@@ -6,31 +6,27 @@ endpoint can authenticate and authorize a client using Apache Syncope.
 
 1) Prequisites
 
-The tests assume an Apache Syncope instance (tested with 1.0.5) with a REST
-interface accessible at "http://localhost:9080/syncope/rest/" (this can be
-changed in 'cxf-service.xml' for each test). The administrator
+The tests assume an Apache Syncope instance (tested with 1.1.0-SNAPSHOT) with
+a REST interface accessible at "http://localhost:8080/syncope/rest/" (this can
+be changed in 'cxf-service.xml' for each test). The administrator
 username/password is the default username/password used in a Syncope instance
 ("admin"/"password"). 
 
-To create a new Syncope project enter:
+See the following tutorial for an example of how to set up Apache Syncope
+in a standalone deployment:
 
-mvn archetype:generate -DarchetypeGroupId=org.apache.syncope -DarchetypeArtifactId=syncope-archetype -DarchetypeRepository=http://repo1.maven.org/maven2 -DarchetypeVersion=1.0.5
+<TODO>
 
-Go into the created project and copy:
-
-cp core/src/main/resources/content.xml core/src/test/resources/
-
-This will remove the test configuration and provide you with a blank slate 
-when launching Syncope in embedded mode. Package everything up via "mvn clean
-package". Then go into "console" and type "mvn -Pembedded". You can access
-the console via "http://localhost:9080/syncope-console", and username/password
-"admin/password".
+The tutorial referenced above goes on to synchronize user information from an
+SQL and LDAP backend. The latter contains the information used for 
+authentication and authorization in this test. Alternatively, you can 
+start the Syncope console and enter the following:
 
 You must create new roles called "boss" and "employee".
 
 You must then create two users in Syncope with username/password/roles:
- - "dave/password/boss"
- - "harry/password/employee"
+ - "alice/security/boss+employee"
+ - "bob/security/employee"
 
 2) AuthenticationTest
 
@@ -52,5 +48,5 @@ roles of the user and stores them in a Subject.
   
 The CXF Endpoint has configured the SimpleAuthorizingInterceptor, which
 requires that a user must have role "boss" to access the "doubleIt"
-operation ("dave" has this role, "harry" does not).
+operation ("alice" has this role, "bob" does not).
 

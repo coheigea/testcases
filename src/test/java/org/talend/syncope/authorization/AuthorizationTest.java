@@ -79,7 +79,7 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
         updateAddressPort(transportPort, PORT);
         
         Client client = ClientProxy.getClient(transportPort);
-        client.getRequestContext().put("ws-security.username", "dave");
+        client.getRequestContext().put("ws-security.username", "alice");
         
         doubleIt(transportPort, 25);
     }
@@ -102,7 +102,7 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
         updateAddressPort(transportPort, PORT);
         
         Client client = ClientProxy.getClient(transportPort);
-        client.getRequestContext().put("ws-security.username", "harry");
+        client.getRequestContext().put("ws-security.username", "bob");
         
         try {
             doubleIt(transportPort, 25);

@@ -26,8 +26,8 @@
 
    <properties>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
-        <cxf.version>2.7.0</cxf.version>
-        <syncope.version>1.0.5</syncope.version>
+        <cxf.version>2.7.3</cxf.version>
+        <syncope.version>1.1.0-SNAPSHOT</syncope.version>
         <spring.version>3.0.7.RELEASE</spring.version>
    </properties>
 
