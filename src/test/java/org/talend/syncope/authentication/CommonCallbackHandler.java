@@ -37,10 +37,10 @@ public class CommonCallbackHandler implements CallbackHandler {
                 } else if ("myservicekey".equals(pc.getIdentifier())) {
                     pc.setPassword("skpass");
                     break;
-                } else if ("dave".equals(pc.getIdentifier())) {
-                    pc.setPassword("password");
+                } else if ("alice".equals(pc.getIdentifier())) {
+                    pc.setPassword("security");
                     break;
-                } else if ("harry".equals(pc.getIdentifier())) {
+                } else if ("bob".equals(pc.getIdentifier())) {
                     pc.setPassword("bad-password");
                     break;
                 } 

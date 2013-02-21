@@ -37,8 +37,8 @@ import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 import org.apache.cxf.security.SecurityContext;
 
-import org.apache.syncope.client.to.MembershipTO;
-import org.apache.syncope.client.to.UserTO;
+import org.apache.syncope.common.to.MembershipTO;
+import org.apache.syncope.common.to.UserTO;
 
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
