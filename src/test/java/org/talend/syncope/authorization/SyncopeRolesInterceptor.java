@@ -81,8 +81,9 @@ public class SyncopeRolesInterceptor extends AbstractPhaseInterceptor<Message> {
         client.header("Authorization", authorizationHeader);
         
         // First authenticate the client
-        client = client.path("user/verifyPassword/" + usernameToken.getName() + ".json");
-        client = client.query("password", usernameToken.getPassword());
+        client = client.path("users.json");
+        client = client.query("username", usernameToken.getName());
+        client = client.query("pwd", usernameToken.getPassword());
         try {
             Boolean verified = client.accept("application/json").get(Boolean.class);
             if (!verified) {
@@ -99,7 +100,8 @@ public class SyncopeRolesInterceptor extends AbstractPhaseInterceptor<Message> {
         // Now read the user and get the roles
         client.reset();
         client.header("Authorization", authorizationHeader);
-        client = client.path("user/readByUsername/" + usernameToken.getName() + ".json");
+        client = client.path("users.json");
+        client = client.query("username", usernameToken.getName());
         try {
             UserTO user = client.accept("application/json").get(UserTO.class);
             if (user == null) {
