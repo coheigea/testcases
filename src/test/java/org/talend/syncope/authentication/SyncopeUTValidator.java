@@ -80,8 +80,9 @@ public class SyncopeUTValidator implements Validator {
             log.debug("Authenticating user " + usernameToken.getName() + " to Syncope server");
         }
         
-        client = client.path("user/verifyPassword/" + usernameToken.getName() + ".json");
-        client = client.query("password", usernameToken.getPassword());
+        client = client.path("users.json");
+        client = client.query("username", usernameToken.getName());
+        client = client.query("pwd", usernameToken.getPassword());
         try {
             Boolean verified = client.accept("application/json").get(Boolean.class);
             if (!verified) {
