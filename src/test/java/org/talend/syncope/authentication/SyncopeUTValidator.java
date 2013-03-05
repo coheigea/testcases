@@ -23,6 +23,7 @@ import java.util.Collections;
 
 import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.syncope.common.to.UserTO;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.handler.RequestData;
@@ -41,8 +42,6 @@ public class SyncopeUTValidator implements Validator {
             org.apache.commons.logging.LogFactory.getLog(SyncopeUTValidator.class);
     
     private String address;
-    private String username;
-    private String password;
     
     public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
         if (credential == null || credential.getUsernametoken() == null) {
@@ -70,22 +69,23 @@ public class SyncopeUTValidator implements Validator {
         }
         
         // Send it off to Syncope for validation
-        WebClient client = WebClient.create(address, Collections.singletonList(new JacksonJsonProvider()));
+        WebClient client = 
+            WebClient.create(address, Collections.singletonList(new JacksonJsonProvider()));
         
         String authorizationHeader = 
-            "Basic " + Base64Utility.encode((username + ":" + password).getBytes());
+            "Basic " + Base64Utility.encode(
+                (usernameToken.getName() + ":" + usernameToken.getPassword()).getBytes()
+            );
 
         client.header("Authorization", authorizationHeader);
         if (log.isDebugEnabled()) {
             log.debug("Authenticating user " + usernameToken.getName() + " to Syncope server");
         }
         
-        client = client.path("users.json");
-        client = client.query("username", usernameToken.getName());
-        client = client.query("pwd", usernameToken.getPassword());
+        client = client.path("users/self");
         try {
-            Boolean verified = client.accept("application/json").get(Boolean.class);
-            if (!verified) {
+            UserTO user = client.accept("application/json").get(UserTO.class);
+            if (user == null) {
                 throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
             }
         } catch (RuntimeException ex) {
@@ -104,22 +104,6 @@ public class SyncopeUTValidator implements Validator {
     
     public String getAddress() {
         return address;
-    }
-    
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
     
 }

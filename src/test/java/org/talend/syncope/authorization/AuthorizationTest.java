@@ -42,7 +42,7 @@ import org.junit.BeforeClass;
  * them in a Subject.
  * 
  * The CXF Endpoint has configured the SimpleAuthorizingInterceptor, which requires that a user must
- * have role "boss" to access the "doubleIt" operation ("dave" has this role, "harry" does not).
+ * have role "boss" to access the "doubleIt" operation ("alice" has this role, "bob" does not).
  */
 public class AuthorizationTest extends AbstractBusClientServerTestBase {
     

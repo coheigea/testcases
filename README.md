@@ -7,7 +7,7 @@ endpoint can authenticate and authorize a client using Apache Syncope.
 1) Prequisites
 
 The tests assume an Apache Syncope instance (tested with 1.1.0-SNAPSHOT) with
-a REST interface accessible at "http://localhost:8080/syncope/rest/" (this can
+a REST interface accessible at "http://localhost:9080/syncope/rest/" (this can
 be changed in 'cxf-service.xml' for each test). The administrator
 username/password is the default username/password used in a Syncope instance
 ("admin"/"password"). 
