@@ -36,10 +36,8 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 import org.apache.cxf.security.SecurityContext;
-
 import org.apache.syncope.common.to.MembershipTO;
 import org.apache.syncope.common.to.UserTO;
-
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 /**
@@ -53,8 +51,6 @@ public class SyncopeRolesInterceptor extends AbstractPhaseInterceptor<Message> {
             org.apache.commons.logging.LogFactory.getLog(SyncopeRolesInterceptor.class);
     
     private String address;
-    private String username;
-    private String password;
 
     public SyncopeRolesInterceptor() {
         super(Phase.PRE_INVOKE);
@@ -74,19 +70,21 @@ public class SyncopeRolesInterceptor extends AbstractPhaseInterceptor<Message> {
         }
         
         // Read the user from Syncope and get the roles
-        WebClient client = WebClient.create(address, Collections.singletonList(new JacksonJsonProvider()));
+        WebClient client = 
+            WebClient.create(address, Collections.singletonList(new JacksonJsonProvider()));
         
         String authorizationHeader = 
-            "Basic " + Base64Utility.encode((username + ":" + password).getBytes());
+            "Basic " + Base64Utility.encode(
+                (usernameToken.getName() + ":" + usernameToken.getPassword()).getBytes()
+            );
+        
         client.header("Authorization", authorizationHeader);
         
-        // First authenticate the client
-        client = client.path("users.json");
-        client = client.query("username", usernameToken.getName());
-        client = client.query("pwd", usernameToken.getPassword());
+        client = client.path("users/self");
+        UserTO user = null;
         try {
-            Boolean verified = client.accept("application/json").get(Boolean.class);
-            if (!verified) {
+            user = client.accept("application/json").get(UserTO.class);
+            if (user == null) {
                 Exception exception = new Exception("Authentication failed");
                 throw new Fault(exception);
             }
@@ -97,34 +95,17 @@ public class SyncopeRolesInterceptor extends AbstractPhaseInterceptor<Message> {
             throw new Fault(ex);
         }
         
-        // Now read the user and get the roles
-        client.reset();
-        client.header("Authorization", authorizationHeader);
-        client = client.path("users.json");
-        client = client.query("username", usernameToken.getName());
-        try {
-            UserTO user = client.accept("application/json").get(UserTO.class);
-            if (user == null) {
-                Exception exception = new Exception("Error in obtaining Syncope User");
-                throw new Fault(exception);
-            }
-            
-            List<MembershipTO> membershipList = user.getMemberships();
-            Subject subject = new Subject();
-            subject.getPrincipals().add(principal);
-            for (MembershipTO membership : membershipList) {
-                String roleName = membership.getRoleName();
-                subject.getPrincipals().add(new SimpleGroup(roleName, usernameToken.getName()));
-            }
-            subject.setReadOnly();
-            
-            message.put(SecurityContext.class, new DefaultSecurityContext(principal, subject));
-        } catch (RuntimeException ex) {
-            if (log.isDebugEnabled()) {
-                log.debug(ex.getMessage(), ex);
-            }
-            throw new Fault(ex);
+        // Now get the roles
+        List<MembershipTO> membershipList = user.getMemberships();
+        Subject subject = new Subject();
+        subject.getPrincipals().add(principal);
+        for (MembershipTO membership : membershipList) {
+            String roleName = membership.getRoleName();
+            subject.getPrincipals().add(new SimpleGroup(roleName, usernameToken.getName()));
         }
+        subject.setReadOnly();
+
+        message.put(SecurityContext.class, new DefaultSecurityContext(principal, subject));
     }
     
     public void setAddress(String newAddress) {
@@ -134,22 +115,5 @@ public class SyncopeRolesInterceptor extends AbstractPhaseInterceptor<Message> {
     public String getAddress() {
         return address;
     }
-    
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
     
 }
