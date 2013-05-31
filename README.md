@@ -39,14 +39,14 @@ authentication via Syncope's REST API.
 3) AuthorizationTest
 
 This tests using Syncope as an IDM for authorization. A CXF client sends a
-SOAP UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured
-(see cxf-service.xml) to validate the UsernameToken via the SyncopeUTValidator,
-which dispatches it to Syncope for authentication.
+SOAP UsernameToken to a CXF Endpoint. The CXF Endpoint has configured the
+SyncopeRolesInterceptor, which authenticates the Username/Password to Syncope
+as per the authentication test. If authentication is successful, it then gets
+the roles of the user and populates a CXF SecurityContext with the user's name
++ roles.
 
-The CXF Endpoint has configured the SyncopeRolesInterceptor, which gets the
-roles of the user and stores them in a Subject.
-  
-The CXF Endpoint has configured the SimpleAuthorizingInterceptor, which
-requires that a user must have role "boss" to access the "doubleIt"
-operation ("alice" has this role, "bob" does not).
+The CXF Endpoint has also configured the SimpleAuthorizingInterceptor, which
+reads the current Subject's roles from the SecurityContext, and requires that
+a user must have role "boss" to access the "doubleIt" operation ("alice" has
+this role, "bob" does not). 
 
