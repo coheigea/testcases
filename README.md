@@ -6,8 +6,8 @@ endpoint can authenticate and authorize a client using Apache Syncope.
 
 1) Prequisites
 
-The tests assume an Apache Syncope instance (tested with 1.1.0-SNAPSHOT) with
-a REST interface accessible at "http://localhost:9080/syncope/rest/" (this can
+The tests assume an Apache Syncope instance (tested with 1.1.1) with a REST
+interface accessible at "http://localhost:8080/syncope/rest/" (this can
 be changed in 'cxf-service.xml' for each test). The administrator
 username/password is the default username/password used in a Syncope instance
 ("admin"/"password"). 
@@ -30,7 +30,7 @@ You must then create two users in Syncope with username/password/roles:
 
 2) AuthenticationTest
 
-This tests using Syncope as an IDM for authentication. A cxf client sends a
+This tests using Syncope as an IDM for authentication. A CXF client sends a
 SOAP UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured
 (see cxf-service.xml) to validate the UsernameToken via the
 SyncopeUTValidator, which dispatches the username/passwords to Syncope for
@@ -38,7 +38,7 @@ authentication via Syncope's REST API.
 
 3) AuthorizationTest
 
-This tests using Syncope as an IDM for authorization. A cxf client sends a
+This tests using Syncope as an IDM for authorization. A CXF client sends a
 SOAP UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured
 (see cxf-service.xml) to validate the UsernameToken via the SyncopeUTValidator,
 which dispatches it to Syncope for authentication.
