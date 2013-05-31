@@ -46,7 +46,7 @@
    </cxf:bus>
    
    <bean class="org.talend.syncope.authentication.SyncopeUTValidator" id="utValidator">
-       <property name="address" value="http://localhost:9080/syncope/cxf/"/>
+       <property name="address" value="http://localhost:8080/syncope/cxf/"/>
    </bean>
    
    <jaxws:endpoint id="doubleittransport"
