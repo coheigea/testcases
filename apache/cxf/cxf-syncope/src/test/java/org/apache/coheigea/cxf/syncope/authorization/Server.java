@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.talend.syncope.authorization;
+package org.apache.coheigea.cxf.syncope.authorization;
 
 import java.net.URL;
 
