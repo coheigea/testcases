@@ -34,7 +34,8 @@ This tests using Syncope as an IDM for authentication. A CXF client sends a
 SOAP UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured
 (see cxf-service.xml) to validate the UsernameToken via the
 SyncopeUTValidator, which dispatches the username/passwords to Syncope for
-authentication via Syncope's REST API.
+authentication via Syncope's REST API. A test that passes username/passwords 
+via Basic Authentication to the CXF endpoint is also added.
 
 3) AuthorizationTest
 

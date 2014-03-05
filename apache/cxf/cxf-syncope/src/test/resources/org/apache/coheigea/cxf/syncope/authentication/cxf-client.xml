@@ -42,6 +42,10 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
        </jaxws:properties>
    </jaxws:client>
    
+   <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportBasicAuthPort" 
+                  createdFromAPI="true" username="alice" password="security">
+   </jaxws:client>
+   
    <http:conduit name="https://localhost.*">
       <http:tlsClientParameters disableCNCheck="true">
         <sec:trustManagers>

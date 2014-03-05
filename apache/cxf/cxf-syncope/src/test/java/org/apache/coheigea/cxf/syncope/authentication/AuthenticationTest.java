@@ -34,7 +34,8 @@ import org.junit.BeforeClass;
 /**
  * This tests using Syncope as an IDM for authentication. A cxf client sends a SOAP UsernameToken to a CXF
  * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken via
- * the SyncopeUTValidator, which dispatches it to Syncope for authentication.
+ * the SyncopeUTValidator, which dispatches it to Syncope for authentication. A test that passes
+ * username/passwords via Basic Authentication to the CXF endpoint is also added.
  */
 public class AuthenticationTest extends AbstractBusClientServerTestBase {
     
@@ -102,6 +103,26 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
         } catch (Exception ex) {
             // expected
         }
+    }
+    
+    @org.junit.Test
+    public void testAuthenticatedRequestBasicAuthentication() throws Exception {
+
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
+        
+        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportBasicAuthPort");
+        DoubleItPortType transportPort = 
+            service.getPort(portQName, DoubleItPortType.class);
+        updateAddressPort(transportPort, PORT);
+        
+        doubleIt(transportPort, 25);
     }
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
