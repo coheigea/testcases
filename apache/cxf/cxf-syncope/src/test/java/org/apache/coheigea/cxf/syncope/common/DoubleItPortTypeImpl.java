@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.talend.syncope.common;
+package org.apache.coheigea.cxf.syncope.common;
 
 import java.security.Principal;
 

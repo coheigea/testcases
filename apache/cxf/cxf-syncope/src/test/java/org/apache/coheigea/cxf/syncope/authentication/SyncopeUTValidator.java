@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.talend.syncope.authentication;
+package org.apache.coheigea.cxf.syncope.authentication;
 
 import java.util.Collections;
 
