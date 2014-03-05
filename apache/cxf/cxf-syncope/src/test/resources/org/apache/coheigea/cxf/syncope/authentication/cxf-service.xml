@@ -63,6 +63,24 @@
       </jaxws:properties> 
    </jaxws:endpoint>
    
+   <bean id="basicAuthValidator" class="org.apache.coheigea.cxf.syncope.authentication.SyncopeBasicAuthInterceptor">
+        <property name="validator" ref="utValidator" />
+   </bean>
+   
+   <jaxws:endpoint id="doubleittransportbasicauth"
+      implementor="org.apache.coheigea.cxf.syncope.common.DoubleItPortTypeImpl"
+      endpointName="s:DoubleItTransportBasicAuthPort"
+      serviceName="s:DoubleItService"
+      depends-on="ClientAuthHttpsSettings"
+      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportbasicauth"
+      wsdlLocation="org/apache/coheigea/cxf/syncope/authentication/DoubleIt.wsdl"
+      xmlns:s="http://www.example.org/contract/DoubleIt">
+        
+      <jaxws:inInterceptors>
+         <ref bean="basicAuthValidator"/>
+      </jaxws:inInterceptors>
+   </jaxws:endpoint>
+   
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
    <httpj:engine port="${testutil.ports.Server}">
     <httpj:tlsServerParameters>
