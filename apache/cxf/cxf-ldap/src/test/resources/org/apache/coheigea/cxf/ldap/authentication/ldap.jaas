@@ -1,0 +1,25 @@
+sun {
+ com.sun.security.auth.module.LdapLoginModule REQUIRED
+ userProvider="ldap://localhost:10389/"
+ authIdentity="cn={USERNAME},ou=users,ou=system"
+ useSSL=false
+ debug=true;
+};
+
+jetty {
+    org.eclipse.jetty.plus.jaas.spi.LdapLoginModule required
+    debug="true"
+    contextFactory="com.sun.jndi.ldap.LdapCtxFactory"
+    hostname="localhost"
+    port="10389"
+    bindDn="uid=admin,ou=system"
+    bindPassword="ldap_su"
+    authenticationMethod="simple"
+    forceBindingLogin="false"
+    userBaseDn="ou=users,ou=system"
+    userRdnAttribute="cn"
+    userIdAttribute="cn"
+    userPasswordAttribute="userPassword"
+    userObjectClass="inetOrgPerson"
+    authenticated="true";
+};

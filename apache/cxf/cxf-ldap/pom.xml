@@ -19,19 +19,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.coheigea.cxf</groupId>
-    <artifactId>cxf-syncope-demo</artifactId>
+    <artifactId>cxf-ldap-demo</artifactId>
     <packaging>jar</packaging>
-    <name>Apache CXF Syncope Demo</name>
+    <name>Apache CXF LDAP Demo</name>
     <version>1.0</version>
 
    <properties>
-        <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <cxf.version>2.7.10</cxf.version>
-        <jackson.version>1.9.0</jackson.version>
         <junit.version>4.11</junit.version>
         <slf4j.version>1.7.6</slf4j.version>
         <spring.version>3.1.4.RELEASE</spring.version>
-        <syncope.version>1.1.6</syncope.version>
    </properties>
 
    <dependencies>
@@ -89,34 +86,6 @@
            <scope>test</scope>
        </dependency>
        <dependency>
-           <groupId>org.apache.syncope</groupId>
-           <artifactId>syncope-client</artifactId>
-           <version>${syncope.version}</version>
-           <scope>test</scope>
-           <exclusions>
-               <exclusion>
-                   <groupId>org.springframework</groupId>
-                   <artifactId>spring-webmvc</artifactId>
-               </exclusion>
-               <exclusion>
-                   <groupId>com.thoughtworks.xstream</groupId>
-                   <artifactId>xstream</artifactId>
-               </exclusion>
-               <exclusion>
-                   <groupId>org.apache.httpcomponents</groupId>
-                   <artifactId>httpclient</artifactId>
-               </exclusion>
-               <exclusion>
-                   <groupId>ch.qos.logback</groupId>
-                   <artifactId>logback-core</artifactId>
-               </exclusion>
-               <exclusion>
-                   <groupId>ch.qos.logback</groupId>
-                   <artifactId>logback-classic</artifactId>
-               </exclusion>
-           </exclusions>
-       </dependency>
-       <dependency>
            <groupId>org.springframework</groupId>
            <artifactId>spring-core</artifactId>
            <version>${spring.version}</version>
@@ -132,16 +101,16 @@
            <version>${spring.version}</version>
        </dependency>
        <dependency>
-           <groupId>org.codehaus.jackson</groupId>
-           <artifactId>jackson-jaxrs</artifactId>
-           <version>${jackson.version}</version>
-           <scope>test</scope>
-       </dependency>
-       <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>${slf4j.version}</version>
             <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.eclipse.jetty</groupId>
+           <artifactId>jetty-plus</artifactId>
+           <version>8.1.5.v20120716</version>
+           <scope>test</scope>
        </dependency>
 
     </dependencies>
@@ -204,25 +173,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.15</version>
+                <configuration>
+                    <reuseForks>false</reuseForks>
+                    <systemPropertyVariables>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
         </plugins>
         
     </build>
     
-    <profiles>
-        <profile>
-            <build>
-                <plugins>
-                    <plugin>
-                         <groupId>org.apache.maven.plugins</groupId>
-                         <artifactId>maven-surefire-plugin</artifactId>
-                         <configuration>
-                             <systemPropertyVariables>
-                             </systemPropertyVariables>
-                         </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
 </project>
