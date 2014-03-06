@@ -45,29 +45,14 @@
 		</wsdl:operation>
 	</wsdl:binding>
 	
-    <wsdl:binding name="DoubleItNoPolicyBinding" type="tns:DoubleItPortType">
-        <soap:binding style="document"
-            transport="http://schemas.xmlsoap.org/soap/http" />
-        <wsdl:operation name="DoubleIt">
-            <soap:operation soapAction="" />
-            <wsdl:input>
-                <soap:body use="literal" />
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal" />
-            </wsdl:output>
-        </wsdl:operation>
-    </wsdl:binding>
-    
-
 	<wsdl:service name="DoubleItService">
-		<wsdl:port name="DoubleItTransportPort" binding="tns:DoubleItTransportBinding">
+		<wsdl:port name="DoubleItTransportSunPort" binding="tns:DoubleItTransportBinding">
 			<soap:address
-				location="https://localhost:8081/doubleit/services/doubleittransport" />
+				location="https://localhost:8081/doubleit/services/doubleittransportsun" />
 		</wsdl:port>
-		<wsdl:port name="DoubleItTransportBasicAuthPort" binding="tns:DoubleItNoPolicyBinding">
+		<wsdl:port name="DoubleItTransportJettyPort" binding="tns:DoubleItTransportBinding">
             <soap:address
-                location="https://localhost:8081/doubleit/services/doubleittransportbasicauth" />
+                location="https://localhost:8081/doubleit/services/doubleittransportjetty" />
         </wsdl:port>
 	</wsdl:service>
 	

@@ -4,7 +4,7 @@ cxf-syncope
 This project contains a number of tests that show how an Apache CXF service
 endpoint can authenticate and authorize a client using Apache Syncope.
 
-1) Prequisites
+1) Pre-requisites
 
 The tests assume an Apache Syncope instance (tested with 1.1.6) with a REST
 interface accessible at "http://localhost:9080/syncope/rest/" (this can
