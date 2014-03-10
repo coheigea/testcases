@@ -23,6 +23,7 @@
   xmlns:http="http://cxf.apache.org/transports/http/configuration"
   xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
   xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xmlns:util="http://www.springframework.org/schema/util"
   xsi:schemaLocation="
             http://cxf.apache.org/core
             http://cxf.apache.org/schemas/core.xsd
@@ -35,7 +36,9 @@
             http://cxf.apache.org/transports/http-jetty/configuration
             http://cxf.apache.org/schemas/configuration/http-jetty.xsd
             http://www.springframework.org/schema/beans
-            http://www.springframework.org/schema/beans/spring-beans.xsd">
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/util 
+            http://www.springframework.org/schema/util/spring-util.xsd">
    
    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
    
@@ -45,35 +48,27 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="authorizationInterceptor" 
-         class="org.apache.cxf.interceptor.security.SimpleAuthorizingInterceptor">
-       <property name="methodRolesMap">
-           <map>
-               <entry key="doubleIt" value="boss"/>
-           </map>
-       </property> 
-   </bean>
+   <util:list id="requiredRolesList">
+       <value>boss</value>
+   </util:list>
    
-   <bean class="org.apache.coheigea.cxf.syncope.authorization.SyncopeRolesInterceptor" id="rolesInterceptor">
-       <property name="address" value="http://localhost:9080/syncope/cxf/"/>
+   <bean class="org.apache.coheigea.cxf.shiro.authentication.ShiroUTValidator" id="utValidator">
+       <constructor-arg value="src/test/resources/securityconfig.ini"/>
+       <property name="requiredRoles" ref="requiredRolesList"/>
    </bean>
    
    <jaxws:endpoint id="doubleittransport"
-      implementor="org.apache.coheigea.cxf.syncope.common.DoubleItPortTypeImpl"
+      implementor="org.apache.coheigea.cxf.shiro.common.DoubleItPortTypeImpl"
       endpointName="s:DoubleItTransportPort"
       serviceName="s:DoubleItService"
       depends-on="ClientAuthHttpsSettings"
       address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransport"
-      wsdlLocation="org/apache/coheigea/cxf/syncope/authentication/DoubleIt.wsdl"
+      wsdlLocation="org/apache/coheigea/cxf/shiro/authorization/DoubleIt.wsdl"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-         <entry key="ws-security.validate.token" value="false"/>
+         <entry key="ws-security.ut.validator" value-ref="utValidator"/>
       </jaxws:properties> 
-      <jaxws:inInterceptors>
-         <ref bean="rolesInterceptor"/>
-         <ref bean="authorizationInterceptor"/>
-      </jaxws:inInterceptors>
    </jaxws:endpoint>
    
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">

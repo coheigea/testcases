@@ -34,15 +34,14 @@ import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
 /**
- * This tests using Syncope as an IDM for authorization. A cxf client sends a SOAP UsernameToken to a CXF
- * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken via
- * the SyncopeUTValidator, which dispatches it to Syncope for authentication.
+ * This tests using Shiro for authorization. A cxf client sends a SOAP UsernameToken to a CXF
+ * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken 
+ * via the ShiroUTValidator. The ShiroUTValidator has also been configured with some roles, that
+ * require that a user must have role "boss" to proceed ("alice" has this role, "bob" does not). 
  * 
- * The CXF Endpoint has configured the SyncopeRolesInterceptor, which gets the roles of the user and stores
- * them in a Subject.
- * 
- * The CXF Endpoint has configured the SimpleAuthorizingInterceptor, which requires that a user must
- * have role "boss" to access the "doubleIt" operation ("alice" has this role, "bob" does not).
+ * Note that unlike the syncope + ldap demos, we do not use the SimpleAuthorizingInterceptor. This 
+ * is because there is no straightforward way to extract roles from a Shiro Subject, only to check 
+ * if the Subject has a given role.
  */
 public class AuthorizationTest extends AbstractBusClientServerTestBase {
     
