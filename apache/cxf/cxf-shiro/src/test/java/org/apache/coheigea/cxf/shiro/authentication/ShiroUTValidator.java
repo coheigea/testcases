@@ -19,6 +19,9 @@
 
 package org.apache.coheigea.cxf.shiro.authentication;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -40,6 +43,7 @@ public class ShiroUTValidator implements Validator {
     
     private static org.apache.commons.logging.Log log = 
             org.apache.commons.logging.LogFactory.getLog(ShiroUTValidator.class);
+    private final List<String> requiredRoles = new ArrayList<String>();
     
     public ShiroUTValidator(String iniResourcePath) {
         Factory<SecurityManager> factory = new IniSecurityManagerFactory(iniResourcePath);
@@ -83,9 +87,21 @@ public class ShiroUTValidator implements Validator {
             }
             throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
         }
+
+        // Perform authorization check
+        if (!requiredRoles.isEmpty() && !currentUser.hasAllRoles(requiredRoles)) {
+            log.debug("Authorization failed for authenticated user");
+            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+        }
         
         return credential;
     }
+
+    public List<String> getRequiredRoles() {
+        return requiredRoles;
+    }
     
-    
+    public void setRequiredRoles(List<String> roles) {
+        requiredRoles.addAll(roles);
+    }
 }
