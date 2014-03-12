@@ -38,8 +38,8 @@
     </spring-security:authentication-manager>
    
     <spring-security:user-service id="userDetailsService">
-        <spring-security:user name="alice" password="security" authorities="boss, employee"/>
-        <spring-security:user name="bob" password="security" authorities="employee"/>
+        <spring-security:user name="alice" password="security" authorities="ROLE_BOSS, ROLE_EMPLOYEE"/>
+        <spring-security:user name="bob" password="security" authorities="ROLE_EMPLOYEE"/>
     </spring-security:user-service>
 
 </beans>

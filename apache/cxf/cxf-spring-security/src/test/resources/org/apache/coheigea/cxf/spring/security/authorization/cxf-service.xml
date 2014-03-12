@@ -48,22 +48,27 @@
         </cxf:features>
    </cxf:bus>
    
+   <!-- import the spring security configuration  -->
+   <import resource="classpath:security_context.xml"/>
+   
    <util:list id="requiredRolesList">
-       <value>boss</value>
+       <value>ROLE_BOSS</value>
    </util:list>
    
-   <bean class="org.apache.coheigea.cxf.shiro.authentication.ShiroUTValidator" id="utValidator">
-       <constructor-arg value="src/test/resources/securityconfig.ini"/>
+   <bean class="org.apache.coheigea.cxf.spring.security.authentication.SpringSecurityUTValidator" 
+       id="utValidator">
+       <constructor-arg ref="authenticationManager"/>
+       <constructor-arg ref="accessDecisionManager"/>
        <property name="requiredRoles" ref="requiredRolesList"/>
    </bean>
    
    <jaxws:endpoint id="doubleittransport"
-      implementor="org.apache.coheigea.cxf.shiro.common.DoubleItPortTypeImpl"
+      implementor="org.apache.coheigea.cxf.spring.security.common.DoubleItPortTypeImpl"
       endpointName="s:DoubleItTransportPort"
       serviceName="s:DoubleItService"
       depends-on="ClientAuthHttpsSettings"
       address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransport"
-      wsdlLocation="org/apache/coheigea/cxf/shiro/authorization/DoubleIt.wsdl"
+      wsdlLocation="org/apache/coheigea/cxf/spring/security/authorization/DoubleIt.wsdl"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
