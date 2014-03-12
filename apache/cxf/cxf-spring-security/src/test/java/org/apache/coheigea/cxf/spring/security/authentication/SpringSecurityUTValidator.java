@@ -19,6 +19,8 @@
 
 package org.apache.coheigea.cxf.spring.security.authentication;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -29,10 +31,14 @@ import org.apache.ws.security.handler.RequestData;
 import org.apache.ws.security.message.token.UsernameToken;
 import org.apache.ws.security.validate.Credential;
 import org.apache.ws.security.validate.Validator;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * This is a custom Validator that authenticates via Spring Security.
@@ -42,9 +48,17 @@ public class SpringSecurityUTValidator implements Validator {
     private static org.apache.commons.logging.Log log = 
             org.apache.commons.logging.LogFactory.getLog(SpringSecurityUTValidator.class);
     private AuthenticationManager authenticationManager;
+    private AccessDecisionManager accessDecisionManager;
+    private final List<String> requiredRoles = new ArrayList<String>();
     
     public SpringSecurityUTValidator(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
+    }
+    
+    public SpringSecurityUTValidator(AuthenticationManager authenticationManager,
+            AccessDecisionManager accessDecisionManager) {
+        this.authenticationManager = authenticationManager;
+        this.accessDecisionManager = accessDecisionManager;
     }
     
     public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
@@ -82,18 +96,44 @@ public class SpringSecurityUTValidator implements Validator {
         subject.getPrincipals().add(authToken);
         
         Set<Authentication> authentications = subject.getPrincipals(Authentication.class);
-        
+        Authentication authenticated = null;
         try {
-            authenticationManager.authenticate(authentications.iterator().next());
+            authenticated = 
+                authenticationManager.authenticate(authentications.iterator().next());
         } catch (AuthenticationException ex) {
             if (log.isDebugEnabled()) {
                 log.debug(ex.getMessage(), ex);
             }
             throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
         }
+        
+        if (!authenticated.isAuthenticated()) {
+            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+        }
+        
+        for (GrantedAuthority authz : authenticated.getAuthorities()) {
+            System.out.println("Granted: " + authz.getAuthority());
+        }
+        
+        // Authorize request
+        if (accessDecisionManager != null && !requiredRoles.isEmpty()) {
+            List<ConfigAttribute> attributes
+                = SecurityConfig.createList(requiredRoles.toArray(new String[requiredRoles.size()]));
+            for (ConfigAttribute attr : attributes) {
+                System.out.println("Attr: " + attr.getAttribute());
+            }
+            accessDecisionManager.decide(authenticated, this, attributes);
+        }
 
         credential.setSubject(subject);
         return credential;
     }
 
+    public List<String> getRequiredRoles() {
+        return requiredRoles;
+    }
+    
+    public void setRequiredRoles(List<String> roles) {
+        requiredRoles.addAll(roles);
+    }
 }
