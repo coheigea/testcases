@@ -9,7 +9,7 @@ The shiro.ini file has two users with the following usernames/passwords/roles:
  - "alice/security/boss+employee"
  - "bob/security/employee"
 
-2) AuthenticationTest
+1) AuthenticationTest
 
 This tests using Shiro for authentication. A CXF client sends a SOAP
 UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured (see
@@ -17,7 +17,7 @@ cxf-service.xml) to validate the UsernameToken via the ShiroUTValidator. A
 test that passes username/passwords via Basic Authentication to the CXF
 endpoint is also added.
 
-3) AuthorizationTest
+2) AuthorizationTest
 
 This tests using Shiro for authorization. A CXF client sends a SOAP
 UsernameToken to a CXF Endpoint. The CXF Endpoint has configured the
@@ -28,4 +28,15 @@ The CXF Endpoint has also configured the SimpleAuthorizingInterceptor, which
 reads the current Subject's roles from the SecurityContext, and requires that
 a user must have role "boss" to access the "doubleIt" operation ("alice" has
 this role, "bob" does not). 
+
+3) SSOTest
+
+This test builds on the AuthenticationTest to show how SingleSignOn (SSO) can
+be achieved using WS-SecureConversation. In this scenario an STS is co-located
+with the endpoint. The client sends the UsernameToken to the STS for 
+authentication using Apache Shiro. The STS returns a token and a secret key
+to the client. The client then makes the service request including the token
+and using the secret key to sign a portion of the request, thus proving
+proof-of-possession. The client can then make repeated invocations without 
+having to re-authenticate the UsernameToken credentials.
 
