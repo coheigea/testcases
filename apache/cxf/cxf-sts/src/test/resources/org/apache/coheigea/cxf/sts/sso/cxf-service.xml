@@ -45,21 +45,17 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean class="org.apache.coheigea.cxf.shiro.authentication.ShiroUTValidator" id="utValidator">
-       <constructor-arg value="src/test/resources/securityconfig.ini"/>
-   </bean>
-   
    <jaxws:endpoint id="doubleittransport"
-      implementor="org.apache.coheigea.cxf.shiro.common.DoubleItPortTypeImpl"
+      implementor="org.apache.coheigea.cxf.sts.common.DoubleItPortTypeImpl"
       endpointName="s:DoubleItTransportSSOPort"
       serviceName="s:DoubleItService"
       depends-on="ClientAuthHttpsSettings"
       address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportsso"
-      wsdlLocation="org/apache/coheigea/cxf/shiro/sso/DoubleIt.wsdl"
+      wsdlLocation="org/apache/coheigea/cxf/sts/sso/DoubleIt.wsdl"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-         <entry key="ws-security.ut.validator.sct" value-ref="utValidator"/>
+          <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
       </jaxws:properties> 
    </jaxws:endpoint>
    

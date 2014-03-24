@@ -21,27 +21,28 @@ package org.apache.coheigea.cxf.sts.authorization;
 import java.net.URL;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 
+import org.apache.coheigea.cxf.sts.common.STSServer;
+import org.apache.coheigea.cxf.sts.common.TokenTestUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
-
 import org.example.contract.doubleit.DoubleItPortType;
-
 import org.junit.BeforeClass;
 
 /**
- * This tests using Shiro for authorization. A cxf client sends a SOAP UsernameToken to a CXF
- * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken 
- * via the ShiroUTValidator. The ShiroUTValidator has also been configured with some roles, that
- * require that a user must have role "boss" to proceed ("alice" has this role, "bob" does not). 
+ * This tests using the CXF STS for authorization. The client authenticates to the STS using
+ * a username/password, and gets a signed holder-of-key SAML Assertion in return. This is
+ * presented to the service, who verifies proof-of-possession + the signature of the STS on
+ * the assertion. The CXF endpoint extracts roles from the Assertion + populates the security
+ * context. Note that the CXF endpoint requires a "role" Claim via the security policy.
  * 
- * Note that unlike the syncope + ldap demos, we do not use the SimpleAuthorizingInterceptor. This 
- * is because there is no straightforward way to extract roles from a Shiro Subject, only to check 
- * if the Subject has a given role.
+ * The CXF Endpoint has configured the SimpleAuthorizingInterceptor, which requires that a user must
+ * have role "boss" to access the "doubleIt" operation ("alice" has this role, "bob" does not).
  */
 public class AuthorizationTest extends AbstractBusClientServerTestBase {
     
@@ -49,6 +50,7 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
     
     private static final String PORT = allocatePort(Server.class);
+    private static final String STS_PORT = allocatePort(STSServer.class);
     
     @BeforeClass
     public static void startServers() throws Exception {
@@ -57,6 +59,12 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
                    // run the server in the same process
                    // set this to false to fork
                    launchServer(Server.class, true)
+        );
+        assertTrue(
+                "Server failed to launch",
+                // run the server in the same process
+                // set this to false to fork
+                launchServer(STSServer.class, true)
         );
     }
     
@@ -80,6 +88,8 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
         Client client = ClientProxy.getClient(transportPort);
         client.getRequestContext().put("ws-security.username", "alice");
         
+        TokenTestUtils.updateSTSPort((BindingProvider)transportPort, STS_PORT);
+        
         doubleIt(transportPort, 25);
     }
     
@@ -102,6 +112,8 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
         
         Client client = ClientProxy.getClient(transportPort);
         client.getRequestContext().put("ws-security.username", "bob");
+        
+        TokenTestUtils.updateSTSPort((BindingProvider)transportPort, STS_PORT);
         
         try {
             doubleIt(transportPort, 25);
