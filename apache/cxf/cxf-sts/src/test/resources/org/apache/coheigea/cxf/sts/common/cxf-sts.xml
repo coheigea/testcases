@@ -31,6 +31,7 @@
         <property name="tokenValidators" ref="transportTokenValidators"/>
         <property name="services" ref="transportService"/>
         <property name="stsProperties" ref="transportSTSProperties"/>
+        <property name="claimsManager" ref="claimsManager" />
     </bean>
     <bean id="transportValidateDelegate" class="org.apache.cxf.sts.operation.TokenValidateOperation">
         <property name="tokenValidators" ref="transportTokenValidators"/>
@@ -57,6 +58,15 @@
         <value>https://localhost:(\d)*/doubleit/services/doubleittransport.*
         </value>
     </util:list>
+    <bean id="claimsManager" class="org.apache.cxf.sts.claims.ClaimsManager">
+        <property name="claimHandlers" ref="claimHandlerList" />
+    </bean>
+    <util:list id="claimHandlerList">
+        <ref bean="rolesClaimsHandler" />
+    </util:list>
+    <bean id="rolesClaimsHandler"
+        class="org.apache.coheigea.cxf.sts.common.RolesClaimsHandler">
+    </bean>
     <bean id="transportSTSProperties" class="org.apache.cxf.sts.StaticSTSProperties">
         <property name="signaturePropertiesFile" value="stsKeystore.properties"/>
         <property name="signatureUsername" value="mystskey"/>

@@ -44,7 +44,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
-
+	
 	<wsdl:service name="DoubleItService">
 		<wsdl:port name="DoubleItTransportPort" binding="tns:DoubleItTransportBinding">
 			<soap:address
@@ -78,13 +78,22 @@
 						<sp:IncludeTimestamp />
 					</wsp:Policy>
 				</sp:TransportBinding>
-				<sp:SupportingTokens>
+				<sp:EndorsingSupportingTokens>
                     <wsp:Policy>
-                        <sp:UsernameToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
-                            <wsp:Policy/>
-                        </sp:UsernameToken>
+                        <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+                            <sp:RequestSecurityTokenTemplate>
+                                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0</t:TokenType>
+                                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/PublicKey</t:KeyType>
+                                <t:Claims xmlns:ic="http://schemas.xmlsoap.org/ws/2005/05/identity" Dialect="http://schemas.xmlsoap.org/ws/2005/05/identity">
+                                    <ic:ClaimType Uri="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role"/>
+                                </t:Claims>
+                            </sp:RequestSecurityTokenTemplate>
+                            <wsp:Policy>
+                                <sp:RequireInternalReference/>
+                            </wsp:Policy>
+                        </sp:IssuedToken>
                     </wsp:Policy>
-                </sp:SupportingTokens>
+                </sp:EndorsingSupportingTokens>
 			</wsp:All>
 		</wsp:ExactlyOne>
 	</wsp:Policy>

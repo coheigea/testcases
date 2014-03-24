@@ -21,8 +21,11 @@ package org.apache.coheigea.cxf.sts.sso;
 import java.net.URL;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 
+import org.apache.coheigea.cxf.sts.common.STSServer;
+import org.apache.coheigea.cxf.sts.common.TokenTestUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Client;
@@ -32,12 +35,9 @@ import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
 /**
- * This tests using Apache Shiro for authentication in combination with SingleSignOn (SSO)
- * provided by the WS-SecureConveration protocol. A cxf client sends a SOAP UsernameToken to a CXF
- * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken
- * via the ShiroUTValidator. The Endpoint returns a token + associated secret to the client,
- * who then includes the token in a request to the endpoint + uses the associated secret to
- * sign the request. The client does not need to re-authenticate on subsequent requests.
+ * This test builds on the AuthenticationTest to show how SingleSignOn (SSO) can be achieved 
+ * using the STS. The client caches the token after the initial invocation, and therefore the 
+ * client can make repeated invocations without having to re-authenticate itself to the STS.
  */
 public class SSOTest extends AbstractBusClientServerTestBase {
     
@@ -45,6 +45,7 @@ public class SSOTest extends AbstractBusClientServerTestBase {
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
     
     private static final String PORT = allocatePort(Server.class);
+    private static final String STS_PORT = allocatePort(STSServer.class);
     
     @BeforeClass
     public static void startServers() throws Exception {
@@ -53,6 +54,12 @@ public class SSOTest extends AbstractBusClientServerTestBase {
                    // run the server in the same process
                    // set this to false to fork
                    launchServer(Server.class, true)
+        );
+        assertTrue(
+                "Server failed to launch",
+                // run the server in the same process
+                // set this to false to fork
+                launchServer(STSServer.class, true)
         );
     }
    
@@ -75,6 +82,8 @@ public class SSOTest extends AbstractBusClientServerTestBase {
         
         Client client = ClientProxy.getClient(transportPort);
         client.getRequestContext().put("ws-security.username", "alice");
+        
+        TokenTestUtils.updateSTSPort((BindingProvider)transportPort, STS_PORT);
         
         doubleIt(transportPort, 25);
         // Remove the username to test that SSO is working...
