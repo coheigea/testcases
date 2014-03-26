@@ -45,7 +45,6 @@ import org.apache.ws.security.saml.ext.OpenSAMLUtil;
 import org.apache.ws.security.saml.ext.SAMLParms;
 import org.apache.ws.security.saml.ext.bean.ConditionsBean;
 import org.apache.ws.security.saml.ext.bean.SubjectConfirmationDataBean;
-import org.apache.ws.security.saml.ext.builder.SAML2Constants;
 import org.apache.ws.security.util.DOM2Writer;
 import org.joda.time.DateTime;
 import org.opensaml.saml2.core.AuthnRequest;
@@ -138,9 +137,9 @@ public class SamlSso {
         
         // Create an AuthenticationAssertion
         SAML2CallbackHandler callbackHandler = new SAML2CallbackHandler();
-        callbackHandler.setStatement(SAML2CallbackHandler.Statement.AUTHN);
         callbackHandler.setIssuer(issuer);
-        callbackHandler.setConfirmationMethod(SAML2Constants.CONF_BEARER);
+        String user = messageContext.getSecurityContext().getUserPrincipal().getName();
+        callbackHandler.setSubjectName(user);
         
         // Subject Confirmation Data
         SubjectConfirmationDataBean subjectConfirmationData = new SubjectConfirmationDataBean();

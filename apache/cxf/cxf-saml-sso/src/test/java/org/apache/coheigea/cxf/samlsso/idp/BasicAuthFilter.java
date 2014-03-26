@@ -49,7 +49,7 @@ public class BasicAuthFilter implements RequestHandler {
     public Response handleRequest(Message message, ClassResourceInfo arg1) {
         AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
         if (policy == null || policy.getUserName() == null || policy.getPassword() == null) {
-            return Response.status(401).header("WWW-Authenticate", "Basic realm=\"Reservations\"").build();
+            return Response.status(401).header("WWW-Authenticate", "Basic realm=\"IdP\"").build();
         }
 
         try {

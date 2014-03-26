@@ -20,36 +20,63 @@
 package org.apache.coheigea.cxf.samlsso.idp;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.apache.ws.security.components.crypto.Crypto;
-import org.apache.ws.security.components.crypto.CryptoFactory;
-import org.apache.ws.security.components.crypto.CryptoType;
 import org.apache.ws.security.saml.ext.SAMLCallback;
-import org.apache.ws.security.saml.ext.bean.KeyInfoBean;
+import org.apache.ws.security.saml.ext.bean.AttributeBean;
+import org.apache.ws.security.saml.ext.bean.AttributeStatementBean;
+import org.apache.ws.security.saml.ext.bean.AuthenticationStatementBean;
+import org.apache.ws.security.saml.ext.bean.ConditionsBean;
 import org.apache.ws.security.saml.ext.bean.SubjectBean;
+import org.apache.ws.security.saml.ext.bean.SubjectConfirmationDataBean;
 import org.apache.ws.security.saml.ext.builder.SAML2Constants;
 import org.opensaml.common.SAMLVersion;
 
 /**
- * A Callback Handler implementation for a SAML 2 assertion. By default it creates an
- * authentication assertion using Sender Vouches.
+ * A Callback Handler implementation for a SAML 2 assertion for use by the SAML SSO IdP. By
+ * default it creates a SAML 2.0 Assertion with an AuthenticationStatement. If a list of roles 
+ * are also supplied, it will insert them as part of an AttributeStatement.
  */
-public class SAML2CallbackHandler extends AbstractSAMLCallbackHandler {
+public class SAML2CallbackHandler implements CallbackHandler {
     
-    public SAML2CallbackHandler() throws Exception {
-        if (certs == null) {
-            Crypto crypto = CryptoFactory.getInstance("stsKeystore.properties");
-            CryptoType cryptoType = new CryptoType(CryptoType.TYPE.ALIAS);
-            cryptoType.setAlias("mystskey");
-            certs = crypto.getX509Certificates(cryptoType);
+    private String subjectName;
+    private String subjectQualifier;
+    private String confirmationMethod = SAML2Constants.CONF_BEARER;
+    private String issuer;
+    private String subjectNameIDFormat;
+    private ConditionsBean conditions;
+    private SubjectConfirmationDataBean subjectConfirmationData;
+    
+    private void createAndSetStatement(SAMLCallback callback) {
+        AuthenticationStatementBean authBean = new AuthenticationStatementBean();
+        authBean.setAuthenticationMethod("Password");
+        callback.setAuthenticationStatementData(Collections.singletonList(authBean));
+
+        // Add roles for certain users
+        List<String> roles = new ArrayList<String>();
+        if ("alice".equals(subjectName)) {
+            roles.add("boss");
+            roles.add("employee");
+        } else if ("bob".equals(subjectName)) {
+            roles.add("employee");
         }
         
-        subjectName = "uid=joe,ou=people,ou=saml-demo,o=example.com";
-        subjectQualifier = "www.example.com";
-        confirmationMethod = SAML2Constants.CONF_SENDER_VOUCHES;
+        if (!roles.isEmpty()) {
+            AttributeStatementBean attrBean = new AttributeStatementBean();
+            AttributeBean attributeBean = new AttributeBean();
+            attributeBean.setQualifiedName("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role");
+            attributeBean.setNameFormat(SAML2Constants.ATTRNAME_FORMAT_UNSPECIFIED);
+            attributeBean.setAttributeValues(roles);
+                
+            attrBean.setSamlAttributes(Collections.singletonList(attributeBean));
+            callback.setAttributeStatementData(Collections.singletonList(attrBean));
+        }
     }
     
     public void handle(Callback[] callbacks)
@@ -71,20 +98,49 @@ public class SAML2CallbackHandler extends AbstractSAMLCallbackHandler {
                     subjectBean.setSubjectNameIDFormat(subjectNameIDFormat);
                 }
                 subjectBean.setSubjectConfirmationData(subjectConfirmationData);
-                if (SAML2Constants.CONF_HOLDER_KEY.equals(confirmationMethod)) {
-                    try {
-                        KeyInfoBean keyInfo = createKeyInfo();
-                        subjectBean.setKeyInfo(keyInfo);
-                    } catch (Exception ex) {
-                        throw new IOException("Problem creating KeyInfo: " +  ex.getMessage());
-                    }
-                }
+
                 callback.setSubject(subjectBean);
-                createAndSetStatement(null, callback);
+                createAndSetStatement(callback);
             } else {
                 throw new UnsupportedCallbackException(callbacks[i], "Unrecognized Callback");
             }
         }
+    }
+    
+    public void setSubjectConfirmationData(SubjectConfirmationDataBean subjectConfirmationData) {
+        this.subjectConfirmationData = subjectConfirmationData;
+    }
+    
+    public void setConditions(ConditionsBean conditionsBean) {
+        this.conditions = conditionsBean;
+    }
+    
+    public void setConfirmationMethod(String confMethod) {
+        confirmationMethod = confMethod;
+    }
+    
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+    
+    public void setSubjectNameIDFormat(String subjectNameIDFormat) {
+        this.subjectNameIDFormat = subjectNameIDFormat;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+    public String getSubjectQualifier() {
+        return subjectQualifier;
+    }
+
+    public void setSubjectQualifier(String subjectQualifier) {
+        this.subjectQualifier = subjectQualifier;
     }
     
 }
