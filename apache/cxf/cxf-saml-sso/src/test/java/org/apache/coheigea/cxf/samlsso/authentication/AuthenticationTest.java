@@ -58,23 +58,27 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     public void testAuthenticatedRequest() throws Exception {
 
         // https://localhost:9001/doubleit/services/doubleit-rs/25
-        System.out.println("Sleeping...");
-        Thread.sleep(60 * 1000);
-        /*
+        // System.out.println("Sleeping...");
+        // Thread.sleep(60 * 1000);
+        
         URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
+        // http.redirect.max.same.uri.count
         String address = "https://localhost:" + PORT + "/doubleit/services/doubleit-rs";
         WebClient client = WebClient.create(address, "alice", "security", busFile.toString());
-        // WebClient.getConfig(client).getHttpConduit().getClient().setAutoRedirect(true);
+        WebClient.getConfig(client).getHttpConduit().getClient().setAutoRedirect(true);
+        WebClient.getConfig(client).getRequestContext().put("http.redirect.max.same.uri.count", "2");
+        WebClient.getConfig(client).getRequestContext().put(
+                org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         client.type("text/plain").accept("text/plain");
         
-        try {
+       // try {
             client.path("/25");
             client.get();
-        } catch (RedirectionException ex) {
+        //} catch (RedirectionException ex) {
             //
-        }
-        
+        //}
+        /*
         String location = (String)client.getResponse().getMetadata().getFirst("Location");
         WebClient idpClient = WebClient.create(location, "alice", "security", busFile.toString());
         idpClient.type("text/plain").accept("text/plain");
@@ -92,7 +96,7 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
             }
         }
         idpClient.get();
-        
+        */
         /*
         int numToDouble = 25;
         int resp = client.post(numToDouble, Integer.class);
