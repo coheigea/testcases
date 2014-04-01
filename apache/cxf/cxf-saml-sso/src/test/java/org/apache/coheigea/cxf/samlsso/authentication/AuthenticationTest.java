@@ -20,7 +20,7 @@ package org.apache.coheigea.cxf.samlsso.authentication;
 
 import java.net.URL;
 
-import javax.ws.rs.RedirectionException;
+import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.samlsso.idp.IdpServer;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -53,17 +53,20 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
                 launchServer(IdpServer.class, true)
         );
     }
+    
+    @org.junit.Test
+    @org.junit.Ignore
+    public void testBrowser() throws Exception {
+        // https://localhost:9001/doubleit/services/doubleit-rs/25
+        // System.out.println("Sleeping...");
+        // Thread.sleep(60 * 1000);
+    }
    
     @org.junit.Test
     public void testAuthenticatedRequest() throws Exception {
 
-        // https://localhost:9001/doubleit/services/doubleit-rs/25
-        // System.out.println("Sleeping...");
-        // Thread.sleep(60 * 1000);
-        
         URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
-        // http.redirect.max.same.uri.count
         String address = "https://localhost:" + PORT + "/doubleit/services/doubleit-rs";
         WebClient client = WebClient.create(address, "alice", "security", busFile.toString());
         WebClient.getConfig(client).getHttpConduit().getClient().setAutoRedirect(true);
@@ -72,43 +75,27 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
                 org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         client.type("text/plain").accept("text/plain");
         
-       // try {
-            client.path("/25");
-            client.get();
-        //} catch (RedirectionException ex) {
-            //
-        //}
-        /*
-        String location = (String)client.getResponse().getMetadata().getFirst("Location");
-        WebClient idpClient = WebClient.create(location, "alice", "security", busFile.toString());
-        idpClient.type("text/plain").accept("text/plain");
-        WebClient.getConfig(idpClient).getHttpConduit().getClient().setAutoRedirect(true);
-        WebClient.getConfig(idpClient).getRequestContext().put(
-                org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        WebClient.getConfig(idpClient).getResponseContext().put(
-                org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-
-
-        for (String header : client.getResponse().getHeaders().keySet()) {
-            if (client.getResponse().getHeaders().get(header) != null 
-                    && !client.getResponse().getHeaders().get(header).isEmpty()) {
-                idpClient.getHeaders().add(header, (String)client.getResponse().getHeaders().get(header).get(0));
-            }
-        }
-        idpClient.get();
-        */
-        /*
-        int numToDouble = 25;
-        int resp = client.post(numToDouble, Integer.class);
-        assertEquals(numToDouble * 2 , resp);
-        // assertEquals(500, ex.getResponse().getStatus());
-         */
+        client.path("/25");
+        Response response = client.get();
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Integer.class).intValue(), 50);
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testUnauthenticatedRequest() throws Exception {
-        // TODO
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+
+        String address = "https://localhost:" + PORT + "/doubleit/services/doubleit-rs";
+        WebClient client = WebClient.create(address, "unknown", "security", busFile.toString());
+        WebClient.getConfig(client).getHttpConduit().getClient().setAutoRedirect(true);
+        WebClient.getConfig(client).getRequestContext().put("http.redirect.max.same.uri.count", "2");
+        WebClient.getConfig(client).getRequestContext().put(
+                org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        client.type("text/plain").accept("text/plain");
+        
+        client.path("/25");
+        Response response = client.get();
+        assertEquals(response.getStatus(), 500);
     }
     
     
