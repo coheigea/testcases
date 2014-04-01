@@ -28,6 +28,7 @@ import org.apache.cxf.helpers.DOMUtils;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
+import org.apache.cxf.jaxrs.utils.ExceptionUtils;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.security.SecurityContext;
 import org.apache.ws.security.WSConstants;
@@ -74,7 +75,7 @@ public class BasicAuthFilter implements RequestHandler {
             message.put(SecurityContext.class, createSecurityContext(p));
             return null;
         } catch (Exception ex) {
-            throw new Fault(ex);
+            throw ExceptionUtils.toInternalServerErrorException(ex, null);
         }
     }
 
