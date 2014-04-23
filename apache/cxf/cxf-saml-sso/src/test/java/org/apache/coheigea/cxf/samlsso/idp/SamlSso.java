@@ -89,7 +89,8 @@ public class SamlSso {
         if (serviceProviders != null) {
             for (ServiceProvider sp : serviceProviders) {
                 if (sp.getIssuer() != null && sp.getIssuer().equals(requestIssuer)
-                        && sp.getRacs() != null && sp.getRacs().equals(racs)) {
+                        && ((sp.getRacs() != null && sp.getRacs().equals(racs))
+                            || sp.getRacs() == null)) {
                     match = true;
                 }
             }
