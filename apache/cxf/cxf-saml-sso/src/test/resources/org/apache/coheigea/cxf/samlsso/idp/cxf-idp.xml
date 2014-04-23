@@ -54,8 +54,6 @@
    <bean id="serviceProviderBean" class="org.apache.coheigea.cxf.samlsso.idp.ServiceProvider">
        <property name="issuer" 
                  value="https://localhost:${testutil.ports.Server}/doubleit/services/doubleit-rs" />
-       <property name="racs" 
-                 value="https://localhost:${testutil.ports.Server}/racs/sso" />
    </bean>
    
    <util:list id="serviceProviders">
