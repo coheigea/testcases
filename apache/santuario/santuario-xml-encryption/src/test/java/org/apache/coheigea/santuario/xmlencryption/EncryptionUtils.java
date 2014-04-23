@@ -46,6 +46,7 @@ import org.apache.xml.security.stax.ext.XMLSecurityConstants;
 import org.apache.xml.security.stax.ext.XMLSecurityProperties;
 import org.apache.xml.security.stax.securityEvent.EncryptedElementSecurityEvent;
 import org.apache.xml.security.stax.securityEvent.SecurityEventConstants;
+import org.apache.xml.security.stax.securityToken.SecurityTokenConstants;
 import org.junit.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -180,9 +181,8 @@ public final class EncryptionUtils {
         properties.setEncryptionKey(encryptingKey);
         properties.setEncryptionKeyTransportAlgorithm(keyTransportAlgorithm);
         properties.setEncryptionTransportKey(wrappingKey);
-        // TODO?
-        // properties.set(
-         //       SecurityTokenConstants.KeyIdentifier_X509KeyIdentifier);
+        properties.setEncryptionKeyIdentifier(
+                SecurityTokenConstants.KeyIdentifier_X509KeyIdentifier);
         
         SecurePart.Modifier modifier = SecurePart.Modifier.Content;
         if (!content) {
