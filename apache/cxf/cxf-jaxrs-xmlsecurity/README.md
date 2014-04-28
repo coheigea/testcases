@@ -14,3 +14,12 @@ Apache CXF JAX-RS clients and endpoints:
  - XMLSignatureStaxTest - Use the StAX implementation of XML Signature
  - XMLSignatureInteropTest - An interop test for the different stacks
 
+2) XML Encryption
+
+There are also a number of tests that demonstrate how to use XML Encryption
+with Apache CXF JAX-RS clients and endpoints:
+
+ - XMLEncryptionDOMTest - Use the DOM implementation of XML Encryption
+ - XMLEncryptionStaxTest - Use the StAX implementation of XML Encryption
+ - XMLEncryptionInteropTest - An interop test for the different stacks
+
