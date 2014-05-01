@@ -16,11 +16,19 @@ TLS.
 
 2) /doubleit/services/doubleittransport
 
-This uses a Transport binding with a Timestamp and a UsernameToken supporting
-token. The UsernameToken is just validated by a simple CallbackHandler on
-the service side.
+This uses a Transport binding with a UsernameToken supporting token. The
+UsernameToken is just validated by a simple CallbackHandler on the service
+side. 
+
+3) /doubleit/services/doubleitsymmetric
+
+This uses a Symmetric binding with a UsernameToken supporting token. The
+UsernameToken is just validated by a simple CallbackHandler on the service
+side. 
 
 Build the project via "mvn clean install" and copy target/doubleit.war to the
 webapps folder of a container such as Tomcat. Then open up JMeter and import
-the "DoubleIt_Users.jmx" in the root directory of this project. 
+the "DoubleIt_Users.jmx" in the root directory of this project. Run the project
+and look at the Summary Report for throughput, etc.
+
 
