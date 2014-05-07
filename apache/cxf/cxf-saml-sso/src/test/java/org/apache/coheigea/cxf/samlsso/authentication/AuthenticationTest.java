@@ -30,8 +30,8 @@ import org.junit.BeforeClass;
 /**
  * Here the JAX-RS service uses the HTTP redirect binding of SAML SSO to redirect
  * the client to the IdP for authentication. The client is then redirected to the
- * RACS (Request Assertion Consumer Service), which parses the response from the
- * IdP and then redirects again to the original service.
+ * RACS (Request Assertion Consumer Service) which is co-located with the service endpoint.
+ * The RACS parses the response from the IdP and then redirects again to the original service.
  */
 public class AuthenticationTest extends AbstractBusClientServerTestBase {
     
@@ -55,14 +55,14 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testBrowser() throws Exception {
+        // https://localhost:9001/doubleit/services/doubleit-rs/25
         System.out.println("Sleeping...");
         Thread.sleep(60 * 1000);
     }
    
     @org.junit.Test
-    @org.junit.Ignore
     public void testAuthenticatedRequest() throws Exception {
 
         URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
@@ -82,7 +82,6 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testUnauthenticatedRequest() throws Exception {
         URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
