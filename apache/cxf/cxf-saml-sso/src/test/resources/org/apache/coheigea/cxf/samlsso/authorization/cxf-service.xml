@@ -64,13 +64,11 @@
    <bean id="ssoRedirectURI" class="org.apache.cxf.rs.security.saml.sso.SamlRedirectBindingFilter">
        <property name="idpServiceAddress" 
                  value="https://localhost:${testutil.ports.IdpServer}/idp/samlsso"/>
-       <property name="assertionConsumerServiceAddress" 
-                 value="https://localhost:${testutil.ports.Server}/racs/sso"/>
        <property name="stateProvider" ref="stateManager"/>
        <property name="addEndpointAddressToContext" value="true"/>
    </bean>
    
-   <bean id="consumerService" class="org.apache.cxf.rs.security.saml.sso.RequestAssertionConsumerService">
+   <bean id="consumerService" class="org.apache.cxf.rs.security.saml.sso.RequestAssertionConsumerFilter">
        <property name="stateProvider" ref="stateManager"/>
        <property name="signaturePropertiesFile" value="serviceKeystore.properties"/>
        <property name="enforceAssertionsSigned" value="true"/>
@@ -83,17 +81,12 @@
         address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleit-rs">
         <jaxrs:providers>
             <ref bean="ssoRedirectURI"/>
+            <ref bean="consumerService"/>
         </jaxrs:providers>
         <jaxrs:inInterceptors>
             <ref bean="authorizationInterceptor"/>
        </jaxrs:inInterceptors>
    </jaxrs:server>
-   
-   <jaxrs:server address="https://localhost:${testutil.ports.Server}/racs">
-       <jaxrs:serviceBeans>
-          <ref bean="consumerService"/>
-       </jaxrs:serviceBeans>
-    </jaxrs:server>
    
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
    <httpj:engine port="${testutil.ports.Server}">
