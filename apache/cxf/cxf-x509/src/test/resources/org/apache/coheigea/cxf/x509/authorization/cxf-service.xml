@@ -48,27 +48,33 @@
         </cxf:features>
    </cxf:bus>
    
-   <util:list id="requiredRolesList">
-       <value>boss</value>
-   </util:list>
-   
-   <bean class="org.apache.coheigea.cxf.shiro.authentication.ShiroUTValidator" id="utValidator">
-       <constructor-arg value="src/test/resources/securityconfig.ini"/>
-       <property name="requiredRoles" ref="requiredRolesList"/>
+   <bean id="authorizationInterceptor" 
+         class="org.apache.cxf.interceptor.security.SimpleAuthorizingInterceptor">
+       <property name="methodRolesMap">
+           <map>
+               <entry key="doubleIt" value="boss"/>
+           </map>
+       </property> 
    </bean>
    
    <jaxws:endpoint id="doubleittransport"
-      implementor="org.apache.coheigea.cxf.shiro.common.DoubleItPortTypeImpl"
+      implementor="org.apache.coheigea.cxf.x509.common.DoubleItPortTypeImpl"
       endpointName="s:DoubleItTransportPort"
       serviceName="s:DoubleItService"
       depends-on="ClientAuthHttpsSettings"
       address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransport"
-      wsdlLocation="org/apache/coheigea/cxf/shiro/authorization/DoubleIt.wsdl"
+      wsdlLocation="org/apache/coheigea/cxf/x509/authorization/DoubleIt.wsdl"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-         <entry key="ws-security.ut.validator" value-ref="utValidator"/>
-      </jaxws:properties> 
+           <entry key="ws-security.callback-handler" 
+                  value="org.apache.coheigea.cxf.x509.authorization.CommonCallbackHandler"/>
+           <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
+           <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
+      </jaxws:properties>
+      <jaxws:inInterceptors>
+         <ref bean="authorizationInterceptor"/>
+      </jaxws:inInterceptors>
    </jaxws:endpoint>
    
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
