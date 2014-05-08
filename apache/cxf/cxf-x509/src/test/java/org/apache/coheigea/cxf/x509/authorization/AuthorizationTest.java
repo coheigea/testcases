@@ -34,14 +34,8 @@ import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
 /**
- * This tests using Shiro for authorization. A cxf client sends a SOAP UsernameToken to a CXF
- * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken 
- * via the ShiroUTValidator. The ShiroUTValidator has also been configured with some roles, that
- * require that a user must have role "boss" to proceed ("alice" has this role, "bob" does not). 
- * 
- * Note that unlike the syncope + ldap demos, we do not use the SimpleAuthorizingInterceptor. This 
- * is because there is no straightforward way to extract roles from a Shiro Subject, only to check 
- * if the Subject has a given role.
+ * This tests using X.509 Certificates for authentication and authorization in CXF using a 
+ * WS-SecurityPolicy TransportBinding with an endorsing X509Token. 
  */
 public class AuthorizationTest extends AbstractBusClientServerTestBase {
     
@@ -78,12 +72,15 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
         updateAddressPort(transportPort, PORT);
         
         Client client = ClientProxy.getClient(transportPort);
-        client.getRequestContext().put("ws-security.username", "alice");
+        client.getRequestContext().put("ws-security.signature.username", "myclientkey");
+        client.getRequestContext().put("ws-security.signature.properties", 
+                "clientKeystore.properties");
         
         doubleIt(transportPort, 25);
     }
     
     @org.junit.Test
+    @org.junit.Ignore
     public void testUnauthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();

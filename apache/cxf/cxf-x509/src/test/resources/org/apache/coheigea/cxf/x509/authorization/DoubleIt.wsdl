@@ -78,13 +78,15 @@
 						<sp:IncludeTimestamp />
 					</wsp:Policy>
 				</sp:TransportBinding>
-				<sp:SupportingTokens>
+				<sp:EndorsingSupportingTokens>
                     <wsp:Policy>
-                        <sp:UsernameToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
-                            <wsp:Policy/>
-                        </sp:UsernameToken>
+                        <sp:X509Token sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+                            <wsp:Policy>
+                                <sp:WssX509V3Token10/>
+                            </wsp:Policy>
+                        </sp:X509Token>
                     </wsp:Policy>
-                </sp:SupportingTokens>
+                </sp:EndorsingSupportingTokens>
 			</wsp:All>
 		</wsp:ExactlyOne>
 	</wsp:Policy>
