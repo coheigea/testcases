@@ -48,13 +48,20 @@
         </cxf:features>
    </cxf:bus>
    
+   <util:list id="requiredRolesList">
+       <value>boss</value>
+   </util:list>
+   
    <bean id="authorizationInterceptor" 
          class="org.apache.cxf.interceptor.security.SimpleAuthorizingInterceptor">
        <property name="methodRolesMap">
            <map>
                <entry key="doubleIt" value="boss"/>
            </map>
-       </property> 
+       </property>
+   </bean>
+   
+   <bean class="org.apache.coheigea.cxf.x509.authorization.X509AuthorizationValidator" id="x509Validator">
    </bean>
    
    <jaxws:endpoint id="doubleittransport"
@@ -71,9 +78,10 @@
                   value="org.apache.coheigea.cxf.x509.authorization.CommonCallbackHandler"/>
            <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
            <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
+           <entry key="ws-security.signature.validator" value-ref="x509Validator"/>
       </jaxws:properties>
       <jaxws:inInterceptors>
-         <ref bean="authorizationInterceptor"/>
+          <ref bean="authorizationInterceptor"/>
       </jaxws:inInterceptors>
    </jaxws:endpoint>
    
