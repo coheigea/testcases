@@ -35,7 +35,10 @@ import org.junit.BeforeClass;
 
 /**
  * This tests using X.509 Certificates for authentication and authorization in CXF using a 
- * WS-SecurityPolicy TransportBinding with an endorsing X509Token. 
+ * WS-SecurityPolicy TransportBinding with an endorsing X509Token. Authorization is handled
+ * by the SimpleAuthorizingInterceptor in CXF, which requires a role of "boss". The endpoint
+ * is configured with a custom WSS4J Validator, which mocks up a Subject with a role depending
+ * on the X.509 certificate principal.
  */
 public class AuthorizationTest extends AbstractBusClientServerTestBase {
     
@@ -77,35 +80,6 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
                 "clientKeystore.properties");
         
         doubleIt(transportPort, 25);
-    }
-    
-    @org.junit.Test
-    @org.junit.Ignore
-    public void testUnauthorizedRequest() throws Exception {
-
-        SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
-
-        Bus bus = bf.createBus(busFile.toString());
-        SpringBusFactory.setDefaultBus(bus);
-        SpringBusFactory.setThreadDefaultBus(bus);
-        
-        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
-        Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
-        DoubleItPortType transportPort = 
-            service.getPort(portQName, DoubleItPortType.class);
-        updateAddressPort(transportPort, PORT);
-        
-        Client client = ClientProxy.getClient(transportPort);
-        client.getRequestContext().put("ws-security.username", "bob");
-        
-        try {
-            doubleIt(transportPort, 25);
-            fail("Failure expected on harry");
-        } catch (Exception ex) {
-            // expected
-        }
     }
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {

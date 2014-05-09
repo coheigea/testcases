@@ -39,6 +39,13 @@
            <version>1.1.1</version>
            <scope>compile</scope>
        </dependency>
+       <!-- Required to pick up a "Subject" fix -->
+       <dependency>
+           <groupId>org.apache.ws.security</groupId>
+           <artifactId>wss4j</artifactId>
+           <version>1.6.16-SNAPSHOT</version>
+           <scope>test</scope>
+       </dependency>
        <dependency>
            <groupId>org.apache.cxf</groupId>
            <artifactId>cxf-rt-databinding-jaxb</artifactId>
