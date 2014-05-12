@@ -89,7 +89,7 @@ public class MockPDPImpl {
         DecisionType decisionType = decisionTypeBuilder.buildObject();
         
         String role = getSubjectRole(requestType);
-        if ("manager".equals(role)) {
+        if ("boss".equals(role)) {
             decisionType.setDecision(DecisionType.DECISION.Permit); 
         } else {
             decisionType.setDecision(DecisionType.DECISION.Deny);
