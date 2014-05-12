@@ -43,8 +43,8 @@ public class XACMLAuthorizingInterceptor extends AbstractXACMLAuthorizingInterce
 
     @Override
     public ResponseType performRequest(RequestType arg0, Message arg1) throws Exception {
-        
-        URL busFile = XACMLAuthorizingInterceptor.class.getResource("cxf-client.xml");
+        URL busFile = 
+            XACMLAuthorizingInterceptor.class.getResource("../authorization/cxf-pdp-client.xml");
 
         String address = "https://localhost:" + AuthorizationTest.PDP_PORT + "/authorization/pdp";
         WebClient client = WebClient.create(address, "myservicekey", "skpass", busFile.toString());
@@ -60,7 +60,7 @@ public class XACMLAuthorizingInterceptor extends AbstractXACMLAuthorizingInterce
         
         Document responseDoc = StaxUtils.read(response.readEntity(Source.class));
 
-        return (ResponseType)OpenSAMLUtil.fromDom(responseDoc.getDocumentElement());
+        return (ResponseType)OpenSAMLUtil.fromDom(responseDoc.getDocumentElement()); 
     }
     
     

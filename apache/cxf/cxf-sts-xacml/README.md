@@ -21,6 +21,7 @@ security policy.
   
 The CXF Endpoint has configured the XACMLAuthorizingInterceptor, which creates
 a XACML request for dispatch to the PDP, and then enforces the PDP's decision.
-The mocked PDP is a REST service, requires that a user must have role "boss"
-to access the "doubleIt" operation ("alice" has this role, "bob" does not).
+The mocked PDP is a REST service that accepts a POST request to
+authorization/pdp, requires that a user must have role "boss" to access the
+"doubleIt" operation ("alice" has this role, "bob" does not).
 

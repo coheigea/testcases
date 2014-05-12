@@ -105,7 +105,6 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testUnauthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
