@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.coheigea.cxf.oauth1.service;
+package org.apache.coheigea.cxf.oauth1.balanceservice;
 
 
 import java.util.HashMap;

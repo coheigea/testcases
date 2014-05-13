@@ -51,66 +51,8 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="serviceBean" class="org.apache.coheigea.cxf.oauth1.service.BalanceService" />
-   
-   <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth1.service.ServiceCallbackHandler"/>
-   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth1.service.BasicAuthFilter">
-       <property name="callbackHandler" ref="callbackHandler"/>
-   </bean>
-   
-   <jaxrs:server 
-        depends-on="ClientAuthHttpsSettings" 
-        address="https://localhost:${testutil.ports.BankServer}/bankservice/customers">
-        <jaxrs:serviceBeans>
-            <ref bean="serviceBean"/>
-        </jaxrs:serviceBeans>
-        <jaxrs:providers>
-            <ref bean="basicAuthFilter"/>
-        </jaxrs:providers>
-   </jaxrs:server>
-   
-   <bean id="oAuthFilter" class="org.apache.cxf.rs.security.oauth.filters.OAuthRequestFilter" />
-   
-   <jaxrs:server 
-        depends-on="ClientAuthHttpsSettings" 
-        address="https://localhost:${testutil.ports.BankServer}/bankservice/partners">
-        <jaxrs:serviceBeans>
-            <ref bean="serviceBean"/>
-        </jaxrs:serviceBeans>
-        <jaxrs:providers>
-            <ref bean="oAuthFilter"/>
-        </jaxrs:providers>
-   </jaxrs:server>
-   
-   <!--<bean id="oauthProvider" class="oauth.manager.OAuthManager"/>
- 
-   <bean id="requestTokenService" class="org.apache.cxf.rs.security.oauth.services.RequestTokenService">
-      <property name="dataProvider" ref="oauthProvider"/>
-   </bean>
-      
-   <bean id="accessTokenService" class="org.apache.cxf.rs.security.oauth.services.AccessTokenService">
-     <property name="dataProvider" ref="oauthProvider"/>
-   </bean>
-
-   <bean id="authorizationService" class="org.apache.cxf.rs.security.oauth.services.AuthorizationRequestService">
-     <property name="dataProvider" ref="oauthProvider"/>
-   </bean>
-   
-   <jaxrs:server 
-        depends-on="ClientAuthHttpsSettings" 
-        address="https://localhost:${testutil.ports.BankServer}/oauth">
-        <jaxrs:serviceBeans>
-            <ref bean="requestTokenService"/>
-            <ref bean="accessTokenService"/>
-            <ref bean="authorizationService"/>
-        </jaxrs:serviceBeans>
-        <jaxrs:providers>
-            <ref bean="oAuthFilter"/>
-        </jaxrs:providers>
-   </jaxrs:server>-->
-   
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
-   <httpj:engine port="${testutil.ports.BankServer}">
+   <httpj:engine port="${testutil.ports.InvoiceServer}">
     <httpj:tlsServerParameters>
       <sec:keyManagers keyPassword="stskpass">
           <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
