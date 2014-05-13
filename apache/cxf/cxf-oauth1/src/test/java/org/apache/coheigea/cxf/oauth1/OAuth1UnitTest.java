@@ -19,11 +19,16 @@
 package org.apache.coheigea.cxf.oauth1;
 
 import java.net.URL;
+import java.util.Date;
+import java.util.UUID;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.coheigea.cxf.oauth1.service.BankServer;
+import org.apache.coheigea.cxf.oauth1.balanceservice.BankServer;
+import org.apache.coheigea.cxf.oauth1.invoiceservice.InvoiceServer;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.ext.form.Form;
+import org.apache.cxf.jaxrs.ext.xml.XMLSource;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
@@ -34,6 +39,7 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
     
     // private static final String PORT = allocatePort(Server.class);
     static final String BANK_SERVICE_PORT = allocatePort(BankServer.class);
+    static final String INVOICE_SERVICE_PORT = allocatePort(InvoiceServer.class);
     
     @BeforeClass
     public static void startServers() throws Exception {
@@ -42,6 +48,12 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
                 // run the server in the same process
                 // set this to false to fork
                 launchServer(BankServer.class, true)
+        );
+        assertTrue(
+                   "Server failed to launch",
+                   // run the server in the same process
+                   // set this to false to fork
+                   launchServer(InvoiceServer.class, true)
         );
     }
     
@@ -86,6 +98,97 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
         client.path("/alice");
         Response response =  client.post(25);
         assertEquals(response.getStatus(), 401);
+    }
+    
+    @org.junit.Test
+    public void testRequestTokenService() throws Exception {
+        URL busFile = OAuth1UnitTest.class.getResource("cxf-client.xml");
+
+        Response response = makeRequestTokenInvocation(busFile);
+        assertEquals(response.getStatus(), 200);
+        
+        String responseString = response.readEntity(String.class);
+        String requestToken = 
+            responseString.substring(responseString.indexOf("oauth_token="),
+                                     responseString.indexOf("&oauth_token_secret"));
+        requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
+        assertNotNull(requestToken);
+        
+        String requestTokenSecret = 
+            responseString.substring(responseString.indexOf("oauth_token_secret="));
+        requestTokenSecret = requestTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
+        assertNotNull(requestTokenSecret);
+    }
+    
+    @org.junit.Test
+    public void testAuthorizationService() throws Exception {
+        URL busFile = OAuth1UnitTest.class.getResource("cxf-client.xml");
+
+        Response response = makeRequestTokenInvocation(busFile);
+        assertEquals(response.getStatus(), 200);
+        
+        String responseString = response.readEntity(String.class);
+        String requestToken = 
+            responseString.substring(responseString.indexOf("oauth_token="),
+                                     responseString.indexOf("&oauth_token_secret"));
+        requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
+        assertNotNull(requestToken);
+        
+        String requestTokenSecret = 
+            responseString.substring(responseString.indexOf("oauth_token_secret="));
+        requestTokenSecret = requestTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
+        assertNotNull(requestTokenSecret);
+        
+        makeAuthorizationInvocation(busFile, requestToken);
+    }
+   
+    private Response makeRequestTokenInvocation(URL busFile) {
+        String address = "https://localhost:" + BANK_SERVICE_PORT + "/oauth/initiate";
+        WebClient client = WebClient.create(address, busFile.toString());
+        
+        String nonce = UUID.randomUUID().toString();
+        String oAuthHeader = "OAuth "
+            + "oauth_consumer_key=\"consumer-id\", "
+            + "oauth_signature_method=\"PLAINTEXT\", "
+            + "oauth_nonce=\"" + nonce + "\", "
+            + "oauth_callback=\"https://localhost:" + INVOICE_SERVICE_PORT + "/callback\", "
+            + "oauth_timestamp=\"" + new Date().getTime() / 1000L + "\", "
+            + "oauth_signature=\"" + "this-is-a-secret&\", "
+            + "scope=\"get_balance\"";
+        client.header("Authorization", oAuthHeader);
+        return client.post(null);
+    }
+    
+    private void makeAuthorizationInvocation(URL busFile, String requestToken) {
+        // Make initial invocation to authorization service
+        String address = "https://localhost:" + BANK_SERVICE_PORT + "/oauth/authorize";
+        WebClient client = WebClient.create(address, busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        client.accept("application/xml");
+        
+        client.query("oauth_token", requestToken);
+        XMLSource authorizationResponse = client.get(XMLSource.class);
+        authorizationResponse.setBuffering();
+        
+        String authenticityToken = 
+            authorizationResponse.getNode("//authenticityToken/text()", String.class);
+        assertNotNull(authenticityToken);
+        
+        String replyTo = 
+            authorizationResponse.getNode("//replyTo/text()", String.class);
+        assertNotNull(replyTo);
+        
+        // Now send back the decision
+        client.to(replyTo, false);
+        client.type("application/x-www-form-urlencoded");
+        
+        Form form = new Form();
+        form.set("session_authenticity_token", authenticityToken);
+        form.set("oauthDecision", "allow");
+        form.set("oauth_token", requestToken);
+        client.post(form);
     }
     
 }

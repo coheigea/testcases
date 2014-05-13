@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.oauth1.service;
+package org.apache.coheigea.cxf.oauth1.balanceservice;
 
 import java.security.Principal;
 
