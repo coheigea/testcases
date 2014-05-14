@@ -24,19 +24,18 @@
     <name>Apache CXF STS Demo</name>
     <version>1.0</version>
 
-   <properties>
-        <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
-        <cxf.version>2.7.11</cxf.version>
-        <junit.version>4.11</junit.version>
-        <slf4j.version>1.7.6</slf4j.version>
-        <spring.version>3.1.4.RELEASE</spring.version>
-   </properties>
+   <parent>
+        <groupId>org.apache.coheigea.cxf</groupId>
+        <artifactId>cxf-parent</artifactId>
+        <relativePath>../parent/pom.xml</relativePath>
+        <version>1.0</version>
+   </parent>
 
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>
            <artifactId>commons-logging</artifactId>
-           <version>1.1.1</version>
+           <version>${commons.logging.version}</version>
            <scope>compile</scope>
        </dependency>
        <dependency>

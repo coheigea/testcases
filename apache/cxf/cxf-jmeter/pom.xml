@@ -24,11 +24,15 @@
     <name>Apache CXF JMeter testcases</name>
     <version>1.0</version>
 
+   <parent>
+        <groupId>org.apache.coheigea.cxf</groupId>
+        <artifactId>cxf-parent</artifactId>
+        <relativePath>../parent/pom.xml</relativePath>
+        <version>1.0</version>
+   </parent>
+
    <properties>
-        <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <cxf.version>3.0.0-SNAPSHOT</cxf.version>
-        <junit.version>4.11</junit.version>
-        <slf4j.version>1.7.7</slf4j.version>
         <spring.version>3.2.6.RELEASE</spring.version>
    </properties>
 
@@ -36,7 +40,7 @@
        <dependency>
            <groupId>commons-logging</groupId>
            <artifactId>commons-logging</artifactId>
-           <version>1.1.1</version>
+           <version>${commons.logging.version}</version>
            <scope>compile</scope>
        </dependency>
        <dependency>
