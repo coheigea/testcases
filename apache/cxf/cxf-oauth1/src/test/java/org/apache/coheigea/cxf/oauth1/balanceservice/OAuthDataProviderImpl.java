@@ -22,6 +22,7 @@ package org.apache.coheigea.cxf.oauth1.balanceservice;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
     
     private Map<String, Client> clients = new HashMap<String, Client>();
     private Map<String, RequestToken> requestTokens = new HashMap<String, RequestToken>();
+    private Map<String, AccessToken> accessTokens = new HashMap<String, AccessToken>();
     
     public OAuthDataProviderImpl() throws Exception {
         random = SecureRandom.getInstance("SHA1PRNG");
@@ -69,8 +71,25 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
     }
 
     public AccessToken createAccessToken(AccessTokenRegistration reg) throws OAuthServiceException {
-        // TODO Auto-generated method stub
-        return null;
+        
+        // Generate request token + associated secret
+        Client client = reg.getRequestToken().getClient();
+        String token = UUID.randomUUID().toString();
+        byte[] secret = new byte[20];
+        random.nextBytes(secret);
+        
+        AccessToken accessToken = 
+            new AccessToken(client, token, Base64.encode(secret), 60L * 5L, 
+                            new Date().getTime() / 1000L);
+        accessToken.setScopes(reg.getRequestToken().getScopes());
+        
+        // Remove request token
+        requestTokens.remove(reg.getRequestToken().getTokenKey());
+        
+        // Add access token
+        accessTokens.put(token,  accessToken);
+        
+        return accessToken;
     }
 
     public RequestToken createRequestToken(RequestTokenRegistration reg) throws OAuthServiceException {
@@ -110,7 +129,10 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
     }
 
     public AccessToken getAccessToken(String tokenId) throws OAuthServiceException {
-        // TODO Auto-generated method stub
+        if (accessTokens.containsKey(tokenId)) {
+            return accessTokens.get(tokenId);
+        }
+        
         return null;
     }
 
@@ -131,8 +153,13 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
     }
 
     public void removeToken(Token token) throws OAuthServiceException {
-        // TODO Auto-generated method stub
+        if (requestTokens.containsKey(token.getTokenKey())) {
+            requestTokens.remove(token.getTokenKey());
+        }
         
+        if (accessTokens.containsKey(token.getTokenKey())) {
+            accessTokens.remove(token.getTokenKey());
+        }
     }
     
     public Map<String, Client> getClients() {

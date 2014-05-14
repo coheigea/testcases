@@ -14,4 +14,6 @@ is secured by HTTP/BA. A "partners" access point is secured by CXF's
 OAuthRequestFilter.
 
 In addition, there is an OAuth service that is used to issue tokens to customer
-applications.
+applications. The OAuth service uses a trivial "in-memory" OAuthDataProvider
+implementation to manage tokens.
+
