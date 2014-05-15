@@ -16,31 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.coheigea.cxf.oauth1.balanceservice;
 
-import java.net.URL;
 
-import org.apache.cxf.Bus;
-import org.apache.cxf.BusFactory;
-import org.apache.cxf.bus.spring.SpringBusFactory;
-import org.apache.cxf.testutil.common.AbstractBusTestServerBase;
+import javax.annotation.Resource;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
-public class OAuthServer extends AbstractBusTestServerBase {
-
-    public OAuthServer() {
-
-    }
-
-    protected void run()  {
-        URL busFile = OAuthServer.class.getResource("cxf-oauth-service.xml");
-        Bus busLocal = new SpringBusFactory().createBus(busFile);
-        BusFactory.setDefaultBus(busLocal);
-        setBus(busLocal);
-
-        try {
-            new OAuthServer();
-        } catch (Exception e) {
-            e.printStackTrace();
+/**
+ * A "Balance" service for a bank. It checks that a user has authenticated and that the username
+ * is the same as the desired user.
+ */
+public class CustomerBalanceService extends BalanceService {
+    @Resource
+    private SecurityContext securityContext;
+    
+    @Override
+    protected void authenticateUser(String user) {
+        if (securityContext.getUserPrincipal() == null 
+            || !user.equals(securityContext.getUserPrincipal().getName())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
+    
 }
+
+
