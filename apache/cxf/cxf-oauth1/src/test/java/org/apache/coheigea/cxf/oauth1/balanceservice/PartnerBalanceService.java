@@ -19,47 +19,34 @@
 
 package org.apache.coheigea.cxf.oauth1.balanceservice;
 
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.annotation.Resource;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.apache.cxf.rs.security.oauth.data.OAuthContext;
+
 /**
- * A "Balance" service for a bank.
+ * A "Balance" service for a bank. It checks that the original OAuth end username is the same
+ * as the given username.
  */
 @Path("/balance/")
-public abstract class BalanceService {
-    private static Map<String, Integer> balances = new HashMap<String, Integer>();
+public class PartnerBalanceService extends BalanceService {
     
-    @GET
-    @Path("/{user}")
-    public int getBalance(@PathParam("user") String user) {
-        authenticateUser(user);
-        
-        if (balances.containsKey(user)) {
-            return balances.get(user);
-        }
-        
-        throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
+    @Resource
+    private MessageContext messageContext;
     
-    @POST
-    @Path("/{user}")
-    public void setBalance(@PathParam("user") String user, int amount) {
-        authenticateUser(user);
+    @Override
+    protected void authenticateUser(String user) {
+        OAuthContext oauthContext = messageContext.getContent(OAuthContext.class);
         
-        if (!balances.containsKey(user)) {
-            balances.put(user, amount);
+        if (oauthContext == null || oauthContext.getSubject() == null
+            || !user.equals(oauthContext.getSubject().getLogin())) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
     
-    protected abstract void authenticateUser(String user);
 }
 
 

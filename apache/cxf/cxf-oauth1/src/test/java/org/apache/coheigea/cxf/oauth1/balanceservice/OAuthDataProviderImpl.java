@@ -83,6 +83,8 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
                             new Date().getTime() / 1000L);
         accessToken.setScopes(reg.getRequestToken().getScopes());
         
+        accessToken.setSubject(reg.getRequestToken().getSubject());
+        
         // Remove request token
         requestTokens.remove(reg.getRequestToken().getTokenKey());
         
