@@ -21,6 +21,9 @@ package org.apache.coheigea.cxf.oauth1.balanceservice;
 
 
 import javax.annotation.Resource;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -38,6 +41,16 @@ public class CustomerBalanceService extends BalanceService {
         if (securityContext.getUserPrincipal() == null 
             || !user.equals(securityContext.getUserPrincipal().getName())) {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
+        }
+    }
+    
+    @POST
+    @Path("/{user}")
+    public void setBalance(@PathParam("user") String user, int amount) {
+        authenticateUser(user);
+        
+        if (!balances.containsKey(user)) {
+            balances.put(user, amount);
         }
     }
     

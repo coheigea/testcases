@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
@@ -35,7 +34,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/balance/")
 public abstract class BalanceService {
-    private static Map<String, Integer> balances = new HashMap<String, Integer>();
+    protected static Map<String, Integer> balances = new HashMap<String, Integer>();
     
     @GET
     @Path("/{user}")
@@ -47,16 +46,6 @@ public abstract class BalanceService {
         }
         
         throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
-    
-    @POST
-    @Path("/{user}")
-    public void setBalance(@PathParam("user") String user, int amount) {
-        authenticateUser(user);
-        
-        if (!balances.containsKey(user)) {
-            balances.put(user, amount);
-        }
     }
     
     protected abstract void authenticateUser(String user);
