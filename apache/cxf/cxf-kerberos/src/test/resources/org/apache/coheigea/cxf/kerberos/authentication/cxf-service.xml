@@ -55,17 +55,32 @@
        <property name="callbackHandler" ref="kerberosCallbackHandler"/>
    </bean>
    
-   <jaxws:endpoint id="doubleittransport"
+   <jaxws:endpoint id="kerberosEndpoint"
       implementor="org.apache.coheigea.cxf.kerberos.common.DoubleItPortTypeImpl"
-      endpointName="s:DoubleItTransportPort"
+      endpointName="s:DoubleItKerberosTransportPort"
       serviceName="s:DoubleItService"
       depends-on="ClientAuthHttpsSettings"
-      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransport"
+      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportkerberos"
       wsdlLocation="org/apache/coheigea/cxf/kerberos/authentication/DoubleIt.wsdl"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
           <entry key="ws-security.bst.validator" value-ref="kerberosValidator"/>
+      </jaxws:properties> 
+   </jaxws:endpoint>
+   
+   <jaxws:endpoint id="spnegoEndpoint"
+      implementor="org.apache.coheigea.cxf.kerberos.common.DoubleItPortTypeImpl"
+      endpointName="s:DoubleItSpnegoTransportPort"
+      serviceName="s:DoubleItService"
+      depends-on="ClientAuthHttpsSettings"
+      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportspnego"
+      wsdlLocation="org/apache/coheigea/cxf/kerberos/authentication/DoubleIt.wsdl"
+      xmlns:s="http://www.example.org/contract/DoubleIt">
+        
+      <jaxws:properties>
+          <entry key="ws-security.kerberos.jaas.context" value="bob"/>
+          <entry key="ws-security.callback-handler" value-ref="kerberosCallbackHandler"/>
       </jaxws:properties> 
    </jaxws:endpoint>
    
