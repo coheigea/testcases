@@ -80,7 +80,7 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     }
 
     @org.junit.Test
-    public void testAuthenticatedRequest() throws Exception {
+    public void testKerberos() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
         URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
@@ -91,7 +91,28 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
         
         URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
+        QName portQName = new QName(NAMESPACE, "DoubleItKerberosTransportPort");
+        DoubleItPortType transportPort = 
+            service.getPort(portQName, DoubleItPortType.class);
+        updateAddressPort(transportPort, PORT);
+        
+        doubleIt(transportPort, 25);
+    }
+    
+    @org.junit.Test
+    @org.junit.Ignore
+    public void testSpnego() throws Exception {
+
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
+        
+        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItSpnegoTransportPort");
         DoubleItPortType transportPort = 
             service.getPort(portQName, DoubleItPortType.class);
         updateAddressPort(transportPort, PORT);

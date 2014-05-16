@@ -28,8 +28,25 @@
     <wsdl:import location="src/test/resources/DoubleItLogical.wsdl" 
                  namespace="http://www.example.org/contract/DoubleIt"/>
 
-	<wsdl:binding name="DoubleItTransportBinding" type="tns:DoubleItPortType">
-		<wsp:PolicyReference URI="#DoubleItBindingTransportPolicy" />
+	<wsdl:binding name="DoubleItKerberosTransportBinding" type="tns:DoubleItPortType">
+		<wsp:PolicyReference URI="#DoubleItKerberosTransportBindingPolicy" />
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="DoubleIt">
+			<soap:operation soapAction="" />
+			<wsdl:input>
+				<soap:body use="literal" />
+				<wsp:PolicyReference URI="#DoubleItBinding_DoubleIt_Input_Policy" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+				<wsp:PolicyReference URI="#DoubleItBinding_DoubleIt_Output_Policy" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	
+	<wsdl:binding name="DoubleItSpnegoTransportBinding" type="tns:DoubleItPortType">
+		<wsp:PolicyReference URI="#DoubleItSpnegoTransportBindingPolicy" />
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<wsdl:operation name="DoubleIt">
@@ -46,13 +63,17 @@
 	</wsdl:binding>
 	
 	<wsdl:service name="DoubleItService">
-		<wsdl:port name="DoubleItTransportPort" binding="tns:DoubleItTransportBinding">
+		<wsdl:port name="DoubleItKerberosTransportPort" binding="tns:DoubleItKerberosTransportBinding">
 			<soap:address
-				location="https://localhost:8081/doubleit/services/doubleittransport" />
+				location="https://localhost:8081/doubleit/services/doubleittransportkerberos" />
+		</wsdl:port>
+		<wsdl:port name="DoubleItSpnegoTransportPort" binding="tns:DoubleItSpnegoTransportBinding">
+			<soap:address
+				location="https://localhost:8081/doubleit/services/doubleittransportspnego" />
 		</wsdl:port>
 	</wsdl:service>
 	
-	<wsp:Policy wsu:Id="DoubleItBindingTransportPolicy">
+	<wsp:Policy wsu:Id="DoubleItKerberosTransportBindingPolicy">
 		<wsp:ExactlyOne>
 			<wsp:All>
 				<sp:TransportBinding
@@ -67,7 +88,7 @@
 						</sp:TransportToken>
 						<sp:AlgorithmSuite>
 							<wsp:Policy>
-								<sp:TripleDes />
+								<sp:Basic128 />
 							</wsp:Policy>
 						</sp:AlgorithmSuite>
 						<sp:Layout>
@@ -78,7 +99,7 @@
 						<sp:IncludeTimestamp />
 					</wsp:Policy>
 				</sp:TransportBinding>
-				<sp:SupportingTokens>
+				<sp:EndorsingSupportingTokens>
                     <wsp:Policy>
                         <sp:KerberosToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
                             <wsp:Policy>
@@ -86,7 +107,44 @@
                             </wsp:Policy>
                         </sp:KerberosToken>
                     </wsp:Policy>
-                </sp:SupportingTokens>
+                </sp:EndorsingSupportingTokens>
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	
+	<wsp:Policy wsu:Id="DoubleItSpnegoTransportBindingPolicy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<sp:TransportBinding
+					xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpsToken>
+                                    <wsp:Policy/>
+                                </sp:HttpsToken>
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic128 />
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Lax />
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp />
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<sp:EndorsingSupportingTokens>
+                    <wsp:Policy>
+                        <sp:SpnegoContextToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+                            <wsp:Policy />
+                        </sp:SpnegoContextToken>
+                    </wsp:Policy>
+                </sp:EndorsingSupportingTokens>
 			</wsp:All>
 		</wsp:ExactlyOne>
 	</wsp:Policy>
