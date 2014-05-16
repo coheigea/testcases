@@ -51,7 +51,41 @@
         </cxf:features>
    </cxf:bus>
    
-   <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
+   <bean id="oauthConsumer" class="org.apache.coheigea.cxf.oauth1.invoiceservice.OAuthConsumer">
+       <property name="requestURL" 
+                 value="https://localhost:${testutil.ports.BankServer.2}/oauth/initiate"/>
+       <property name="accessURL" 
+                 value="https://localhost:${testutil.ports.BankServer.2}/oauth/token"/>
+       <property name="authorizationURL" 
+                 value="https://localhost:${testutil.ports.BankServer.2}/authorization/authorize"/>
+       <property name="consumerKey" value="this-is-a-secret"/>
+       <property name="consumerId" value="consumer-id"/>
+       <property name="consumerCallback" 
+                 value="https://localhost:${testutil.ports.InvoiceServer}/callback"/>
+   </bean>
+   
+   <bean id="invoiceServiceBean" 
+         class="org.apache.coheigea.cxf.oauth1.invoiceservice.InvoiceService">
+         <property name="oauthConsumer" ref="oauthConsumer"/>
+   </bean>
+   
+   <jaxrs:server 
+        depends-on="InvoiceServerTLS" 
+        address="https://localhost:${testutil.ports.InvoiceServer}/invoiceservice/">
+        <jaxrs:serviceBeans>
+            <ref bean="invoiceServiceBean"/>
+        </jaxrs:serviceBeans>
+   </jaxrs:server>
+   
+   <http:conduit name="https://localhost.*">
+      <http:tlsClientParameters disableCNCheck="true">
+        <sec:trustManagers>
+          <sec:keyStore type="jks" password="cspass" resource="clientstore.jks"/>
+        </sec:trustManagers>
+      </http:tlsClientParameters>
+   </http:conduit>
+   
+   <httpj:engine-factory id="InvoiceServerTLS" bus="cxf">
    <httpj:engine port="${testutil.ports.InvoiceServer}">
     <httpj:tlsServerParameters>
       <sec:keyManagers keyPassword="stskpass">
