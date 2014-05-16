@@ -38,6 +38,7 @@
         <module>cxf-x509</module>
         <module>cxf-shiro</module>
         <module>cxf-sts-xacml</module>
+        <module>cxf-kerberos</module>
     </modules>
 
 </project>
