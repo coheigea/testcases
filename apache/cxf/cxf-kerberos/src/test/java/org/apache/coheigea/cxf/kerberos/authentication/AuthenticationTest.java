@@ -100,7 +100,6 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testSpnego() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
