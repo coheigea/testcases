@@ -20,11 +20,11 @@
 package org.apache.coheigea.cxf.oauth1.balanceservice;
 
 
-import javax.annotation.Resource;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
@@ -33,7 +33,7 @@ import javax.ws.rs.core.SecurityContext;
  * is the same as the desired user.
  */
 public class CustomerBalanceService extends BalanceService {
-    @Resource
+    @Context
     private SecurityContext securityContext;
     
     @Override

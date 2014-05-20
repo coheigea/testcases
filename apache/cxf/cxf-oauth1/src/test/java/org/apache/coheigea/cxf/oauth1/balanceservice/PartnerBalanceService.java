@@ -19,9 +19,9 @@
 
 package org.apache.coheigea.cxf.oauth1.balanceservice;
 
-import javax.annotation.Resource;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
@@ -34,7 +34,7 @@ import org.apache.cxf.rs.security.oauth.data.OAuthContext;
 @Path("/balance/")
 public class PartnerBalanceService extends BalanceService {
     
-    @Resource
+    @Context
     private MessageContext messageContext;
     
     @Override
