@@ -45,8 +45,11 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean class="org.apache.coheigea.cxf.sts.xacml.common.XACMLAuthorizingInterceptor" 
+   <bean class="org.apache.coheigea.cxf.sts.xacml.common.PolicyDecisionPointImpl" id="pdp" />
+   
+   <bean class="org.apache.cxf.rt.security.xacml.XACMLAuthorizingInterceptor" 
           id="XACMLInterceptor">
+       <constructor-arg><ref bean="pdp"/></constructor-arg>
    </bean>
    
    <jaxws:endpoint id="doubleittransport"

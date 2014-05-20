@@ -33,7 +33,6 @@
 
    <properties>
         <jackson.version>1.9.0</jackson.version>
-        <spring.version>3.1.4.RELEASE</spring.version>
         <syncope.version>1.1.6</syncope.version>
    </properties>
 

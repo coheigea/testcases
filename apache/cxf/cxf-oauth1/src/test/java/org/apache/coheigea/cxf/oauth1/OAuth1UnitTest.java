@@ -22,12 +22,12 @@ import java.net.URL;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.oauth1.balanceservice.BankServer;
 import org.apache.coheigea.cxf.oauth1.invoiceservice.InvoiceServer;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.jaxrs.ext.form.Form;
 import org.apache.cxf.jaxrs.ext.xml.XMLSource;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
@@ -288,9 +288,9 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
         client.type("application/x-www-form-urlencoded");
         
         Form form = new Form();
-        form.set("session_authenticity_token", authenticityToken);
-        form.set("oauthDecision", "allow");
-        form.set("oauth_token", requestToken);
+        form.param("session_authenticity_token", authenticityToken);
+        form.param("oauthDecision", "allow");
+        form.param("oauth_token", requestToken);
         return client.post(form);
     }
     

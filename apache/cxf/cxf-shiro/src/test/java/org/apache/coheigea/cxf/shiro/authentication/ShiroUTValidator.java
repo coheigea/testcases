@@ -29,12 +29,12 @@ import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSSecurityException;
-import org.apache.ws.security.handler.RequestData;
-import org.apache.ws.security.message.token.UsernameToken;
-import org.apache.ws.security.validate.Credential;
-import org.apache.ws.security.validate.Validator;
+import org.apache.wss4j.common.ext.WSSecurityException;
+import org.apache.wss4j.dom.WSConstants;
+import org.apache.wss4j.dom.handler.RequestData;
+import org.apache.wss4j.dom.message.token.UsernameToken;
+import org.apache.wss4j.dom.validate.Credential;
+import org.apache.wss4j.dom.validate.Validator;
 
 /**
  * This is a custom Validator that authenticates via Apache Shiro.
@@ -52,7 +52,7 @@ public class ShiroUTValidator implements Validator {
     
     public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
         if (credential == null || credential.getUsernametoken() == null) {
-            throw new WSSecurityException(WSSecurityException.FAILURE, "noCredential");
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILURE, "noCredential");
         }
         
         // Validate the UsernameToken
@@ -66,13 +66,13 @@ public class ShiroUTValidator implements Validator {
             if (log.isDebugEnabled()) {
                 log.debug("Authentication failed - digest passwords are not accepted");
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         if (usernameToken.getPassword() == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Authentication failed - no password was provided");
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         
         // Validate it via Shiro
@@ -85,13 +85,13 @@ public class ShiroUTValidator implements Validator {
             if (log.isDebugEnabled()) {
                 log.debug(ex.getMessage(), ex);
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
 
         // Perform authorization check
         if (!requiredRoles.isEmpty() && !currentUser.hasAllRoles(requiredRoles)) {
             log.debug("Authorization failed for authenticated user");
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         
         return credential;

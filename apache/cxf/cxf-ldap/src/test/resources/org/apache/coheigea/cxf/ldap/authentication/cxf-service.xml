@@ -45,7 +45,7 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="sunUtValidator" class="org.apache.ws.security.validate.JAASUsernameTokenValidator">
+   <bean id="sunUtValidator" class="org.apache.wss4j.dom.validate.JAASUsernameTokenValidator">
        <property name="contextName" value="sun"/>
    </bean>
    
@@ -64,7 +64,7 @@
       
    </jaxws:endpoint>
    
-   <bean id="jettyUtValidator" class="org.apache.ws.security.validate.JAASUsernameTokenValidator">
+   <bean id="jettyUtValidator" class="org.apache.wss4j.dom.validate.JAASUsernameTokenValidator">
        <property name="contextName" value="jetty"/>
    </bean>
    

@@ -54,7 +54,7 @@
        </property> 
    </bean>
    
-   <bean id="jettyUtValidator" class="org.apache.ws.security.validate.JAASUsernameTokenValidator">
+   <bean id="jettyUtValidator" class="org.apache.wss4j.dom.validate.JAASUsernameTokenValidator">
        <property name="contextName" value="jetty"/>
    </bean>
    

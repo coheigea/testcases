@@ -30,6 +30,10 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
    </parent>
+   
+   <properties>
+       <wss4j.version>2.0.1-SNAPSHOT</wss4j.version>
+   </properties>
 
    <dependencies>
        <dependency>
@@ -40,9 +44,9 @@
        </dependency>
        <!-- Required to pick up a "Subject" fix -->
        <dependency>
-           <groupId>org.apache.ws.security</groupId>
-           <artifactId>wss4j</artifactId>
-           <version>1.6.16-SNAPSHOT</version>
+           <groupId>org.apache.wss4j</groupId>
+           <artifactId>wss4j-ws-security-dom</artifactId>
+           <version>${wss4j.version}</version>
            <scope>test</scope>
        </dependency>
        <dependency>

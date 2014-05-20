@@ -22,45 +22,29 @@ package org.apache.coheigea.cxf.sts.xacml.common;
 import java.net.URL;
 
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 
 import org.apache.coheigea.cxf.sts.xacml.authorization.AuthorizationTest;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.message.Message;
-import org.apache.cxf.rt.security.xacml.AbstractXACMLAuthorizingInterceptor;
-import org.apache.cxf.staxutils.StaxUtils;
-import org.apache.ws.security.saml.ext.OpenSAMLUtil;
-import org.opensaml.xacml.ctx.RequestType;
-import org.opensaml.xacml.ctx.ResponseType;
-import org.w3c.dom.Document;
+import org.apache.cxf.rt.security.xacml.pdp.api.PolicyDecisionPoint;
 
 /**
  * Send the XACML Request to the PDP for evaluation.
  */
-public class XACMLAuthorizingInterceptor extends AbstractXACMLAuthorizingInterceptor {
+public class PolicyDecisionPointImpl implements PolicyDecisionPoint {
 
-    @Override
-    public ResponseType performRequest(RequestType arg0, Message arg1) throws Exception {
+    public Source evaluate(Source arg0) {
         URL busFile = 
-            XACMLAuthorizingInterceptor.class.getResource("../authorization/cxf-pdp-client.xml");
+            PolicyDecisionPointImpl.class.getResource("../authorization/cxf-pdp-client.xml");
 
         String address = "https://localhost:" + AuthorizationTest.PDP_PORT + "/authorization/pdp";
         WebClient client = WebClient.create(address, "myservicekey", "skpass", busFile.toString());
         client.type("text/xml").accept("text/xml");
         
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        Document doc = dbf.newDocumentBuilder().newDocument();
-        Source source = new DOMSource(OpenSAMLUtil.toDom(arg0, doc));
-
-        Response response = client.post(source);
+        Response response = client.post(arg0);
         response.bufferEntity();
         
-        Document responseDoc = StaxUtils.read(response.readEntity(Source.class));
-
-        return (ResponseType)OpenSAMLUtil.fromDom(responseDoc.getDocumentElement()); 
+        return response.readEntity(Source.class);
     }
     
     
