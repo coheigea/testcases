@@ -25,12 +25,12 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSSecurityException;
-import org.apache.ws.security.handler.RequestData;
-import org.apache.ws.security.message.token.UsernameToken;
-import org.apache.ws.security.validate.Credential;
-import org.apache.ws.security.validate.Validator;
+import org.apache.wss4j.common.ext.WSSecurityException;
+import org.apache.wss4j.dom.WSConstants;
+import org.apache.wss4j.dom.handler.RequestData;
+import org.apache.wss4j.dom.message.token.UsernameToken;
+import org.apache.wss4j.dom.validate.Credential;
+import org.apache.wss4j.dom.validate.Validator;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -63,7 +63,7 @@ public class SpringSecurityUTValidator implements Validator {
     
     public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
         if (credential == null || credential.getUsernametoken() == null) {
-            throw new WSSecurityException(WSSecurityException.FAILURE, "noCredential");
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILURE, "noCredential");
         }
         
         // Validate the UsernameToken
@@ -77,13 +77,13 @@ public class SpringSecurityUTValidator implements Validator {
             if (log.isDebugEnabled()) {
                 log.debug("Authentication failed - digest passwords are not accepted");
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         if (usernameToken.getPassword() == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Authentication failed - no password was provided");
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         
         // Validate it via Spring Security
@@ -104,11 +104,11 @@ public class SpringSecurityUTValidator implements Validator {
             if (log.isDebugEnabled()) {
                 log.debug(ex.getMessage(), ex);
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         
         if (!authenticated.isAuthenticated()) {
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         
         for (GrantedAuthority authz : authenticated.getAuthorities()) {

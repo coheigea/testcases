@@ -28,14 +28,14 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.apache.ws.security.saml.ext.SAMLCallback;
-import org.apache.ws.security.saml.ext.bean.AttributeBean;
-import org.apache.ws.security.saml.ext.bean.AttributeStatementBean;
-import org.apache.ws.security.saml.ext.bean.AuthenticationStatementBean;
-import org.apache.ws.security.saml.ext.bean.ConditionsBean;
-import org.apache.ws.security.saml.ext.bean.SubjectBean;
-import org.apache.ws.security.saml.ext.bean.SubjectConfirmationDataBean;
-import org.apache.ws.security.saml.ext.builder.SAML2Constants;
+import org.apache.wss4j.common.saml.SAMLCallback;
+import org.apache.wss4j.common.saml.bean.AttributeBean;
+import org.apache.wss4j.common.saml.bean.AttributeStatementBean;
+import org.apache.wss4j.common.saml.bean.AuthenticationStatementBean;
+import org.apache.wss4j.common.saml.bean.ConditionsBean;
+import org.apache.wss4j.common.saml.bean.SubjectBean;
+import org.apache.wss4j.common.saml.bean.SubjectConfirmationDataBean;
+import org.apache.wss4j.common.saml.builder.SAML2Constants;
 import org.opensaml.common.SAMLVersion;
 
 /**
@@ -59,7 +59,7 @@ public class SAML2CallbackHandler implements CallbackHandler {
         callback.setAuthenticationStatementData(Collections.singletonList(authBean));
 
         // Add roles for certain users
-        List<String> roles = new ArrayList<String>();
+        List<Object> roles = new ArrayList<Object>();
         if ("alice".equals(subjectName)) {
             roles.add("boss");
             roles.add("employee");

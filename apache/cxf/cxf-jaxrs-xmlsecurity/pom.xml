@@ -31,11 +31,6 @@
         <version>1.0</version>
     </parent>
 
-   <properties>
-        <cxf.version>3.0.0-SNAPSHOT</cxf.version>
-        <spring.version>3.2.6.RELEASE</spring.version>
-   </properties>
-
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>

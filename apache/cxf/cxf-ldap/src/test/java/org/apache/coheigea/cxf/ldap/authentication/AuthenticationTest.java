@@ -80,7 +80,7 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
         
         doubleIt(transportPort, 25);
     }
-    /*
+    
     @org.junit.Test
     public void testUnauthenticatedRequestviaSun() throws Exception {
 
@@ -159,7 +159,6 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
             // expected
         }
     }
-    */
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);

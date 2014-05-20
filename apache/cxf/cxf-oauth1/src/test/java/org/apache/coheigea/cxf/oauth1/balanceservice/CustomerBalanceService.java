@@ -38,7 +38,7 @@ public class CustomerBalanceService extends BalanceService {
     
     @Override
     protected void authenticateUser(String user) {
-        if (securityContext.getUserPrincipal() == null 
+        if (securityContext.getUserPrincipal() == null || user == null
             || !user.equals(securityContext.getUserPrincipal().getName())) {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
         }

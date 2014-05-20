@@ -1,7 +1,8 @@
 sun {
  com.sun.security.auth.module.LdapLoginModule REQUIRED
- userProvider="ldaps://localhost:10636/"
+ userProvider="ldap://localhost:10389/"
  authIdentity="cn={USERNAME},ou=users,ou=system"
+ useSSL=false
  debug=true;
 };
 

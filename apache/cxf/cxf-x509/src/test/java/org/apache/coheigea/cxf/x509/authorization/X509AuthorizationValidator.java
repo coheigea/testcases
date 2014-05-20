@@ -25,10 +25,10 @@ import java.security.cert.X509Certificate;
 import javax.security.auth.Subject;
 
 import org.apache.cxf.common.security.SimpleGroup;
-import org.apache.ws.security.WSSecurityException;
-import org.apache.ws.security.handler.RequestData;
-import org.apache.ws.security.validate.Credential;
-import org.apache.ws.security.validate.SignatureTrustValidator;
+import org.apache.wss4j.common.ext.WSSecurityException;
+import org.apache.wss4j.dom.handler.RequestData;
+import org.apache.wss4j.dom.validate.Credential;
+import org.apache.wss4j.dom.validate.SignatureTrustValidator;
 
 /**
  * This is a custom Validator that just mocks up some roles depending on the certificate
@@ -49,7 +49,7 @@ public class X509AuthorizationValidator extends SignatureTrustValidator {
             if (log.isDebugEnabled()) {
                 log.debug("No X.509 Certificates are found");
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         
         Principal principal = validatedCredential.getPrincipal();

@@ -20,12 +20,11 @@ package org.apache.coheigea.cxf.oauth1;
 
 import java.net.URL;
 
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Form;
 
 import org.apache.coheigea.cxf.oauth1.balanceservice.BankServer;
 import org.apache.coheigea.cxf.oauth1.invoiceservice.InvoiceServer;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.jaxrs.ext.form.Form;
 import org.apache.cxf.jaxrs.ext.xml.XMLSource;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
@@ -95,8 +94,8 @@ public class InvoiceServiceTest extends AbstractBusClientServerTestBase {
         client.type("application/x-www-form-urlencoded");
         
         Form form = new Form();
-        form.set("session_authenticity_token", authenticityToken);
-        form.set("oauthDecision", "allow");
+        form.param("session_authenticity_token", authenticityToken);
+        form.param("oauthDecision", "allow");
         // TODO form.set("oauth_token", requestToken);
         client.post(form);
     }

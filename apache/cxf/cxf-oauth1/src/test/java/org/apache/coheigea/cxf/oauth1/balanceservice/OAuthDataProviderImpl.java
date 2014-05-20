@@ -38,7 +38,7 @@ import org.apache.cxf.rs.security.oauth.data.RequestTokenRegistration;
 import org.apache.cxf.rs.security.oauth.data.Token;
 import org.apache.cxf.rs.security.oauth.provider.OAuthDataProvider;
 import org.apache.cxf.rs.security.oauth.provider.OAuthServiceException;
-import org.apache.ws.security.util.Base64;
+import org.apache.xml.security.utils.Base64;
 
 /**
  * A simple implementation of CXF's OAuthDataProvider interface.

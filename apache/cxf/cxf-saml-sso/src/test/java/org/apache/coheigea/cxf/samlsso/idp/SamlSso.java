@@ -23,6 +23,7 @@ package org.apache.coheigea.cxf.samlsso.idp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.BadRequestException;
@@ -35,17 +36,19 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.cxf.common.util.Base64Utility;
-import org.apache.cxf.helpers.DOMUtils;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.rs.security.saml.DeflateEncoderDecoder;
-import org.apache.ws.security.components.crypto.Crypto;
-import org.apache.ws.security.components.crypto.CryptoFactory;
-import org.apache.ws.security.saml.ext.AssertionWrapper;
-import org.apache.ws.security.saml.ext.OpenSAMLUtil;
-import org.apache.ws.security.saml.ext.SAMLParms;
-import org.apache.ws.security.saml.ext.bean.ConditionsBean;
-import org.apache.ws.security.saml.ext.bean.SubjectConfirmationDataBean;
-import org.apache.ws.security.util.DOM2Writer;
+import org.apache.cxf.staxutils.StaxUtils;
+import org.apache.wss4j.common.crypto.Crypto;
+import org.apache.wss4j.common.crypto.CryptoFactory;
+import org.apache.wss4j.common.saml.OpenSAMLUtil;
+import org.apache.wss4j.common.saml.SAMLCallback;
+import org.apache.wss4j.common.saml.SAMLUtil;
+import org.apache.wss4j.common.saml.SamlAssertionWrapper;
+import org.apache.wss4j.common.saml.bean.AudienceRestrictionBean;
+import org.apache.wss4j.common.saml.bean.ConditionsBean;
+import org.apache.wss4j.common.saml.bean.SubjectConfirmationDataBean;
+import org.apache.wss4j.common.util.DOM2Writer;
 import org.joda.time.DateTime;
 import org.opensaml.saml2.core.AuthnRequest;
 import org.opensaml.saml2.core.Response;
@@ -76,7 +79,7 @@ public class SamlSso {
         byte[] deflatedToken = Base64Utility.decode(samlRequest);
         InputStream tokenStream = new DeflateEncoderDecoder().inflateToken(deflatedToken);
         
-        Document responseDoc = DOMUtils.readXml(new InputStreamReader(tokenStream, "UTF-8"));
+        Document responseDoc = StaxUtils.read(new InputStreamReader(tokenStream, "UTF-8"));
         AuthnRequest request = 
             (AuthnRequest)OpenSAMLUtil.fromDom(responseDoc.getDocumentElement());
         System.out.println(DOM2Writer.nodeToString(responseDoc));
@@ -153,12 +156,15 @@ public class SamlSso {
         // Audience Restriction
         ConditionsBean conditions = new ConditionsBean();
         conditions.setTokenPeriodMinutes(5);
-        conditions.setAudienceURI(requestIssuer);
+        
+        AudienceRestrictionBean audienceRestriction = new AudienceRestrictionBean();
+        audienceRestriction.setAudienceURIs(Collections.singletonList(requestIssuer));
+        conditions.setAudienceRestrictions(Collections.singletonList(audienceRestriction));
         callbackHandler.setConditions(conditions);
         
-        SAMLParms samlParms = new SAMLParms();
-        samlParms.setCallbackHandler(callbackHandler);
-        AssertionWrapper assertion = new AssertionWrapper(samlParms);
+        SAMLCallback samlCallback = new SAMLCallback();
+        SAMLUtil.doSAMLCallback(callbackHandler, samlCallback);
+        SamlAssertionWrapper assertion = new SamlAssertionWrapper(samlCallback);
         
         Crypto issuerCrypto = CryptoFactory.getInstance("stsKeystore.properties");
         assertion.signAssertion("mystskey", "stskpass", issuerCrypto, false);

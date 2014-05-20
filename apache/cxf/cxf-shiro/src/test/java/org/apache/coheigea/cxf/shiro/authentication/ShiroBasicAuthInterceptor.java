@@ -30,12 +30,12 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 import org.apache.cxf.security.SecurityContext;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSUsernameTokenPrincipal;
-import org.apache.ws.security.handler.RequestData;
-import org.apache.ws.security.message.token.UsernameToken;
-import org.apache.ws.security.validate.Credential;
-import org.apache.ws.security.validate.Validator;
+import org.apache.wss4j.common.principal.WSUsernameTokenPrincipalImpl;
+import org.apache.wss4j.dom.WSConstants;
+import org.apache.wss4j.dom.handler.RequestData;
+import org.apache.wss4j.dom.message.token.UsernameToken;
+import org.apache.wss4j.dom.validate.Credential;
+import org.apache.wss4j.dom.validate.Validator;
 
 public class ShiroBasicAuthInterceptor extends AbstractPhaseInterceptor<Message> {
 
@@ -78,8 +78,8 @@ public class ShiroBasicAuthInterceptor extends AbstractPhaseInterceptor<Message>
             if (credential != null && credential.getPrincipal() != null) {
                 p = credential.getPrincipal();
             } else {
-                p = new WSUsernameTokenPrincipal(policy.getUserName(), false);
-                ((WSUsernameTokenPrincipal)p).setPassword(policy.getPassword());
+                p = new WSUsernameTokenPrincipalImpl(policy.getUserName(), false);
+                ((WSUsernameTokenPrincipalImpl)p).setPassword(policy.getPassword());
             }
             message.put(SecurityContext.class, createSecurityContext(p));
             

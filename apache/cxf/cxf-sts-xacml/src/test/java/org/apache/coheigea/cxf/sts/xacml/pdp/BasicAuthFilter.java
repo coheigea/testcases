@@ -18,37 +18,42 @@
  */
 package org.apache.coheigea.cxf.sts.xacml.pdp;
 
+import java.io.IOException;
 import java.security.Principal;
 
 import javax.security.auth.callback.CallbackHandler;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.configuration.security.AuthorizationPolicy;
 import org.apache.cxf.helpers.DOMUtils;
-import org.apache.cxf.jaxrs.ext.RequestHandler;
-import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.utils.ExceptionUtils;
+import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.security.SecurityContext;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSUsernameTokenPrincipal;
-import org.apache.ws.security.handler.RequestData;
-import org.apache.ws.security.message.token.UsernameToken;
-import org.apache.ws.security.validate.Credential;
-import org.apache.ws.security.validate.UsernameTokenValidator;
+import org.apache.wss4j.common.principal.WSUsernameTokenPrincipalImpl;
+import org.apache.wss4j.dom.WSConstants;
+import org.apache.wss4j.dom.handler.RequestData;
+import org.apache.wss4j.dom.message.token.UsernameToken;
+import org.apache.wss4j.dom.validate.Credential;
+import org.apache.wss4j.dom.validate.UsernameTokenValidator;
 import org.w3c.dom.Document;
 
 /**
  * A simple filter to validate a Basic Auth username/password via a CallbackHandler
  */
-public class BasicAuthFilter implements RequestHandler {
+public class BasicAuthFilter implements ContainerRequestFilter {
 
     private CallbackHandler callbackHandler;
     
-    public Response handleRequest(Message message, ClassResourceInfo arg1) {
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        Message message = JAXRSUtils.getCurrentMessage();
         AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
+        
         if (policy == null || policy.getUserName() == null || policy.getPassword() == null) {
-            return Response.status(401).header("WWW-Authenticate", "Basic realm=\"IdP\"").build();
+            requestContext.abortWith(
+                Response.status(401).header("WWW-Authenticate", "Basic realm=\"IdP\"").build());
         }
 
         try {
@@ -67,11 +72,10 @@ public class BasicAuthFilter implements RequestHandler {
             if (credential != null && credential.getPrincipal() != null) {
                 p = credential.getPrincipal();
             } else {
-                p = new WSUsernameTokenPrincipal(policy.getUserName(), false);
-                ((WSUsernameTokenPrincipal)p).setPassword(policy.getPassword());
+                p = new WSUsernameTokenPrincipalImpl(policy.getUserName(), false);
+                ((WSUsernameTokenPrincipalImpl)p).setPassword(policy.getPassword());
             }
             message.put(SecurityContext.class, createSecurityContext(p));
-            return null;
         } catch (Exception ex) {
             throw ExceptionUtils.toInternalServerErrorException(ex, null);
         }
