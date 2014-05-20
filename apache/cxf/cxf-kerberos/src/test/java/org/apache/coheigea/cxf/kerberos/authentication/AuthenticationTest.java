@@ -34,9 +34,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 /**
- * A test-case that shows how to authenticate a JAX-WS client via Kerberos. A KDC is started,
- * and the client obtains a service ticket, passing it in the security header of the service
- * request, where it is validated by the service.
+ * There are two test-cases covered in this class, one that uses a WS-SecurityPolicy 
+ * KerberosToken policy, and the other that uses a SpnegoContextToken policy.
+ *
+ * Both testcases start up a KDC locally using Apache DS. In each case, the service endpoint 
+ * has a TransportBinding policy, with a corresponding EndorsingSupportingToken which is either 
+ * a KerberosToken or SpnegoContextToken. The client will obtain a service ticket from the KDC
+ * and include it in the security header of the service request.
  */
 public class AuthenticationTest extends AbstractBusClientServerTestBase {
     
