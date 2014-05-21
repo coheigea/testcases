@@ -24,12 +24,12 @@ import java.util.Collections;
 import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.syncope.common.to.UserTO;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSSecurityException;
-import org.apache.ws.security.handler.RequestData;
-import org.apache.ws.security.message.token.UsernameToken;
-import org.apache.ws.security.validate.Credential;
-import org.apache.ws.security.validate.Validator;
+import org.apache.wss4j.common.ext.WSSecurityException;
+import org.apache.wss4j.dom.WSConstants;
+import org.apache.wss4j.dom.handler.RequestData;
+import org.apache.wss4j.dom.message.token.UsernameToken;
+import org.apache.wss4j.dom.validate.Credential;
+import org.apache.wss4j.dom.validate.Validator;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 /**
@@ -45,7 +45,7 @@ public class SyncopeUTValidator implements Validator {
     
     public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
         if (credential == null || credential.getUsernametoken() == null) {
-            throw new WSSecurityException(WSSecurityException.FAILURE, "noCredential");
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILURE, "noCredential");
         }
         
         // Validate the UsernameToken
@@ -59,13 +59,13 @@ public class SyncopeUTValidator implements Validator {
             if (log.isDebugEnabled()) {
                 log.debug("Authentication failed - digest passwords are not accepted");
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         if (usernameToken.getPassword() == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Authentication failed - no password was provided");
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         
         // Send it off to Syncope for validation
@@ -86,13 +86,13 @@ public class SyncopeUTValidator implements Validator {
         try {
             UserTO user = client.accept("application/json").get(UserTO.class);
             if (user == null) {
-                throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+                throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
             }
         } catch (RuntimeException ex) {
             if (log.isDebugEnabled()) {
                 log.debug(ex.getMessage(), ex);
             }
-            throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         
         return credential;
