@@ -26,6 +26,11 @@ This uses a Symmetric binding with a UsernameToken supporting token. The
 UsernameToken is just validated by a simple CallbackHandler on the service
 side. 
 
+4) /doubleit/services/doubleitasymmetric
+
+This uses a Asymmetric binding. Authentication is established by a certificate
+chain.
+
 Build the project via "mvn clean install" and copy target/doubleit.war to the
 webapps folder of a container such as Tomcat. Then open up JMeter and import
 the "DoubleIt_Users.jmx" in the root directory of this project. Run the project
