@@ -26,10 +26,20 @@ This uses a Symmetric binding with a UsernameToken supporting token. The
 UsernameToken is just validated by a simple CallbackHandler on the service
 side. 
 
-4) /doubleit/services/doubleitasymmetric
+4) /doubleit/services/doubleitsymmetricstreaming
+
+This is the same as per the symmetric case above, except that it uses the 
+new streaming WS-Security implementation available in Apache CXF 3.0.0.
+
+5) /doubleit/services/doubleitasymmetric
 
 This uses a Asymmetric binding. Authentication is established by a certificate
 chain.
+
+6) /doubleit/services/doubleitasymmetricstreaming
+
+Same as for the asymmetric case above, except that it uses the new streaming
+WS-Security implementation available in Apache CXF 3.0.0.
 
 Build the project via "mvn clean install" and copy target/doubleit.war to the
 webapps folder of a container such as Tomcat. Then open up JMeter and import
