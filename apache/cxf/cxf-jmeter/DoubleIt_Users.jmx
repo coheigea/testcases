@@ -295,6 +295,63 @@
           <hashTree/>
         </hashTree>
       </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="UsernameToken with Streaming SymmetricBinding" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">10000</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
+        <longProp name="ThreadGroup.start_time">1375525852000</longProp>
+        <longProp name="ThreadGroup.end_time">1375525852000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Soap Request Streaming Symmetric" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;soap:Envelope xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;&lt;SOAP-ENV:Header xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;&lt;wsse:Security xmlns:wsse=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot; xmlns:wsu=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot; soap:mustUnderstand=&quot;1&quot;&gt;&lt;xenc:EncryptedKey xmlns:xenc=&quot;http://www.w3.org/2001/04/xmlenc#&quot; Id=&quot;EK-3ca67662-e08f-4e7d-92ce-4f21f70c0c09&quot;&gt;&lt;xenc:EncryptionMethod Algorithm=&quot;http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p&quot;/&gt;&lt;ds:KeyInfo xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;&lt;wsse:SecurityTokenReference xmlns:wsse=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot;&gt;&lt;wsse:KeyIdentifier EncodingType=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary&quot; ValueType=&quot;http://docs.oasis-open.org/wss/oasis-wss-soap-message-security-1.1#ThumbprintSHA1&quot;&gt;nGQQPJyS/AKvf2ILYoaI4Y/aZRU=&lt;/wsse:KeyIdentifier&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;xenc:CipherData&gt;&lt;xenc:CipherValue&gt;RXtpBNpcj3D90WL3HOiMb0rXIdhP9CoGfBmo48WNhznnfH6jaGHw21bjIcRwY93fqYozV22hbE4uUJbUmo9/N0Ioqr0koQ3PSTgiAzI4deyR0EUrdf22a3mp83LzYd0EioqYxEGLRtOe5bSNMgopyT1Phcu2jhPp8pjXnegfBXw=&lt;/xenc:CipherValue&gt;&lt;/xenc:CipherData&gt;&lt;/xenc:EncryptedKey&gt;&lt;xenc:ReferenceList xmlns:xenc=&quot;http://www.w3.org/2001/04/xmlenc#&quot;&gt;&lt;xenc:DataReference URI=&quot;#ED-45688b0d-a743-4721-b375-a36d1d178c3c&quot;/&gt;&lt;xenc:DataReference URI=&quot;#ED-a4e4862e-cda8-4817-8ed4-849af2d8bac8&quot;/&gt;&lt;/xenc:ReferenceList&gt;&lt;xenc:EncryptedData xmlns:xenc=&quot;http://www.w3.org/2001/04/xmlenc#&quot; Id=&quot;ED-a4e4862e-cda8-4817-8ed4-849af2d8bac8&quot; Type=&quot;http://www.w3.org/2001/04/xmlenc#Element&quot;&gt;&lt;xenc:EncryptionMethod Algorithm=&quot;http://www.w3.org/2001/04/xmlenc#aes128-cbc&quot;/&gt;&lt;ds:KeyInfo xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;&lt;wsse:SecurityTokenReference xmlns:wsse=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot; xmlns:wsse11=&quot;http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd&quot; wsse11:TokenType=&quot;http://docs.oasis-open.org/wss/oasis-wss-soap-message-security-1.1#EncryptedKey&quot;&gt;&lt;wsse:Reference URI=&quot;#EK-3ca67662-e08f-4e7d-92ce-4f21f70c0c09&quot;/&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;xenc:CipherData&gt;&lt;xenc:CipherValue&gt;qoJZL57Kmb21GJNYBRzhrz33WEgYSryoibMmdA9ChgN0hGfzp38SIRCryswmpzSJudeJEp1l8BdDGBS09+jRMEfQk21dj8QDebjgV0X46042THKJhIcbkV0r35a2XbaH+lizIYrFqFq54ElF7umGYsFLGHberOCzAmDbNpHbV9Xkd4hFfhtob/ttSKEqAtUhv4lMvBGJW20KGNlVtXdQTPfszqf5koqdg4+IYSvbozZCmvMRbrI7rbT2dpdVX5PZlzjYQ/BlFztSeVjsF9hxV0QMl5FSHV1/8ospZxcLB9VVJReyxNinPBUiGKJElmSaWmi4pYpJ8+d8s+pTFtFCUSh6yOuouFlnV70WFRmi7WmCecrFOsyxdcDz2TBN36T4HenvmRupmxV/eJTYUCVh0A==&lt;/xenc:CipherValue&gt;&lt;/xenc:CipherData&gt;&lt;/xenc:EncryptedData&gt;&lt;ds:Signature xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot; Id=&quot;SIG-8c2fa93d-8367-4441-9950-b82ec4786fbb&quot;&gt;&lt;ds:SignedInfo&gt;&lt;ds:CanonicalizationMethod Algorithm=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;&gt;&lt;ec:InclusiveNamespaces xmlns:ec=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot; PrefixList=&quot;soap&quot;/&gt;&lt;/ds:CanonicalizationMethod&gt;&lt;ds:SignatureMethod Algorithm=&quot;http://www.w3.org/2000/09/xmldsig#hmac-sha1&quot;/&gt;&lt;ds:Reference URI=&quot;#_0a3cd420-9a32-494a-b938-b4e830d854ee&quot;&gt;&lt;ds:Transforms&gt;&lt;ds:Transform Algorithm=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;&gt;&lt;ec:InclusiveNamespaces xmlns:ec=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot; PrefixList=&quot;&quot;/&gt;&lt;/ds:Transform&gt;&lt;/ds:Transforms&gt;&lt;ds:DigestMethod Algorithm=&quot;http://www.w3.org/2000/09/xmldsig#sha1&quot;/&gt;&lt;ds:DigestValue&gt;l/V/eiBwoakCBuZNdYnK8cpGIEY=&lt;/ds:DigestValue&gt;&lt;/ds:Reference&gt;&lt;/ds:SignedInfo&gt;&lt;ds:SignatureValue&gt;BbQO1uggNLoY+hkqtRm/gPbC+4M=&lt;/ds:SignatureValue&gt;&lt;ds:KeyInfo Id=&quot;KI-a61ec5ac-56ee-47f6-bc6e-bade94152e38&quot;&gt;&lt;wsse:SecurityTokenReference xmlns:wsse11=&quot;http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd&quot; wsse11:TokenType=&quot;http://docs.oasis-open.org/wss/oasis-wss-soap-message-security-1.1#EncryptedKey&quot; wsu:Id=&quot;STR-f89fdbca-f093-4e79-9572-aadcd8254387&quot;&gt;&lt;wsse:Reference URI=&quot;#EK-3ca67662-e08f-4e7d-92ce-4f21f70c0c09&quot; ValueType=&quot;http://docs.oasis-open.org/wss/oasis-wss-soap-message-security-1.1#EncryptedKey&quot;/&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;/ds:Signature&gt;&lt;/wsse:Security&gt;&lt;/SOAP-ENV:Header&gt;&lt;soap:Body xmlns:wsu=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot; wsu:Id=&quot;_0a3cd420-9a32-494a-b938-b4e830d854ee&quot;&gt;&lt;xenc:EncryptedData xmlns:xenc=&quot;http://www.w3.org/2001/04/xmlenc#&quot; Id=&quot;ED-45688b0d-a743-4721-b375-a36d1d178c3c&quot; Type=&quot;http://www.w3.org/2001/04/xmlenc#Content&quot;&gt;&lt;xenc:EncryptionMethod Algorithm=&quot;http://www.w3.org/2001/04/xmlenc#aes128-cbc&quot;/&gt;&lt;ds:KeyInfo xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;&lt;wsse:SecurityTokenReference xmlns:wsse=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot; xmlns:wsse11=&quot;http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd&quot; wsse11:TokenType=&quot;http://docs.oasis-open.org/wss/oasis-wss-soap-message-security-1.1#EncryptedKey&quot;&gt;&lt;wsse:Reference URI=&quot;#EK-3ca67662-e08f-4e7d-92ce-4f21f70c0c09&quot;/&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;xenc:CipherData&gt;&lt;xenc:CipherValue&gt;8a9S2pFkry04t7I446VctxbDoPRFsdpbv00pthJFbUoR/YN9NloyhV7RCS3lUgmSXr1PMB8HVmG6mozQaTMw5MQ3mkatG1ZuV/S3ZsraOwgqwlaT9eNjvm8+DaUSg5b+Hli/cOSop5WWuRxQcQpF9zioFuabTRVMBVR3xwglSj+wMW3CG+CLZow4yEEiXclQ&lt;/xenc:CipherValue&gt;&lt;/xenc:CipherData&gt;&lt;/xenc:EncryptedData&gt;&lt;/soap:Body&gt;&lt;/soap:Envelope&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">doubleit/services/doubleitsymmetricstreaming</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">text/xml; charset=utf-8</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">SOAPAction</stringProp>
+                <stringProp name="Header.value">&quot;&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="UsernameToken with AsymmetricBinding" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -328,6 +385,63 @@
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">doubleit/services/doubleitasymmetric</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">text/xml; charset=utf-8</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">SOAPAction</stringProp>
+                <stringProp name="Header.value">&quot;&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="UsernameToken with Streaming AsymmetricBinding" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">10000</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
+        <longProp name="ThreadGroup.start_time">1375525852000</longProp>
+        <longProp name="ThreadGroup.end_time">1375525852000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Soap Request Streaming Asymmetric" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;soap:Envelope xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;&lt;SOAP-ENV:Header xmlns:SOAP-ENV=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;&lt;wsse:Security xmlns:wsse=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot; xmlns:wsu=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot; soap:mustUnderstand=&quot;1&quot;&gt;&lt;xenc:EncryptedKey xmlns:xenc=&quot;http://www.w3.org/2001/04/xmlenc#&quot; Id=&quot;EK-07d5a87f-e81d-460c-ac7f-0cd2bfd5f4b8&quot;&gt;&lt;xenc:EncryptionMethod Algorithm=&quot;http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p&quot;/&gt;&lt;ds:KeyInfo xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;&lt;wsse:SecurityTokenReference&gt;&lt;ds:X509Data&gt;&lt;ds:X509IssuerSerial&gt;&lt;ds:X509IssuerName&gt;CN=Werner,OU=Apache WSS4J,O=Home,L=Munich,ST=Bayern,C=DE&lt;/ds:X509IssuerName&gt;&lt;ds:X509SerialNumber&gt;28&lt;/ds:X509SerialNumber&gt;&lt;/ds:X509IssuerSerial&gt;&lt;/ds:X509Data&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;xenc:CipherData&gt;&lt;xenc:CipherValue&gt;HwslDiOc8+A5k9xOm5fKVGHnRHAm3GZO3coMFjpwj5bYrEYmuOOyHUbCCbcMFfIJgQHR6OC3gRboGnIGvlvx3kcmi34Z9DxuFHM0QOviG4Ie/cg8vMNFUHf5cbNKnTy2j6o84Fbx1l9Jwnmt6dx5hnWFTBptwihy2O9fxROTNh8jfwNslrt8+ckUbkNgvuGdRRXLuNoAkHJCumX5xflKK47CyMmtLXj6KX6fQKZR2fALGdUNtTmsh3Xpy1NiZJUSz9uEdgxvE/yg7CSPBDZHD3oHcGEDx9nYsW/eXOPa/ZTsPrarBaLUb8xIgwuyMlY0Hx+ahlOoZS3pheIUym7Y9Q==&lt;/xenc:CipherValue&gt;&lt;/xenc:CipherData&gt;&lt;xenc:ReferenceList&gt;&lt;xenc:DataReference URI=&quot;#ED-aa7c61c2-bae2-4116-81da-fd31723db2aa&quot;/&gt;&lt;/xenc:ReferenceList&gt;&lt;/xenc:EncryptedKey&gt;&lt;wsse:BinarySecurityToken EncodingType=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary&quot; ValueType=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3&quot; wsu:Id=&quot;X509-7fd979c5-5a51-4a5e-b606-c17e29ee4d06&quot;&gt;MIIDqjCCAxOgAwIBAgIBGzANBgkqhkiG9w0BAQQFADBmMQswCQYDVQQGEwJERTEPMA0GA1UECBMGQmF5ZXJuMQ8wDQYDVQQHEwZNdW5pY2gxDTALBgNVBAoTBEhvbWUxFTATBgNVBAsTDEFwYWNoZSBXU1M0SjEPMA0GA1UEAxMGV2VybmVyMB4XDTE0MDUwODE0MDkzMloXDTI0MDUwNTE0MDkzMlowUzELMAkGA1UEBhMCSUUxETAPBgNVBAgTCExlaW5zdGVyMQ8wDQYDVQQHEwZEdWJsaW4xDzANBgNVBAoTBkFwYWNoZTEPMA0GA1UEAxMGQ2xpZW50MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv7CECpn7T+H/jHN+h+1MPPChG1dzw2OlGh0ayzsvLayW9HLYr50ZQDz9kEtbmHhBDZVw1nEK6fOhqCPTdxvOAiVfxlKJEX9cdRsw+rPeZFXrV136PtJ8j2RMCakKcsYOhL1AI6hBi5Wp4Ivncd61UipyJ/8UmtOB6qARqxnrozs3MfJgPfrNmkjZIMBc53EOToGQageg8r3OeEGkDhxJLUk5QFC/16oeHzx9cjw8n24FMZQ9sIY0w7aDPMLmsCkQQ3gcktWn8cnfQYUq7BqfvPbddxJLNXTnqsIvi0J5KoPAQz38zqwVHWH1vwnz8J57igIckLpqBE6AJvd4ptWtHwIDAQABo4H2MIHzMAkGA1UdEwQCMAAwLAYJYIZIAYb4QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBTqMDbtQKrZZBpmL5mrtmLBsd7lLTCBmAYDVR0jBIGQMIGNgBRWF+/2a4tZ/iMZaN54wOFNZ33QZqFqpGgwZjELMAkGA1UEBhMCREUxDzANBgNVBAgTBkJheWVybjEPMA0GA1UEBxMGTXVuaWNoMQ0wCwYDVQQKEwRIb21lMRUwEwYDVQQLEwxBcGFjaGUgV1NTNEoxDzANBgNVBAMTBldlcm5lcoIJAI3hLAppEXfSMA0GCSqGSIb3DQEBBAUAA4GBAJm0gXDNMpd9UR2iRx7kxMv/Rvqi9BLIyDW41rO0Gd5RUym/snPQ8SHD/e93JIX/dzXjZkyRwnncgMssoxYpIKR4gv/0Bf7b97MVMfJwVsXGGgbn2v/M1k26RnfUbtJpuhvBBt43w0P2tYblSaWIT1UJzSfYTstr7GNtHAngZ+bK&lt;/wsse:BinarySecurityToken&gt;&lt;ds:Signature xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot; Id=&quot;SIG-557dfcb9-a3f5-490b-9be3-b29da97f9808&quot;&gt;&lt;ds:SignedInfo&gt;&lt;ds:CanonicalizationMethod Algorithm=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;&gt;&lt;ec:InclusiveNamespaces xmlns:ec=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot; PrefixList=&quot;soap&quot;/&gt;&lt;/ds:CanonicalizationMethod&gt;&lt;ds:SignatureMethod Algorithm=&quot;http://www.w3.org/2000/09/xmldsig#rsa-sha1&quot;/&gt;&lt;ds:Reference URI=&quot;#_11dcb792-2a42-42a4-a913-c59312874a0c&quot;&gt;&lt;ds:Transforms&gt;&lt;ds:Transform Algorithm=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;&gt;&lt;ec:InclusiveNamespaces xmlns:ec=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot; PrefixList=&quot;&quot;/&gt;&lt;/ds:Transform&gt;&lt;/ds:Transforms&gt;&lt;ds:DigestMethod Algorithm=&quot;http://www.w3.org/2000/09/xmldsig#sha1&quot;/&gt;&lt;ds:DigestValue&gt;d9IW0tbGUHUVehlGBvkMQF6z1I4=&lt;/ds:DigestValue&gt;&lt;/ds:Reference&gt;&lt;/ds:SignedInfo&gt;&lt;ds:SignatureValue&gt;EgjsfisCKny3ie4CmS6hNkhymuacjEU5lFXMQ70xzQ6DaKMPLYqQmsMBvqQl1rb40ffz2fwAL5X6hzXk0+/Upz3lMqAw1pe/3J4vLOhHEuXWTuemukAgwzjVLqK5x1rwg7PTRXHwbeUTBodfAsAXJZG+fV1iZVmKR5KGjMbNloUA7vOKX0FTt10TpEB2Vm7cMFFTd4HJHOWJyhE1HFEe+nLr+YXOTYMBnfLWwqTjwCMc2HKdynzsREUFOcmHVlbHncacRwm6RR2maWBu0AiSkLPB8I1T58NmggaWfkRItL5KYnAOMfMyxlHqfsxDDzPq8+3Z6dS/Ergk16KVf//BAQ==&lt;/ds:SignatureValue&gt;&lt;ds:KeyInfo Id=&quot;KI-a654fc4b-c44e-4b75-86bc-f9a09de661a7&quot;&gt;&lt;wsse:SecurityTokenReference wsu:Id=&quot;STR-6efdffda-60b9-4ea0-b4b5-85cc015af6c5&quot;&gt;&lt;wsse:Reference URI=&quot;#X509-7fd979c5-5a51-4a5e-b606-c17e29ee4d06&quot; ValueType=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3&quot;/&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;/ds:Signature&gt;&lt;/wsse:Security&gt;&lt;/SOAP-ENV:Header&gt;&lt;soap:Body xmlns:wsu=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot; wsu:Id=&quot;_11dcb792-2a42-42a4-a913-c59312874a0c&quot;&gt;&lt;xenc:EncryptedData xmlns:xenc=&quot;http://www.w3.org/2001/04/xmlenc#&quot; Id=&quot;ED-aa7c61c2-bae2-4116-81da-fd31723db2aa&quot; Type=&quot;http://www.w3.org/2001/04/xmlenc#Content&quot;&gt;&lt;xenc:EncryptionMethod Algorithm=&quot;http://www.w3.org/2001/04/xmlenc#aes128-cbc&quot;/&gt;&lt;ds:KeyInfo xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;&lt;wsse:SecurityTokenReference xmlns:wsse=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot; xmlns:wsse11=&quot;http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd&quot; wsse11:TokenType=&quot;http://docs.oasis-open.org/wss/oasis-wss-soap-message-security-1.1#EncryptedKey&quot;&gt;&lt;wsse:Reference URI=&quot;#EK-07d5a87f-e81d-460c-ac7f-0cd2bfd5f4b8&quot;/&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;xenc:CipherData&gt;&lt;xenc:CipherValue&gt;rwL+NDHehSHTX+XE3WtUTPqsq3T/Rmjf20mgugwlm9LBSfxjJSdwsDhw05Q+vytV7ZMoJLemZ+O8uUnaYqJG3arHeEpEsN1WkpCvQsCn+WoEflUyBmnV2HPuPWYSLNTBr1W7IQ9X/rxE1bJPj0paxE0ZJkr8sDs52vd2wM5a4jaF+AmFNKTUftdqCwT5cNLA&lt;/xenc:CipherValue&gt;&lt;/xenc:CipherData&gt;&lt;/xenc:EncryptedData&gt;&lt;/soap:Body&gt;&lt;/soap:Envelope&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">doubleit/services/doubleitasymmetricstreaming</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
