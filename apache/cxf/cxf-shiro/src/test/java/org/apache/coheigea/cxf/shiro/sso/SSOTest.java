@@ -33,7 +33,7 @@ import org.junit.BeforeClass;
 
 /**
  * This tests using Apache Shiro for authentication in combination with SingleSignOn (SSO)
- * provided by the WS-SecureConveration protocol. A cxf client sends a SOAP UsernameToken to a CXF
+ * provided by the WS-SecureConversation protocol. A cxf client sends a SOAP UsernameToken to a CXF
  * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken
  * via the ShiroUTValidator. The Endpoint returns a token + associated secret to the client,
  * who then includes the token in a request to the endpoint + uses the associated secret to
