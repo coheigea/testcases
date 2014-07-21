@@ -251,8 +251,8 @@ public final class EncryptionUtils {
                     found = true;
                     break;
                 }
-                Assert.assertTrue(found);
             }
+            Assert.assertTrue(found);
         }
     }
     

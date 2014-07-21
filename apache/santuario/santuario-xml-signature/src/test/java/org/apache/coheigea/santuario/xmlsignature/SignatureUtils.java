@@ -238,8 +238,8 @@ public final class SignatureUtils {
                     found = true;
                     break;
                 }
-                Assert.assertTrue(found);
             }
+            Assert.assertTrue(found);
         }
         
         // Check Signing cert
