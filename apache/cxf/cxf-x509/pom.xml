@@ -31,23 +31,12 @@
         <version>1.0</version>
    </parent>
    
-   <properties>
-       <wss4j.version>2.0.1-SNAPSHOT</wss4j.version>
-   </properties>
-
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>
            <artifactId>commons-logging</artifactId>
            <version>${commons.logging.version}</version>
            <scope>compile</scope>
-       </dependency>
-       <!-- Required to pick up a "Subject" fix -->
-       <dependency>
-           <groupId>org.apache.wss4j</groupId>
-           <artifactId>wss4j-ws-security-dom</artifactId>
-           <version>${wss4j.version}</version>
-           <scope>test</scope>
        </dependency>
        <dependency>
            <groupId>org.apache.cxf</groupId>
