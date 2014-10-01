@@ -18,19 +18,22 @@
  */
 package org.apache.coheigea.cxf.samlsso.common;
 
-import javax.jws.WebService;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 
-import org.apache.cxf.feature.Features;
-import org.example.contract.doubleit.DoubleItPortType;
+@Path("/services")
+public class DoubleItService {
 
-@WebService(targetNamespace = "http://www.example.org/contract/DoubleIt", 
-            serviceName = "DoubleItService", 
-            endpointInterface = "org.example.contract.doubleit.DoubleItPortType")
-@Features(features = "org.apache.cxf.feature.LoggingFeature")              
-public class DoubleItPortTypeImpl implements DoubleItPortType {
-    
-    public int doubleIt(int numberToDouble) {
-        return numberToDouble * 2;
+    @GET
+    @Produces("application/xml")
+    @Path("/{numberToDouble}/")
+    public Number doubleIt(@PathParam("numberToDouble") int numberToDouble) {
+        Number newNumber = new Number();
+        newNumber.setDescription("This is the double number response");
+        newNumber.setNumber(numberToDouble * 2);
+        return newNumber;
     }
     
 }
