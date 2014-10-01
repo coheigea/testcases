@@ -53,7 +53,7 @@
    
    <bean id="serviceProviderBean" class="org.apache.coheigea.cxf.samlsso.idp.ServiceProvider">
        <property name="issuer" 
-                 value="https://localhost:${testutil.ports.Server}/doubleit/services/doubleit-rs" />
+                 value="https://localhost:${testutil.ports.Server}/doubleit" />
    </bean>
    
    <util:list id="serviceProviders">

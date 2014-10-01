@@ -67,13 +67,17 @@
        <property name="callbackHandlerClass" value="org.apache.coheigea.cxf.samlsso.authentication.CommonCallbackHandler"/>
    </bean>
    
-   <jaxrs:server modelRef="classpath:org/apache/coheigea/cxf/samlsso/authentication/jaxrs.xml" 
-        depends-on="ClientAuthHttpsSettings" 
-        address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleit-rs">
-        <jaxrs:providers>
-            <ref bean="ssoRedirectURI"/>
-            <ref bean="consumerService"/>
-        </jaxrs:providers>
+   <bean id="serviceBean" class="org.apache.coheigea.cxf.samlsso.common.DoubleItService"/>
+   
+   <jaxrs:server address="https://localhost:${testutil.ports.Server}/doubleit"
+       depends-on="ClientAuthHttpsSettings" >
+       <jaxrs:serviceBeans>
+          <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="ssoRedirectURI"/>
+          <ref bean="consumerService"/>
+       </jaxrs:providers>
    </jaxrs:server>
 
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">

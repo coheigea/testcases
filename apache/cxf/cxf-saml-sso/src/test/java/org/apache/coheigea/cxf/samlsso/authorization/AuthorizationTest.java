@@ -23,6 +23,7 @@ import java.net.URL;
 import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.samlsso.authentication.AuthenticationTest;
+import org.apache.coheigea.cxf.samlsso.common.Number;
 import org.apache.coheigea.cxf.samlsso.idp.IdpServer;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
@@ -69,37 +70,37 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    public void testAuthorizationRequest() throws Exception {
+    public void testAuthenticatedRequest() throws Exception {
 
         URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
-        String address = "https://localhost:" + PORT + "/doubleit/services/doubleit-rs";
+        String address = "https://localhost:" + PORT + "/doubleit/services";
         WebClient client = WebClient.create(address, "alice", "security", busFile.toString());
         WebClient.getConfig(client).getHttpConduit().getClient().setAutoRedirect(true);
         WebClient.getConfig(client).getRequestContext().put("http.redirect.max.same.uri.count", "2");
         WebClient.getConfig(client).getRequestContext().put(
                 org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        client.type("text/plain").accept("text/plain");
+        client.accept("application/xml");
+        client.path(25);
         
-        client.path("/25");
         Response response = client.get();
         assertEquals(response.getStatus(), 200);
-        assertEquals(response.readEntity(Integer.class).intValue(), 50);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
     
     @org.junit.Test
-    public void testUnauthorizedRequest() throws Exception {
+    public void testUnauthenticatedRequest() throws Exception {
         URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
-        String address = "https://localhost:" + PORT + "/doubleit/services/doubleit-rs";
+        String address = "https://localhost:" + PORT + "/doubleit/services";
         WebClient client = WebClient.create(address, "bob", "security", busFile.toString());
         WebClient.getConfig(client).getHttpConduit().getClient().setAutoRedirect(true);
         WebClient.getConfig(client).getRequestContext().put("http.redirect.max.same.uri.count", "2");
         WebClient.getConfig(client).getRequestContext().put(
                 org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        client.type("text/plain").accept("text/plain");
+        client.accept("application/xml");
+        client.path(25);
         
-        client.path("/25");
         Response response = client.get();
         assertEquals(response.getStatus(), 500);
     }
