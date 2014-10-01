@@ -48,15 +48,6 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="authorizationInterceptor" 
-         class="org.apache.cxf.interceptor.security.SimpleAuthorizingInterceptor">
-       <property name="methodRolesMap">
-           <map>
-               <entry key="doubleIt" value="boss"/>
-           </map>
-       </property>
-   </bean>
-   
    <bean id="stateManager" class="org.apache.cxf.rs.security.saml.sso.state.EHCacheSPStateManager">
        <constructor-arg ref="cxf"/>
    </bean>
@@ -77,6 +68,11 @@
    </bean>
    
    <bean id="serviceBean" class="org.apache.coheigea.cxf.samlsso.common.DoubleItService"/>
+   
+   <bean id="authorizationInterceptor"
+      class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+      <property name="securedObject" ref="serviceBean" />
+   </bean>
    
    <jaxrs:server address="https://localhost:${testutil.ports.Server}/doubleit"
        depends-on="ClientAuthHttpsSettings" >

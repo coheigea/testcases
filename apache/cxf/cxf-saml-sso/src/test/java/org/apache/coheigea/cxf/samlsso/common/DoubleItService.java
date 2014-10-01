@@ -18,6 +18,7 @@
  */
 package org.apache.coheigea.cxf.samlsso.common;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -29,6 +30,7 @@ public class DoubleItService {
     @GET
     @Produces("application/xml")
     @Path("/{numberToDouble}/")
+    @RolesAllowed({ "boss" })
     public Number doubleIt(@PathParam("numberToDouble") int numberToDouble) {
         Number newNumber = new Number();
         newNumber.setDescription("This is the double number response");

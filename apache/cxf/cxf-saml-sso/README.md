@@ -24,7 +24,7 @@ the IdP is configured to add an AttributeStatement to the SAML Assertion in
 the Response, containing the roles of the authenticated user. This is used by
 the endpoint to set up the security context.
 
-The CXF Endpoint has also configured the SimpleAuthorizingInterceptor, which
+The CXF Endpoint has also configured the SecureAnnotationsInterceptor, which
 reads the current Subject's roles from the SecurityContext, and requires that
 a user must have role "boss" to access the "doubleIt" operation ("alice" has
 this role, "bob" does not).
