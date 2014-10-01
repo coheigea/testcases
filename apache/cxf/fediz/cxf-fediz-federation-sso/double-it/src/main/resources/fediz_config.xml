@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FedizConfig>
+    <contextConfig name="/fedizdoubleit">
+        <audienceUris>
+            <audienceItem>urn:org:apache:cxf:fediz:fedizhelloworld</audienceItem>
+        </audienceUris>
+        <certificateStores>
+            <trustManager>
+                <keyStore file="test-classes/ststrust.jks"
+                          password="storepass" type="JKS" />
+            </trustManager>
+        </certificateStores>
+        <trustedIssuers>
+            <issuer certificateValidation="PeerTrust" />
+        </trustedIssuers>
+        <maximumClockSkew>1000</maximumClockSkew>
+        <protocol xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:type="federationProtocolType" version="1.0.0">
+            <realm>urn:org:apache:cxf:fediz:fedizhelloworld</realm>
+            <issuer>https://localhost:${idp.https.port}/fediz-idp/federation</issuer>
+            <roleDelimiter>,</roleDelimiter>
+            <roleURI>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role</roleURI>
+            <freshness>10</freshness>
+            <homeRealm type="String">urn:org:apache:cxf:fediz:idp:realm-A</homeRealm>
+            <claimTypesRequested>
+                <claimType type="a particular claim type"
+                           optional="true" />
+            </claimTypesRequested>
+        </protocol>
+        <logoutURL>/secure/logout</logoutURL>
+        <logoutRedirectTo>/index.html</logoutRedirectTo>
+    </contextConfig>
+</FedizConfig>
