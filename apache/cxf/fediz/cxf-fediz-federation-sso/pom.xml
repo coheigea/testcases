@@ -25,7 +25,8 @@
     <version>1.0</version>
 
     <modules>
-        <module>doubleit-war</module>
+        <module>double-it</module>
+        <module>sso-tomcat</module>
     </modules>
 
 </project>
