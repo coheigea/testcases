@@ -31,7 +31,6 @@ import com.gargoylesoftware.htmlunit.xml.XmlPage;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.cxf.fediz.core.ClaimTypes;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.wss4j.dom.WSSConfig;

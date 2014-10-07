@@ -42,6 +42,7 @@
         <module>cxf-shiro</module>
         <module>cxf-sts-xacml</module>
         <module>cxf-kerberos</module>
+        <module>fediz</module>
     </modules>
 
 </project>

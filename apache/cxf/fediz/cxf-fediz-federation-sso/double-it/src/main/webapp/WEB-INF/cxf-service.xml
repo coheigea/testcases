@@ -56,13 +56,13 @@
    </bean>
    
    <bean id="authorizationInterceptor"
-      class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
-      <property name="securedObject" ref="serviceBean" />
+         class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+       <property name="securedObject" ref="serviceBean" />
    </bean>
    
    <jaxrs:server address="/">
        <jaxrs:serviceBeans>
-          <ref bean="serviceBean"/>
+            <ref bean="serviceBean"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
             <ref bean="fedizFilter"/>
