@@ -33,8 +33,6 @@
 
    <properties>
        <bcprov.version>1.50</bcprov.version>
-       <cxf.version>3.0.1-SNAPSHOT</cxf.version>
-       <wss4j.version>2.0.1-SNAPSHOT</wss4j.version>
    </properties>
 
    <dependencies>
