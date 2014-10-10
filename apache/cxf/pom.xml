@@ -29,6 +29,7 @@
         <module>parent</module>
         <module>cxf-common</module>
         <module>cxf-asymmetric</module>
+        <module>cxf-jaxrs-sts</module>
         <module>cxf-jaxrs-xmlsecurity</module>
         <module>cxf-oauth1</module>
         <module>cxf-spring-security</module>
