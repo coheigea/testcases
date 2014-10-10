@@ -32,7 +32,6 @@ import org.apache.cxf.rs.security.xml.XmlEncInInterceptor;
 import org.apache.cxf.rs.security.xml.XmlEncOutInterceptor;
 import org.apache.cxf.rs.security.xml.XmlSecInInterceptor;
 import org.apache.cxf.rs.security.xml.XmlSecOutInterceptor;
-import org.apache.cxf.rs.security.xml.XmlSigOutInterceptor;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;

@@ -23,3 +23,7 @@ with Apache CXF JAX-RS clients and endpoints:
  - XMLEncryptionStaxTest - Use the StAX implementation of XML Encryption
  - XMLEncryptionInteropTest - An interop test for the different stacks
 
+3) Authentication
+
+This tests authentication via JAX-RS XML Signature.
+
