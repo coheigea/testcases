@@ -59,6 +59,7 @@
                   value="org.apache.coheigea.cxf.x509.authentication.CommonCallbackHandler"/>
            <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
            <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
+           <entry key="ws-security.subject.cert.constraints" value=".*O=Apache,.*"/>
       </jaxws:properties> 
    </jaxws:endpoint>
    

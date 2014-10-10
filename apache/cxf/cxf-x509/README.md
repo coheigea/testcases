@@ -12,7 +12,9 @@ sign a Timestamp in the security header of the request using an X.509 token.
 In this test, the client authenticates to the service provider by signing a
 message portion using XML Signature and a X.509 Certificate. The service
 provider authenticates the client by the fact that the issuing certificate
-of the client certificate is in the keystore/truststore of the service.
+of the client certificate is in the keystore/truststore of the service. In
+addition, the service provider specifies a constraint on the Subject DN of
+the authenticated certificate - it must belong to the "Apache" organisation.
 
 2) AuthorizationTest
 
