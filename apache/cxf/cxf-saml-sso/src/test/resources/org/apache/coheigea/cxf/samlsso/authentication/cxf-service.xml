@@ -54,7 +54,7 @@
 
    <bean id="ssoRedirectURI" class="org.apache.cxf.rs.security.saml.sso.SamlRedirectBindingFilter">
        <property name="idpServiceAddress" 
-                 value="http://localhost:12345/idp/samlsso"/>
+                 value="https://localhost:${testutil.ports.IdpServer}/idp/samlsso"/>
        <property name="stateProvider" ref="stateManager"/>
        <property name="addEndpointAddressToContext" value="true"/>
    </bean>
