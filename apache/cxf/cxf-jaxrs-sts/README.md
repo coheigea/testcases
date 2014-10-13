@@ -17,13 +17,11 @@ HTTP/BA request to the service, which sends it to the STS for validation
 
 2) AuthorizationTest
 
-This tests using the CXF STS for authorization. The client authenticates to
-the STS using a username/password, and gets a signed holder-of-key SAML
-Assertion in return. This is presented to the service, who verifies
-proof-of-possession + the signature of the STS on the assertion. The CXF
-endpoint extracts roles from the Assertion + populates the security context.
-Note that the CXF endpoint requires a "role" Claim via the security policy.
-  
+This tests using the CXF STS for authorization. The JAX-RS client sends a
+HTTP/BA request to the service, which sends it to the STS for validation
+(along with its own UsernameToken for authentication to the STS). The service
+also requests the roles for the client.
+ 
 The CXF Endpoint has configured the SimpleAuthorizingInterceptor, which
 requires that a user must have role "boss" to access the "doubleIt" operation
 ("alice" has this role, "bob" does not).

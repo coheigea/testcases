@@ -31,14 +31,14 @@
             http://cxf.apache.org/schemas/configuration/security.xsd
             http://cxf.apache.org/jaxws
             http://cxf.apache.org/schemas/jaxws.xsd
-            http://cxf.apache.org/jaxrs
-            http://cxf.apache.org/schemas/jaxrs.xsd
             http://cxf.apache.org/transports/http/configuration
             http://cxf.apache.org/schemas/configuration/http-conf.xsd
             http://cxf.apache.org/transports/http-jetty/configuration
             http://cxf.apache.org/schemas/configuration/http-jetty.xsd
             http://www.springframework.org/schema/beans
-            http://www.springframework.org/schema/beans/spring-beans.xsd">
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://cxf.apache.org/jaxrs
+            http://cxf.apache.org/schemas/jaxrs.xsd">
    
    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
    
@@ -48,38 +48,60 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="stateManager" class="org.apache.cxf.rs.security.saml.sso.state.EHCacheSPStateManager">
-       <constructor-arg ref="cxf"/>
-   </bean>
-
-   <bean id="ssoRedirectURI" class="org.apache.cxf.rs.security.saml.sso.SamlRedirectBindingFilter">
-       <property name="idpServiceAddress" 
-                 value="http://localhost:12345/idp/samlsso"/>
-       <property name="stateProvider" ref="stateManager"/>
-       <property name="addEndpointAddressToContext" value="true"/>
-   </bean>
+   <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.sts.common.DoubleItService"/>
    
-   <bean id="consumerService" class="org.apache.cxf.rs.security.saml.sso.RequestAssertionConsumerFilter">
-       <property name="stateProvider" ref="stateManager"/>
-       <property name="signaturePropertiesFile" value="serviceKeystore.properties"/>
-       <property name="enforceAssertionsSigned" value="true"/>
-       <property name="enforceKnownIssuer" value="true"/>
-       <property name="callbackHandlerClass" value="org.apache.coheigea.cxf.samlsso.authentication.CommonCallbackHandler"/>
+   <bean id="basicAuthValidator" class="org.apache.cxf.ws.security.trust.AuthPolicyValidatingInterceptor">
+        <property name="validator">
+            <bean class="org.apache.cxf.ws.security.trust.STSTokenValidator">
+                <constructor-arg value="true"/>
+                <property name="useIssueBinding" value="true"/>
+            </bean>
+        </property>
    </bean>
    
-   <bean id="serviceBean" class="org.apache.coheigea.cxf.samlsso.common.DoubleItService"/>
+   <bean id="roleClaimsCallbackHandler" 
+         class="org.apache.coheigea.cxf.jaxrs.sts.common.ClaimsCallbackHandler" />
    
-   <jaxrs:server address="https://localhost:${testutil.ports.Server}/doubleit"
-       depends-on="ClientAuthHttpsSettings" >
+   <bean id="stsClient" class="org.apache.cxf.ws.security.trust.STSClient">
+        <constructor-arg ref="cxf"/>
+        <property name="wsdlLocation" value="https://localhost:${testutil.ports.STSServer}/SecurityTokenService/Transport?wsdl"/>
+        <property name="serviceName" value="{http://docs.oasis-open.org/ws-sx/ws-trust/200512/}SecurityTokenService"/>
+        <property name="endpointName" value="{http://docs.oasis-open.org/ws-sx/ws-trust/200512/}Transport_Port"/>
+        <property name="properties">
+            <map>
+                <entry key="ws-security.username" value="bob"/>
+                <entry key="ws-security.password" value="security"/>
+            </map>
+        </property>
+        <property name="claimsCallbackHandler" ref="roleClaimsCallbackHandler"/>
+        <property name="tokenType" 
+                  value="http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0"/>
+   </bean>
+    
+   <bean id="authorizationInterceptor" 
+         class="org.apache.cxf.interceptor.security.SimpleAuthorizingInterceptor">
+       <property name="methodRolesMap">
+           <map>
+               <entry key="doubleIt" value="boss"/>
+           </map>
+       </property> 
+   </bean>
+   
+   <jaxrs:server address="https://localhost:${testutil.ports.Server}/doubleit">
        <jaxrs:serviceBeans>
           <ref bean="serviceBean"/>
        </jaxrs:serviceBeans>
-       <jaxrs:providers>
-          <ref bean="ssoRedirectURI"/>
-          <ref bean="consumerService"/>
-       </jaxrs:providers>
+       <jaxrs:inInterceptors>
+            <ref bean="basicAuthValidator"/>
+            <ref bean="authorizationInterceptor"/>
+       </jaxrs:inInterceptors>
+       <jaxrs:properties>
+            <entry key="ws-security.sts.client">
+                <ref bean="stsClient"/>
+            </entry>
+       </jaxrs:properties>
    </jaxrs:server>
-
+   
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
    <httpj:engine port="${testutil.ports.Server}">
     <httpj:tlsServerParameters>
@@ -101,6 +123,15 @@
     </httpj:tlsServerParameters>
    </httpj:engine>
   </httpj:engine-factory>
+  
+  <http:conduit name="https://localhost.*">
+      <http:tlsClientParameters disableCNCheck="true">
+        <sec:trustManagers>
+          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
+        </sec:trustManagers>
+      </http:tlsClientParameters>
+   </http:conduit>
+   
   
 </beans>
 

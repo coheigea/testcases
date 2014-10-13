@@ -32,6 +32,7 @@
         <property name="services" ref="transportService"/>
         <property name="stsProperties" ref="transportSTSProperties"/>
         <property name="claimsManager" ref="claimsManager" />
+        <property name="delegationHandlers" ref="utDelegationHandler"/>
     </bean>
     <bean id="transportValidateDelegate" class="org.apache.cxf.sts.operation.TokenValidateOperation">
         <property name="tokenValidators" ref="transportTokenValidators"/>
@@ -50,6 +51,9 @@
     </bean>
     <bean id="transportSamlTokenProvider" class="org.apache.cxf.sts.token.provider.SAMLTokenProvider">
     </bean>
+    
+    <bean id="utDelegationHandler" class="org.apache.cxf.sts.token.delegation.UsernameTokenDelegationHandler"/>
+    
     <bean id="transportSTSProviderBean" class="org.apache.cxf.ws.security.sts.provider.SecurityTokenServiceProvider">
         <property name="issueOperation" ref="transportIssueDelegate"/>
         <property name="validateOperation" ref="transportValidateDelegate"/>

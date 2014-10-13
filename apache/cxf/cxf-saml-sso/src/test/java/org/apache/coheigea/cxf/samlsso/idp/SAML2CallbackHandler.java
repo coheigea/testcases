@@ -63,6 +63,7 @@ public class SAML2CallbackHandler implements CallbackHandler {
         if ("alice".equals(subjectName)) {
             roles.add("boss");
             roles.add("employee");
+            roles.add("User");
         } else if ("bob".equals(subjectName)) {
             roles.add("employee");
         }

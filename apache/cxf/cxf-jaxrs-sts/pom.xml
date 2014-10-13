@@ -30,6 +30,11 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
    </parent>
+ 
+   <properties>
+        <!-- CXF-6047 and 6048 required -->
+        <cxf.version>3.0.3-SNAPSHOT</cxf.version>
+   </properties>
 
    <dependencies>
        <dependency>
