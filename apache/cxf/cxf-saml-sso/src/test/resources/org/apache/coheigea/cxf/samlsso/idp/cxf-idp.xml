@@ -63,7 +63,8 @@
    <bean id="serviceBean" class="org.apache.coheigea.cxf.samlsso.idp.SamlSso">
        <property name="serviceProviders" ref="serviceProviders" />
        <property name="issuer" 
-                 value="https://localhost:${testutil.ports.IdpServer}/idp/samlsso" />
+                 value="http://localhost:12345/idp/samlsso" />
+                 <!--value="https://localhost:${testutil.ports.IdpServer}/idp/samlsso" />-->
    </bean>
    
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.samlsso.common.CommonCallbackHandler"/>
@@ -72,8 +73,7 @@
    </bean>
    
    <jaxrs:server 
-        depends-on="ClientAuthHttpsSettings" 
-        address="https://localhost:${testutil.ports.IdpServer}/idp">
+        address="http://localhost:12345/idp">
         <jaxrs:serviceBeans>
             <ref bean="serviceBean"/>
         </jaxrs:serviceBeans>
@@ -82,8 +82,9 @@
         </jaxrs:providers>
    </jaxrs:server>
    
+<!--
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
-   <httpj:engine port="${testutil.ports.IdpServer}">
+   <httpj:engine port="12345">
     <httpj:tlsServerParameters>
       <sec:keyManagers keyPassword="stskpass">
           <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
@@ -103,6 +104,7 @@
     </httpj:tlsServerParameters>
    </httpj:engine>
   </httpj:engine-factory>
+-->
   
 </beans>
 
