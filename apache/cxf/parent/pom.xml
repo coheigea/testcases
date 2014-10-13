@@ -27,7 +27,7 @@
     <properties>
         <commons.logging.version>1.1.1</commons.logging.version>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
-        <cxf.version>3.0.1</cxf.version>
+        <cxf.version>3.0.2</cxf.version>
         <fediz.version>1.2.0-SNAPSHOT</fediz.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
         <htmlunit.version>2.15</htmlunit.version>
@@ -35,7 +35,7 @@
         <slf4j.version>1.7.7</slf4j.version>
         <spring.version>3.2.6.RELEASE</spring.version>
         <tomcat.version>7.0.54</tomcat.version>
-        <wss4j.version>2.0.1</wss4j.version>
+        <wss4j.version>2.0.2</wss4j.version>
     </properties>
 
 
