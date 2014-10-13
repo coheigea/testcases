@@ -88,7 +88,7 @@ public class SamlSso {
         String requestIssuer = request.getIssuer().getValue();
         
         // Match the RACS + Issuer against known values
-        boolean match = true;
+        boolean match = false;
         if (serviceProviders != null) {
             for (ServiceProvider sp : serviceProviders) {
                 if (sp.getIssuer() != null && sp.getIssuer().equals(requestIssuer)
@@ -142,8 +142,7 @@ public class SamlSso {
         // Create an AuthenticationAssertion
         SAML2CallbackHandler callbackHandler = new SAML2CallbackHandler();
         callbackHandler.setIssuer(issuer);
-        // String user = messageContext.getSecurityContext().getUserPrincipal().getName();
-        String user = "alice";
+        String user = messageContext.getSecurityContext().getUserPrincipal().getName();
         callbackHandler.setSubjectName(user);
         
         // Subject Confirmation Data

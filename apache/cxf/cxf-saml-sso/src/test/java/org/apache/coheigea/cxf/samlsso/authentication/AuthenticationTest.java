@@ -56,6 +56,7 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
+    @org.junit.Ignore
     public void testBrowser() throws Exception {
         // https://localhost:9001/doubleit/services/doubleit-rs/25
         System.out.println("https://localhost:" + PORT + "/doubleit/services/25");
@@ -64,7 +65,6 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     }
    
     @org.junit.Test
-    @org.junit.Ignore
     public void testAuthenticatedRequest() throws Exception {
 
         URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
@@ -84,7 +84,6 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testUnauthenticatedRequest() throws Exception {
         URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
