@@ -33,7 +33,6 @@
 
    <properties>
        <bcprov.version>1.51</bcprov.version>
-       <cxf.version>3.0.2-SNAPSHOT</cxf.version>
    </properties>
    
    <dependencies>
