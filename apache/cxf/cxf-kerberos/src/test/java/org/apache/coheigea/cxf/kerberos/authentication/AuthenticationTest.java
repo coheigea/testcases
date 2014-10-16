@@ -68,12 +68,6 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
         if (basedir == null) {
             basedir = new File(".").getCanonicalPath();
         }
-
-        System.setProperty("sun.security.krb5.debug", "true");
-        System.setProperty("java.security.auth.login.config", 
-                           basedir + "/src/test/resources/kerberos/kerberos.jaas");
-        System.setProperty("java.security.krb5.conf",
-                           basedir + "/src/test/resources/kerberos/krb5.conf");
     }
     
     @AfterClass

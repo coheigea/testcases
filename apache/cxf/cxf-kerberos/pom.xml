@@ -97,6 +97,12 @@
            <scope>test</scope>
        </dependency>
        <dependency>
+           <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-rs-client</artifactId>
+           <version>${cxf.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
            <groupId>org.springframework</groupId>
            <artifactId>spring-core</artifactId>
            <version>${spring.version}</version>
@@ -321,6 +327,9 @@
     
     <profiles>
         <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -328,6 +337,9 @@
                          <artifactId>maven-surefire-plugin</artifactId>
                          <configuration>
                              <systemPropertyVariables>
+                                 <java.security.auth.login.config>src/test/resources/kerberos/kerberos.jaas</java.security.auth.login.config>
+                                 <java.security.krb5.conf>src/test/resources/kerberos/krb5.conf</java.security.krb5.conf>
+                                 <sun.security.krb5.debug>true</sun.security.krb5.debug>
                              </systemPropertyVariables>
                          </configuration>
                     </plugin>
