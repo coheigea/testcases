@@ -1,0 +1,102 @@
+package org.apache.coheigea.santuario.xmlsignature;
+
+import static org.junit.Assert.fail;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.stream.XMLStreamException;
+
+import org.apache.xml.security.exceptions.XMLSecurityException;
+import org.apache.xml.security.utils.XMLUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.w3c.dom.Document;
+
+public class SignatureVerificationDomVsStAXTest {
+
+	private Document documentToVerify;
+	private List<QName> namesToSign;
+	private X509Certificate cert;
+	
+	 @Before
+	 public void setUp() throws Exception {
+		 documentToVerify = createSignedDocumentWithDom();
+	 }
+	
+	 private Document createSignedDocumentWithDom() throws Exception {
+	        // Read in plaintext document
+	        InputStream sourceDocument = 
+	                this.getClass().getClassLoader().getResourceAsStream("plaintext2.xml");
+	        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
+	        Document document = builder.parse(sourceDocument);
+	        
+	        // Set up the Key
+	        KeyStore keyStore = KeyStore.getInstance("jks");
+	        keyStore.load(
+	            this.getClass().getClassLoader().getResource("clientstore.jks").openStream(), 
+	            "cspass".toCharArray()
+	        );
+	        Key key = keyStore.getKey("myclientkey", "ckpass".toCharArray());
+	        cert = (X509Certificate)keyStore.getCertificate("myclientkey");
+	        
+	        // Sign using DOM
+	        namesToSign = new ArrayList<QName>();
+	        namesToSign.add(new QName("", "person"));
+	        SignatureUtils.signUsingDOM(
+	            document, namesToSign, "http://www.w3.org/2000/09/xmldsig#rsa-sha1", key, cert
+	        );
+	        document.getDocumentElement().getFirstChild().setNodeValue("NODE MODIFIED");
+	        XMLUtils.outputDOM(document, System.out);
+	        
+	        return document;
+	 }
+	 
+	// Verify an XML Document using the DOM API
+    @org.junit.Test
+    public void testSignatureVerificationUsingDOMAPI() {
+    	
+        // Verify using DOM
+        try {
+			SignatureUtils.verifyUsingDOM(documentToVerify, namesToSign, cert);
+			fail("Failure expected on a bad digest");
+        } catch (XMLStreamException ex) {
+			ex.printStackTrace();
+            Assert.assertTrue(ex.getCause() instanceof XMLSecurityException);
+            Assert.assertEquals("INVALID signature -- core validation failed.", ex.getCause().getMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    // Verify an XML Document using the StAX API
+    @org.junit.Test
+    public void testSignatureUsingStAXAPI()  {
+    	
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    	XMLUtils.outputDOM(documentToVerify, baos);
+    	
+    	// Verify using StAX
+         try {
+			SignatureUtils.verifyUsingStAX(
+			     new ByteArrayInputStream(baos.toByteArray()), namesToSign, cert);
+			fail("Failure expected on a bad digest");
+         } catch (XMLStreamException ex) {
+			ex.printStackTrace();
+            Assert.assertTrue(ex.getCause() instanceof XMLSecurityException);
+            Assert.assertEquals("INVALID signature -- core validation failed.", ex.getCause().getMessage());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+}
