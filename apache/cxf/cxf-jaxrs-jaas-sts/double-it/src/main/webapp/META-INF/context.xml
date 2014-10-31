@@ -3,5 +3,5 @@
   <Realm className="org.apache.catalina.realm.JAASRealm" 
     appName="sts"
     userClassNames="org.apache.cxf.common.security.SimplePrincipal"
-    roleClassNames="org.apache.cxf.common.security.SimplePrincipal" />
+    roleClassNames="org.apache.cxf.common.security.SimpleGroup" />
 </Context>
