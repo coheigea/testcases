@@ -76,12 +76,12 @@
     <jaxws:endpoint xmlns:ns1="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" 
         id="transportSTS" 
         implementor="#transportSTSProviderBean" 
-        address="/Transport" 
+        address="/UT" 
         wsdlLocation="/WEB-INF/wsdl/ws-trust-1.4-service.wsdl" 
         serviceName="ns1:SecurityTokenService" 
-        endpointName="ns1:Transport_Port">
+        endpointName="ns1:UT_Port">
         <jaxws:properties>
-            <entry key="ws-security.callback-handler" value="org.apache.coheigea.cxf.jaxrs.sts.common.CommonCallbackHandler"/>
+            <entry key="ws-security.callback-handler" value="org.apache.coheigea.cxf.jaxrs.sts.CommonCallbackHandler"/>
         </jaxws:properties>
     </jaxws:endpoint>
 

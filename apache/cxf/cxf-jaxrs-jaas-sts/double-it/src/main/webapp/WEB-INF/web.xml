@@ -21,12 +21,12 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-	<servlet-mapping>
-		<servlet-name>CXFServlet</servlet-name>
-		<url-pattern>/*</url-pattern>
-	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CXFServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
 	
-	<security-constraint>
+    <security-constraint>
         <web-resource-collection>
             <web-resource-name>DoubleIt</web-resource-name>
             <url-pattern>/*</url-pattern>

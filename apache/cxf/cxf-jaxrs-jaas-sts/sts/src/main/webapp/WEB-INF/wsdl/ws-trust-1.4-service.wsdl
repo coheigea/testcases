@@ -81,28 +81,24 @@
             <wsdl:input message="tns:RequestSecurityTokenResponseMsg"/>
         </wsdl:operation>
     </wsdl:portType>
-    <wsdl:binding name="Transport_Binding" type="wstrust:STS">
-        <wsp:PolicyReference URI="#Transport_policy"/>
+    <wsdl:binding name="UT_Binding" type="wstrust:STS">
+        <wsp:PolicyReference URI="#UT_policy"/>
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
         <wsdl:operation name="Issue">
             <soap:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue"/>
             <wsdl:input>
-                <wsp:PolicyReference URI="#Input_policy"/>
                 <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <wsp:PolicyReference URI="#Output_policy"/>
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="Validate">
             <soap:operation soapAction="http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Validate"/>
             <wsdl:input>
-                <wsp:PolicyReference URI="#Input_policy"/>
                 <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <wsp:PolicyReference URI="#Output_policy"/>
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
@@ -144,37 +140,14 @@
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="SecurityTokenService">
-        <wsdl:port name="Transport_Port" binding="tns:Transport_Binding">
-            <soap:address location="https://localhost:8443/SecurityTokenService/Transport"/>
+        <wsdl:port name="UT_Port" binding="tns:UT_Binding">
+            <soap:address location="http://localhost:8080/SecurityTokenService/UT"/>
         </wsdl:port>
     </wsdl:service>
-    <wsp:Policy wsu:Id="Transport_policy">
+    <wsp:Policy wsu:Id="UT_policy">
         <wsp:ExactlyOne>
             <wsp:All>
-                <wsap10:UsingAddressing/>
-                <sp:TransportBinding xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
-                    <wsp:Policy>
-                        <sp:TransportToken>
-                            <wsp:Policy>
-                                <sp:HttpsToken>
-                                    <wsp:Policy/>
-                                </sp:HttpsToken>
-                            </wsp:Policy>
-                        </sp:TransportToken>
-                        <sp:AlgorithmSuite>
-                            <wsp:Policy>
-                                <sp:Basic128/>
-                            </wsp:Policy>
-                        </sp:AlgorithmSuite>
-                        <sp:Layout>
-                            <wsp:Policy>
-                                <sp:Lax/>
-                            </wsp:Policy>
-                        </sp:Layout>
-                        <sp:IncludeTimestamp/>
-                    </wsp:Policy>
-                </sp:TransportBinding>
-                <sp:SignedSupportingTokens xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
+                <sp:SupportingTokens xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
                     <wsp:Policy>
                         <wsp:ExactlyOne>
                             <wsp:All>
@@ -197,60 +170,7 @@
                             </wsp:All>
                         </wsp:ExactlyOne>
                     </wsp:Policy>
-                </sp:SignedSupportingTokens>
-                <sp:Wss11 xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
-                    <wsp:Policy>
-                        <sp:MustSupportRefKeyIdentifier/>
-                        <sp:MustSupportRefIssuerSerial/>
-                        <sp:MustSupportRefThumbprint/>
-                        <sp:MustSupportRefEncryptedKey/>
-                    </wsp:Policy>
-                </sp:Wss11>
-                <sp:Trust13 xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
-                    <wsp:Policy>
-                        <sp:MustSupportIssuedTokens/>
-                        <sp:RequireClientEntropy/>
-                        <sp:RequireServerEntropy/>
-                    </wsp:Policy>
-                </sp:Trust13>
-            </wsp:All>
-        </wsp:ExactlyOne>
-    </wsp:Policy>
-    <wsp:Policy wsu:Id="Input_policy">
-        <wsp:ExactlyOne>
-            <wsp:All>
-                <sp:SignedParts xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
-                    <sp:Body/>
-                    <sp:Header Name="To" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="From" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="FaultTo" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="ReplyTo" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="MessageID" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="RelatesTo" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="Action" Namespace="http://www.w3.org/2005/08/addressing"/>
-                </sp:SignedParts>
-                <sp:EncryptedParts xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
-                    <sp:Body/>
-                </sp:EncryptedParts>
-            </wsp:All>
-        </wsp:ExactlyOne>
-    </wsp:Policy>
-    <wsp:Policy wsu:Id="Output_policy">
-        <wsp:ExactlyOne>
-            <wsp:All>
-                <sp:SignedParts xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
-                    <sp:Body/>
-                    <sp:Header Name="To" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="From" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="FaultTo" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="ReplyTo" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="MessageID" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="RelatesTo" Namespace="http://www.w3.org/2005/08/addressing"/>
-                    <sp:Header Name="Action" Namespace="http://www.w3.org/2005/08/addressing"/>
-                </sp:SignedParts>
-                <sp:EncryptedParts xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
-                    <sp:Body/>
-                </sp:EncryptedParts>
+                </sp:SupportingTokens>
             </wsp:All>
         </wsp:ExactlyOne>
     </wsp:Policy>
