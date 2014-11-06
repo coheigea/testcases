@@ -2,5 +2,5 @@
 karaf {
     org.apache.karaf.jaas.modules.syncope.SyncopeLoginModule required
     debug="true"
-    address="http://localhost:9080/syncope/cxf";
+    address="http://localhost:8080/syncope/rest";
 };
