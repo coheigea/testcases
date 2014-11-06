@@ -83,7 +83,7 @@ public class SyncopeRolesInterceptor extends AbstractPhaseInterceptor<Message> {
         client = client.path("users/self");
         UserTO user = null;
         try {
-            user = client.accept("application/json").get(UserTO.class);
+            user = client.get(UserTO.class);
             if (user == null) {
                 Exception exception = new Exception("Authentication failed");
                 throw new Fault(exception);

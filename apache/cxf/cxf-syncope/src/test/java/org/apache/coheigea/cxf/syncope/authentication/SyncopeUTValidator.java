@@ -84,7 +84,7 @@ public class SyncopeUTValidator implements Validator {
         
         client = client.path("users/self");
         try {
-            UserTO user = client.accept("application/json").get(UserTO.class);
+            UserTO user = client.get(UserTO.class);
             if (user == null) {
                 throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
             }
