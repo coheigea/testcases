@@ -50,6 +50,7 @@
                         secureTag="//ns1:PaymentInfo"
                         secureTagContents="true"
                         xmlCipherAlgorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"       
+                        keyCipherAlgorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"
                         recipientKeyAlias="myservicekey"
                         keyPassword="skpass"
                         keyOrTrustStoreParametersId="decryptionParams" />
