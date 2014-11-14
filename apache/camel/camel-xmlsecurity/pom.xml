@@ -61,7 +61,12 @@
            <version>${camel.version}</version>
            <scope>test</scope>
        </dependency>
-       
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-jasypt</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
        <dependency>
            <groupId>org.slf4j</groupId>
            <artifactId>slf4j-jdk14</artifactId>
@@ -103,23 +108,19 @@
             </testResource>
         </testResources>
         
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <PASSWORD>master-secret</PASSWORD>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+        
     </build>
     
-    <profiles>
-        <profile>
-            <build>
-                <plugins>
-                    <plugin>
-                         <groupId>org.apache.maven.plugins</groupId>
-                         <artifactId>maven-surefire-plugin</artifactId>
-                         <configuration>
-                             <systemPropertyVariables>
-                             </systemPropertyVariables>
-                         </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

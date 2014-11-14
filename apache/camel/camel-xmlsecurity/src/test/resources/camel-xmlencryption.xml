@@ -24,13 +24,23 @@
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
     <camel:keyStoreParameters id="encryptionParams" resource="./clientstore.jks" 
-           password="cspass" />
+           password="{{client.store.password}}" />
            
     <camel:keyStoreParameters id="decryptionParams" resource="./servicestore.jks" 
-           password="sspass" />
+           password="{{service.store.password}}" />
+           
+    <bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
+        <!-- password is mandatory, you can prefix it with sysenv: or sys: to indicate it should use
+         an OS environment or JVM system property value, so you dont have the master password defined here -->
+        <property name="password" value="sys:PASSWORD"/>
+    </bean>
     
     <camelContext xmlns="http://camel.apache.org/schema/spring"
         xmlns:ns1="urn:example:po">
+         <!-- define the camel properties placeholder, and let it leverage jasypt -->
+         <propertyPlaceholder id="properties"
+                         location="classpath:passwords.properties"
+                         propertiesParserRef="jasypt"/>
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
                 <marshal>
@@ -52,7 +62,7 @@
                         xmlCipherAlgorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"       
                         keyCipherAlgorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"
                         recipientKeyAlias="myservicekey"
-                        keyPassword="skpass"
+                        keyPassword="{{service.key.password}}"
                         keyOrTrustStoreParametersId="decryptionParams" />
                 </unmarshal>
             <to uri="file:target/decrypted-data?fileName=${file:name.noext}.decrypted"/>
