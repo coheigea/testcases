@@ -37,8 +37,7 @@
     
     <bean id="signatureAccessor" class="org.apache.camel.component.xmlsecurity.api.DefaultKeyAccessor">
         <property name="alias" value="myclientkey"/>
-        <!--<property name="password" value="{{client.key.password}}"/>-->
-        <property name="password" value="ckpass"/>
+        <property name="password" value="{{client.key.password}}"/>
         <property name="keyStoreParameters" ref="signatureParams"/>
     </bean>
     
