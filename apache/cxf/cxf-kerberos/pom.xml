@@ -31,11 +31,6 @@
         <version>1.0</version>
    </parent>
 
-   <properties>
-       <bcprov.version>1.51</bcprov.version>
-       <apacheds.version>2.0.0-M19</apacheds.version>
-   </properties>
-
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>
