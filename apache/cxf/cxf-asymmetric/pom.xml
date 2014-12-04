@@ -31,10 +31,6 @@
         <version>1.0</version>
    </parent>
 
-   <properties>
-       <bcprov.version>1.51</bcprov.version>
-   </properties>
-   
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>

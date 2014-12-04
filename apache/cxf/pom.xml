@@ -34,8 +34,8 @@
         <module>cxf-oauth1</module>
         <module>cxf-spring-security</module>
         <!-- Commented due to setup required
-        <module>cxf-syncope</module>
-        <module>cxf-ldap</module>-->
+        <module>cxf-syncope</module>-->
+        <module>cxf-ldap</module>
         <module>cxf-jmeter</module>
         <module>cxf-saml-sso</module>
         <module>cxf-sts</module>

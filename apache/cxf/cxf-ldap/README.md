@@ -2,22 +2,11 @@ cxf-ldap
 ===========
 
 This project contains a number of tests that show how an Apache CXF service
-endpoint can authenticate and authorize a client using LDAP.
+endpoint can authenticate and authorize a client using LDAP. An Apache DS
+LDAP instance is started with both tests with some pre-existing user and
+group information.
 
-1) Pre-requisites
-
-An LDAP directory server must be configured and started for these tests to run.
-Follow section "1) Apache DS" at the following link to start Apache Directory
-Server with the given ldif configuration file:
-
-http://coheigea.blogspot.ie/2013/08/apache-syncope-tutorial-part-iii.html
-
-The tests require two users in the directory username/password/roles:
-
- - "alice/security/boss+employee"
- - "bob/security/employee"
-
-2) AuthenticationTest
+1) AuthenticationTest
 
 This tests using LDAP for authentication. A CXF client sends a SOAP
 UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured
@@ -27,7 +16,7 @@ directory server for authentication via LDAP.
 
 Tests are added for authentication using both Sun and Jetty's LdapLoginModules.
 
-3) AuthorizationTest
+2) AuthorizationTest
 
 This tests using LDAP for authorization. A CXF client sends a SOAP
 UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured
