@@ -31,10 +31,6 @@
         <version>1.0</version>
    </parent>
 
-   <properties>
-        <cxf.version>3.0.3-SNAPSHOT</cxf.version>
-   </properties>
- 
    <modules>
        <module>double-it</module>
        <module>sts</module>
