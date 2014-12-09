@@ -56,6 +56,12 @@
        </dependency>
        <dependency>
            <groupId>org.apache.camel</groupId>
+           <artifactId>camel-jasypt</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.camel</groupId>
            <artifactId>camel-spring</artifactId>
            <version>${camel.version}</version>
            <scope>test</scope>
@@ -106,6 +112,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <systemPropertyVariables>
+                        <PASSWORD>master-secret</PASSWORD>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>

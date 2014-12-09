@@ -23,27 +23,29 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <bean id="cryptoKey" class="org.apache.coheigea.camel.xmlsecurity.CryptoEncryptionTest" 
-        factory-method="getKey" />
-        
-    <bean id="iv" class="org.apache.coheigea.camel.xmlsecurity.CryptoEncryptionTest" 
-        factory-method="getIV" />
+    <camel:keyStoreParameters id="signatureParams" resource="./clientstore.jks" 
+           password="{{client.store.password}}" />
+
+    <camel:keyStoreParameters id="verificationParams" resource="./servicestore.jks" 
+           password="{{service.store.password}}" />
+
+    <bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
+        <!-- password is mandatory, you can prefix it with sysenv: or sys: to indicate it should use
+         an OS environment or JVM system property value, so you dont have the master password defined here -->
+        <property name="password" value="sys:PASSWORD"/>
+    </bean>
         
     <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <!-- define the camel properties placeholder, and let it leverage jasypt -->
+        <propertyPlaceholder id="properties"
+                         location="classpath:passwords.properties"
+                         propertiesParserRef="jasypt"/>
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
-                <marshal>
-                    <crypto keyRef="cryptoKey" algorithm="AES/CBC/ISO10126Padding" inline="true"
-                     initVectorRef="iv" shouldAppendHMAC="true" />
-                </marshal>
-            <to uri="file:target/encrypted-data?fileName=${file:name}.encrypted"/>
-        </route>
-        <route>
-            <from uri="file:target/encrypted-data?noop=true"/>
-                <unmarshal>
-                    <crypto keyRef="cryptoKey" algorithm="AES/CBC/ISO10126Padding" inline="true"/>
-                </unmarshal>
-            <to uri="file:target/decrypted-data?fileName=${file:name.noext}.decrypted"/>
+            <to uri="crypto:sign://keystoreParams?keyStoreParameters=#signatureParams&amp;alias=myclientkey&amp;password=ckpass&amp;algorithm=SHA256withRSA" />
+            <log message="Signature $simple{in.header.CamelDigitalSignature}" loggingLevel="INFO"/>
+            <to uri="crypto:verify://keystoreParams?keyStoreParameters=#verificationParams&amp;alias=myclientkey&amp;algorithm=SHA256WithRSA" />
+            <to uri="file:target/verified-data?fileName=${file:name}.verified"/>
         </route>
     </camelContext>
   
