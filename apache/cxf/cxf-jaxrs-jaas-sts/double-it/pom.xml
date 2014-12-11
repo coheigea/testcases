@@ -49,6 +49,16 @@
            <version>${cxf.version}</version>
        </dependency>
        <dependency>
+           <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-ws-security</artifactId>
+           <version>${cxf.version}</version>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-ws-policy</artifactId>
+           <version>${cxf.version}</version>
+       </dependency>
+       <dependency>
            <groupId>org.springframework</groupId>
            <artifactId>spring-core</artifactId>
            <version>${spring.version}</version>
