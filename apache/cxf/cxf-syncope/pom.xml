@@ -33,7 +33,7 @@
 
    <properties>
         <jackson.version>1.9.0</jackson.version>
-        <syncope.version>1.2.0</syncope.version>
+        <syncope.version>1.2.1</syncope.version>
    </properties>
 
    <dependencies>
