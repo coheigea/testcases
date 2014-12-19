@@ -30,7 +30,7 @@
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <cxf.version>3.0.2</cxf.version>
         <junit.version>4.11</junit.version>
-        <slf4j.version>1.7.7</slf4j.version>
+        <slf4j.version>1.7.9</slf4j.version>
         <spring.version>3.2.6.RELEASE</spring.version>
     </properties>
 
