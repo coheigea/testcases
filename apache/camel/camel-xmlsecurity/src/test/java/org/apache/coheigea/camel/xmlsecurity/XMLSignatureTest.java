@@ -25,7 +25,7 @@ import org.apache.camel.spring.Main;
 public class XMLSignatureTest extends org.junit.Assert {
     
     @org.junit.Test
-    public void testXMLEncryption() throws Exception {
+    public void testXMLSignature() throws Exception {
         // Start up the Camel route
         Main main = new Main();
         main.setApplicationContextUri("camel-xmlsignature.xml");

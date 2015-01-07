@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.camel.xmlsecurity;
+package org.apache.coheigea.camel.crypto;
 
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -43,7 +43,7 @@ public class CryptoEncryptionTest extends org.junit.Assert {
     }
     
     @org.junit.Test
-    public void testXMLEncryption() throws Exception {
+    public void testEncryption() throws Exception {
         // Start up the Camel route
         Main main = new Main();
         main.setApplicationContextUri("camel-encryption.xml");
