@@ -23,10 +23,10 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <bean id="cryptoKey" class="org.apache.coheigea.camel.xmlsecurity.CryptoEncryptionTest" 
+    <bean id="cryptoKey" class="org.apache.coheigea.camel.crypto.CryptoEncryptionTest" 
         factory-method="getKey" />
         
-    <bean id="iv" class="org.apache.coheigea.camel.xmlsecurity.CryptoEncryptionTest" 
+    <bean id="iv" class="org.apache.coheigea.camel.crypto.CryptoEncryptionTest" 
         factory-method="getIV" />
         
     <camelContext xmlns="http://camel.apache.org/schema/spring">

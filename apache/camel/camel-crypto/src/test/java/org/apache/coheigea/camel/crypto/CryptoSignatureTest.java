@@ -16,13 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.camel.xmlsecurity;
-
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-
-import javax.crypto.KeyGenerator;
+package org.apache.coheigea.camel.crypto;
 
 import org.apache.camel.spring.Main;
 
@@ -30,20 +24,8 @@ import org.apache.camel.spring.Main;
  */
 public class CryptoSignatureTest extends org.junit.Assert {
     
-    private static Key key;
-    
-    static {
-        try {
-            KeyGenerator generator = KeyGenerator.getInstance("AES");
-            key = generator.generateKey();
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    
     @org.junit.Test
-    public void testXMLEncryption() throws Exception {
+    public void testSignature() throws Exception {
         // Start up the Camel route
         Main main = new Main();
         main.setApplicationContextUri("camel-signature.xml");
@@ -56,14 +38,4 @@ public class CryptoSignatureTest extends org.junit.Assert {
         main.stop();
     }
     
-    public static Key getKey() throws NoSuchAlgorithmException {
-        return key;
-    }
-    
-    public static byte[] getIV() {
-        byte[] iv = new byte[16];
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(iv);
-        return iv;
-    }
 }
