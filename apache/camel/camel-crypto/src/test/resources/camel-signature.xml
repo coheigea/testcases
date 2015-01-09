@@ -42,7 +42,7 @@
                          propertiesParserRef="jasypt"/>
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
-            <to uri="crypto:sign://keystoreParams?keyStoreParameters=#signatureParams&amp;alias=myclientkey&amp;password=ckpass&amp;algorithm=SHA256withRSA" />
+            <to uri="crypto:sign://keystoreParams?keyStoreParameters=#signatureParams&amp;alias=myclientkey&amp;password={{client.key.password}}&amp;algorithm=SHA256withRSA" />
             <log message="Signature $simple{in.header.CamelDigitalSignature}" loggingLevel="INFO"/>
             <to uri="crypto:verify://keystoreParams?keyStoreParameters=#verificationParams&amp;alias=myclientkey&amp;algorithm=SHA256WithRSA" />
             <to uri="file:target/verified-data?fileName=${file:name}.verified"/>
