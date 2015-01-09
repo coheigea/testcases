@@ -38,17 +38,24 @@
             <from uri="file:src/test/resources/data?noop=true"/>
                 <marshal>
                     <pgp keyFileName="pubring.pgp" keyUserid="Camel PGP Service Demo"
-                         algorithm="7" armored="true" />
+                         algorithm="7" armored="true"
+                         signatureKeyFileName="secring.pgp" 
+                         signatureKeyUserid="Camel PGP Service Demo"
+                         signaturePassword="{{service.store.password}}"
+                         hashAlgorithm="8" />
                 </marshal>
-            <to uri="file:target/encrypted-pgp-data?fileName=${file:name}.encrypted"/>
+            <to uri="file:target/signed-pgp-data?fileName=${file:name}.signed"/>
         </route>
         <route>
-            <from uri="file:target/encrypted-pgp-data?noop=true"/>
+            <from uri="file:target/signed-pgp-data?noop=true"/>
                 <unmarshal>
                     <pgp keyFileName="secring.pgp" keyUserid="Camel PGP Service Demo"
-                         password="{{service.store.password}}" />
+                         password="{{service.store.password}}"
+                         signatureKeyFileName="pubring.pgp" 
+                         signatureKeyUserid="Camel PGP Service Demo"
+                         signatureVerificationOption="required" />
                 </unmarshal>
-            <to uri="file:target/decrypted-pgp-data?fileName=${file:name.noext}.decrypted"/>
+            <to uri="file:target/verified-pgp-data?fileName=${file:name.noext}.verified"/>
         </route>
     </camelContext>
   
