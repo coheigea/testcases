@@ -30,3 +30,11 @@ places in target/signed-data. Another route takes files found in
 target/signed-data, verifies the credit card information and stores the
 plaintext files in target/verified-data.
 
+3) XMLSignatureXAdESTest
+
+This extends the XMLSignatureTest to show how to leverage some new functionality
+in Camel 2.15 in relation to XAdES (XML Advanced Electronic Signatures). 
+Essentially Camel 2.15 allows you to specify certain properties that are
+inserted into the digital signature. No support is available yet for 
+signature verification.
+
