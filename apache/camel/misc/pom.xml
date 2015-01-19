@@ -19,19 +19,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.coheigea.camel</groupId>
-    <artifactId>camel-root</artifactId>
+    <artifactId>camel-misc</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Camel root pom for demos</name>
+    <name>Apache Camel misc demos</name>
     <version>1.0</version>
 
-
     <modules>
-        <module>parent</module>
-        <module>camel-cxf</module>
-        <module>camel-xmlsecurity</module>
-        <module>camel-crypto</module>
-        <module>camel-ldap</module>
-        <module>misc</module>
+        <module>camel-dns</module>
     </modules>
 
 </project>
