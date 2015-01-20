@@ -1,7 +1,5 @@
-cxf-asymmetric
+encrypted-elements
 ===========
 
-This project contains a number of tests for Asymmetric WS-Security, where it
-is applied both via "actions" and also via WS-SecurityPolicy. Tests are 
-included for various algorithms
+A testcase that shows an EncryptedElements WS-SecurityPolicy policy.
 
