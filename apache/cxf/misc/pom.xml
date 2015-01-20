@@ -19,32 +19,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.coheigea.cxf</groupId>
-    <artifactId>cxf-root</artifactId>
+    <artifactId>cxf-misc</artifactId>
     <packaging>pom</packaging>
-    <name>Apache CXF root pom for demos</name>
+    <name>Apache CXF misc testcases</name>
     <version>1.0</version>
 
-
     <modules>
-        <module>parent</module>
-        <module>cxf-common</module>
-        <module>cxf-asymmetric</module>
-        <module>cxf-jaxrs-sts</module>
-        <module>cxf-jaxrs-xmlsecurity</module>
-        <module>cxf-oauth1</module>
-        <module>cxf-spring-security</module>
-        <!-- Commented due to setup required
-        <module>cxf-syncope</module>-->
-        <module>cxf-ldap</module>
-        <module>cxf-jmeter</module>
-        <module>cxf-saml-sso</module>
-        <module>cxf-sts</module>
-        <module>cxf-x509</module>
-        <module>cxf-shiro</module>
-        <module>cxf-sts-xacml</module>
-        <module>cxf-kerberos</module>
-        <module>fediz</module>
-        <module>misc</module>
+        <module>encrypted-elements</module>
     </modules>
 
 </project>
