@@ -26,6 +26,7 @@
 
     <modules>
         <module>camel-dns</module>
+        <module>camel-weather</module>
     </modules>
 
 </project>
