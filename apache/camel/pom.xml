@@ -31,6 +31,7 @@
         <module>camel-xmlsecurity</module>
         <module>camel-crypto</module>
         <module>camel-ldap</module>
+        <module>camel-ssh</module>
         <module>misc</module>
     </modules>
 
