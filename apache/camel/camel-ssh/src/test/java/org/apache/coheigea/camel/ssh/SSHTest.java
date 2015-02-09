@@ -18,14 +18,18 @@
  */
 package org.apache.coheigea.camel.ssh;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 import org.apache.camel.spring.Main;
+import org.apache.commons.io.IOUtils;
 import org.apache.mina.util.AvailablePortFinder;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.CommandFactory;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.shell.ProcessShellFactory;
-import org.bouncycastle.openssl.PasswordFinder;
 import org.junit.After;
 import org.junit.Before;
 
@@ -34,17 +38,35 @@ import org.junit.Before;
 public class SSHTest extends org.junit.Assert {
     
     private SshServer sshServer;
-
+    
     @Before
     public void setup() throws Exception {
-        // int port = AvailablePortFinder.getNextAvailable(10000);
-        int port = 8081;
+        int port = AvailablePortFinder.getNextAvailable(10000);
+        
+        // Write port number to configuration file in target
+        String basedir = System.getProperty("basedir");
+        if (basedir == null) {
+            basedir = new File(".").getCanonicalPath();
+        }
 
+        // Read in jaas file and substitute in the correct port
+        File f = new File(basedir + "/src/test/resources/camel-ssh.xml");
+
+        FileInputStream inputStream = new FileInputStream(f);
+        String content = IOUtils.toString(inputStream, "UTF-8");
+        inputStream.close();
+        content = content.replaceAll("portno", "" + port);
+
+        File f2 = new File(basedir + "/target/test-classes/camel-ssh.xml");
+        FileOutputStream outputStream = new FileOutputStream(f2);
+        IOUtils.write(content, outputStream, "UTF-8");
+        outputStream.close();
+            
         sshServer = SshServer.setUpDefaultServer();
         sshServer.setPort(port);
         
         // Generate a key
-        sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("generatedkey.pen"));
+        sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("target/generatedkey.pem"));
 
         // Simple CommandFactory to run commands in a process
         sshServer.setCommandFactory(new CommandFactory() {
@@ -54,8 +76,7 @@ public class SSHTest extends org.junit.Assert {
         });
         // sshServer.setShellFactory(new ProcessShellFactory(new String[] { "/bin/sh", "-i", "-l" }));
 
-        // TODO investigate JAAS
-        sshServer.setPasswordAuthenticator(new BogusPasswordAuthenticator());
+        sshServer.setPasswordAuthenticator(new CamelPasswordAuthenticator());
         sshServer.start();
     }
 

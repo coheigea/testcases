@@ -23,10 +23,21 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
+    <bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
+        <!-- password is mandatory, you can prefix it with sysenv: or sys: to indicate it should use
+         an OS environment or JVM system property value, so you dont have the master password defined here -->
+        <property name="password" value="sys:PASSWORD"/>
+    </bean>
+    
     <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <!-- define the camel properties placeholder, and let it leverage jasypt -->
+        <propertyPlaceholder id="properties"
+                         location="classpath:passwords.properties"
+                         propertiesParserRef="jasypt"/>
+                         
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
-            <to uri="ssh://colm:colm@localhost:8081"/>
+            <to uri="ssh://alice:{{alice.password}}@localhost:portno"/>
             <to uri="file:target/results?fileName=${file:name.noext}.result"/>
         </route>
     </camelContext>
