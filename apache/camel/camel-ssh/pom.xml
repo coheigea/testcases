@@ -31,12 +31,22 @@
         <version>1.0</version>
    </parent>
 
+   <properties>
+       <commons.io.version>2.4</commons.io.version>
+   </properties>
+
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>
            <artifactId>commons-logging</artifactId>
            <version>${commons.logging.version}</version>
            <scope>compile</scope>
+       </dependency>
+       <dependency>
+           <groupId>commons-io</groupId>
+           <artifactId>commons-io</artifactId>
+           <version>${commons.io.version}</version>
+           <scope>test</scope>
        </dependency>
        <dependency>
            <groupId>junit</groupId>
@@ -47,6 +57,12 @@
        <dependency>
            <groupId>org.apache.camel</groupId>
            <artifactId>camel-ssh</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-jasypt</artifactId>
            <version>${camel.version}</version>
            <scope>test</scope>
        </dependency>
@@ -97,6 +113,17 @@
             </testResource>
         </testResources>
         
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <PASSWORD>master-secret</PASSWORD>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     
 
