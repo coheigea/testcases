@@ -37,7 +37,6 @@
         <slf4j.version>1.7.9</slf4j.version>
         <spring.version>3.2.6.RELEASE</spring.version>
         <tomcat.version>7.0.54</tomcat.version>
-        <wss4j.version>2.0.2</wss4j.version>
     </properties>
 
 
