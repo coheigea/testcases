@@ -170,6 +170,7 @@ public final class SignatureUtils {
         actions.add(XMLSecurityConstants.SIGNATURE);
         properties.setActions(actions);
         
+        properties.setSignatureAlgorithm(algorithm);
         properties.setSignatureCerts(new X509Certificate[]{signingCert});
         properties.setSignatureKey(signingKey);
         properties.setSignatureKeyIdentifier(
