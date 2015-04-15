@@ -27,6 +27,7 @@ import org.apache.coheigea.cxf.samlsso.common.Number;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
+import org.w3c.dom.Document;
 
 /**
  * Here the JAX-RS service uses the HTTP redirect binding of SAML SSO to redirect
@@ -100,5 +101,18 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
         assertEquals(response.getStatus(), 500);
     }
     
-    
+    @org.junit.Test
+    public void testMetadata() throws Exception {
+
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+
+        String address = "https://localhost:" + PORT + "/sso/metadata";
+        WebClient client = WebClient.create(address, busFile.toString());
+        client.accept("text/xml");
+        
+        Response response = client.get();
+        assertEquals(response.getStatus(), 200);
+        Document doc = response.readEntity(Document.class);
+        assertEquals("EntityDescriptor", doc.getDocumentElement().getLocalName());
+    }
 }
