@@ -32,7 +32,9 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
+import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
+import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.spec.ticket.ServiceTicket;
 import org.apache.kerby.kerberos.kerb.spec.ticket.TgtTicket;
 import org.apache.wss4j.dom.WSSConfig;
@@ -91,8 +93,11 @@ public class AuthenticationTest extends org.junit.Assert {
         kerbyServer.setAllowUdp(true);
         kerbyServer.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
         
-        // kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl());
+        kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl());
         kerbyServer.init();
+        
+        // Need to disable PRE_AUTH ?
+        kerbyServer.getSetting().getKdcConfig().setBoolean(KdcConfigKey.PREAUTH_REQUIRED, false);
         
         // Create principals
         String alice = "alice@service.ws.apache.org";
