@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 import org.apache.coheigea.cxf.jaxrs.json.common.Number;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.jose.jaxrs.JwsJsonWriterInterceptor;
+import org.apache.cxf.rs.security.jose.jaxrs.JwsWriterInterceptor;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.junit.BeforeClass;
@@ -39,6 +40,7 @@ import org.junit.BeforeClass;
 public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     
     private static final String PORT = allocatePort(Server.class);
+    private static final String PORT2 = allocatePort(Server.class, 2);
     
     @BeforeClass
     public static void startServers() throws Exception {
@@ -69,7 +71,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
         
         
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put("rs.security.signature.list.properties", "clientKeystore.properties");
+        properties.put("rs.security.signature.out.list.properties", "clientKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
         
         Number numberToDouble = new Number();
@@ -107,6 +109,38 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
         properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+        
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+        
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
+    
+    
+    @org.junit.Test
+    @org.junit.Ignore
+    public void testSignatureCompact() throws Exception {
+
+        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        JwsWriterInterceptor writer = new JwsWriterInterceptor();
+        providers.add(writer);
+        
+        String address = "http://localhost:" + PORT2 + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.signature.out.properties", "clientKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
         
         Number numberToDouble = new Number();

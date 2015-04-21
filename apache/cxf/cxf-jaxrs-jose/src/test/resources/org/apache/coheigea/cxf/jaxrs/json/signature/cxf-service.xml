@@ -52,10 +52,7 @@
    
    <bean id="jackson" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
    
-   <bean id="jwsOutFilter" 
-         class="org.apache.cxf.rs.security.jose.jaxrs.JwsWriterInterceptor"/>
-         
-   <bean id="jwsInFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwsJsonContainerRequestFilter"/>
+   <bean id="jwsInFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwsJsonContainerRequestFilter" />
    
    <bean id="keyPasswordProvider" 
          class="org.apache.coheigea.cxf.jaxrs.json.common.PrivateKeyPasswordProviderImpl"/>
@@ -69,7 +66,23 @@
           <ref bean="jwsInFilter"/>
        </jaxrs:providers>
        <jaxrs:properties>
-            <entry key="rs.security.signature.list.properties"  value="serviceKeystore.properties"/>
+            <entry key="rs.security.signature.in.list.properties"  value="serviceKeystore.properties"/>
+            <entry key="rs.security.signature.key.password.provider" value-ref="keyPasswordProvider"/>
+       </jaxrs:properties>
+   </jaxrs:server>
+   
+   <bean id="compactJwsInFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwsContainerRequestFilter" />
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.2}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="compactJwsInFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.signature.in.properties"  value="serviceKeystore.properties"/>
             <entry key="rs.security.signature.key.password.provider" value-ref="keyPasswordProvider"/>
        </jaxrs:properties>
    </jaxrs:server>
