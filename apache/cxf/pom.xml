@@ -31,6 +31,7 @@
         <module>cxf-asymmetric</module>
         <module>cxf-jaxrs-sts</module>
         <module>cxf-jaxrs-xmlsecurity</module>
+        <module>cxf-jaxrs-jose</module>
         <module>cxf-oauth1</module>
         <module>cxf-spring-security</module>
         <!-- Commented due to setup required
