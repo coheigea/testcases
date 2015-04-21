@@ -122,7 +122,6 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testSignatureCompact() throws Exception {
 
         URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
