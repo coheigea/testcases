@@ -32,19 +32,14 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
-import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
-import org.apache.kerby.kerberos.kerb.server.KdcConfig;
-import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.spec.ticket.ServiceTicket;
 import org.apache.kerby.kerberos.kerb.spec.ticket.TgtTicket;
 import org.apache.wss4j.dom.WSSConfig;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
 
 /**
  * There are two test-cases covered in this class, one that uses a WS-SecurityPolicy 
@@ -140,8 +135,8 @@ public class AuthenticationTest extends org.junit.Assert {
 
     	client.setKdcHost("127.0.0.1");
     	client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
-    	client.setAllowUdp(true);
-    	client.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
+    	// client.setAllowUdp(true);
+    	// client.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
 
     	client.setTimeout(5);
     	client.setKdcRealm(kerbyServer.getSetting().getKdcRealm());
