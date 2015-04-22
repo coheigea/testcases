@@ -111,7 +111,7 @@ public class AuthenticationTest extends org.junit.Assert {
     @AfterClass
     public static void tearDown() {
     	if (kerbyServer != null) {
-    		kerbyServer.stop();
+            kerbyServer.stop();
     	}
     }
     
@@ -185,7 +185,6 @@ public class AuthenticationTest extends org.junit.Assert {
         TestUtil.updateAddressPort(transportPort, PORT);
         
         doubleIt(transportPort, 25);
-        
     }
     
     @org.junit.Test
