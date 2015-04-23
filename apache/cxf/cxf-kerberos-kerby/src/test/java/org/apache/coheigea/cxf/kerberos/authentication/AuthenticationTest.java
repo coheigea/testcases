@@ -87,7 +87,7 @@ public class AuthenticationTest extends org.junit.Assert {
         
         kerbyServer = new KerbyServer();
         
-        kerbyServer.setKdcHost("127.0.0.1");
+        kerbyServer.setKdcHost("localhost");
         kerbyServer.setKdcRealm("service.ws.apache.org");
         kerbyServer.setKdcTcpPort(Integer.parseInt(KDC_PORT));
         kerbyServer.setAllowUdp(true);
@@ -98,13 +98,15 @@ public class AuthenticationTest extends org.junit.Assert {
         
         // Need to disable PRE_AUTH ?
         kerbyServer.getSetting().getKdcConfig().setBoolean(KdcConfigKey.PREAUTH_REQUIRED, false);
+        kerbyServer.getSetting().getKdcConfig().setString(KdcConfigKey.TGS_PRINCIPAL, 
+                                                          "krbtgt/service.ws.apache.org@service.ws.apache.org");
         
         // Create principals
         String alice = "alice@service.ws.apache.org";
         String bob = "bob/service.ws.apache.org@service.ws.apache.org";
         kerbyServer.createPrincipal(alice, "alice");
         kerbyServer.createPrincipal(bob, "bob");
-        kerbyServer.createPrincipals("krbtgt/service.ws.apache.org@service.ws.apache.org", "krbtgt");
+        kerbyServer.createPrincipal("krbtgt/service.ws.apache.org@service.ws.apache.org", "krbtgt");
         kerbyServer.start();
     }
     
@@ -138,7 +140,7 @@ public class AuthenticationTest extends org.junit.Assert {
     public void unitTest() throws Exception {
     	KrbClient client = new KrbClient();
 
-    	client.setKdcHost("127.0.0.1");
+    	client.setKdcHost("localhost");
     	client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
     	// client.setAllowUdp(true);
     	// client.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
