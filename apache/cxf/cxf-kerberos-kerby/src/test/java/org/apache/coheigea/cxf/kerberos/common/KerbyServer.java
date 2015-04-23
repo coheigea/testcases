@@ -20,7 +20,6 @@
 package org.apache.coheigea.cxf.kerberos.common;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.kerby.kerberos.kerb.KrbException;
 import org.apache.kerby.kerberos.kerb.common.EncryptionUtil;
@@ -45,14 +44,6 @@ public class KerbyServer extends KdcServer {
         }
         identity.addKeys(encKeys);
         getIdentityService().addIdentity(identity);
-    }
-
-    public void createPrincipals(String ... principals) {
-        String passwd;
-        for (String principal : principals) {
-            passwd = UUID.randomUUID().toString();
-            createPrincipal(fixPrincipal(principal), passwd);
-        }
     }
 
     private String fixPrincipal(String principal) {
