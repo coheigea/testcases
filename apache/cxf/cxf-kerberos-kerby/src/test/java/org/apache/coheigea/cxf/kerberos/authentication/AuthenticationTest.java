@@ -169,7 +169,6 @@ public class AuthenticationTest extends org.junit.Assert {
     }
     
     @org.junit.Test
-    // @org.junit.Ignore
     public void testKerberos() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
@@ -190,7 +189,6 @@ public class AuthenticationTest extends org.junit.Assert {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testSpnego() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
