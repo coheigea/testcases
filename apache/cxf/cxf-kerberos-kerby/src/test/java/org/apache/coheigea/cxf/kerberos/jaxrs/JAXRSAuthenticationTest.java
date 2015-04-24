@@ -16,48 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.kerberos.authentication;
+package org.apache.coheigea.cxf.kerberos.jaxrs;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.util.Map;
 
-import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
+import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.kerberos.common.KerbyServer;
 import org.apache.commons.io.IOUtils;
-import org.apache.cxf.Bus;
-import org.apache.cxf.bus.spring.SpringBusFactory;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
+import org.apache.cxf.transport.http.auth.SpnegoAuthSupplier;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
-import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
-import org.apache.kerby.kerberos.kerb.spec.ticket.ServiceTicket;
-import org.apache.kerby.kerberos.kerb.spec.ticket.TgtTicket;
 import org.apache.wss4j.dom.WSSConfig;
-import org.example.contract.doubleit.DoubleItPortType;
+import org.ietf.jgss.GSSName;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
 /**
- * There are two test-cases covered in this class, one that uses a WS-SecurityPolicy 
- * KerberosToken policy, and the other that uses a SpnegoContextToken policy.
- *
- * Both testcases start up a KDC locally using Apache Kerby. In each case, the service endpoint 
- * has a TransportBinding policy, with a corresponding EndorsingSupportingToken which is either 
- * a KerberosToken or SpnegoContextToken. The client will obtain a service ticket from the KDC
- * and include it in the security header of the service request.
+ * This is a test-case that shows how to use Kerberos with a JAX-RS service.
  */
-public class AuthenticationTest extends org.junit.Assert {
+
+public class JAXRSAuthenticationTest extends org.junit.Assert {
     
-    private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
-    private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
-    
-    private static final String PORT = TestUtil.getPortNumber(Server.class);
+	private static final String PORT = TestUtil.getPortNumber(Server.class);
     private static final String KDC_PORT = TestUtil.getPortNumber(Server.class, 2);
     private static final String KDC_UDP_PORT = TestUtil.getPortNumber(Server.class, 3);
     
@@ -134,83 +123,30 @@ public class AuthenticationTest extends org.junit.Assert {
 
     	System.setProperty("java.security.krb5.conf", f2.getPath());
     }
-
-    @org.junit.Test
-    @org.junit.Ignore
-    public void unitTest() throws Exception {
-    	KrbClient client = new KrbClient();
-
-    	client.setKdcHost("localhost");
-    	client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
-    	// client.setAllowUdp(true);
-    	// client.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
-
-    	client.setTimeout(5);
-    	client.setKdcRealm(kerbyServer.getSetting().getKdcRealm());
-        
-        File testDir = new File(System.getProperty("test.dir", "target"));
-        File testConfDir = new File(testDir, "conf");
-        client.setConfDir(testConfDir);
-        client.init();
-
-        TgtTicket tgt;
-        ServiceTicket tkt;
-
-        try {
-            tgt = client.requestTgtWithPassword("alice@service.ws.apache.org", "alice");
-            assertTrue(tgt != null);
-
-            tkt = client.requestServiceTicketWithTgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
-            assertTrue(tkt != null);
-        } catch (Exception e) {
-        	e.printStackTrace();
-            Assert.fail();
-        }
-    }
     
     @org.junit.Test
     public void testKerberos() throws Exception {
 
-        SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
-
-        Bus bus = bf.createBus(busFile.toString());
-        SpringBusFactory.setDefaultBus(bus);
-        SpringBusFactory.setThreadDefaultBus(bus);
-    
-        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
-        Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItKerberosTransportPort");
-        DoubleItPortType transportPort = 
-            service.getPort(portQName, DoubleItPortType.class);
-        TestUtil.updateAddressPort(transportPort, PORT);
+        URL busFile = JAXRSAuthenticationTest.class.getResource("cxf-client.xml");
         
-        doubleIt(transportPort, 25);
-    }
-    
-    @org.junit.Test
-    public void testSpnego() throws Exception {
-
-        SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
-
-        Bus bus = bf.createBus(busFile.toString());
-        SpringBusFactory.setDefaultBus(bus);
-        SpringBusFactory.setThreadDefaultBus(bus);
+        String address = "https://localhost:" + PORT + "/doubleit/services";
+        WebClient client = WebClient.create(address, busFile.toString());
         
-        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
-        Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItSpnegoTransportPort");
-        DoubleItPortType transportPort = 
-            service.getPort(portQName, DoubleItPortType.class);
-        TestUtil.updateAddressPort(transportPort, PORT);
+        Map<String, Object> requestContext = WebClient.getConfig(client).getRequestContext();
+        requestContext.put("auth.spnego.useKerberosOid", "true");
+
+        SpnegoAuthSupplier authSupplier = new SpnegoAuthSupplier();
+        authSupplier.setServicePrincipalName("bob@service.ws.apache.org");
+        authSupplier.setServiceNameType(GSSName.NT_HOSTBASED_SERVICE);
+        WebClient.getConfig(client).getHttpConduit().setAuthSupplier(authSupplier);
         
-        doubleIt(transportPort, 25);
-    }
-    
-    private static void doubleIt(DoubleItPortType port, int numToDouble) {
-        int resp = port.doubleIt(numToDouble);
-        Assert.assertEquals(numToDouble * 2 , resp);
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+        
+        Response response = client.post(numberToDouble);
+        Assert.assertEquals(response.getStatus(), 200);
+        Assert.assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
     
 }
