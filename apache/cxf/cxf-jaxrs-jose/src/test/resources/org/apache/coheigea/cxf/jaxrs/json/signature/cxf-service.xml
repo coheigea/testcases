@@ -67,7 +67,6 @@
        </jaxrs:providers>
        <jaxrs:properties>
             <entry key="rs.security.signature.in.list.properties"  value="serviceKeystore.properties"/>
-            <entry key="rs.security.signature.key.password.provider" value-ref="keyPasswordProvider"/>
        </jaxrs:properties>
    </jaxrs:server>
    
@@ -83,9 +82,24 @@
        </jaxrs:providers>
        <jaxrs:properties>
             <entry key="rs.security.signature.in.properties"  value="serviceKeystore.properties"/>
-            <entry key="rs.security.signature.key.password.provider" value-ref="keyPasswordProvider"/>
        </jaxrs:properties>
    </jaxrs:server>
+  
+  <jaxrs:server address="http://localhost:${testutil.ports.Server.3}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="compactJwsInFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.keystore.type" value="jwk" />
+            <entry key="rs.security.keystore.alias" value="HMACKey"/>
+            <entry key="rs.security.keystore.file" value="jwkHMAC.txt" />
+       </jaxrs:properties>
+   </jaxrs:server>
+  
   
 </beans>
 
