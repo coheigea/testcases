@@ -41,6 +41,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     
     private static final String PORT = allocatePort(Server.class);
     private static final String PORT2 = allocatePort(Server.class, 2);
+    private static final String PORT3 = allocatePort(Server.class, 3);
     
     @BeforeClass
     public static void startServers() throws Exception {
@@ -84,44 +85,6 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
-    public void testSignatureDynamicProperties() throws Exception {
-
-        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
-
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
-        JwsJsonWriterInterceptor writer = new JwsJsonWriterInterceptor();
-        writer.setUseJwsJsonOutputStream(true);
-        providers.add(writer);
-        
-        String address = "http://localhost:" + PORT + "/doubleit/services";
-        WebClient client = 
-            WebClient.create(address, providers, busFile.toString());
-        client.type("application/json").accept("application/json");
-        
-        
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put("rs.security.keystore.type", "jks");
-        properties.put("rs.security.keystore.password", "cspass");
-        properties.put("rs.security.keystore.alias", "myclientkey");
-        properties.put("rs.security.keystore.file", "clientstore.jks");
-        properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
-        WebClient.getConfig(client).getRequestContext().putAll(properties);
-        
-        Number numberToDouble = new Number();
-        numberToDouble.setDescription("This is the number to double");
-        numberToDouble.setNumber(25);
-        
-        Response response = client.post(numberToDouble);
-        assertEquals(response.getStatus(), 200);
-        assertEquals(response.readEntity(Number.class).getNumber(), 50);
-    }
-    
-    
-    @org.junit.Test
     public void testSignatureCompact() throws Exception {
 
         URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
@@ -140,6 +103,75 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
         
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.signature.out.properties", "clientKeystore.properties");
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+        
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+        
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
+    
+    @org.junit.Test
+    public void testSignatureCompactDynamicProperties() throws Exception {
+
+        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        JwsWriterInterceptor writer = new JwsWriterInterceptor();
+        providers.add(writer);
+        
+        String address = "http://localhost:" + PORT2 + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.keystore.type", "jks");
+        properties.put("rs.security.keystore.password", "cspass");
+        properties.put("rs.security.keystore.alias", "myclientkey");
+        properties.put("rs.security.keystore.file", "clientstore.jks");
+        properties.put("rs.security.key.password", "ckpass");
+        // properties.put("rs.security.key.password.provider", 
+        //                  new org.apache.coheigea.cxf.jaxrs.json.common.PrivateKeyPasswordProviderImpl());
+        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+        
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+        
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
+    
+    @org.junit.Test
+    public void testHMACSignatureCompact() throws Exception {
+
+        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        JwsWriterInterceptor writer = new JwsWriterInterceptor();
+        providers.add(writer);
+        
+        String address = "http://localhost:" + PORT3 + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.keystore.type", "jwk");
+        properties.put("rs.security.keystore.alias.jws", "HMACKey");
+        properties.put("rs.security.keystore.file", "jwkHMAC.txt");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
         
         Number numberToDouble = new Number();
