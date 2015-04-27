@@ -98,8 +98,6 @@ public class AuthenticationTest extends org.junit.Assert {
         
         // Need to disable PRE_AUTH (not sure why, maybe a bug in Kerby)
         kerbyServer.getSetting().getKdcConfig().setBoolean(KdcConfigKey.PREAUTH_REQUIRED, false);
-        kerbyServer.getSetting().getKdcConfig().setString(KdcConfigKey.TGS_PRINCIPAL, 
-                                                          "krbtgt/service.ws.apache.org@service.ws.apache.org");
         
         // Create principals
         String alice = "alice@service.ws.apache.org";
@@ -136,7 +134,6 @@ public class AuthenticationTest extends org.junit.Assert {
     }
 
     @org.junit.Test
-    @org.junit.Ignore
     public void unitTest() throws Exception {
     	KrbClient client = new KrbClient();
 
