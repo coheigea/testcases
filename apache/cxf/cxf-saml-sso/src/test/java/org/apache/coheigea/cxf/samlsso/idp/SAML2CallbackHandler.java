@@ -35,8 +35,8 @@ import org.apache.wss4j.common.saml.bean.AuthenticationStatementBean;
 import org.apache.wss4j.common.saml.bean.ConditionsBean;
 import org.apache.wss4j.common.saml.bean.SubjectBean;
 import org.apache.wss4j.common.saml.bean.SubjectConfirmationDataBean;
+import org.apache.wss4j.common.saml.bean.Version;
 import org.apache.wss4j.common.saml.builder.SAML2Constants;
-import org.opensaml.common.SAMLVersion;
 
 /**
  * A Callback Handler implementation for a SAML 2 assertion for use by the SAML SSO IdP. By
@@ -85,7 +85,7 @@ public class SAML2CallbackHandler implements CallbackHandler {
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof SAMLCallback) {
                 SAMLCallback callback = (SAMLCallback) callbacks[i];
-                callback.setSamlVersion(SAMLVersion.VERSION_20);
+                callback.setSamlVersion(Version.SAML_20);
                 callback.setIssuer(issuer);
                 if (conditions != null) {
                     callback.setConditions(conditions);
