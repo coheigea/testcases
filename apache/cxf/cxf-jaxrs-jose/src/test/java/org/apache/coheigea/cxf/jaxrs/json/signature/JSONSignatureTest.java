@@ -19,6 +19,7 @@
 package org.apache.coheigea.cxf.jaxrs.json.signature;
 
 import java.net.URL;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.jose.jaxrs.JwsJsonWriterInterceptor;
 import org.apache.cxf.rs.security.jose.jaxrs.JwsWriterInterceptor;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.junit.BeforeClass;
 
@@ -42,6 +44,8 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     private static final String PORT = allocatePort(Server.class);
     private static final String PORT2 = allocatePort(Server.class, 2);
     private static final String PORT3 = allocatePort(Server.class, 3);
+    private static final String PORT4 = allocatePort(Server.class, 4);
+    private static final String PORT5 = allocatePort(Server.class, 5);
     
     @BeforeClass
     public static void startServers() throws Exception {
@@ -183,4 +187,119 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
     
+    @org.junit.Test
+    public void testPSSignatureCompact() throws Exception {
+    	try {
+    		Security.addProvider(new BouncyCastleProvider());  
+    		
+	        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+	
+	        List<Object> providers = new ArrayList<Object>();
+	        providers.add(new JacksonJsonProvider());
+	        
+	        JwsWriterInterceptor writer = new JwsWriterInterceptor();
+	        providers.add(writer);
+	        
+	        String address = "http://localhost:" + PORT4 + "/doubleit/services";
+	        WebClient client = 
+	            WebClient.create(address, providers, busFile.toString());
+	        client.type("application/json").accept("application/json");
+	        
+	        
+	        Map<String, Object> properties = new HashMap<String, Object>();
+	        properties.put("rs.security.keystore.type", "jks");
+	        properties.put("rs.security.keystore.password", "cspass");
+	        properties.put("rs.security.keystore.alias", "myclientkey");
+	        properties.put("rs.security.keystore.file", "clientstore.jks");
+	        properties.put("rs.security.key.password", "ckpass");
+	        // properties.put("rs.security.key.password.provider", 
+	        //                  new org.apache.coheigea.cxf.jaxrs.json.common.PrivateKeyPasswordProviderImpl());
+	        properties.put("rs.security.jws.content.signature.algorithm", "PS256");
+	        WebClient.getConfig(client).getRequestContext().putAll(properties);
+	        
+	        Number numberToDouble = new Number();
+	        numberToDouble.setDescription("This is the number to double");
+	        numberToDouble.setNumber(25);
+	        
+	        Response response = client.post(numberToDouble);
+	        assertEquals(response.getStatus(), 200);
+	        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    	} finally {
+    		Security.removeProvider(BouncyCastleProvider.class.getName());  
+    	}
+    }
+    
+    @org.junit.Test
+    public void testEllipticCurveSignatureCompact() throws Exception {
+    	try {
+    		Security.addProvider(new BouncyCastleProvider());  
+    		
+	        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+	
+	        List<Object> providers = new ArrayList<Object>();
+	        providers.add(new JacksonJsonProvider());
+	        
+	        JwsWriterInterceptor writer = new JwsWriterInterceptor();
+	        providers.add(writer);
+	        
+	        String address = "http://localhost:" + PORT5 + "/doubleit/services";
+	        WebClient client = 
+	            WebClient.create(address, providers, busFile.toString());
+	        client.type("application/json").accept("application/json");
+	        
+	        
+	        Map<String, Object> properties = new HashMap<String, Object>();
+	        properties.put("rs.security.keystore.type", "jks");
+	        properties.put("rs.security.keystore.password", "security");
+	        properties.put("rs.security.keystore.alias", "ECDSA");
+	        properties.put("rs.security.keystore.file", "ecdsa.jks");
+	        properties.put("rs.security.key.password", "security");
+	        properties.put("rs.security.jws.content.signature.algorithm", "ES256");
+	        WebClient.getConfig(client).getRequestContext().putAll(properties);
+	        
+	        Number numberToDouble = new Number();
+	        numberToDouble.setDescription("This is the number to double");
+	        numberToDouble.setNumber(25);
+	        
+	        Response response = client.post(numberToDouble);
+	        assertEquals(response.getStatus(), 200);
+	        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    	} finally {
+    		Security.removeProvider(BouncyCastleProvider.class.getName());  
+    	}
+    }
+    
+    @org.junit.Test
+    public void testImposterSignature() throws Exception {
+
+        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        JwsWriterInterceptor writer = new JwsWriterInterceptor();
+        providers.add(writer);
+        
+        String address = "http://localhost:" + PORT2 + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.keystore.type", "jks");
+        properties.put("rs.security.keystore.password", "ispass");
+        properties.put("rs.security.keystore.alias", "imposter");
+        properties.put("rs.security.keystore.file", "imposter.jks");
+        properties.put("rs.security.key.password", "ikpass");
+        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+        
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+        
+        Response response = client.post(numberToDouble);
+        assertNotEquals(response.getStatus(), 200);
+    }
 }

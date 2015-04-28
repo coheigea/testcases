@@ -100,6 +100,39 @@
        </jaxrs:properties>
    </jaxrs:server>
   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.4}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="compactJwsInFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.keystore.type" value="jks" />
+            <entry key="rs.security.keystore.alias" value="myclientkey"/>
+            <entry key="rs.security.keystore.password" value="cspass"/>
+            <entry key="rs.security.keystore.file" value="clientstore.jks" />
+            <entry key="rs.security.jws.content.signature.algorithm" value="PS256" />
+       </jaxrs:properties>
+   </jaxrs:server>
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.5}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="compactJwsInFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.keystore.type" value="jks" />
+            <entry key="rs.security.keystore.alias" value="ECDSA"/>
+            <entry key="rs.security.keystore.password" value="security"/>
+            <entry key="rs.security.keystore.file" value="ecdsa.jks" />
+            <entry key="rs.security.jws.content.signature.algorithm" value="ES256" />
+       </jaxrs:properties>
+   </jaxrs:server>
   
 </beans>
 

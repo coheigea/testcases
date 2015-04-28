@@ -111,6 +111,13 @@
             <version>${slf4j.version}</version>
             <scope>test</scope>
        </dependency>
+       <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>${bcprov.version}</version>
+            <scope>test</scope>
+       </dependency>
+
 
     </dependencies>
 
