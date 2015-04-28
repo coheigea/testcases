@@ -49,7 +49,7 @@ public class SSHTest extends org.junit.Assert {
             basedir = new File(".").getCanonicalPath();
         }
 
-        // Read in jaas file and substitute in the correct port
+        // Read in camel configuration file and substitute in the correct port
         File f = new File(basedir + "/src/test/resources/camel-ssh.xml");
 
         FileInputStream inputStream = new FileInputStream(f);
