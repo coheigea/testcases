@@ -83,6 +83,8 @@
    <bean id="metadataBean" class="org.apache.cxf.rs.security.saml.sso.MetadataService">
        <property name="serviceAddress" 
                  value="https://localhost:${testutil.ports.Server}/doubleit"/>
+       <property name="assertionConsumerServiceAddress" 
+                 value="https://localhost:${testutil.ports.Server}/doubleit"/>
        <property name="logoutServiceAddress" 
                  value="https://localhost:${testutil.ports.Server}/logout"/>
        <property name="signatureUsername" value="myservicekey"/>
