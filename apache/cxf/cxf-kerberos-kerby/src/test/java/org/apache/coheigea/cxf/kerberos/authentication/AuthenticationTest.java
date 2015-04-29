@@ -22,7 +22,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.security.Principal;
+import java.security.PrivilegedExceptionAction;
+import java.util.Set;
 
+import javax.security.auth.Subject;
+import javax.security.auth.kerberos.KerberosTicket;
+import javax.security.auth.login.LoginContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
@@ -37,8 +43,15 @@ import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.spec.ticket.ServiceTicket;
 import org.apache.kerby.kerberos.kerb.spec.ticket.TgtTicket;
+import org.apache.wss4j.common.kerberos.KerberosContext;
 import org.apache.wss4j.dom.WSSConfig;
 import org.example.contract.doubleit.DoubleItPortType;
+import org.ietf.jgss.GSSContext;
+import org.ietf.jgss.GSSCredential;
+import org.ietf.jgss.GSSException;
+import org.ietf.jgss.GSSManager;
+import org.ietf.jgss.GSSName;
+import org.ietf.jgss.Oid;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -166,6 +179,36 @@ public class AuthenticationTest extends org.junit.Assert {
     }
     
     @org.junit.Test
+    public void unitGSSTest() throws Exception {
+        LoginContext loginContext = new LoginContext("alice", new KerberosCallbackHandler());
+        loginContext.login();
+        
+        Subject clientSubject = loginContext.getSubject();
+        Set<Principal> clientPrincipals = clientSubject.getPrincipals();
+        assertFalse(clientPrincipals.isEmpty());
+
+        // Get the TGT
+        Set<KerberosTicket> privateCredentials = 
+            clientSubject.getPrivateCredentials(KerberosTicket.class);
+        assertFalse(privateCredentials.isEmpty());
+        KerberosTicket tgt = privateCredentials.iterator().next();
+        assertNotNull(tgt);
+
+        // Get the service ticket
+        KerberosClientExceptionAction action =
+            new KerberosClientExceptionAction(clientPrincipals.iterator().next(), "bob@service.ws.apache.org");
+        KerberosContext krbCtx = null;
+        try {
+            krbCtx = (KerberosContext) Subject.doAs(clientSubject, action);
+            assertNotNull(krbCtx.getKerberosToken());
+        } finally {
+            if (krbCtx != null) {
+                krbCtx.dispose();
+            }
+        }
+    }
+    
+    @org.junit.Test
     public void testKerberos() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
@@ -210,4 +253,49 @@ public class AuthenticationTest extends org.junit.Assert {
         Assert.assertEquals(numToDouble * 2 , resp);
     }
     
+    /**
+     * This class represents a PrivilegedExceptionAction implementation to obtain a service ticket from a Kerberos
+     * Key Distribution Center.
+     */
+    private static class KerberosClientExceptionAction implements PrivilegedExceptionAction<KerberosContext> {
+
+        private static final String JGSS_KERBEROS_TICKET_OID = "1.2.840.113554.1.2.2";
+        
+        private Principal clientPrincipal;
+        private String serviceName;
+
+        public KerberosClientExceptionAction(Principal clientPrincipal, String serviceName) { 
+            this.clientPrincipal = clientPrincipal;
+            this.serviceName = serviceName;
+        }
+        
+        public KerberosContext run() throws GSSException {
+            GSSManager gssManager = GSSManager.getInstance();
+
+            GSSName gssService = gssManager.createName(serviceName, GSSName.NT_HOSTBASED_SERVICE);
+            Oid oid = new Oid(JGSS_KERBEROS_TICKET_OID);
+            GSSName gssClient = gssManager.createName(clientPrincipal.getName(), GSSName.NT_USER_NAME);
+            GSSCredential credentials = 
+                gssManager.createCredential(
+                    gssClient, GSSCredential.DEFAULT_LIFETIME, oid, GSSCredential.INITIATE_ONLY
+                );
+
+            GSSContext secContext =
+                gssManager.createContext(
+                    gssService, oid, credentials, GSSContext.DEFAULT_LIFETIME
+                );
+
+            secContext.requestMutualAuth(false);
+            secContext.requestCredDeleg(false);
+
+            byte[] token = new byte[0];
+            byte[] returnedToken = secContext.initSecContext(token, 0, token.length);
+
+            KerberosContext krbCtx = new KerberosContext();
+            krbCtx.setGssContext(secContext);
+            krbCtx.setKerberosToken(returnedToken);
+
+            return krbCtx;
+        }
+    }
 }
