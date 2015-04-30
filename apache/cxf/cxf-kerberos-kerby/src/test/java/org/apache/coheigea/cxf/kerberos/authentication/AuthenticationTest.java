@@ -43,7 +43,6 @@ import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.spec.ticket.ServiceTicket;
 import org.apache.kerby.kerberos.kerb.spec.ticket.TgtTicket;
-import org.apache.wss4j.common.kerberos.KerberosContext;
 import org.apache.wss4j.dom.WSSConfig;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.ietf.jgss.GSSContext;
@@ -88,7 +87,7 @@ public class AuthenticationTest extends org.junit.Assert {
         
         updatePort(basedir);
 
-        // System.setProperty("sun.security.krb5.debug", "true");
+        System.setProperty("sun.security.krb5.debug", "true");
         System.setProperty("java.security.auth.login.config", basedir + "/src/test/resources/kerberos/kerberos.jaas");
         
         Assert.assertTrue(
@@ -197,15 +196,28 @@ public class AuthenticationTest extends org.junit.Assert {
         // Get the service ticket
         KerberosClientExceptionAction action =
             new KerberosClientExceptionAction(clientPrincipals.iterator().next(), "bob@service.ws.apache.org");
-        KerberosContext krbCtx = null;
-        try {
-            krbCtx = (KerberosContext) Subject.doAs(clientSubject, action);
-            assertNotNull(krbCtx.getKerberosToken());
-        } finally {
-            if (krbCtx != null) {
-                krbCtx.dispose();
-            }
-        }
+        byte[] ticket = (byte[]) Subject.doAs(clientSubject, action);
+        assertNotNull(ticket);
+        
+        loginContext.logout();
+        
+        validateServiceTicket(ticket);
+    }
+    
+    private void validateServiceTicket(byte[] ticket) throws Exception {
+        // Get the TGT for the service
+        LoginContext loginContext = new LoginContext("bob", new KerberosCallbackHandler());
+        loginContext.login();
+        
+        Subject serviceSubject = loginContext.getSubject();
+        Set<Principal> servicePrincipals = serviceSubject.getPrincipals();
+        assertFalse(servicePrincipals.isEmpty());
+
+        // Handle the service ticket
+        KerberosServiceExceptionAction serviceAction = 
+            new KerberosServiceExceptionAction(ticket, "bob@service.ws.apache.org");
+        
+        Subject.doAs(serviceSubject, serviceAction);
     }
     
     @org.junit.Test
@@ -257,7 +269,7 @@ public class AuthenticationTest extends org.junit.Assert {
      * This class represents a PrivilegedExceptionAction implementation to obtain a service ticket from a Kerberos
      * Key Distribution Center.
      */
-    private static class KerberosClientExceptionAction implements PrivilegedExceptionAction<KerberosContext> {
+    private static class KerberosClientExceptionAction implements PrivilegedExceptionAction<byte[]> {
 
         private static final String JGSS_KERBEROS_TICKET_OID = "1.2.840.113554.1.2.2";
         
@@ -269,7 +281,7 @@ public class AuthenticationTest extends org.junit.Assert {
             this.serviceName = serviceName;
         }
         
-        public KerberosContext run() throws GSSException {
+        public byte[] run() throws GSSException {
             GSSManager gssManager = GSSManager.getInstance();
 
             GSSName gssService = gssManager.createName(serviceName, GSSName.NT_HOSTBASED_SERVICE);
@@ -291,11 +303,46 @@ public class AuthenticationTest extends org.junit.Assert {
             byte[] token = new byte[0];
             byte[] returnedToken = secContext.initSecContext(token, 0, token.length);
 
-            KerberosContext krbCtx = new KerberosContext();
-            krbCtx.setGssContext(secContext);
-            krbCtx.setKerberosToken(returnedToken);
+            secContext.dispose();
 
-            return krbCtx;
+            return returnedToken;
         }
+    }
+    
+    private static class KerberosServiceExceptionAction implements PrivilegedExceptionAction<byte[]> {
+
+        private static final String JGSS_KERBEROS_TICKET_OID = "1.2.840.113554.1.2.2";
+
+        private byte[] ticket;
+        private String serviceName;
+
+        public KerberosServiceExceptionAction(byte[] ticket, String serviceName) {
+            this.ticket = ticket;
+            this.serviceName = serviceName;
+        }
+
+        public byte[] run() throws GSSException {
+
+            GSSManager gssManager = GSSManager.getInstance();
+
+            GSSContext secContext = null;
+            GSSName gssService = gssManager.createName(serviceName, GSSName.NT_HOSTBASED_SERVICE);
+              
+            Oid oid = new Oid(JGSS_KERBEROS_TICKET_OID);
+            GSSCredential credentials = 
+                gssManager.createCredential(
+                    gssService, GSSCredential.DEFAULT_LIFETIME, oid, GSSCredential.ACCEPT_ONLY
+                );
+            secContext = gssManager.createContext(credentials);
+
+            try {
+                return secContext.acceptSecContext(ticket, 0, ticket.length);
+            } finally {
+                if (null != secContext) {
+                    secContext.dispose();    
+                }
+            }               
+        }
+
     }
 }
