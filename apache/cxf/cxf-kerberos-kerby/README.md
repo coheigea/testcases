@@ -8,6 +8,9 @@ Note: To disable UDP (for GSS) you can add the following to the krb5.conf:
 
 "udp_preference_limit = 1".
 
+Then edit the tests + change the port substitution from KDC_UDP_PORT to
+KDC_PORT.
+
 1) AuthenticationTest
 
 Thie test shows how an Apache CXF JAX-WS service endpoint can authenticate a

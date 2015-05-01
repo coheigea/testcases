@@ -46,7 +46,7 @@ import org.junit.BeforeClass;
 
 public class JAXRSAuthenticationTest extends org.junit.Assert {
     
-	private static final String PORT = TestUtil.getPortNumber(Server.class);
+    private static final String PORT = TestUtil.getPortNumber(Server.class);
     private static final String KDC_PORT = TestUtil.getPortNumber(Server.class, 2);
     private static final String KDC_UDP_PORT = TestUtil.getPortNumber(Server.class, 3);
     
@@ -112,7 +112,8 @@ public class JAXRSAuthenticationTest extends org.junit.Assert {
     	FileInputStream inputStream = new FileInputStream(f);
     	String content = IOUtils.toString(inputStream, "UTF-8");
     	inputStream.close();
-    	content = content.replaceAll("port", KDC_PORT);
+    	// content = content.replaceAll("port", KDC_PORT);
+    	content = content.replaceAll("port", KDC_UDP_PORT);
 
     	File f2 = new File(basedir + "/target/test-classes/kerberos/krb5.conf");
     	FileOutputStream outputStream = new FileOutputStream(f2);
