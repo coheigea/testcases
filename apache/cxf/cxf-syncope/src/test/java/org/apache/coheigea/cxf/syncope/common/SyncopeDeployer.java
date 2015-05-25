@@ -32,32 +32,32 @@ import org.apache.syncope.common.to.UserTO;
  * Deploy some Syncope users + roles to Syncope to get the tests to work!
  */
 public class SyncopeDeployer {
-	
-	private String address;
-    
+
+    private String address;
+
     @SuppressWarnings("unchecked")
-	public void deployUserData() {
+    public void deployUserData() {
         WebClient client = WebClient.create(address);
-        
+
         String authorizationHeader = 
             "Basic " + Base64Utility.encode(("admin" + ":" + "password").getBytes());
 
         client.header("Authorization", authorizationHeader);
-        
+
         // Create the roles first
         client = client.path("roles");
-        
-		PagedResult<RoleTO> existingRoles = (PagedResult<RoleTO>)client.get(PagedResult.class);
-        
+
+        PagedResult<RoleTO> existingRoles = (PagedResult<RoleTO>)client.get(PagedResult.class);
+
         RoleTO bossRole = findOrCreateRole("boss", existingRoles, client);
 
         RoleTO employeeRole = findOrCreateRole("employee", existingRoles, client);
-        
+
         // Now create the users
         client = client.replacePath("users");
-        
+
         PagedResult<UserTO> existingUsers = (PagedResult<UserTO>)client.get(PagedResult.class);
-        
+
         if (!doesUserAlreadyExist("alice", existingUsers.getResult())) {
             UserTO user = new UserTO();
             user.setUsername("alice");
@@ -83,24 +83,24 @@ public class SyncopeDeployer {
             client.post(user, UserTO.class);
         }
     }
-    
-    private RoleTO findOrCreateRole(
-        String roleName,
-        PagedResult<RoleTO> roles,
-        WebClient client
-    ) {
-    	// See if the Role already exists
-    	for (RoleTO role : roles.getResult()) {
-    		if (roleName.equals(role.getName())) {
-    			return role;
-    		}
-    	}
 
-    	RoleTO role = new RoleTO();
-    	role.setName(roleName);
-    	return client.post(role, RoleTO.class);
+    private RoleTO findOrCreateRole(
+                                    String roleName,
+                                    PagedResult<RoleTO> roles,
+                                    WebClient client
+        ) {
+        // See if the Role already exists
+        for (RoleTO role : roles.getResult()) {
+            if (roleName.equals(role.getName())) {
+                return role;
+            }
+        }
+
+        RoleTO role = new RoleTO();
+        role.setName(roleName);
+        return client.post(role, RoleTO.class);
     }
-    
+
     private boolean doesUserAlreadyExist(String username, Collection<? extends UserTO> users) {
         for (UserTO user : users) {
             if (username.equals(user.getUsername())) {
@@ -110,13 +110,13 @@ public class SyncopeDeployer {
         return false;
     }
 
-	public String getAddress() {
-		return address;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
-    
-    
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
 }
