@@ -55,7 +55,7 @@
    </bean>
    
    <bean class="org.apache.coheigea.cxf.syncope.authorization.SyncopeRolesInterceptor" id="rolesInterceptor">
-       <property name="address" value="http://localhost:8080/syncope/rest/"/>
+       <property name="address" value="http://localhost:${syncope.port}/syncope/rest/"/>
    </bean>
    
    <jaxws:endpoint id="doubleittransport"

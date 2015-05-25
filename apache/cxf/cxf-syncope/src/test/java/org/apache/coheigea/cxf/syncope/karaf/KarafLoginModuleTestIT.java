@@ -16,35 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.syncope.authorization;
+package org.apache.coheigea.cxf.syncope.karaf;
 
 import java.net.URL;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
+import org.apache.coheigea.cxf.syncope.common.SyncopeDeployer;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
-
 import org.example.contract.doubleit.DoubleItPortType;
-
 import org.junit.BeforeClass;
 
 /**
  * This tests using Syncope as an IDM for authorization. A cxf client sends a SOAP UsernameToken to a CXF
  * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken via
- * the SyncopeUTValidator, which dispatches it to Syncope for authentication.
+ * the Karaf SyncopeLoginModule, which dispatches it to Syncope for authentication.
  * 
- * The CXF Endpoint has configured the SyncopeRolesInterceptor, which gets the roles of the user and stores
- * them in a Subject.
  * 
  * The CXF Endpoint has configured the SimpleAuthorizingInterceptor, which requires that a user must
  * have role "boss" to access the "doubleIt" operation ("alice" has this role, "bob" does not).
  */
-public class AuthorizationTest extends AbstractBusClientServerTestBase {
+public class KarafLoginModuleTestIT extends AbstractBusClientServerTestBase {
     
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
@@ -59,19 +56,29 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
                    // set this to false to fork
                    launchServer(Server.class, true)
         );
+        System.setProperty(
+            "java.security.auth.login.config",
+            "src/test/resources/org/apache/coheigea/cxf/syncope/karaf/syncope.jaas"
+        );
+        
+        SyncopeDeployer deployer = new SyncopeDeployer();
+        String syncopePort = System.getProperty("syncope.port");
+        assertNotNull(syncopePort);
+        deployer.setAddress("http://localhost:" + syncopePort + "/syncope/rest/");
+        deployer.deployUserData();
     }
     
     @org.junit.Test
     public void testAuthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = KarafLoginModuleTestIT.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = KarafLoginModuleTestIT.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 
@@ -88,13 +95,13 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     public void testUnauthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = KarafLoginModuleTestIT.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = KarafLoginModuleTestIT.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 
