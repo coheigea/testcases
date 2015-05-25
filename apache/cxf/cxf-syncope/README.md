@@ -2,33 +2,13 @@ cxf-syncope
 ===========
 
 This project contains a number of tests that show how an Apache CXF service
-endpoint can authenticate and authorize a client using Apache Syncope.
+endpoint can authenticate and authorize a client using Apache Syncope. Earlier
+versions of this test-case required that you download and deploy an Apache
+Syncope instance with specific users + roles installed. However, the latest
+version creates and launches an Apache Syncope instance, and populates it
+with the correct data for the tests to run.
 
-1) Pre-requisites
-
-The tests assume an Apache Syncope instance (tested with 1.2.0) with a REST
-interface accessible at "http://localhost:8080/syncope/cxf/" (this can
-be changed in 'cxf-service.xml' for each test). The administrator
-username/password is the default username/password used in a Syncope instance
-("admin"/"password"). 
-
-See the following tutorial for an example of how to set up Apache Syncope
-in a standalone deployment:
-
-http://coheigea.blogspot.ie/2013/07/apache-syncope-tutorial-part-i_26.html
-
-The tutorial referenced above goes on to synchronize user information from an
-SQL and LDAP backend. The latter contains the information used for 
-authentication and authorization in this test. Alternatively, you can 
-start the Syncope console and enter the following:
-
-You must create new roles called "boss" and "employee".
-
-You must then create two users in Syncope with username/password/roles:
- - "alice/security/boss+employee"
- - "bob/security/employee"
-
-2) AuthenticationTest
+1) AuthenticationTest
 
 This tests using Syncope as an IDM for authentication. A CXF client sends a
 SOAP UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured
@@ -37,7 +17,7 @@ SyncopeUTValidator, which dispatches the username/passwords to Syncope for
 authentication via Syncope's REST API. A test that passes username/passwords 
 via Basic Authentication to the CXF endpoint is also added.
 
-3) AuthorizationTest
+2) AuthorizationTest
 
 This tests using Syncope as an IDM for authorization. A CXF client sends a
 SOAP UsernameToken to a CXF Endpoint. The CXF Endpoint has configured the
@@ -51,7 +31,7 @@ reads the current Subject's roles from the SecurityContext, and requires that
 a user must have role "boss" to access the "doubleIt" operation ("alice" has
 this role, "bob" does not). 
 
-4) KarafLoginModuleTest
+3) KarafLoginModuleTest
 
 This test does the same as the AuthorizationTest above, except that it uses
 the new SyncopeLoginModule in Apache Karaf instead. The CXF
@@ -61,6 +41,6 @@ JAAS realm by default. The JAAS configuration file is simply:
 karaf {
     org.apache.karaf.jaas.modules.syncope.SyncopeLoginModule required
     debug="true"
-    address="http://localhost:9080/syncope/cxf";
+    address="http://localhost:${syncope.port}/syncope/cxf";
 };
 

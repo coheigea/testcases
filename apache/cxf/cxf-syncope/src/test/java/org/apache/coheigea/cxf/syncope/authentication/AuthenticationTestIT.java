@@ -23,6 +23,7 @@ import java.net.URL;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
+import org.apache.coheigea.cxf.syncope.common.SyncopeDeployer;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Client;
@@ -38,7 +39,7 @@ import org.junit.BeforeClass;
  * the SyncopeUTValidator, which dispatches it to Syncope for authentication. A test that passes
  * username/passwords via Basic Authentication to the CXF endpoint is also added.
  */
-public class AuthenticationTest extends AbstractBusClientServerTestBase {
+public class AuthenticationTestIT extends AbstractBusClientServerTestBase {
     
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
@@ -54,19 +55,25 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
                    launchServer(Server.class, true)
         );
         WSSConfig.init();
+        
+        SyncopeDeployer deployer = new SyncopeDeployer();
+        String syncopePort = System.getProperty("syncope.port");
+        assertNotNull(syncopePort);
+        deployer.setAddress("http://localhost:" + syncopePort + "/syncope/rest/");
+        deployer.deployUserData();
     }
    
     @org.junit.Test
     public void testAuthenticatedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthenticationTestIT.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = AuthenticationTestIT.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 
@@ -83,13 +90,13 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     public void testUnauthenticatedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthenticationTestIT.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = AuthenticationTestIT.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 
@@ -111,13 +118,13 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
     public void testAuthenticatedRequestBasicAuthentication() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthenticationTestIT.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = AuthenticationTestIT.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportBasicAuthPort");
         DoubleItPortType transportPort = 
