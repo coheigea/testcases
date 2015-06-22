@@ -155,7 +155,6 @@ public class AuthenticationTest extends org.junit.Assert {
     	// client.setAllowUdp(true);
     	// client.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
 
-    	client.setTimeout(5);
     	client.setKdcRealm(kerbyServer.getSetting().getKdcRealm());
         
         File testDir = new File(System.getProperty("test.dir", "target"));
