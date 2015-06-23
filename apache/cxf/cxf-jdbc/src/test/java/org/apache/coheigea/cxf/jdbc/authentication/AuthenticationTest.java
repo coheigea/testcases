@@ -48,12 +48,12 @@ import org.junit.BeforeClass;
  */
 
 public class AuthenticationTest extends AbstractBusClientServerTestBase {
-    
+
 	private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
-    private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
-	    
+	private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
+
 	private static final String PORT = allocatePort(Server.class);
-	
+
 	private static Connection conn;
 
 	@BeforeClass
@@ -63,25 +63,25 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
 				// run the server in the same process
 				// set this to false to forkj
 				launchServer(Server.class, true)
-		);
-		
+				);
+
 		String basedir = System.getProperty("basedir");
-        if (basedir == null) {
-            basedir = new File(".").getCanonicalPath();
-        }
-		
+		if (basedir == null) {
+			basedir = new File(".").getCanonicalPath();
+		}
+
 		File f = new File(basedir 
-                  + "/target/test-classes/org/apache/coheigea/cxf/jdbc/authentication/jdbc.jaas");
+				+ "/target/test-classes/org/apache/coheigea/cxf/jdbc/authentication/jdbc.jaas");
 		System.setProperty("java.security.auth.login.config", f.getPath());
-		
+
 		// Start Apache Derby
 		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-		
+
 		Properties props = new Properties();
-	    conn = DriverManager.getConnection("jdbc:derby:memory:derbyDB;create=true", props);
-		
+		conn = DriverManager.getConnection("jdbc:derby:memory:derbyDB;create=true", props);
+
 		Statement statement = conn.createStatement();
-		
+
 		// Read in SQL file + populate the database
 		File sqlFile = new File(basedir + "/target/test-classes/create-users.sql");
 		String sqlString = FileUtils.readFileToString(sqlFile);
@@ -94,7 +94,7 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
 		}
 
 	}
-	
+
 	@AfterClass
 	public static void stopServers() throws Exception {
 		// Shut Derby down
@@ -108,60 +108,60 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
 		}
 	}
 
-    @org.junit.Test
-    public void testAuthenticatedRequest() throws Exception {
+	@org.junit.Test
+	public void testAuthenticatedRequest() throws Exception {
 
-        SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+		SpringBusFactory bf = new SpringBusFactory();
+		URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
-        Bus bus = bf.createBus(busFile.toString());
-        SpringBusFactory.setDefaultBus(bus);
-        SpringBusFactory.setThreadDefaultBus(bus);
-        
-        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
-        Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
-        DoubleItPortType transportPort = 
-            service.getPort(portQName, DoubleItPortType.class);
-        TestUtil.updateAddressPort(transportPort, PORT);
-        
-        Client client = ClientProxy.getClient(transportPort);
-        client.getRequestContext().put("ws-security.username", "alice");
-        
-        doubleIt(transportPort, 25);
-    }
-    
-    @org.junit.Test
-    public void testUnauthenticatedRequest() throws Exception {
+		Bus bus = bf.createBus(busFile.toString());
+		SpringBusFactory.setDefaultBus(bus);
+		SpringBusFactory.setThreadDefaultBus(bus);
 
-        SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+		URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+		Service service = Service.create(wsdl, SERVICE_QNAME);
+		QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
+		DoubleItPortType transportPort = 
+				service.getPort(portQName, DoubleItPortType.class);
+		TestUtil.updateAddressPort(transportPort, PORT);
 
-        Bus bus = bf.createBus(busFile.toString());
-        SpringBusFactory.setDefaultBus(bus);
-        SpringBusFactory.setThreadDefaultBus(bus);
-        
-        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
-        Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
-        DoubleItPortType transportPort = 
-            service.getPort(portQName, DoubleItPortType.class);
-        TestUtil.updateAddressPort(transportPort, PORT);
-        
-        Client client = ClientProxy.getClient(transportPort);
-        client.getRequestContext().put("ws-security.username", "bob");
-        
-        try {
-            doubleIt(transportPort, 25);
-            Assert.fail("Failure expected on bob");
-        } catch (Exception ex) {
-            // expected
-        }
-    }
+		Client client = ClientProxy.getClient(transportPort);
+		client.getRequestContext().put("ws-security.username", "alice");
 
-    private static void doubleIt(DoubleItPortType port, int numToDouble) {
-        int resp = port.doubleIt(numToDouble);
-        Assert.assertEquals(numToDouble * 2 , resp);
-    }
-    
+		doubleIt(transportPort, 25);
+	}
+
+	@org.junit.Test
+	public void testUnauthenticatedRequest() throws Exception {
+
+		SpringBusFactory bf = new SpringBusFactory();
+		URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+
+		Bus bus = bf.createBus(busFile.toString());
+		SpringBusFactory.setDefaultBus(bus);
+		SpringBusFactory.setThreadDefaultBus(bus);
+
+		URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+		Service service = Service.create(wsdl, SERVICE_QNAME);
+		QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
+		DoubleItPortType transportPort = 
+				service.getPort(portQName, DoubleItPortType.class);
+		TestUtil.updateAddressPort(transportPort, PORT);
+
+		Client client = ClientProxy.getClient(transportPort);
+		client.getRequestContext().put("ws-security.username", "bob");
+
+		try {
+			doubleIt(transportPort, 25);
+			Assert.fail("Failure expected on bob");
+		} catch (Exception ex) {
+			// expected
+		}
+	}
+
+	private static void doubleIt(DoubleItPortType port, int numToDouble) {
+		int resp = port.doubleIt(numToDouble);
+		Assert.assertEquals(numToDouble * 2 , resp);
+	}
+
 }
