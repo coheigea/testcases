@@ -49,119 +49,119 @@ import org.junit.BeforeClass;
 
 public class AuthenticationTest extends AbstractBusClientServerTestBase {
 
-	private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
-	private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
+    private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
+    private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
 
-	private static final String PORT = allocatePort(Server.class);
+    private static final String PORT = allocatePort(Server.class);
 
-	private static Connection conn;
+    private static Connection conn;
 
-	@BeforeClass
-	public static void startServers() throws Exception {
-		assertTrue(
-				"Server failed to launch",
-				// run the server in the same process
-				// set this to false to forkj
-				launchServer(Server.class, true)
-				);
+    @BeforeClass
+    public static void startServers() throws Exception {
+        assertTrue(
+                   "Server failed to launch",
+                   // run the server in the same process
+                   // set this to false to forkj
+                   launchServer(Server.class, true)
+            );
 
-		String basedir = System.getProperty("basedir");
-		if (basedir == null) {
-			basedir = new File(".").getCanonicalPath();
-		}
+        String basedir = System.getProperty("basedir");
+        if (basedir == null) {
+            basedir = new File(".").getCanonicalPath();
+        }
 
-		File f = new File(basedir 
-				+ "/target/test-classes/org/apache/coheigea/cxf/jdbc/authentication/jdbc.jaas");
-		System.setProperty("java.security.auth.login.config", f.getPath());
+        File f = new File(basedir 
+                          + "/target/test-classes/org/apache/coheigea/cxf/jdbc/authentication/jdbc.jaas");
+        System.setProperty("java.security.auth.login.config", f.getPath());
 
-		// Start Apache Derby
-		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+        // Start Apache Derby
+        Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
 
-		Properties props = new Properties();
-		conn = DriverManager.getConnection("jdbc:derby:memory:derbyDB;create=true", props);
+        Properties props = new Properties();
+        conn = DriverManager.getConnection("jdbc:derby:memory:derbyDB;create=true", props);
 
-		Statement statement = conn.createStatement();
+        Statement statement = conn.createStatement();
 
-		// Read in SQL file + populate the database
-		File sqlFile = new File(basedir + "/target/test-classes/create-users.sql");
-		String sqlString = FileUtils.readFileToString(sqlFile);
-		String[] statements = sqlString.split(";");
-		for (String s : statements) {
-			String trimmedS = s.trim();
-			if (!trimmedS.equals("")) {
-				statement.executeUpdate(trimmedS);
-			}
-		}
+        // Read in SQL file + populate the database
+        File sqlFile = new File(basedir + "/target/test-classes/create-users.sql");
+        String sqlString = FileUtils.readFileToString(sqlFile);
+        String[] statements = sqlString.split(";");
+        for (String s : statements) {
+            String trimmedS = s.trim();
+            if (!trimmedS.equals("")) {
+                statement.executeUpdate(trimmedS);
+            }
+        }
 
-	}
+    }
 
-	@AfterClass
-	public static void stopServers() throws Exception {
-		// Shut Derby down
-		if (conn != null) {
-			conn.close();
-		}
-		try {
-			DriverManager.getConnection("jdbc:derby:memory:derbyDB;drop=true");
-		} catch (SQLException ex) {
-			// expected
-		}
-	}
+    @AfterClass
+    public static void stopServers() throws Exception {
+        // Shut Derby down
+        if (conn != null) {
+            conn.close();
+        }
+        try {
+            DriverManager.getConnection("jdbc:derby:memory:derbyDB;drop=true");
+        } catch (SQLException ex) {
+            // expected
+        }
+    }
 
-	@org.junit.Test
-	public void testAuthenticatedRequest() throws Exception {
+    @org.junit.Test
+    public void testAuthenticatedRequest() throws Exception {
 
-		SpringBusFactory bf = new SpringBusFactory();
-		URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
-		Bus bus = bf.createBus(busFile.toString());
-		SpringBusFactory.setDefaultBus(bus);
-		SpringBusFactory.setThreadDefaultBus(bus);
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
 
-		URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
-		Service service = Service.create(wsdl, SERVICE_QNAME);
-		QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
-		DoubleItPortType transportPort = 
-				service.getPort(portQName, DoubleItPortType.class);
-		TestUtil.updateAddressPort(transportPort, PORT);
+        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
+        DoubleItPortType transportPort = 
+            service.getPort(portQName, DoubleItPortType.class);
+        TestUtil.updateAddressPort(transportPort, PORT);
 
-		Client client = ClientProxy.getClient(transportPort);
-		client.getRequestContext().put("ws-security.username", "alice");
+        Client client = ClientProxy.getClient(transportPort);
+        client.getRequestContext().put("ws-security.username", "alice");
 
-		doubleIt(transportPort, 25);
-	}
+        doubleIt(transportPort, 25);
+    }
 
-	@org.junit.Test
-	public void testUnauthenticatedRequest() throws Exception {
+    @org.junit.Test
+    public void testUnauthenticatedRequest() throws Exception {
 
-		SpringBusFactory bf = new SpringBusFactory();
-		URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
-		Bus bus = bf.createBus(busFile.toString());
-		SpringBusFactory.setDefaultBus(bus);
-		SpringBusFactory.setThreadDefaultBus(bus);
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
 
-		URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
-		Service service = Service.create(wsdl, SERVICE_QNAME);
-		QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
-		DoubleItPortType transportPort = 
-				service.getPort(portQName, DoubleItPortType.class);
-		TestUtil.updateAddressPort(transportPort, PORT);
+        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
+        DoubleItPortType transportPort = 
+            service.getPort(portQName, DoubleItPortType.class);
+        TestUtil.updateAddressPort(transportPort, PORT);
 
-		Client client = ClientProxy.getClient(transportPort);
-		client.getRequestContext().put("ws-security.username", "bob");
+        Client client = ClientProxy.getClient(transportPort);
+        client.getRequestContext().put("ws-security.username", "bob");
 
-		try {
-			doubleIt(transportPort, 25);
-			Assert.fail("Failure expected on bob");
-		} catch (Exception ex) {
-			// expected
-		}
-	}
+        try {
+            doubleIt(transportPort, 25);
+            Assert.fail("Failure expected on bob");
+        } catch (Exception ex) {
+            // expected
+        }
+    }
 
-	private static void doubleIt(DoubleItPortType port, int numToDouble) {
-		int resp = port.doubleIt(numToDouble);
-		Assert.assertEquals(numToDouble * 2 , resp);
-	}
+    private static void doubleIt(DoubleItPortType port, int numToDouble) {
+        int resp = port.doubleIt(numToDouble);
+        Assert.assertEquals(numToDouble * 2 , resp);
+    }
 
 }

@@ -37,33 +37,33 @@ import org.apache.wss4j.dom.validate.SignatureTrustValidator;
  */
 public class X509AuthorizationValidator extends SignatureTrustValidator {
 
-	private static org.apache.commons.logging.Log log = 
-			org.apache.commons.logging.LogFactory.getLog(X509AuthorizationValidator.class);
+    private static org.apache.commons.logging.Log log = 
+        org.apache.commons.logging.LogFactory.getLog(X509AuthorizationValidator.class);
 
-	public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
-		Credential validatedCredential = super.validate(credential, data);
+    public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
+        Credential validatedCredential = super.validate(credential, data);
 
-		// Validate the Certificate
-		X509Certificate[] certs = validatedCredential.getCertificates();
-		if (certs == null || certs.length == 0) {
-			if (log.isDebugEnabled()) {
-				log.debug("No X.509 Certificates are found");
-			}
-			throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
-		}
+        // Validate the Certificate
+        X509Certificate[] certs = validatedCredential.getCertificates();
+        if (certs == null || certs.length == 0) {
+            if (log.isDebugEnabled()) {
+                log.debug("No X.509 Certificates are found");
+            }
+            throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
+        }
 
-		Principal principal = validatedCredential.getPrincipal();
-		// Mock up a Subject
-		Subject subject = new Subject();
-		subject.getPrincipals().add(principal);
-		subject.getPrincipals().add(new SimpleGroup("employee"));
-		if (principal.getName().startsWith("CN=Client,O=Apache")) {
-			subject.getPrincipals().add(new SimpleGroup("boss"));
-		}
-		subject.setReadOnly();
-		credential.setSubject(subject);
+        Principal principal = validatedCredential.getPrincipal();
+        // Mock up a Subject
+        Subject subject = new Subject();
+        subject.getPrincipals().add(principal);
+        subject.getPrincipals().add(new SimpleGroup("employee"));
+        if (principal.getName().startsWith("CN=Client,O=Apache")) {
+            subject.getPrincipals().add(new SimpleGroup("boss"));
+        }
+        subject.setReadOnly();
+        credential.setSubject(subject);
 
-		return credential;
-	}
+        return credential;
+    }
 
 }
