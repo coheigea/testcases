@@ -20,10 +20,16 @@ package org.apache.coheigea.cxf.jdbc.authorization;
 
 import java.io.File;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Client;
@@ -31,6 +37,7 @@ import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
 import org.example.contract.doubleit.DoubleItPortType;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
@@ -50,6 +57,8 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
 	    
 	private static final String PORT = allocatePort(Server.class);
 
+	private static Connection conn;
+	
 	@BeforeClass
 	public static void startServers() throws Exception {
 		assertTrue(
@@ -67,6 +76,39 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
 		File f = new File(basedir 
                   + "/target/test-classes/org/apache/coheigea/cxf/jdbc/authentication/jdbc.jaas");
 		System.setProperty("java.security.auth.login.config", f.getPath());
+		
+		// Start Apache Derby
+		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+
+		Properties props = new Properties();
+		conn = DriverManager.getConnection("jdbc:derby:memory:derbyDB;create=true", props);
+
+		Statement statement = conn.createStatement();
+
+		// Read in SQL file + populate the database
+		File sqlFile = new File(basedir + "/target/test-classes/create-users.sql");
+		String sqlString = FileUtils.readFileToString(sqlFile);
+		String[] statements = sqlString.split(";");
+		for (String s : statements) {
+			String trimmedS = s.trim();
+			if (!trimmedS.equals("")) {
+				statement.executeUpdate(trimmedS);
+			}
+		}
+
+	}
+
+	@AfterClass
+	public static void stopServers() throws Exception {
+		// Shut Derby down
+		if (conn != null) {
+			conn.close();
+		}
+		try {
+			DriverManager.getConnection("jdbc:derby:memory:derbyDB;drop=true");
+		} catch (SQLException ex) {
+			// expected
+		}
 	}
 
     @org.junit.Test

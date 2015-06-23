@@ -2,7 +2,7 @@
 jetty {
      org.eclipse.jetty.plus.jaas.spi.JDBCLoginModule required
      debug="true"
-     dbUrl="jdbc:derby://localhost:1527/SYNCOPE"
+     dbUrl="jdbc:derby:memory:derbyDB"
      dbUserName="admin"
      dbPassword="security"
      dbDriver="org.apache.derby.jdbc.ClientDriver"
