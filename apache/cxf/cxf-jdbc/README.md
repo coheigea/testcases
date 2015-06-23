@@ -2,53 +2,9 @@ cxf-jdbc
 ===========
 
 This project contains a number of tests that show how an Apache CXF service
-endpoint can authenticate and authorize a client using JDBC. 
-
-Prerequisites:
-
-a) Launch Apache Derby
-
-Download Apache Derby and extract it into a new directory ($DERBY_HOME). Create a directory to use to store Apache Derby databases ($DERBY_DATA). In $DERBY_DATA, create a file called 'derby.properties' with the content:
-
-derby.connection.requireAuthentication=true
-derby.user.admin=security
-
-In other words, authentication is required, and a valid user is "admin" with password "security". Now launch Apache Derby in network mode via:
-
-java -Dderby.system.home=$DERBY_DATA/ -jar $DERBY_HOME/lib/derbyrun.jar server start
-
-b) Create user data
-
-Create a new file called 'create-users.sql' with the following content:
-
-SET SCHEMA APP;
-DROP TABLE USERS;
-DROP TABLE ROLES;
-
-CREATE TABLE USERS (
-  NAME   VARCHAR(20) NOT NULL PRIMARY KEY,
-  PASSWORD  VARCHAR(20) NOT NULL,
-  STATUS  VARCHAR(20) NOT NULL,
-  SURNAME  VARCHAR(20) NOT NULL
-);
-
-INSERT INTO USERS VALUES('alice', 'security', 'true', 'yellow');
-INSERT INTO USERS VALUES('bob', 'security', 'true', 'blue');
-
-CREATE TABLE ROLES (
-  NAME   VARCHAR(20) NOT NULL PRIMARY KEY,
-  ROLE   VARCHAR(20) NOT NULL
-);
-
-INSERT INTO ROLES VALUES('alice', 'boss');
-
-Launch Apache Derby via $DERBY_HOME/bin/ij. Then connect to the server via:
-
-connect 'jdbc:derby://localhost:1527/SYNCOPE;create=true;user=admin;password=security;';
-
-Populate user data via: run 'create-users.sql';
-
-You can now see the user data via: select * from users;
+endpoint can authenticate and authorize a client using JDBC. Each test
+launches an in-memory Apache Derby instance to use as the database, and
+populates it with a user and roles table in 'create-users.sql'.
 
 1) AuthenticationTest
 
