@@ -8,7 +8,10 @@ Prerequisities:
 
 You must have registered for Amazon AWS, and created a user in the IAM service,
 saving the access key id and secret key. You then need to create a customer
-master key for this user, and save the key id.
+master key for this user, and save the key id. See this article for more
+information:
+
+http://coheigea.blogspot.ie/2015/06/integrating-aws-key-management-service.html
 
 1) SymmetricActionTest
 
