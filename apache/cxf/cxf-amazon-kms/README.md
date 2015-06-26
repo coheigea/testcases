@@ -38,3 +38,25 @@ Similarly, edit org/apache/coheigea/cxf/kms/symmetric/cxf-service.xml:
        <property name="accessKey" value="<access key>" />
        <property name="secretKey" value="<secret key>" />
  </bean>
+
+2) AsymmetricTest
+
+A test-case for a CXF based web service using Asymmetric encryption via
+WS-SecurityPolicy. The keystore password for both signature and encryption is
+stored encrypted in the crypto properties files using the AWS KMS (Key
+Management Service) via the KMSPasswordEncryptor class.
+
+Edit org/apache/coheigea/cxf/kms/asymmetric/cxf-client.xml, and insert the
+relevant values here:
+
+ <bean id="kmsEncryptor" class="org.apache.coheigea.cxf.kms.asymmetric.KMSPasswordEncryptor">
+       <property name="endpoint" value="https://kms.eu-west-1.amazonaws.com" />
+       <property name="accessKey" value="<access key>" />
+       <property name="secretKey" value="<secret key>" />
+       <property name="masterKeyId" value="<master key id> " />
+ </bean>
+
+The same goes for the cxf-service.xml file for this test.
+
+
+
