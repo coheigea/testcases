@@ -39,6 +39,7 @@ import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
+import org.apache.kerby.kerberos.kerb.KrbException;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.spec.ticket.ServiceTicket;
@@ -104,12 +105,12 @@ public class AuthenticationTest extends org.junit.Assert {
         kerbyServer.setKdcTcpPort(Integer.parseInt(KDC_PORT));
         kerbyServer.setAllowUdp(true);
         kerbyServer.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
-
-        kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl());
+        
+        kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
         kerbyServer.init();
 
         // Need to disable PRE_AUTH (not sure why, maybe a bug in Kerby)
-        kerbyServer.getSetting().getKdcConfig().setBoolean(KdcConfigKey.PREAUTH_REQUIRED, false);
+        kerbyServer.getKdcSetting().getKdcConfig().setBoolean(KdcConfigKey.PREAUTH_REQUIRED, false);
 
         // Create principals
         String alice = "alice@service.ws.apache.org";
@@ -121,7 +122,7 @@ public class AuthenticationTest extends org.junit.Assert {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws KrbException {
         if (kerbyServer != null) {
             kerbyServer.stop();
         }
@@ -152,14 +153,10 @@ public class AuthenticationTest extends org.junit.Assert {
 
         client.setKdcHost("localhost");
         client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
-        // client.setAllowUdp(true);
+        client.setAllowUdp(false);
         // client.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
 
-        client.setKdcRealm(kerbyServer.getSetting().getKdcRealm());
-
-        File testDir = new File(System.getProperty("test.dir", "target"));
-        File testConfDir = new File(testDir, "conf");
-        client.setConfDir(testConfDir);
+        client.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
         client.init();
 
         TgtTicket tgt;
