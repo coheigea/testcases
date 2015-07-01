@@ -46,8 +46,7 @@
         <property name="keyStoreParameters" ref="verificationParams"/>
     </bean>
     
-    <camelContext xmlns="http://camel.apache.org/schema/spring"
-        xmlns:ns1="urn:example:po">
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
          <!-- define the camel properties placeholder, and let it leverage jasypt -->
          <propertyPlaceholder id="properties"
                          location="classpath:passwords.properties"

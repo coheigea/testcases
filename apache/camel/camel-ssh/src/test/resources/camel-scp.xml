@@ -23,38 +23,21 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <camel:keyStoreParameters id="signatureParams" resource="./clientstore.jks" 
-           password="{{client.store.password}}" />
-           
     <bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
         <!-- password is mandatory, you can prefix it with sysenv: or sys: to indicate it should use
          an OS environment or JVM system property value, so you dont have the master password defined here -->
         <property name="password" value="sys:PASSWORD"/>
     </bean>
     
-    <bean id="signatureAccessor" class="org.apache.camel.component.xmlsecurity.api.DefaultKeyAccessor">
-        <property name="alias" value="myclientkey"/>
-        <property name="password" value="{{client.key.password}}"/>
-        <property name="keyStoreParameters" ref="signatureParams"/>
-    </bean>
-    
-    <bean id="xadesProperties"
-         class="org.apache.camel.component.xmlsecurity.api.DefaultXAdESSignatureProperties">
-         <property name="keyStoreParameters" ref="signatureParams" />
-         <property name="alias" value="myclientkey"/>
-         <property name="signaturePolicy" value="Implied" />
-         <property name="signerClaimedRoles" value="employee" />
-    </bean>
-    
     <camelContext xmlns="http://camel.apache.org/schema/spring">
-         <!-- define the camel properties placeholder, and let it leverage jasypt -->
-         <propertyPlaceholder id="properties"
+        <!-- define the camel properties placeholder, and let it leverage jasypt -->
+        <propertyPlaceholder id="properties"
                          location="classpath:passwords.properties"
                          propertiesParserRef="jasypt"/>
+                         
         <route>
-            <from uri="file:src/test/resources/data?noop=true"/>
-            <to uri="xmlsecurity:sign://enveloped?keyAccessor=#signatureAccessor&amp;parentLocalName=PaymentInfo&amp;parentNamespace=urn:example:po&amp;properties=#xadesProperties" />
-            <to uri="file:target/signed-xades-data?fileName=${file:name}.signed"/>
+            <from uri="file:src/test/resources/scp_data?noop=true"/>
+            <to uri="scp://localhost:portno/target/storage?username=alice&amp;password={{alice.password}}&amp;knownHostsFile=target/test-classes/known_hosts"/>
         </route>
     </camelContext>
   
