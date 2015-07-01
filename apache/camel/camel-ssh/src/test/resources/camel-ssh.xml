@@ -36,9 +36,9 @@
                          propertiesParserRef="jasypt"/>
                          
         <route>
-            <from uri="file:src/test/resources/data?noop=true"/>
+            <from uri="file:src/test/resources/ssh_data?noop=true"/>
             <to uri="ssh://alice:{{alice.password}}@localhost:portno"/>
-            <to uri="file:target/results?fileName=${file:name.noext}.result"/>
+            <to uri="file:target/ssh_results?fileName=${file:name.noext}.result"/>
         </route>
     </camelContext>
   

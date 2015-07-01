@@ -34,6 +34,9 @@ import org.junit.After;
 import org.junit.Before;
 
 /**
+ * This test uses the Apache Camel File component to take plaintext files from
+ * src/test/resources/ssh_data which contain various unix commands. These commands
+ * are run on the SSH server, and the results are stored in target/results.
  */
 public class SSHTest extends org.junit.Assert {
     

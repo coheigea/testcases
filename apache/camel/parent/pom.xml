@@ -25,7 +25,7 @@
     <version>1.0</version>
 
     <properties>
-        <camel.version>2.14.1</camel.version>
+        <camel.version>2.15.2</camel.version>
         <commons.logging.version>1.1.1</commons.logging.version>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <cxf.version>3.0.5</cxf.version>
