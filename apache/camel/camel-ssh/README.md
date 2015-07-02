@@ -28,6 +28,16 @@ This test uses the Camel JSCH component. The SSH server for this test supports
 SCP.
 
 This test uses the Apache Camel File component to take XML files from
-src/test/resources/scp_data. These files are then copied using SCP to a file on
-the SSH server (target/storage) using the camel-jsch component.
+src/test/resources/scp_data. These files are then copied using SCP to a
+directory on the SSH server (target/storage) using the camel-jsch component.
+
+2) SFTPTest
+
+This test uses the Camel FTP component. The SSH server for this test supports
+SFTP.
+
+This test uses the Apache Camel File component to take XML files from
+src/test/resources/scp_data. These files are then copied using SFTP to a
+directory on the SSH server (target/storage_sftp) using the camel-ftp
+component.
 
