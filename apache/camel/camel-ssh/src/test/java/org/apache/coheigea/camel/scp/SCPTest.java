@@ -38,7 +38,7 @@ import com.jcraft.jsch.UserInfo;
 
 /**
  * This test uses the Apache Camel File component to take XML files from
- * src/test/resources/scp_data. These files are then copied using SCP to a file on 
+ * src/test/resources/scp_data. These files are then copied using SCP to a directory on 
  * the SSH server (target/storage) using the camel-jsch component.
  */
 public class SCPTest extends org.junit.Assert {
