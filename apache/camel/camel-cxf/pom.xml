@@ -33,6 +33,7 @@
 
 
     <modules>
-        <module>ut-secure-proxy</module>
+        <module>proxy</module>
+        <module>proxy-shiro</module>
     </modules>
 </project>
