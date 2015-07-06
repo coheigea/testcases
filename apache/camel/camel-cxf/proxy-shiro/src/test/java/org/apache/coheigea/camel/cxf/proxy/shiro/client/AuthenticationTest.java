@@ -35,16 +35,15 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 /**
- * A secure proxy test. A CXF JAX-WS "double-it" service requires TLS with client
- * authentication. A CXF proxy service also requires TLS, but with a UsernameToken
- * instead of client authentication. A Camel route is configured to route messages
- * from the proxy to the service. A client can invoke on the proxy with a UsernameToken
- * over TLS, the proxy authenticates the UsernameToken, and passes the call + response
- * to the backend service. In this way, we are delegating the security requirements
- * to the proxy (and ensuring the service is secure against external calls by requiring
- * 2-way TLS). 
+ * An authentication test using a proxy + Apache Shiro. A CXF JAX-WS "double-it" service requires 
+ * TLS with client authentication. A CXF proxy service also requires TLS, but with a UsernameToken
+ * instead of client authentication. A Camel route is configured to route messages from the proxy to 
+ * the service. A client can invoke on the proxy with a UsernameToken over TLS, the proxy is 
+ * configured not to authenticate the UsernameToken, but just to process it and store the Subject on 
+ * the message. The Camel route instantiates a Processor that takes the Subject name + password and
+ * authenticates it to Apache Shiro, and then passes the call + response to the backend service. 
  */
-public class UTSecureProxyTest extends AbstractBusClientServerTestBase {
+public class AuthenticationTest extends AbstractBusClientServerTestBase {
     
     static final String PORT = allocatePort(Server.class);
     
@@ -66,7 +65,7 @@ public class UTSecureProxyTest extends AbstractBusClientServerTestBase {
         
         // Start up the Camel route
         main = new Main();
-        main.setApplicationContextUri("cxf-proxy-shiro.xml");
+        main.setApplicationContextUri("cxf-proxy-shiro-authn.xml");
         main.start();
     }
     
@@ -78,13 +77,13 @@ public class UTSecureProxyTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testUTSecureProxy() throws Exception {
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = UTSecureProxyTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = UTSecureProxyTest.class.getResource("../proxyservice/DoubleItProxy.wsdl");
+        URL wsdl = AuthenticationTest.class.getResource("../proxyservice/DoubleItProxy.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItPort");
         DoubleItPortType transportPort = 
@@ -102,13 +101,13 @@ public class UTSecureProxyTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testUTSecureProxyWrongPassword() throws Exception {
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = UTSecureProxyTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = UTSecureProxyTest.class.getResource("../proxyservice/DoubleItProxy.wsdl");
+        URL wsdl = AuthenticationTest.class.getResource("../proxyservice/DoubleItProxy.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItPort");
         DoubleItPortType transportPort = 
