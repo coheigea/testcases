@@ -1,0 +1,124 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements. See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership. The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License. You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xmlns:sec="http://cxf.apache.org/configuration/security"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:spring-security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://cxf.apache.org/configuration/security
+       http://cxf.apache.org/schemas/configuration/security.xsd
+       http://cxf.apache.org/transports/http/configuration
+       http://cxf.apache.org/schemas/configuration/http-conf.xsd
+       http://cxf.apache.org/transports/http-jetty/configuration
+       http://cxf.apache.org/schemas/configuration/http-jetty.xsd
+       http://www.springframework.org/schema/util 
+       http://www.springframework.org/schema/util/spring-util.xsd
+       http://camel.apache.org/schema/spring-security http://camel.apache.org/schema/spring-security/camel-spring-security.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    
+    <!-- import the spring security configuration  -->
+   <import resource="classpath:security_context.xml"/>
+    
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+
+    <bean id="dropAllMessageHeadersStrategy" class="org.apache.camel.component.cxf.common.header.CxfHeaderFilterStrategy">
+        <property name="relayHeaders" value="false"/>
+    </bean>
+
+    <cxf:cxfEndpoint id="secureProxy"
+                     address="https://localhost:${testutil.ports.Server.2}/doubleit/services/doubleit"
+                     endpointName="s:DoubleItPort"
+                     serviceName="s:DoubleItService"
+                     wsdlURL="org/apache/coheigea/camel/cxf/proxy/spring/security/proxyservice/DoubleItProxy.wsdl"
+                     xmlns:s="http://www.example.org/contract/DoubleIt">
+        <cxf:properties>
+            <entry key="dataFormat" value="PAYLOAD"/>
+            <entry key="ws-security.validate.token" value="false"/>
+        </cxf:properties>
+    </cxf:cxfEndpoint>
+
+    <cxf:cxfEndpoint id="doubleitService"
+                     address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleit"
+                     endpointName="s:DoubleItPort"
+                     serviceName="s:DoubleItService"
+                     wsdlURL="org/apache/coheigea/camel/cxf/proxy/spring/security/service/DoubleItService.wsdl"
+                     bindingId="s:DoubleItBinding"
+                     xmlns:s="http://www.example.org/contract/DoubleIt">
+        <cxf:properties>
+            <entry key="dataFormat" value="PAYLOAD"/>
+        </cxf:properties>
+    </cxf:cxfEndpoint>
+
+    <authorizationPolicy id="springSecurityPolicy" access="ROLE_BOSS"
+                         authenticationManager="authenticationManager"
+                         accessDecisionManager="accessDecisionManager"
+                         xmlns="http://camel.apache.org/schema/spring-security"/>
+    
+    <bean id="springSecurityHeaderProcessor" 
+          class="org.apache.coheigea.camel.cxf.proxy.spring.security.proxyservice.SpringSecurityHeaderProcessor"/> 
+    
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+
+        <route>
+            <from uri="cxf:bean:secureProxy?headerFilterStrategy=#dropAllMessageHeadersStrategy"/>
+            <!-- <log message="Body: $simple{body}" loggingLevel="INFO"/>
+            <log message="Headers: $simple{headers}" loggingLevel="INFO"/> --> 
+            <to uri="bean:springSecurityHeaderProcessor"/> 
+            <policy ref="springSecurityPolicy">
+                <to uri="cxf:bean:doubleitService?headerFilterStrategy=#dropAllMessageHeadersStrategy"/>
+            </policy>
+        </route>
+    </camelContext>
+
+    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
+   <httpj:engine port="${testutil.ports.Server.2}">
+    <httpj:tlsServerParameters>
+      <sec:keyManagers keyPassword="skpass">
+          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
+      </sec:keyManagers>
+      <sec:trustManagers>
+          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
+      </sec:trustManagers>
+      <sec:clientAuthentication want="true" required="false"/>
+    </httpj:tlsServerParameters>
+   </httpj:engine>
+  </httpj:engine-factory>
+  
+  <http:conduit name="https://localhost.*">
+      <http:tlsClientParameters disableCNCheck="true">
+        <sec:keyManagers keyPassword="skpass">
+          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
+        </sec:keyManagers>
+        <sec:trustManagers>
+          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
+        </sec:trustManagers>
+      </http:tlsClientParameters>
+   </http:conduit>
+  
+</beans>
