@@ -35,5 +35,6 @@
     <modules>
         <module>proxy</module>
         <module>proxy-shiro</module>
+        <module>proxy-spring-security</module>
     </modules>
 </project>
