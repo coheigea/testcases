@@ -31,15 +31,26 @@ side.
 This is the same as per the symmetric case above, except that it uses the 
 new streaming WS-Security implementation available in Apache CXF 3.0.0.
 
-5) /doubleit/services/doubleitasymmetric
+5) /doubleit/services/doubleitsymmetricmtom
+
+This is the same as per the symmetric case (3), except that it enabled MTOM
+and stores the encryption bytes in attachments, instead of BASE-64 encoding
+them.
+
+6) /doubleit/services/doubleitasymmetric
 
 This uses a Asymmetric binding. Authentication is established by a certificate
 chain.
 
-6) /doubleit/services/doubleitasymmetricstreaming
+7) /doubleit/services/doubleitasymmetricstreaming
 
 Same as for the asymmetric case above, except that it uses the new streaming
 WS-Security implementation available in Apache CXF 3.0.0.
+
+8) /doubleit/services/doubleitasymmetricmtom
+
+Same as (6) above, except that MTOM is enabled, and cipherdata is stored in
+the attachments rather than BASE-64 encoded in the request.
 
 Build the project via "mvn clean install" and copy target/doubleit.war to the
 webapps folder of a container such as Tomcat. Then open up JMeter and import

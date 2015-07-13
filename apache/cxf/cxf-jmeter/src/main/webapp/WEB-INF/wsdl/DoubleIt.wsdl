@@ -107,6 +107,10 @@
 			<soap:address
 				location="http://localhost:8080/doubleit/services" />
 		</wsdl:port>
+		<wsdl:port name="DoubleItSymmetricMtomPort" binding="tns:DoubleItSymmetricBinding">
+            <soap:address
+                location="http://localhost:8080/doubleit/services" />
+        </wsdl:port>
 		<wsdl:port name="DoubleItNoSecurityPort" binding="tns:DoubleItNoPolicyBinding">
             <soap:address
                 location="http://localhost:8080/doubleit/services" />
@@ -119,6 +123,10 @@
 			<soap:address
 				location="http://localhost:8080/doubleit/services" />
 		</wsdl:port>
+		<wsdl:port name="DoubleItAsymmetricMtomPort" binding="tns:DoubleItAsymmetricBinding">
+            <soap:address
+                location="http://localhost:8080/doubleit/services" />
+        </wsdl:port>
 	</wsdl:service>
 	
 	<wsp:Policy wsu:Id="DoubleItBindingTransportPolicy">
