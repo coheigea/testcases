@@ -53,5 +53,23 @@
             <entry key="ws-security.enable.streaming" value="true"/>
         </jaxws:properties> 
     </jaxws:endpoint>
+    
+    <jaxws:endpoint id="doubleitasymmetricmtom"
+        implementor="org.apache.coheigea.cxf.jmeter.common.DoubleItPortTypeImpl"
+        endpointName="s:DoubleItAsymmetricMtomPort"
+        serviceName="s:DoubleItService"
+        address="/services/doubleitasymmetricmtom"
+        wsdlLocation="/WEB-INF/wsdl/DoubleIt.wsdl"
+        xmlns:s="http://www.example.org/contract/DoubleIt">
+        
+        <jaxws:properties>
+            <entry key="ws-security.callback-handler" value-ref="callbackHandler"/>
+            <entry key="ws-security.signature.properties" value="asymmetricServiceKeystore.properties"/>
+            <entry key="ws-security.encryption.username" value="useReqSigCert"/>
+            <entry key="ws-security.subject.cert.constraints" value=".*O=Apache.*"/>
+            <entry key="mtom-enabled" value="true"/>
+            <entry key="ws-security.store.bytes.in.attachment" value="true"/>
+        </jaxws:properties> 
+    </jaxws:endpoint>
 
 </beans>
