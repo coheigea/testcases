@@ -31,6 +31,10 @@
         <version>1.0</version>
    </parent>
 
+   <properties>
+       <openaz.version>0.0.1-SNAPSHOT</openaz.version>
+   </properties>
+
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>
@@ -111,6 +115,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>${slf4j.version}</version>
+            <scope>test</scope>
+       </dependency>
+       <dependency>
+            <groupId>org.apache.openaz</groupId>
+            <artifactId>openaz-xacml</artifactId>
+            <version>${openaz.version}</version>
             <scope>test</scope>
        </dependency>
 

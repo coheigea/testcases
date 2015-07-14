@@ -1,0 +1,33 @@
+<xacml-context:Request xmlns:xacml-context="urn:oasis:names:tc:xacml:2.0:context:schema:os">
+	<xacml-context:Subject>
+		<xacml-context:Attribute
+			AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"
+			DataType="http://www.w3.org/2001/XMLSchema#string">
+			<xacml-context:AttributeValue>alice</xacml-context:AttributeValue>
+		</xacml-context:Attribute>
+		<xacml-context:Attribute AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role"
+			DataType="http://www.w3.org/2001/XMLSchema#anyURI">
+			<xacml-context:AttributeValue>manager</xacml-context:AttributeValue>
+		</xacml-context:Attribute>
+	</xacml-context:Subject>
+	<xacml-context:Resource>
+		<xacml-context:Attribute
+			AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"
+			DataType="http://www.w3.org/2001/XMLSchema#string">
+			<xacml-context:AttributeValue>{http://www.example.org/contract/DoubleIt}DoubleItService#DoubleIt</xacml-context:AttributeValue>
+		</xacml-context:Attribute>
+	</xacml-context:Resource>
+	<xacml-context:Action>
+		<xacml-context:Attribute
+			AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string">
+			<xacml-context:AttributeValue>execute</xacml-context:AttributeValue>
+		</xacml-context:Attribute>
+	</xacml-context:Action>
+	<xacml-context:Environment>
+		<xacml-context:Attribute
+			AttributeId="urn:oasis:names:tc:xacml:1.0:environment:current-dateTime"
+			DataType="http://www.w3.org/2001/XMLSchema#dateTime">
+			<xacml-context:AttributeValue>2015-07-14T11:02:01.465+01:00</xacml-context:AttributeValue>
+		</xacml-context:Attribute>
+	</xacml-context:Environment>
+</xacml-context:Request>
