@@ -123,6 +123,12 @@
             <version>${openaz.version}</version>
             <scope>test</scope>
        </dependency>
+       <dependency>
+            <groupId>org.apache.openaz</groupId>
+            <artifactId>openaz-xacml-pdp</artifactId>
+            <version>${openaz.version}</version>
+            <scope>test</scope>
+       </dependency>
 
     </dependencies>
 
