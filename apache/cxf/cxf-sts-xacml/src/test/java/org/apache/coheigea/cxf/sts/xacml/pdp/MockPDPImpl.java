@@ -33,10 +33,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.apache.cxf.helpers.DOMUtils;
-import org.apache.cxf.rt.security.xacml.XACMLConstants;
+import org.apache.cxf.rt.security.saml.xacml.XACMLConstants;
 import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.common.saml.OpenSAMLUtil;
-import org.opensaml.Configuration;
+import org.opensaml.core.xml.XMLObjectBuilderFactory;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.xacml.XACMLObjectBuilder;
 import org.opensaml.xacml.ctx.AttributeType;
 import org.opensaml.xacml.ctx.DecisionType;
@@ -46,7 +47,6 @@ import org.opensaml.xacml.ctx.ResultType;
 import org.opensaml.xacml.ctx.StatusCodeType;
 import org.opensaml.xacml.ctx.StatusType;
 import org.opensaml.xacml.ctx.SubjectType;
-import org.opensaml.xml.XMLObjectBuilderFactory;
 
 /**
  * A test PDP implementation. It just mocks up a Response object based on the role of 
@@ -59,7 +59,7 @@ public class MockPDPImpl {
     public Source evaluate(Source request) {
         RequestType requestType = requestSourceToRequestType(request);
         
-        XMLObjectBuilderFactory builderFactory = Configuration.getBuilderFactory();
+        XMLObjectBuilderFactory builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
         
         @SuppressWarnings("unchecked")
         XACMLObjectBuilder<ResponseType> responseTypeBuilder = 
@@ -105,7 +105,7 @@ public class MockPDPImpl {
         result.setStatus(status);
         
         ResponseType response = responseTypeBuilder.buildObject();
-        response.setResult(result);
+        response.getResults().add(result);
         
         return responseType2Source(response);
     }
@@ -143,7 +143,7 @@ public class MockPDPImpl {
                 List<AttributeType> attributes = subject.getAttributes();
                 if (attributes != null) {
                     for (AttributeType attribute : attributes) {
-                        if (XACMLConstants.SUBJECT_ROLE.equals(attribute.getAttributeID())) {
+                        if (XACMLConstants.SUBJECT_ROLE.equals(attribute.getAttributeId())) {
                             return attribute.getAttributeValues().get(0).getValue();
                         }
                     }
