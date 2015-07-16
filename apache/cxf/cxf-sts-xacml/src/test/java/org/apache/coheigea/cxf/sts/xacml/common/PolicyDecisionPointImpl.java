@@ -26,7 +26,7 @@ import javax.xml.transform.Source;
 
 import org.apache.coheigea.cxf.sts.xacml.authorization.AuthorizationTest;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.rt.security.xacml.pdp.api.PolicyDecisionPoint;
+import org.apache.cxf.rt.security.saml.xacml.pdp.api.PolicyDecisionPoint;
 
 /**
  * Send the XACML Request to the PDP for evaluation.
