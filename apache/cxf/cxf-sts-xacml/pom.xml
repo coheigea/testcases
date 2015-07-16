@@ -31,6 +31,10 @@
         <version>1.0</version>
    </parent>
 
+   <properties>
+       <cxf.version>3.0.5</cxf.version>
+   </properties>
+
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>
