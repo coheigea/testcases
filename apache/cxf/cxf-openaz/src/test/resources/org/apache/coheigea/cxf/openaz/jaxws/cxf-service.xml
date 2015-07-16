@@ -45,9 +45,9 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean class="org.apache.coheigea.cxf.openaz.common.PolicyDecisionPointMockImpl" id="MockPDP" />
+   <bean class="org.apache.coheigea.cxf.openaz.pdp.OpenAZPolicyDecisionPoint" id="openazPDP" />
    <bean class="org.apache.cxf.rt.security.xacml.XACMLAuthorizingInterceptor" id="XACMLInterceptor">
-       <constructor-arg ref="MockPDP"/>
+       <constructor-arg ref="openazPDP"/>
    </bean>
    
    <jaxws:endpoint id="doubleittransport"

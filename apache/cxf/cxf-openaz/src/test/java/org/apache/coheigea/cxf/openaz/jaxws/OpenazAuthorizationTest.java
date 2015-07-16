@@ -32,11 +32,14 @@ import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
 /**
- * This tests using the CXF STS for authentication. The client authenticates to the STS using
- * a username/password, and gets a signed holder-of-key SAML Assertion in return. This is
- * presented to the service, who verifies proof-of-possession + the signature of the STS on
- * the assertion.
+ * An authorization test for a JAX-WS service using XACML and the OpenAZ project.
+ * A "double-it" client creates a signed SAML Token containing a given role. This is sent to the
+ * service, which validates the SAML Token + then invokes a PEP which creates a XACML Request.
+ * A PDP based on OpenAZ is colocated with the PEP + makes an authorization decision based on
+ * a set of policies. Finally the PEP enforces the decision of the PDP.
  */
+// TODO
+@org.junit.Ignore
 public class OpenazAuthorizationTest extends AbstractBusClientServerTestBase {
     
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
