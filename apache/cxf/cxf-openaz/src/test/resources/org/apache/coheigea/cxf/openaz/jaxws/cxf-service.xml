@@ -46,7 +46,7 @@
    </cxf:bus>
    
    <bean class="org.apache.coheigea.cxf.openaz.pdp.OpenAZPolicyDecisionPoint" id="openazPDP" />
-   <bean class="org.apache.cxf.rt.security.xacml.XACMLAuthorizingInterceptor" id="XACMLInterceptor">
+   <bean class="org.apache.coheigea.cxf.openaz.xacml3.XACML3AuthorizingInterceptor" id="XACMLInterceptor">
        <constructor-arg ref="openazPDP"/>
    </bean>
    

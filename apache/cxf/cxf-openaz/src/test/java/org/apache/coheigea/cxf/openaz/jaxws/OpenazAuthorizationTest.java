@@ -38,8 +38,6 @@ import org.junit.BeforeClass;
  * A PDP based on OpenAZ is colocated with the PEP + makes an authorization decision based on
  * a set of policies. Finally the PEP enforces the decision of the PDP.
  */
-// TODO
-@org.junit.Ignore
 public class OpenazAuthorizationTest extends AbstractBusClientServerTestBase {
     
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
@@ -83,9 +81,9 @@ public class OpenazAuthorizationTest extends AbstractBusClientServerTestBase {
 
         doubleIt(transportPort, 25);
     }
-    /*
+    
     @org.junit.Test
-    public void testUnauthenticatedRequest() throws Exception {
+    public void testUnauthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
         URL busFile = OpenazAuthorizationTest.class.getResource("cxf-client.xml");
@@ -101,19 +99,20 @@ public class OpenazAuthorizationTest extends AbstractBusClientServerTestBase {
             service.getPort(portQName, DoubleItPortType.class);
         updateAddressPort(transportPort, PORT);
         
-        Client client = ClientProxy.getClient(transportPort);
-        client.getRequestContext().put("ws-security.username", "bob");
-        
-        TokenTestUtils.updateSTSPort((BindingProvider)transportPort, STS_PORT);
+        SamlRoleCallbackHandler roleCallbackHandler = new SamlRoleCallbackHandler();
+        roleCallbackHandler.setSignAssertion(true);
+        roleCallbackHandler.setRoleName("employee");
+        ((BindingProvider)transportPort).getRequestContext().put(
+            "ws-security.saml-callback-handler", roleCallbackHandler
+        );
         
         try {
             doubleIt(transportPort, 25);
-            fail("Failure expected on harry");
+            fail("Failure expected on employee role");
         } catch (Exception ex) {
             // expected
         }
     }
-    */
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
