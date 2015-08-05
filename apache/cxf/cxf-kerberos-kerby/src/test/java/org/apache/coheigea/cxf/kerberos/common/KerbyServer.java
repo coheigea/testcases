@@ -33,7 +33,7 @@ import org.apache.kerby.kerberos.kerb.spec.base.EncryptionType;
  */
 public class KerbyServer extends KdcServer {
 
-    public synchronized void createPrincipal(String principal, String password) {
+    public synchronized void createPrincipal(String principal, String password)  throws Exception {
         KrbIdentity identity = new KrbIdentity(principal);
         List<EncryptionType> encTypes = getKdcSetting().getKdcConfig().getEncryptionTypes();
         List<EncryptionKey> encKeys = null;
