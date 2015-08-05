@@ -80,7 +80,7 @@
        </dependency>
        <dependency>
            <groupId>org.apache.cxf</groupId>
-           <artifactId>cxf-rt-rs-security-xml</artifactId>
+           <artifactId>cxf-rt-ws-security</artifactId>
            <version>${cxf.version}</version>
            <scope>test</scope>
        </dependency>
