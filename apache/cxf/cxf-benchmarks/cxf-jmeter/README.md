@@ -1,4 +1,4 @@
-cxf-jmeter
+cxf-benchmarks-jmeter
 ===========
 
 This project builds a doubleit.war file which can be deployed to an application
