@@ -26,6 +26,7 @@
 
     <modules>
         <module>cxf-jmeter</module>
+        <module>cxf-jmh</module>
     </modules>
 
 </project>

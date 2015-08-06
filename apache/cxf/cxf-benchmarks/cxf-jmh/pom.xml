@@ -19,9 +19,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.coheigea.cxf</groupId>
-    <artifactId>cxf-benchmarks-jmeter</artifactId>
-    <packaging>war</packaging>
-    <name>Apache CXF JMeter benchmarks</name>
+    <artifactId>cxf-benchmarks-jmh</artifactId>
+    <packaging>jar</packaging>
+    <name>Apache CXF JMH benchmarks</name>
     <version>1.0</version>
 
    <parent>
@@ -30,6 +30,10 @@
         <relativePath>../../parent/pom.xml</relativePath>
         <version>1.0</version>
    </parent>
+
+   <properties>
+       <jmh.version>1.10.3</jmh.version>
+   </properties>
 
    <dependencies>
        <dependency>
@@ -40,20 +44,14 @@
        </dependency>
        <dependency>
            <groupId>org.apache.cxf</groupId>
-           <artifactId>cxf-rt-databinding-jaxb</artifactId>
+           <artifactId>cxf-testutils</artifactId>
            <version>${cxf.version}</version>
            <scope>compile</scope>
        </dependency>
        <dependency>
-           <groupId>org.apache.cxf</groupId>
-           <artifactId>cxf-rt-frontend-jaxws</artifactId>
-           <version>${cxf.version}</version>
-           <scope>compile</scope>
-       </dependency>
-       <dependency>
-           <groupId>org.apache.cxf</groupId>
-           <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-           <version>${cxf.version}</version>
+           <groupId>junit</groupId>
+           <artifactId>junit</artifactId>
+           <version>${junit.version}</version>
            <scope>compile</scope>
        </dependency>
        <dependency>
@@ -63,36 +61,21 @@
            <scope>compile</scope>
        </dependency>
        <dependency>
-           <groupId>org.apache.cxf</groupId>
-           <artifactId>cxf-rt-ws-policy</artifactId>
-           <version>${cxf.version}</version>
+           <groupId>org.slf4j</groupId>
+           <artifactId>slf4j-jdk14</artifactId>
+           <version>${slf4j.version}</version>
            <scope>compile</scope>
        </dependency>
        <dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-core</artifactId>
-           <version>${spring.version}</version>
+           <groupId>org.openjdk.jmh</groupId>
+           <artifactId>jmh-core</artifactId>
+           <version>${jmh.version}</version>
        </dependency>
        <dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-beans</artifactId>
-           <version>${spring.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-context</artifactId>
-           <version>${spring.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-web</artifactId>
-           <version>${spring.version}</version>
-       </dependency>
-       <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>compile</scope>
+           <groupId>org.openjdk.jmh</groupId>
+           <artifactId>jmh-generator-annprocess</artifactId>
+           <version>${jmh.version}</version>
+           <scope>provided</scope>
        </dependency>
 
     </dependencies>
@@ -131,33 +114,58 @@
         
         <plugins>
             <plugin>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-codegen-plugin</artifactId>
-                <version>${cxf.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.2</version>
                 <executions>
                     <execution>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <sourceRoot>
-                                ${basedir}/target/generated-sources
-                            </sourceRoot>
-                            <wsdlOptions>
-                                <wsdlOption>
-                                    <wsdl>
-                                        ${basedir}/src/main/resources/DoubleItLogical.wsdl
-                                    </wsdl>
-                                </wsdlOption>
-                            </wsdlOptions>
-                        </configuration>
+                        <phase>package</phase>
                         <goals>
-                            <goal>wsdl2java</goal>
+                            <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <finalName>benchmarks</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.openjdk.jmh.Main</mainClass>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                             </filters>
+                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
+             </plugin>
+             <plugin>
+                 <groupId>org.codehaus.mojo</groupId>
+                 <artifactId>exec-maven-plugin</artifactId>
+                 <executions>
+                     <execution>
+                         <id>run-benchmarks</id>
+                         <phase>integration-test</phase>
+                         <goals>
+                             <goal>exec</goal>
+                         </goals>
+                         <configuration>
+                             <classpathScope>test</classpathScope>
+                             <executable>java</executable>
+                             <arguments>
+                                 <argument>-jar</argument>
+                                 <argument>target/benchmarks.jar</argument>
+                            </arguments>
+                         </configuration>
+                     </execution>
+                </executions>
+             </plugin>
         </plugins>
-        <!-- Name of the generated WAR file -->
-        <finalName>doubleit</finalName>
         
     </build>
     
