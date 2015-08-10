@@ -18,9 +18,7 @@
  */
 package org.apache.coheigea.cxf.jmh.benchmark.wssec;
 
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import org.apache.wss4j.common.crypto.Crypto;
 import org.apache.wss4j.common.crypto.CryptoFactory;
@@ -30,8 +28,8 @@ import org.apache.wss4j.dom.WSSecurityEngine;
 import org.apache.wss4j.dom.WSSecurityEngineResult;
 import org.apache.wss4j.dom.handler.RequestData;
 import org.apache.wss4j.dom.handler.WSHandlerResult;
+import org.apache.wss4j.dom.message.WSSecEncrypt;
 import org.apache.wss4j.dom.message.WSSecHeader;
-import org.apache.wss4j.dom.message.WSSecSignature;
 import org.apache.wss4j.dom.str.STRParser.REFERENCE_TYPE;
 import org.apache.wss4j.dom.util.WSSecurityUtil;
 import org.junit.Assert;
@@ -48,18 +46,15 @@ import org.w3c.dom.Element;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 
 /**
- * Some benchmarking tests for different ways of referencing keys in XML Signatures.
+ * Some benchmarking tests for different ways of referencing keys in XML Encryption.
  */
-public class SignatureReferenceBenchmark {
+public class EncryptionReferenceBenchmark {
     
-    private static Crypto clientCrypto;
     private static Crypto serviceCrypto;
-    private static Pattern certConstraint = Pattern.compile(".*O=Apache.*");
     
     static {
         WSSConfig.init();
         try {
-            clientCrypto = CryptoFactory.getInstance("clientKeystore.properties");
             serviceCrypto = CryptoFactory.getInstance("serviceKeystore.properties");
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -69,56 +64,56 @@ public class SignatureReferenceBenchmark {
     @Benchmark
     @Fork(1)
     @Warmup(iterations = 5)
-    public void signatureIssuerSerial() throws Exception {
-        doSignature(WSConstants.ISSUER_SERIAL, REFERENCE_TYPE.ISSUER_SERIAL, clientCrypto);
+    public void encryptionIssuerSerial() throws Exception {
+        doEncryption(WSConstants.ISSUER_SERIAL, REFERENCE_TYPE.ISSUER_SERIAL, serviceCrypto);
     }
     
     @Benchmark
     @Fork(1)
     @Warmup(iterations = 5)
-    public void signatureBST() throws Exception {
-        doSignature(WSConstants.BST_DIRECT_REFERENCE, REFERENCE_TYPE.DIRECT_REF, serviceCrypto);
+    public void encryptionBST() throws Exception {
+        doEncryption(WSConstants.BST_DIRECT_REFERENCE, REFERENCE_TYPE.DIRECT_REF, serviceCrypto);
     }
     
     @Benchmark
     @Fork(1)
     @Warmup(iterations = 5)
-    public void signatureX509KeyIdentifier() throws Exception {
-        doSignature(WSConstants.X509_KEY_IDENTIFIER, REFERENCE_TYPE.KEY_IDENTIFIER, serviceCrypto);
+    public void encryptionEncryptedKeySHA1() throws Exception {
+        doEncryption(WSConstants.ENCRYPTED_KEY_SHA1_IDENTIFIER, REFERENCE_TYPE.THUMBPRINT_SHA1, serviceCrypto);
     }
     
     @Benchmark
     @Fork(1)
     @Warmup(iterations = 5)
-    public void signatureThumbprintSHA1() throws Exception {
-        doSignature(WSConstants.THUMBPRINT_IDENTIFIER, REFERENCE_TYPE.THUMBPRINT_SHA1, clientCrypto);
+    public void encryptionThumbprintSHA1() throws Exception {
+        doEncryption(WSConstants.THUMBPRINT_IDENTIFIER, REFERENCE_TYPE.THUMBPRINT_SHA1, serviceCrypto);
     }
     
-    private void doSignature(int identifier, REFERENCE_TYPE referenceType,
+    private void doEncryption(int identifier, REFERENCE_TYPE referenceType,
                              Crypto verifyingCrypto) throws Exception {
-        WSSecSignature builder = new WSSecSignature();
-        builder.setUserInfo("myclientkey", "ckpass");
+        WSSecEncrypt builder = new WSSecEncrypt();
+        builder.setUserInfo("myservicekey", "skpass");
         builder.setKeyIdentifierType(identifier);
         Document doc = SOAPUtil.toSOAPPart(SOAPUtil.SAMPLE_SOAP_MSG);
         WSSecHeader secHeader = new WSSecHeader(doc);
         secHeader.insertSecurityHeader();
-        Document signedDoc = builder.build(doc, clientCrypto, secHeader);
+        Document encryptedDoc = builder.build(doc, serviceCrypto, secHeader);
 
         WSSecurityEngine engine = new WSSecurityEngine();
         
         RequestData data = new RequestData();
         data.setWssConfig(WSSConfig.getNewInstance());
-        data.setSigVerCrypto(verifyingCrypto);
+        data.setDecCrypto(verifyingCrypto);
         data.setEnableTimestampReplayCache(false);
-        data.setSubjectCertConstraints(Collections.singletonList(certConstraint));
-        Element securityHeader = WSSecurityUtil.getSecurityHeader(signedDoc, "");
+        data.setCallbackHandler(new CommonCallbackHandler());
+        Element securityHeader = WSSecurityUtil.getSecurityHeader(encryptedDoc, "");
         Assert.assertNotNull(securityHeader);
         
         WSHandlerResult results = 
             engine.processSecurityHeader(securityHeader, data);
         
         WSSecurityEngineResult actionResult =
-            results.getActionResults().get(WSConstants.SIGN).get(0);
+            results.getActionResults().get(WSConstants.ENCR).get(0);
         Assert.assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_CERTIFICATE));
         Assert.assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_REFERENCE_TYPE));
         REFERENCE_TYPE refType = 

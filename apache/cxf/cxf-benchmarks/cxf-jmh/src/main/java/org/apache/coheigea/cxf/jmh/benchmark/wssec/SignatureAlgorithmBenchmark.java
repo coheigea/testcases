@@ -19,8 +19,10 @@
 package org.apache.coheigea.cxf.jmh.benchmark.wssec;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.apache.wss4j.common.bsp.BSPRule;
 import org.apache.wss4j.common.crypto.Crypto;
@@ -33,7 +35,6 @@ import org.apache.wss4j.dom.handler.RequestData;
 import org.apache.wss4j.dom.handler.WSHandlerResult;
 import org.apache.wss4j.dom.message.WSSecHeader;
 import org.apache.wss4j.dom.message.WSSecSignature;
-import org.apache.wss4j.dom.str.STRParser.REFERENCE_TYPE;
 import org.apache.wss4j.dom.util.WSSecurityUtil;
 import org.junit.Assert;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -54,13 +55,12 @@ import org.w3c.dom.Element;
 public class SignatureAlgorithmBenchmark {
     
     private static Crypto clientCrypto;
-    private static Crypto serviceCrypto;
+    private static Pattern certConstraint = Pattern.compile(".*O=Apache.*");
     
     static {
         WSSConfig.init();
         try {
             clientCrypto = CryptoFactory.getInstance("clientKeystore.properties");
-            serviceCrypto = CryptoFactory.getInstance("serviceKeystore.properties");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -131,6 +131,7 @@ public class SignatureAlgorithmBenchmark {
         data.setWssConfig(WSSConfig.getNewInstance());
         data.setSigVerCrypto(verifyingCrypto);
         data.setEnableTimestampReplayCache(false);
+        data.setSubjectCertConstraints(Collections.singletonList(certConstraint));
         
         List<BSPRule> ignoredRules = new ArrayList<BSPRule>();
         ignoredRules.add(BSPRule.R5404);
@@ -147,8 +148,6 @@ public class SignatureAlgorithmBenchmark {
             results.getActionResults().get(WSConstants.SIGN).get(0);
         Assert.assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_CERTIFICATE));
         Assert.assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_REFERENCE_TYPE));
-        REFERENCE_TYPE refType = 
-            (REFERENCE_TYPE)actionResult.get(WSSecurityEngineResult.TAG_X509_REFERENCE_TYPE);
     }
     
 }
