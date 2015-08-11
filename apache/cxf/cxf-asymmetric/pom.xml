@@ -110,7 +110,7 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>${bcprov.version}</version>
-        </dependency>
+       </dependency>
 
     </dependencies>
 
