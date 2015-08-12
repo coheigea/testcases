@@ -34,8 +34,7 @@
         <module>cxf-jaxrs-jose</module>
         <module>cxf-oauth1</module>
         <module>cxf-spring-security</module>
-        <!-- Commented due to setup required
-        <module>cxf-syncope</module>-->
+        <module>cxf-syncope</module>
         <module>cxf-ldap</module>
         <module>cxf-benchmarks</module>
         <module>cxf-saml-sso</module>
