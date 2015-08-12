@@ -32,7 +32,7 @@
     </parent>
     <properties>
         <jackson.version>1.9.0</jackson.version>
-        <syncope.version>1.2.4</syncope.version>
+        <syncope.version>1.2.5</syncope.version>
         <cargo.core.dir>${project.build.directory}/syncope-core</cargo.core.dir>
         <cargo.console.dir>${project.build.directory}/syncope-console</cargo.console.dir>
         <log.directory>${project.build.directory}/log</log.directory>
@@ -85,7 +85,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-security-xml</artifactId>
+            <artifactId>cxf-rt-ws-security</artifactId>
             <version>${cxf.version}</version>
             <scope>test</scope>
         </dependency>
