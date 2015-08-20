@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.coheigea.cxf.sts.xacml.common;
+package org.apache.coheigea.cxf.sts.xacml.authorization.xacml2;
 
 import java.net.URL;
 
@@ -26,7 +26,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
-import org.apache.coheigea.cxf.sts.xacml.authorization.AuthorizationTest;
 import org.apache.cxf.helpers.DOMUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rt.security.saml.xacml2.PolicyDecisionPoint;
@@ -39,7 +38,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Send the XACML Request to the PDP for evaluation.
+ * Send the XACML 2.0 Request to the PDP for evaluation.
  */
 public class PolicyDecisionPointImpl implements PolicyDecisionPoint {
 
@@ -51,7 +50,7 @@ public class PolicyDecisionPointImpl implements PolicyDecisionPoint {
             Source source = new DOMSource(requestElement);
             
             URL busFile = 
-                PolicyDecisionPointImpl.class.getResource("../authorization/cxf-pdp-client.xml");
+                PolicyDecisionPointImpl.class.getResource("cxf-pdp-client.xml");
     
             String address = "https://localhost:" + AuthorizationTest.PDP_PORT + "/authorization/pdp";
             WebClient client = WebClient.create(address, "myservicekey", "skpass", busFile.toString());

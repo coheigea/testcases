@@ -48,7 +48,7 @@
 	<wsdl:service name="DoubleItService">
 		<wsdl:port name="DoubleItTransportPort" binding="tns:DoubleItTransportBinding">
 			<soap:address
-				location="https://localhost:8081/doubleit/services/doubleittransport" />
+				location="https://localhost:8081/doubleit/services/doubleittransportxacml2" />
 		</wsdl:port>
 	</wsdl:service>
 	

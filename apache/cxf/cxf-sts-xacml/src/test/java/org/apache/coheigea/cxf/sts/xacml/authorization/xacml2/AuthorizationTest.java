@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.sts.xacml.authorization;
+package org.apache.coheigea.cxf.sts.xacml.authorization.xacml2;
 
 import java.net.URL;
 
@@ -26,7 +26,7 @@ import javax.xml.ws.Service;
 
 import org.apache.coheigea.cxf.sts.xacml.common.STSServer;
 import org.apache.coheigea.cxf.sts.xacml.common.TokenTestUtils;
-import org.apache.coheigea.cxf.sts.xacml.pdp.PdpServer;
+import org.apache.coheigea.cxf.sts.xacml.pdp.xacml2.PdpServer;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Client;
@@ -42,7 +42,7 @@ import org.junit.BeforeClass;
  * populates the security context. Note that the CXF endpoint requires a "role" Claim via the
  * security policy.
  *
- * The CXF Endpoint has configured the XACMLAuthorizingInterceptor, which creates a XACML request 
+ * The CXF Endpoint has configured the XACMLAuthorizingInterceptor, which creates a XACML 2.0 request 
  * for dispatch to the PDP, and then enforces the PDP's decision. The mocked PDP is a REST service, 
  * that requires that a user must have role "boss" to access the "doubleIt" operation ("alice" has 
  * this role, "bob" does not).

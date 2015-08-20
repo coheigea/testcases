@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.coheigea.cxf.sts.xacml.pdp;
+package org.apache.coheigea.cxf.sts.xacml.pdp.xacml2;
 
 import java.util.List;
 
@@ -49,8 +49,9 @@ import org.opensaml.xacml.ctx.StatusType;
 import org.opensaml.xacml.ctx.SubjectType;
 
 /**
- * A test PDP implementation. It just mocks up a Response object based on the role of 
- * the Subject. If the role is "boss" then it permits the request, otherwise it denies it.
+ * A testXACML 2.0 PDP implementation based on OpenSAML 2.0. It just mocks up a Response 
+ * object based on the role of the Subject. If the role is "boss" then it permits the 
+ * request, otherwise it denies it.
  */
 @Path("/pdp")
 public class MockPDPImpl {

@@ -45,7 +45,7 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean class="org.apache.coheigea.cxf.sts.xacml.common.PolicyDecisionPointImpl" id="pdp" />
+   <bean class="org.apache.coheigea.cxf.sts.xacml.authorization.xacml2.PolicyDecisionPointImpl" id="pdp" />
    
    <bean class="org.apache.cxf.rt.security.saml.xacml2.XACMLAuthorizingInterceptor" 
           id="XACMLInterceptor">
@@ -57,8 +57,8 @@
       endpointName="s:DoubleItTransportPort"
       serviceName="s:DoubleItService"
       depends-on="ClientAuthHttpsSettings"
-      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransport"
-      wsdlLocation="org/apache/coheigea/cxf/sts/xacml/authorization/DoubleIt.wsdl"
+      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportxacml2"
+      wsdlLocation="org/apache/coheigea/cxf/sts/xacml/authorization/xacml2/DoubleIt.wsdl"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>

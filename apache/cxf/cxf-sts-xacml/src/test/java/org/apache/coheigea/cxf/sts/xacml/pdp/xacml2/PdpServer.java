@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.sts.xacml.pdp;
+package org.apache.coheigea.cxf.sts.xacml.pdp.xacml2;
 
 import java.net.URL;
 
