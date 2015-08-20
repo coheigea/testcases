@@ -55,7 +55,6 @@ public class XACML3AuthorizingInterceptor extends AbstractPhaseInterceptor<Messa
     public XACML3AuthorizingInterceptor(PolicyDecisionPoint pdp) {
         super(Phase.PRE_INVOKE);
         this.pdp = pdp;
-        setRequestBuilder(new DefaultXACML3RequestBuilder());
     }
     
     public void handleMessage(Message message) throws Fault {
