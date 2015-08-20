@@ -48,10 +48,10 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="serviceProviderBean" class="org.apache.coheigea.cxf.sts.xacml.pdp.MockPDPImpl" />
+   <bean id="serviceProviderBean" class="org.apache.coheigea.cxf.sts.xacml.pdp.xacml2.MockPDPImpl" />
    
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.sts.xacml.common.CommonCallbackHandler"/>
-   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.sts.xacml.pdp.BasicAuthFilter">
+   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.sts.xacml.pdp.xacml2.BasicAuthFilter">
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    

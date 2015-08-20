@@ -52,7 +52,7 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportPort" createdFromAPI="true">
        <jaxws:properties>
            <entry key="ws-security.sts.client" value-ref="stsClient"/>
-           <entry key="ws-security.callback-handler" value="org.apache.coheigea.cxf.sts.xacml.authorization.CommonCallbackHandler"/>
+           <entry key="ws-security.callback-handler" value="org.apache.coheigea.cxf.sts.xacml.authorization.xacml2.CommonCallbackHandler"/>
        </jaxws:properties>
    </jaxws:client>
    
