@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.openaz.jaxws;
+package org.apache.coheigea.cxf.sts.xacml.authorization.xacml3;
 
 import java.net.URL;
 
@@ -24,26 +24,33 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 
-import org.apache.coheigea.cxf.openaz.common.SamlRoleCallbackHandler;
+import org.apache.coheigea.cxf.sts.xacml.common.STSServer;
+import org.apache.coheigea.cxf.sts.xacml.common.TokenTestUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
 /**
- * An authorization test for a JAX-WS service using XACML and the OpenAZ project.
- * A "double-it" client creates a signed SAML Token containing a given role. This is sent to the
- * service, which validates the SAML Token + then invokes a PEP which creates a XACML Request.
- * A PDP based on OpenAZ is colocated with the PEP + makes an authorization decision based on
- * a set of policies. Finally the PEP enforces the decision of the PDP.
+ * The client authenticates to the STS using a username/password, and gets a signed holder-of-key 
+ * SAML Assertion in return. This is presented to the service, who verifies proof-of-possession + 
+ * the signature of the STS on the assertion. The CXF endpoint extracts roles from the Assertion + 
+ * populates the security context. Note that the CXF endpoint requires a "role" Claim via the
+ * security policy.
+ *
+ * The CXF Endpoint has configured the XACML3AuthorizingInterceptor, which creates a JSON XACML 3.0 
+ * request for dispatch to the (co-located) PDP, and then enforces the PDP's decision.
  */
-public class OpenazAuthorizationTest extends AbstractBusClientServerTestBase {
+public class AuthorizationTest extends AbstractBusClientServerTestBase {
     
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
     
     private static final String PORT = allocatePort(Server.class);
+    private static final String STS_PORT = allocatePort(STSServer.class);
     
     @BeforeClass
     public static void startServers() throws Exception {
@@ -53,32 +60,36 @@ public class OpenazAuthorizationTest extends AbstractBusClientServerTestBase {
                    // set this to false to fork
                    launchServer(Server.class, true)
         );
+        assertTrue(
+                "Server failed to launch",
+                // run the server in the same process
+                // set this to false to fork
+                launchServer(STSServer.class, true)
+        );
     }
-   
+    
     @org.junit.Test
     public void testAuthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = OpenazAuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = OpenazAuthorizationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 
             service.getPort(portQName, DoubleItPortType.class);
         updateAddressPort(transportPort, PORT);
         
-        SamlRoleCallbackHandler roleCallbackHandler = new SamlRoleCallbackHandler();
-        roleCallbackHandler.setSignAssertion(true);
-        roleCallbackHandler.setRoleName("manager");
-        ((BindingProvider)transportPort).getRequestContext().put(
-            "ws-security.saml-callback-handler", roleCallbackHandler
-        );
-
+        Client client = ClientProxy.getClient(transportPort);
+        client.getRequestContext().put("ws-security.username", "alice");
+        
+        TokenTestUtils.updateSTSPort((BindingProvider)transportPort, STS_PORT);
+        
         doubleIt(transportPort, 25);
     }
     
@@ -86,29 +97,27 @@ public class OpenazAuthorizationTest extends AbstractBusClientServerTestBase {
     public void testUnauthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = OpenazAuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = OpenazAuthorizationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 
             service.getPort(portQName, DoubleItPortType.class);
         updateAddressPort(transportPort, PORT);
         
-        SamlRoleCallbackHandler roleCallbackHandler = new SamlRoleCallbackHandler();
-        roleCallbackHandler.setSignAssertion(true);
-        roleCallbackHandler.setRoleName("employee");
-        ((BindingProvider)transportPort).getRequestContext().put(
-            "ws-security.saml-callback-handler", roleCallbackHandler
-        );
+        Client client = ClientProxy.getClient(transportPort);
+        client.getRequestContext().put("ws-security.username", "bob");
+        
+        TokenTestUtils.updateSTSPort((BindingProvider)transportPort, STS_PORT);
         
         try {
             doubleIt(transportPort, 25);
-            fail("Failure expected on employee role");
+            fail("Failure expected on bob");
         } catch (Exception ex) {
             // expected
         }

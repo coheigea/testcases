@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.openaz.common;
+package org.apache.coheigea.cxf.sts.xacml.authorization.xacml3;
 
 import java.io.IOException;
 
@@ -33,7 +33,13 @@ public class CommonCallbackHandler implements CallbackHandler {
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof WSPasswordCallback) { // CXF
                 WSPasswordCallback pc = (WSPasswordCallback) callbacks[i];
-                if ("alice".equals(pc.getIdentifier())) {
+                if ("myclientkey".equals(pc.getIdentifier())) {
+                    pc.setPassword("ckpass");
+                    break;
+                } else if ("myservicekey".equals(pc.getIdentifier())) {
+                    pc.setPassword("skpass");
+                    break;
+                } else if ("alice".equals(pc.getIdentifier())) {
                     pc.setPassword("security");
                     break;
                 } else if ("bob".equals(pc.getIdentifier())) {

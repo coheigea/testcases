@@ -9,7 +9,7 @@
         <AnyOf>
 		    <AllOf>
 				<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:anyURI-equal">
-					 <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#anyURI">manager</AttributeValue>
+					 <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#anyURI">boss</AttributeValue>
 				     <AttributeDesignator MustBePresent="false"
 						Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" 
 						AttributeId="urn:oasis:names:tc:xacml:2.0:subject:role"
@@ -19,7 +19,7 @@
 	     </AnyOf>
     </Target>
 
-    <!-- Use permissions associated with the manager role -->
+    <!-- Use permissions associated with the boss role -->
     <PolicySetIdReference>org.apache.permissions.doubleit</PolicySetIdReference>
 </PolicySet>
 

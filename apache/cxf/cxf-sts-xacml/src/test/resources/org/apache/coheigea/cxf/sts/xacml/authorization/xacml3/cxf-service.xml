@@ -45,26 +45,26 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean class="org.apache.coheigea.cxf.openaz.pdp.OpenAZPolicyDecisionPoint" id="openazPDP" />
-   <bean class="org.apache.coheigea.cxf.openaz.xacml3.XACML3AuthorizingInterceptor" id="XACMLInterceptor">
+   <bean class="org.apache.coheigea.cxf.sts.xacml.pdp.xacml3.OpenAZPolicyDecisionPoint" id="openazPDP" />
+   <bean class="org.apache.coheigea.cxf.sts.xacml.authorization.xacml3.XACML3AuthorizingInterceptor" id="XACMLInterceptor">
        <constructor-arg ref="openazPDP"/>
    </bean>
    
    <jaxws:endpoint id="doubleittransport"
-      implementor="org.apache.coheigea.cxf.openaz.common.DoubleItPortTypeImpl"
+      implementor="org.apache.coheigea.cxf.sts.xacml.common.DoubleItPortTypeImpl"
       endpointName="s:DoubleItTransportPort"
       serviceName="s:DoubleItService"
       depends-on="ClientAuthHttpsSettings"
-      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransport"
-      wsdlLocation="org/apache/coheigea/cxf/openaz/jaxws/DoubleIt.wsdl"
+      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportxacml3"
+      wsdlLocation="org/apache/coheigea/cxf/sts/xacml/authorization/xacml3/DoubleIt.wsdl"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-          <entry key="ws-security.signature.properties" value="stsKeystore.properties"/>
+          <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
       </jaxws:properties>
       <jaxws:inInterceptors>
-            <ref bean="XACMLInterceptor"/>
-        </jaxws:inInterceptors>
+         <ref bean="XACMLInterceptor"/>
+      </jaxws:inInterceptors>
    </jaxws:endpoint>
    
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">

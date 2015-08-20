@@ -16,18 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.openaz.xacml3;
+package org.apache.coheigea.cxf.sts.xacml.authorization.xacml3;
 
-/**
- * An interface that describes a PolicyDecisionPoint (PDP) that supports XACML 3.0 using OpenAZ
- */
-public interface PolicyDecisionPoint {
-    
-    /**
-     * Evaluate an XACML Request and return a Response
-     * @param request an XACML Request as a String
-     * @return the XACML Response as a String
-     */
-    String evaluate(String request);
-    
+import java.net.URL;
+
+import org.apache.cxf.Bus;
+import org.apache.cxf.BusFactory;
+import org.apache.cxf.bus.spring.SpringBusFactory;
+import org.apache.cxf.testutil.common.AbstractBusTestServerBase;
+
+public class Server extends AbstractBusTestServerBase {
+
+    public Server() {
+
+    }
+
+    protected void run()  {
+        URL busFile = Server.class.getResource("cxf-service.xml");
+        Bus busLocal = new SpringBusFactory().createBus(busFile);
+        BusFactory.setDefaultBus(busLocal);
+        setBus(busLocal);
+
+        try {
+            new Server();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
