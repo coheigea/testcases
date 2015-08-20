@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.coheigea.cxf.openaz.xacml3;
+package org.apache.coheigea.cxf.sts.xacml.authorization.xacml3;
 
 import java.security.Principal;
 import java.util.List;

@@ -48,7 +48,7 @@
 	<wsdl:service name="DoubleItService">
 		<wsdl:port name="DoubleItTransportPort" binding="tns:DoubleItTransportBinding">
 			<soap:address
-				location="https://localhost:8081/doubleit/services/doubleittransport" />
+				location="https://localhost:8081/doubleit/services/doubleittransportxacml3" />
 		</wsdl:port>
 	</wsdl:service>
 	
@@ -67,20 +67,33 @@
 						</sp:TransportToken>
 						<sp:AlgorithmSuite>
 							<wsp:Policy>
-								<sp:Basic128 />
+								<sp:TripleDes />
 							</wsp:Policy>
 						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Lax />
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp />
 					</wsp:Policy>
 				</sp:TransportBinding>
-				<sp:SignedSupportingTokens>
+				<sp:EndorsingSupportingTokens>
                     <wsp:Policy>
-                        <sp:SamlToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+                        <sp:IssuedToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+                            <sp:RequestSecurityTokenTemplate>
+                                <t:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0</t:TokenType>
+                                <t:KeyType>http://docs.oasis-open.org/ws-sx/ws-trust/200512/PublicKey</t:KeyType>
+                                <t:Claims xmlns:ic="http://schemas.xmlsoap.org/ws/2005/05/identity" Dialect="http://schemas.xmlsoap.org/ws/2005/05/identity">
+                                    <ic:ClaimType Uri="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role"/>
+                                </t:Claims>
+                            </sp:RequestSecurityTokenTemplate>
                             <wsp:Policy>
-                                <sp:WssSamlV20Token11/>
+                                <sp:RequireInternalReference/>
                             </wsp:Policy>
-                        </sp:SamlToken>
+                        </sp:IssuedToken>
                     </wsp:Policy>
-                </sp:SignedSupportingTokens>
+                </sp:EndorsingSupportingTokens>
 			</wsp:All>
 		</wsp:ExactlyOne>
 	</wsp:Policy>

@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.openaz.pdp;
+package org.apache.coheigea.cxf.sts.xacml.pdp.xacml3;
 
 import java.util.Properties;
 
-import org.apache.coheigea.cxf.openaz.xacml3.PolicyDecisionPoint;
+import org.apache.coheigea.cxf.sts.xacml.authorization.xacml3.PolicyDecisionPoint;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
@@ -44,9 +44,9 @@ public class OpenAZPolicyDecisionPoint implements PolicyDecisionPoint {
         properties.put("xacml.rootPolicies", "manager");
         properties.put("xacml.referencedPolicies", "doubleit");
         properties.put("manager.file", 
-                       "src/test/resources/org/apache/coheigea/cxf/openaz/pdp/manager_role_policy.xml");
+                       "src/test/resources/org/apache/coheigea/cxf/sts/xacml/pdp/xacml3/boss_role_policy.xml");
         properties.put("doubleit.file", 
-            "src/test/resources/org/apache/coheigea/cxf/openaz/pdp/manager_permission_policy.xml");
+            "src/test/resources/org/apache/coheigea/cxf/sts/xacml/pdp/xacml3/boss_permission_policy.xml");
         
         PDPEngineFactory engineFactory = PDPEngineFactory.newInstance();
         pdpEngine = engineFactory.newEngine(properties);
