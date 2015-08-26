@@ -33,12 +33,6 @@
 
    <dependencies>
        <dependency>
-           <groupId>org.apache.wss4j</groupId>
-           <artifactId>wss4j-ws-security-dom</artifactId>
-           <version>2.0.5-SNAPSHOT</version>
-           <scope>compile</scope>
-       </dependency>
-       <dependency>
            <groupId>commons-logging</groupId>
            <artifactId>commons-logging</artifactId>
            <version>${commons.logging.version}</version>
