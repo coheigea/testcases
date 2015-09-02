@@ -182,12 +182,6 @@
             <version>${syncope.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.syncope</groupId>
-            <artifactId>syncope-console</artifactId>
-            <type>war</type>
-            <version>${syncope.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${h2.version}</version>
@@ -291,14 +285,6 @@
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${cargo.core.dir}</outputDirectory>
                                 </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.syncope</groupId>
-                                    <artifactId>syncope-console</artifactId>
-                                    <version>${syncope.version}</version>
-                                    <type>war</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${cargo.console.dir}</outputDirectory>
-                                </artifactItem>
                             </artifactItems>
                             <outputAbsoluteArtifactFilename>true</outputAbsoluteArtifactFilename>
                             <overWriteSnapshots>true</overWriteSnapshots>
@@ -327,25 +313,6 @@
                                         <include>persistence.properties</include>
                                     </includes>
                                     <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-console-resources</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${cargo.console.dir}/WEB-INF/classes</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/target/test-classes/console</directory>
-                                    <includes>
-                                        <include>console.properties</include>
-                                    </includes>
-                                    <filtering>true</filtering>
                                 </resource>
                             </resources>
                         </configuration>
@@ -396,13 +363,6 @@
                             <type>war</type>
                             <properties>
                                 <context>syncope</context>
-                            </properties>
-                        </deployable>
-                        <deployable>
-                            <location>${cargo.console.dir}</location>
-                            <type>war</type>
-                            <properties>
-                                <context>syncope-console</context>
                             </properties>
                         </deployable>
                     </deployables>
