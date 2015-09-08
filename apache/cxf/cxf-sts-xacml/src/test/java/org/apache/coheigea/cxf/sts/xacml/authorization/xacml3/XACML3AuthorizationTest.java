@@ -44,7 +44,7 @@ import org.junit.BeforeClass;
  * The CXF Endpoint has configured the XACML3AuthorizingInterceptor, which creates a JSON XACML 3.0 
  * request for dispatch to the (co-located) PDP, and then enforces the PDP's decision.
  */
-public class AuthorizationTest extends AbstractBusClientServerTestBase {
+public class XACML3AuthorizationTest extends AbstractBusClientServerTestBase {
     
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
@@ -72,13 +72,13 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     public void testAuthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = XACML3AuthorizationTest.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = XACML3AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 
@@ -97,13 +97,13 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     public void testUnauthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = XACML3AuthorizationTest.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = XACML3AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 
