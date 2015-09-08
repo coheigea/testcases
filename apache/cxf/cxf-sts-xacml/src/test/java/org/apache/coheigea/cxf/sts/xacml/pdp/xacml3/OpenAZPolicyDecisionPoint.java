@@ -19,8 +19,10 @@
 package org.apache.coheigea.cxf.sts.xacml.pdp.xacml3;
 
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.apache.coheigea.cxf.sts.xacml.authorization.xacml3.PolicyDecisionPoint;
+import org.apache.cxf.common.logging.LogUtils;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
@@ -36,14 +38,16 @@ import org.apache.openaz.xacml.std.json.JSONResponse;
  */
 public class OpenAZPolicyDecisionPoint implements PolicyDecisionPoint {
     
+    private static final Logger LOG = LogUtils.getL7dLogger(OpenAZPolicyDecisionPoint.class);
+    
     private final PDPEngine pdpEngine;
     
     public OpenAZPolicyDecisionPoint() throws Exception {
         // Load policies + PDP
         Properties properties = new Properties();
-        properties.put("xacml.rootPolicies", "manager");
+        properties.put("xacml.rootPolicies", "boss");
         properties.put("xacml.referencedPolicies", "doubleit");
-        properties.put("manager.file", 
+        properties.put("boss.file", 
                        "src/test/resources/org/apache/coheigea/cxf/sts/xacml/pdp/xacml3/boss_role_policy.xml");
         properties.put("doubleit.file", 
             "src/test/resources/org/apache/coheigea/cxf/sts/xacml/pdp/xacml3/boss_permission_policy.xml");
@@ -54,6 +58,8 @@ public class OpenAZPolicyDecisionPoint implements PolicyDecisionPoint {
 
     public String evaluate(String requestString) {
         try {
+            LOG.info("XACML request: " + requestString);
+            
             // Convert into a XACML Request
             Request request = JSONRequest.load(requestString);
             
