@@ -6,7 +6,7 @@
     xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17 xacml-core-v3-schema-wd-17.xsd"
     xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" >
     <Target />
-    <Policy PolicyId="Permissions:for:the:manager:role"
+    <Policy PolicyId="Permissions:for:the:boss:role"
 	    Version="1.0" RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-overrides">
 	    <Target />
 	    <Rule RuleId="Permission:to:doubleit" Effect="Permit">
