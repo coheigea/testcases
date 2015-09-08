@@ -47,7 +47,7 @@ import org.junit.BeforeClass;
  * that requires that a user must have role "boss" to access the "doubleIt" operation ("alice" has 
  * this role, "bob" does not).
  */
-public class AuthorizationTest extends AbstractBusClientServerTestBase {
+public class XACML2AuthorizationTest extends AbstractBusClientServerTestBase {
     
     public static final String PDP_PORT = allocatePort(PdpServer.class);
     
@@ -83,13 +83,13 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     public void testAuthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = XACML2AuthorizationTest.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = XACML2AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 
@@ -108,13 +108,13 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     public void testUnauthorizedRequest() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = XACML2AuthorizationTest.class.getResource("cxf-client.xml");
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
+        URL wsdl = XACML2AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
         DoubleItPortType transportPort = 

@@ -52,7 +52,7 @@ public class PolicyDecisionPointImpl implements PolicyDecisionPoint {
             URL busFile = 
                 PolicyDecisionPointImpl.class.getResource("cxf-pdp-client.xml");
     
-            String address = "https://localhost:" + AuthorizationTest.PDP_PORT + "/authorization/pdp";
+            String address = "https://localhost:" + XACML2AuthorizationTest.PDP_PORT + "/authorization/pdp";
             WebClient client = WebClient.create(address, "myservicekey", "skpass", busFile.toString());
             client.type("text/xml").accept("text/xml");
             
