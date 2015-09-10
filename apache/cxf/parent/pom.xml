@@ -24,6 +24,12 @@
     <name>Apache CXF parent pom for demo</name>
     <version>1.0</version>
 
+    <parent>
+        <groupId>org.apache.coheigea.cxf</groupId>
+        <artifactId>cxf-root</artifactId>
+        <version>1.0</version>
+    </parent>
+
     <properties>
         <apacheds.version>2.0.0-M19</apacheds.version>
         <bcprov.version>1.52</bcprov.version>
