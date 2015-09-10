@@ -85,7 +85,7 @@
         <httpj:engine port="${testutil.ports.STSServer}">
             <httpj:tlsServerParameters>
                 <sec:keyManagers keyPassword="skpass">
-                    <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
+                    <sec:keyStore type="jks" password="sspass" resource="stsservicestore.jks"/>
                 </sec:keyManagers>
                 <sec:trustManagers>
                     <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>

@@ -60,7 +60,7 @@
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-          <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
+          <entry key="ws-security.signature.properties" value="stsServiceKeystore.properties"/>
       </jaxws:properties>
       <jaxws:inInterceptors>
          <ref bean="XACMLInterceptor"/>
@@ -71,7 +71,7 @@
    <httpj:engine port="${testutil.ports.Server}">
     <httpj:tlsServerParameters>
       <sec:keyManagers keyPassword="skpass">
-          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
+          <sec:keyStore type="jks" password="sspass" resource="stsservicestore.jks"/>
       </sec:keyManagers>
       <sec:trustManagers>
           <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
