@@ -48,7 +48,7 @@
    <http:conduit name="https://localhost.*">
       <http:tlsClientParameters disableCNCheck="true">
         <sec:trustManagers>
-          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
+          <sec:keyStore type="jks" password="sspass" resource="stsservicestore.jks"/>
         </sec:trustManagers>
       </http:tlsClientParameters>
       <http:authorization>
