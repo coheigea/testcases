@@ -80,7 +80,7 @@
    <http:conduit name="https://localhost.*">
       <http:tlsClientParameters disableCNCheck="true">
         <sec:trustManagers>
-          <sec:keyStore type="jks" password="cspass" resource="clientstore.jks"/>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
         </sec:trustManagers>
       </http:tlsClientParameters>
    </http:conduit>
@@ -88,11 +88,11 @@
    <httpj:engine-factory id="InvoiceServerTLS" bus="cxf">
    <httpj:engine port="${testutil.ports.InvoiceServer}">
     <httpj:tlsServerParameters>
-      <sec:keyManagers keyPassword="stskpass">
-          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
+      <sec:keyManagers keyPassword="skpass">
+          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
       </sec:keyManagers>
       <sec:trustManagers>
-          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
       </sec:trustManagers>
       <sec:clientAuthentication want="true" required="false"/>
     </httpj:tlsServerParameters>
