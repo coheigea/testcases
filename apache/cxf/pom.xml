@@ -30,6 +30,7 @@
         <module>cxf-common</module>
         <module>cxf-asymmetric</module>
         <module>cxf-jaxrs-sts</module>
+        <module>cxf-jaxrs-jaas-sts</module>
         <module>cxf-jaxrs-xmlsecurity</module>
         <module>cxf-jaxrs-jose</module>
         <module>cxf-oauth1</module>
