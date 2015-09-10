@@ -111,6 +111,13 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>${bcprov.version}</version>
        </dependency>
+       <dependency>
+           <groupId>org.apache.coheigea.cxf</groupId>
+           <artifactId>cxf-common</artifactId>
+           <version>${project.version}</version>
+           <scope>test</scope>
+           <classifier>tests</classifier>
+       </dependency>
 
     </dependencies>
 

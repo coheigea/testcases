@@ -164,6 +164,14 @@
             <artifactId>h2</artifactId>
             <version>${h2.version}</version>
         </dependency>
+        <dependency>
+           <groupId>org.apache.coheigea.cxf</groupId>
+           <artifactId>cxf-common</artifactId>
+           <version>${project.version}</version>
+           <scope>test</scope>
+           <classifier>tests</classifier>
+       </dependency>
+
     </dependencies>
     <build>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>

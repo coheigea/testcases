@@ -94,11 +94,11 @@
    <httpj:engine-factory id="OAuthServerTLS" bus="cxf">
    <httpj:engine port="${testutil.ports.BankServer.2}">
     <httpj:tlsServerParameters>
-      <sec:keyManagers keyPassword="stskpass">
-          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
+      <sec:keyManagers keyPassword="skpass">
+          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
       </sec:keyManagers>
       <sec:trustManagers>
-          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
       </sec:trustManagers>
       <sec:clientAuthentication want="true" required="false"/>
     </httpj:tlsServerParameters>

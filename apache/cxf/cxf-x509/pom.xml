@@ -106,6 +106,13 @@
             <version>${slf4j.version}</version>
             <scope>test</scope>
        </dependency>
+       <dependency>
+           <groupId>org.apache.coheigea.cxf</groupId>
+           <artifactId>cxf-common</artifactId>
+           <version>${project.version}</version>
+           <scope>test</scope>
+           <classifier>tests</classifier>
+       </dependency>
 
     </dependencies>
 

@@ -38,7 +38,7 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
    <http:conduit name="https://localhost.*">
       <http:tlsClientParameters disableCNCheck="true">
         <sec:trustManagers>
-          <sec:keyStore type="jks" password="cspass" resource="clientstore.jks"/>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
         </sec:trustManagers>
       </http:tlsClientParameters>
    </http:conduit>

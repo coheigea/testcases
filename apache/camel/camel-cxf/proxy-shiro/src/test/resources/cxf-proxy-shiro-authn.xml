@@ -94,7 +94,7 @@
           <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
       </sec:keyManagers>
       <sec:trustManagers>
-          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
       </sec:trustManagers>
       <sec:clientAuthentication want="true" required="false"/>
     </httpj:tlsServerParameters>
@@ -107,7 +107,7 @@
           <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
         </sec:keyManagers>
         <sec:trustManagers>
-          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
         </sec:trustManagers>
       </http:tlsClientParameters>
    </http:conduit>
