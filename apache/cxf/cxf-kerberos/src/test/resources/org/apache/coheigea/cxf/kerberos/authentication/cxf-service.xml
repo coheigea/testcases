@@ -80,7 +80,7 @@
         
       <jaxws:properties>
           <entry key="ws-security.kerberos.jaas.context" value="bob"/>
-          <entry key="ws-security.callback-handler" value-ref="kerberosCallbackHandler"/>
+          <entry key="security.callback-handler" value-ref="kerberosCallbackHandler"/>
       </jaxws:properties> 
    </jaxws:endpoint>
    

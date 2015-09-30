@@ -54,12 +54,12 @@
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.asymmetric.common.CommonCallbackHandler"/>
-           <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
-           <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
-           <entry key="ws-security.signature.username" value="myservicekey"/>
-           <entry key="ws-security.encryption.username" value="useReqSigCert"/>
+           <entry key="security.encryption.properties" value="serviceKeystore.properties"/>
+           <entry key="security.signature.properties" value="serviceKeystore.properties"/>
+           <entry key="security.signature.username" value="myservicekey"/>
+           <entry key="security.encryption.username" value="useReqSigCert"/>
       </jaxws:properties> 
    </jaxws:endpoint>
    
@@ -72,12 +72,12 @@
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.asymmetric.common.CommonCallbackHandler"/>
-           <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
-           <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
-           <entry key="ws-security.signature.username" value="myservicekey"/>
-           <entry key="ws-security.encryption.username" value="useReqSigCert"/>
+           <entry key="security.encryption.properties" value="serviceKeystore.properties"/>
+           <entry key="security.signature.properties" value="serviceKeystore.properties"/>
+           <entry key="security.signature.username" value="myservicekey"/>
+           <entry key="security.encryption.username" value="useReqSigCert"/>
       </jaxws:properties> 
    </jaxws:endpoint>
    
@@ -90,12 +90,12 @@
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.asymmetric.common.CommonCallbackHandler"/>
-           <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
-           <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
-           <entry key="ws-security.signature.username" value="myservicekey"/>
-           <entry key="ws-security.encryption.username" value="useReqSigCert"/>
+           <entry key="security.encryption.properties" value="serviceKeystore.properties"/>
+           <entry key="security.signature.properties" value="serviceKeystore.properties"/>
+           <entry key="security.signature.username" value="myservicekey"/>
+           <entry key="security.encryption.username" value="useReqSigCert"/>
       </jaxws:properties> 
    </jaxws:endpoint>
    

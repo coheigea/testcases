@@ -30,7 +30,7 @@
         xmlns:s="http://www.example.org/contract/DoubleIt">
         
         <jaxws:properties>
-            <entry key="ws-security.callback-handler" value-ref="callbackHandler"/>
+            <entry key="security.callback-handler" value-ref="callbackHandler"/>
         </jaxws:properties> 
     </jaxws:endpoint>
 

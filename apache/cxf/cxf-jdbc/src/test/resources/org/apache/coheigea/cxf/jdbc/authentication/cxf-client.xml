@@ -37,7 +37,7 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
    
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportUTPort" createdFromAPI="true">
        <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.jdbc.authentication.CommonCallbackHandler"/>
        </jaxws:properties>
    </jaxws:client>

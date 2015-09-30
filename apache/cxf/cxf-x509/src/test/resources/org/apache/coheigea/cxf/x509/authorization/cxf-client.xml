@@ -37,10 +37,10 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
    
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportPort" createdFromAPI="true">
        <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.x509.authentication.CommonCallbackHandler"/>
-           <entry key="ws-security.encryption.properties" value="clientKeystore.properties"/>
-           <entry key="ws-security.encryption.username" value="myservicekey"/>
+           <entry key="security.encryption.properties" value="clientKeystore.properties"/>
+           <entry key="security.encryption.username" value="myservicekey"/>
        </jaxws:properties>
    </jaxws:client>
    

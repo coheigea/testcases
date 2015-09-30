@@ -60,7 +60,7 @@
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-          <entry key="ws-security.signature.properties" value="stsServiceKeystore.properties"/>
+          <entry key="security.signature.properties" value="stsServiceKeystore.properties"/>
       </jaxws:properties>
       <jaxws:inInterceptors>
          <ref bean="XACMLInterceptor"/>

@@ -42,17 +42,17 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
         <property name="endpointName" value="{http://docs.oasis-open.org/ws-sx/ws-trust/200512/}Transport_Port"/>
         <property name="properties">
             <map>
-                <entry key="ws-security.sts.token.username" value="myclientkey"/>
-                <entry key="ws-security.sts.token.properties" value="stsClientKeystore.properties"/>
-                <entry key="ws-security.sts.token.usecert" value="true"/>
+                <entry key="security.sts.token.username" value="myclientkey"/>
+                <entry key="security.sts.token.properties" value="stsClientKeystore.properties"/>
+                <entry key="security.sts.token.usecert" value="true"/>
             </map>
         </property>
     </bean>
    
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportPort" createdFromAPI="true">
        <jaxws:properties>
-           <entry key="ws-security.sts.client" value-ref="stsClient"/>
-           <entry key="ws-security.callback-handler" value="org.apache.coheigea.cxf.sts.authentication.CommonCallbackHandler"/>
+           <entry key="security.sts.client" value-ref="stsClient"/>
+           <entry key="security.callback-handler" value="org.apache.coheigea.cxf.sts.authentication.CommonCallbackHandler"/>
        </jaxws:properties>
    </jaxws:client>
    

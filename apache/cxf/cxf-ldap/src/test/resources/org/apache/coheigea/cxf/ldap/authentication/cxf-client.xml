@@ -37,14 +37,14 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
    
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportSunPort" createdFromAPI="true">
        <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.ldap.authentication.CommonCallbackHandler"/>
        </jaxws:properties>
    </jaxws:client>
    
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportJettyPort" createdFromAPI="true">
        <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.ldap.authentication.CommonCallbackHandler"/>
        </jaxws:properties>
    </jaxws:client>

@@ -45,12 +45,12 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItAsymmetricPort" createdFromAPI="true">
        <jaxws:properties>
            <entry key="ws-security.password.encryptor.instance" value-ref="kmsEncryptor"/>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.kms.asymmetric.AsymmetricCallbackHandler"/>
-           <entry key="ws-security.encryption.properties" value="serviceEncKeystore.properties"/>
-           <entry key="ws-security.encryption.username" value="myservicekey"/>
-           <entry key="ws-security.signature.properties" value="clientEncKeystore.properties"/>
-           <entry key="ws-security.signature.username" value="myclientkey"/>
+           <entry key="security.encryption.properties" value="serviceEncKeystore.properties"/>
+           <entry key="security.encryption.username" value="myservicekey"/>
+           <entry key="security.signature.properties" value="clientEncKeystore.properties"/>
+           <entry key="security.signature.username" value="myclientkey"/>
        </jaxws:properties>
    </jaxws:client>
    
