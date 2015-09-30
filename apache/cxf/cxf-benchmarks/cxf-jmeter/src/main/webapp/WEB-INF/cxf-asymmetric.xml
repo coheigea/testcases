@@ -30,10 +30,10 @@
         xmlns:s="http://www.example.org/contract/DoubleIt">
         
         <jaxws:properties>
-            <entry key="ws-security.callback-handler" value-ref="callbackHandler"/>
-            <entry key="ws-security.signature.properties" value="asymmetricServiceKeystore.properties"/>
-            <entry key="ws-security.encryption.username" value="useReqSigCert"/>
-            <entry key="ws-security.subject.cert.constraints" value=".*O=Apache.*"/>
+            <entry key="security.callback-handler" value-ref="callbackHandler"/>
+            <entry key="security.signature.properties" value="asymmetricServiceKeystore.properties"/>
+            <entry key="security.encryption.username" value="useReqSigCert"/>
+            <entry key="security.subject.cert.constraints" value=".*O=Apache.*"/>
         </jaxws:properties> 
     </jaxws:endpoint>
     
@@ -46,11 +46,11 @@
         xmlns:s="http://www.example.org/contract/DoubleIt">
         
         <jaxws:properties>
-            <entry key="ws-security.callback-handler" value-ref="callbackHandler"/>
-            <entry key="ws-security.signature.properties" value="asymmetricServiceKeystore.properties"/>
-            <entry key="ws-security.encryption.username" value="useReqSigCert"/>
-            <entry key="ws-security.subject.cert.constraints" value=".*O=Apache.*"/>
-            <entry key="ws-security.enable.streaming" value="true"/>
+            <entry key="security.callback-handler" value-ref="callbackHandler"/>
+            <entry key="security.signature.properties" value="asymmetricServiceKeystore.properties"/>
+            <entry key="security.encryption.username" value="useReqSigCert"/>
+            <entry key="security.subject.cert.constraints" value=".*O=Apache.*"/>
+            <entry key="security.enable.streaming" value="true"/>
         </jaxws:properties> 
     </jaxws:endpoint>
     
@@ -63,12 +63,12 @@
         xmlns:s="http://www.example.org/contract/DoubleIt">
         
         <jaxws:properties>
-            <entry key="ws-security.callback-handler" value-ref="callbackHandler"/>
-            <entry key="ws-security.signature.properties" value="asymmetricServiceKeystore.properties"/>
-            <entry key="ws-security.encryption.username" value="useReqSigCert"/>
-            <entry key="ws-security.subject.cert.constraints" value=".*O=Apache.*"/>
+            <entry key="security.callback-handler" value-ref="callbackHandler"/>
+            <entry key="security.signature.properties" value="asymmetricServiceKeystore.properties"/>
+            <entry key="security.encryption.username" value="useReqSigCert"/>
+            <entry key="security.subject.cert.constraints" value=".*O=Apache.*"/>
             <entry key="mtom-enabled" value="true"/>
-            <entry key="ws-security.store.bytes.in.attachment" value="true"/>
+            <entry key="security.store.bytes.in.attachment" value="true"/>
         </jaxws:properties> 
     </jaxws:endpoint>
 

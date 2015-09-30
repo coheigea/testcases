@@ -65,10 +65,10 @@
           <ref bean="xmlSigOutHandler"/>
        </jaxrs:outInterceptors>
        <jaxrs:properties>
-            <entry key="ws-security.callback-handler" 
+            <entry key="security.callback-handler" 
                    value="org.apache.coheigea.cxf.jaxrs.xmlsecurity.common.CommonCallbackHandler"/>
-            <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
-            <!-- <entry key="ws-security.subject.cert.constraints" value=".*O=Apache,.*"/> -->
+            <entry key="security.signature.properties" value="serviceKeystore.properties"/>
+            <!-- <entry key="security.subject.cert.constraints" value=".*O=Apache,.*"/> -->
        </jaxrs:properties>
    </jaxrs:server>
   

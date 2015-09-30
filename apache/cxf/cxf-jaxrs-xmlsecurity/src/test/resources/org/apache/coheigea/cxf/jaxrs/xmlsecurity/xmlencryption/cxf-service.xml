@@ -65,9 +65,9 @@
           <ref bean="xmlEncOutHandler"/>
        </jaxrs:outInterceptors>
        <jaxrs:properties>
-            <entry key="ws-security.callback-handler" 
+            <entry key="security.callback-handler" 
                    value="org.apache.coheigea.cxf.jaxrs.xmlsecurity.common.CommonCallbackHandler"/>
-            <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
+            <entry key="security.encryption.properties" value="serviceKeystore.properties"/>
        </jaxrs:properties>
    </jaxrs:server>
   

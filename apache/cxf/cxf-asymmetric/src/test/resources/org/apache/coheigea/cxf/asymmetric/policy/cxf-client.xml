@@ -37,34 +37,34 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
    
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItAsymmetricOAEPPort" createdFromAPI="true">
        <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.asymmetric.common.CommonCallbackHandler"/>
-           <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
-           <entry key="ws-security.encryption.username" value="myservicekey"/>
-           <entry key="ws-security.signature.properties" value="clientKeystore.properties"/>
-           <entry key="ws-security.signature.username" value="myclientkey"/>
+           <entry key="security.encryption.properties" value="serviceKeystore.properties"/>
+           <entry key="security.encryption.username" value="myservicekey"/>
+           <entry key="security.signature.properties" value="clientKeystore.properties"/>
+           <entry key="security.signature.username" value="myclientkey"/>
        </jaxws:properties>
    </jaxws:client>
    
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItAsymmetricPKCS12Port" createdFromAPI="true">
        <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.asymmetric.common.CommonCallbackHandler"/>
-           <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
-           <entry key="ws-security.encryption.username" value="myservicekey"/>
-           <entry key="ws-security.signature.properties" value="clientKeystore.properties"/>
-           <entry key="ws-security.signature.username" value="myclientkey"/>
+           <entry key="security.encryption.properties" value="serviceKeystore.properties"/>
+           <entry key="security.encryption.username" value="myservicekey"/>
+           <entry key="security.signature.properties" value="clientKeystore.properties"/>
+           <entry key="security.signature.username" value="myclientkey"/>
        </jaxws:properties>
    </jaxws:client>
    
    <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItAsymmetricGCMPort" createdFromAPI="true">
        <jaxws:properties>
-           <entry key="ws-security.callback-handler" 
+           <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.asymmetric.common.CommonCallbackHandler"/>
-           <entry key="ws-security.encryption.properties" value="serviceKeystore.properties"/>
-           <entry key="ws-security.encryption.username" value="myservicekey"/>
-           <entry key="ws-security.signature.properties" value="clientKeystore.properties"/>
-           <entry key="ws-security.signature.username" value="myclientkey"/>
+           <entry key="security.encryption.properties" value="serviceKeystore.properties"/>
+           <entry key="security.encryption.username" value="myservicekey"/>
+           <entry key="security.signature.properties" value="clientKeystore.properties"/>
+           <entry key="security.signature.username" value="myclientkey"/>
        </jaxws:properties>
    </jaxws:client>
    

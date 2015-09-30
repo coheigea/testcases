@@ -30,8 +30,8 @@
         xmlns:s="http://www.example.org/contract/DoubleIt">
         
         <jaxws:properties>
-            <entry key="ws-security.callback-handler" value-ref="callbackHandler"/>
-            <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
+            <entry key="security.callback-handler" value-ref="callbackHandler"/>
+            <entry key="security.signature.properties" value="serviceKeystore.properties"/>
         </jaxws:properties> 
     </jaxws:endpoint>
     
@@ -44,9 +44,9 @@
         xmlns:s="http://www.example.org/contract/DoubleIt">
         
         <jaxws:properties>
-            <entry key="ws-security.callback-handler" value-ref="callbackHandler"/>
-            <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
-            <entry key="ws-security.enable.streaming" value="true"/>
+            <entry key="security.callback-handler" value-ref="callbackHandler"/>
+            <entry key="security.signature.properties" value="serviceKeystore.properties"/>
+            <entry key="security.enable.streaming" value="true"/>
         </jaxws:properties> 
     </jaxws:endpoint>
     
@@ -59,10 +59,10 @@
         xmlns:s="http://www.example.org/contract/DoubleIt">
         
         <jaxws:properties>
-            <entry key="ws-security.callback-handler" value-ref="callbackHandler"/>
-            <entry key="ws-security.signature.properties" value="serviceKeystore.properties"/>
+            <entry key="security.callback-handler" value-ref="callbackHandler"/>
+            <entry key="security.signature.properties" value="serviceKeystore.properties"/>
             <entry key="mtom-enabled" value="true"/>
-            <entry key="ws-security.store.bytes.in.attachment" value="true"/>
+            <entry key="security.store.bytes.in.attachment" value="true"/>
         </jaxws:properties> 
     </jaxws:endpoint>
 

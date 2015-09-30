@@ -81,7 +81,7 @@
         serviceName="ns1:SecurityTokenService" 
         endpointName="ns1:UT_Port">
         <jaxws:properties>
-            <entry key="ws-security.callback-handler" value="org.apache.coheigea.cxf.jaxrs.sts.CommonCallbackHandler"/>
+            <entry key="security.callback-handler" value="org.apache.coheigea.cxf.jaxrs.sts.CommonCallbackHandler"/>
         </jaxws:properties>
     </jaxws:endpoint>
 
