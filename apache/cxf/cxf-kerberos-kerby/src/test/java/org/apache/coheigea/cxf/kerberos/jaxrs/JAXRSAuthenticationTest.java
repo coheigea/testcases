@@ -86,9 +86,6 @@ public class JAXRSAuthenticationTest extends org.junit.Assert {
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
         kerbyServer.init();
 
-        // Need to disable PRE_AUTH (not sure why, maybe a bug in Kerby)
-        kerbyServer.getKdcSetting().getKdcConfig().setBoolean(KdcConfigKey.PREAUTH_REQUIRED, false);
-
         // Create principals
         String alice = "alice@service.ws.apache.org";
         String bob = "bob/service.ws.apache.org@service.ws.apache.org";
