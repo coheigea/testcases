@@ -48,11 +48,11 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.json.jwt.DoubleItAuthenticationService"/>
+   <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.jwt.authentication.DoubleItAuthenticationService"/>
    
    <bean id="jackson" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
    
-   <bean id="jwtJwsFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwtJwsAuthenticationFilter" />
+   <bean id="jwtFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter" />
    
    <jaxrs:server address="http://localhost:${testutil.ports.Server}/doubleit">
        <jaxrs:serviceBeans>
@@ -60,7 +60,7 @@
        </jaxrs:serviceBeans>
        <jaxrs:providers>
           <ref bean="jackson"/>
-          <ref bean="jwtJwsFilter"/>
+          <ref bean="jwtFilter"/>
        </jaxrs:providers>
        <jaxrs:properties>
             <entry key="rs.security.keystore.type" value="jks" />

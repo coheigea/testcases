@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.jaxrs.json.jwt;
+package org.apache.coheigea.cxf.jaxrs.jwt.authentication;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
-        claims.setIssuedAt(new Date().getTime());
+        claims.setIssuedAt(new Date().getTime() / 1000L);
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
@@ -124,7 +124,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
-        claims.setIssuedAt(new Date().getTime());
+        claims.setIssuedAt(new Date().getTime() / 1000L);
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
