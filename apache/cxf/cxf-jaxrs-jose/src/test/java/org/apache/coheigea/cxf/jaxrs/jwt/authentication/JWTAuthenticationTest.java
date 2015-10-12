@@ -34,6 +34,7 @@ import org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationClientFilter;
 import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
 import org.apache.cxf.rs.security.jose.jws.JwsHeaders;
 import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
+import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
 import org.apache.cxf.rs.security.jose.jwt.JwtToken;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
@@ -92,7 +93,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
 
         // Token must be on the filter properties
         Map<String, Object> jaxrsProperties = new HashMap<String, Object>();
-        jaxrsProperties.put("jwt.token", token);
+        jaxrsProperties.put(JwtConstants.JWT_TOKEN, token);
         properties.put("jaxrs.filter.properties", jaxrsProperties);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
@@ -142,7 +143,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
 
         // Token must be on the filter properties
         Map<String, Object> jaxrsProperties = new HashMap<String, Object>();
-        jaxrsProperties.put("jwt.token", token);
+        jaxrsProperties.put(JwtConstants.JWT_TOKEN, token);
         properties.put("jaxrs.filter.properties", jaxrsProperties);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
