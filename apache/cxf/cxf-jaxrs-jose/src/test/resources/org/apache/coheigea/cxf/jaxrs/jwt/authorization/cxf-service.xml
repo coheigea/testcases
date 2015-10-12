@@ -48,11 +48,22 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.jwt.token.DoubleItAuthenticationService"/>
+   <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.jwt.authentication.DoubleItAuthenticationService"/>
    
    <bean id="jackson" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
    
-   <bean id="jwtFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter" />
+   <bean id="jwtFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter">
+       <property name="roleClaim" value="role"/>
+   </bean>
+   
+   <bean id="authorizationInterceptor" 
+         class="org.apache.cxf.interceptor.security.SimpleAuthorizingInterceptor">
+       <property name="methodRolesMap">
+           <map>
+               <entry key="doubleIt" value="boss"/>
+           </map>
+       </property> 
+   </bean>
    
    <jaxrs:server address="http://localhost:${testutil.ports.Server}/doubleit">
        <jaxrs:serviceBeans>
@@ -62,27 +73,9 @@
           <ref bean="jackson"/>
           <ref bean="jwtFilter"/>
        </jaxrs:providers>
-       <jaxrs:properties>
-            <entry key="rs.security.keystore.type" value="jks" />
-            <entry key="rs.security.keystore.alias" value="myclientkey"/>
-            <entry key="rs.security.keystore.password" value="cspass"/>
-            <entry key="rs.security.keystore.file" value="clientstore.jks" />
-            <entry key="rs.security.jws.content.signature.algorithm" value="RS256" />
-       </jaxrs:properties>
-   </jaxrs:server>
-   
-   <bean id="newfutureFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter">
-       <property name="clockOffset" value="60" />
-   </bean>
-   
-   <jaxrs:server address="http://localhost:${testutil.ports.Server.2}/doubleit">
-       <jaxrs:serviceBeans>
-          <ref bean="serviceBean"/>
-       </jaxrs:serviceBeans>
-       <jaxrs:providers>
-          <ref bean="jackson"/>
-          <ref bean="newfutureFilter"/>
-       </jaxrs:providers>
+       <jaxrs:inInterceptors>
+          <ref bean="authorizationInterceptor"/>
+       </jaxrs:inInterceptors>
        <jaxrs:properties>
             <entry key="rs.security.keystore.type" value="jks" />
             <entry key="rs.security.keystore.alias" value="myclientkey"/>
