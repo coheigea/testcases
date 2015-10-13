@@ -92,5 +92,19 @@
        </jaxrs:properties>
    </jaxrs:server>
    
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.3}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="jwtFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+           <entry key="rs.security.jws.allow.none.signature" value="true"/>
+       </jaxrs:properties>
+   </jaxrs:server>
+   
+   
 </beans>
 
