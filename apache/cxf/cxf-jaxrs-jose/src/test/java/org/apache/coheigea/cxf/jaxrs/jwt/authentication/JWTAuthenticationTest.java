@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.jaxrs.json.common.Number;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.rs.security.jose.JoseType;
+import org.apache.cxf.rs.security.jose.common.JoseType;
 import org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationClientFilter;
 import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
 import org.apache.cxf.rs.security.jose.jws.JwsHeaders;
