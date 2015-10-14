@@ -138,7 +138,7 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
 
         Number numberToDouble = new Number();
@@ -207,7 +207,7 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
             properties.put("rs.security.keystore.alias", "myclientkey");
             properties.put("rs.security.keystore.file", "clientstore.jks");
             properties.put("rs.security.key.password", "ckpass");
-            properties.put("rs.security.jws.content.signature.algorithm", "PS256");
+            properties.put("rs.security.signature.algorithm", "PS256");
             WebClient.getConfig(client).getRequestContext().putAll(properties);
 
             Number numberToDouble = new Number();
@@ -249,7 +249,7 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
             properties.put("rs.security.keystore.alias", "ECDSA");
             properties.put("rs.security.keystore.file", "ecdsa.jks");
             properties.put("rs.security.key.password", "security");
-            properties.put("rs.security.jws.content.signature.algorithm", "ES256");
+            properties.put("rs.security.signature.algorithm", "ES256");
             WebClient.getConfig(client).getRequestContext().putAll(properties);
 
             Number numberToDouble = new Number();
@@ -286,7 +286,7 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "imposter");
         properties.put("rs.security.keystore.file", "imposter.jks");
         properties.put("rs.security.key.password", "ikpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
 
         Number numberToDouble = new Number();
