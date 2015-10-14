@@ -200,7 +200,6 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
                 WebClient.create(address, providers, busFile.toString());
             client.type("application/json").accept("application/json");
 
-
             Map<String, Object> properties = new HashMap<String, Object>();
             properties.put("rs.security.keystore.type", "jks");
             properties.put("rs.security.keystore.password", "cspass");
