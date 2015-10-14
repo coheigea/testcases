@@ -89,7 +89,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
@@ -135,7 +135,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "imposter");
         properties.put("rs.security.keystore.file", "imposter.jks");
         properties.put("rs.security.key.password", "ikpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);

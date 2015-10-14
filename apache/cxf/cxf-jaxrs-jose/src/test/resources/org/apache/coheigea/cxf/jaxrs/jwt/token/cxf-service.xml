@@ -67,7 +67,7 @@
             <entry key="rs.security.keystore.alias" value="myclientkey"/>
             <entry key="rs.security.keystore.password" value="cspass"/>
             <entry key="rs.security.keystore.file" value="clientstore.jks" />
-            <entry key="rs.security.jws.content.signature.algorithm" value="RS256" />
+            <entry key="rs.security.signature.algorithm" value="RS256" />
        </jaxrs:properties>
    </jaxrs:server>
    
@@ -88,7 +88,7 @@
             <entry key="rs.security.keystore.alias" value="myclientkey"/>
             <entry key="rs.security.keystore.password" value="cspass"/>
             <entry key="rs.security.keystore.file" value="clientstore.jks" />
-            <entry key="rs.security.jws.content.signature.algorithm" value="RS256" />
+            <entry key="rs.security.signature.algorithm" value="RS256" />
        </jaxrs:properties>
    </jaxrs:server>
    
@@ -101,7 +101,7 @@
           <ref bean="jwtFilter"/>
        </jaxrs:providers>
        <jaxrs:properties>
-           <entry key="rs.security.jws.allow.none.signature" value="true"/>
+           <entry key="rs.security.signature.allow.none" value="true"/>
        </jaxrs:properties>
    </jaxrs:server>
    

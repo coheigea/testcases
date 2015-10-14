@@ -113,7 +113,7 @@
             <entry key="rs.security.keystore.alias" value="myclientkey"/>
             <entry key="rs.security.keystore.password" value="cspass"/>
             <entry key="rs.security.keystore.file" value="clientstore.jks" />
-            <entry key="rs.security.jws.content.signature.algorithm" value="PS256" />
+            <entry key="rs.security.signature.algorithm" value="PS256" />
        </jaxrs:properties>
    </jaxrs:server>
    
@@ -130,7 +130,7 @@
             <entry key="rs.security.keystore.alias" value="ECDSA"/>
             <entry key="rs.security.keystore.password" value="security"/>
             <entry key="rs.security.keystore.file" value="ecdsa.jks" />
-            <entry key="rs.security.jws.content.signature.algorithm" value="ES256" />
+            <entry key="rs.security.signature.algorithm" value="ES256" />
        </jaxrs:properties>
    </jaxrs:server>
   

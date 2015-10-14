@@ -96,7 +96,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
@@ -145,7 +145,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
@@ -194,7 +194,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
@@ -243,7 +243,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
@@ -293,7 +293,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
@@ -343,7 +343,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
@@ -460,7 +460,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        properties.put("rs.security.jws.content.signature.algorithm", "RS256");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_CLAIMS, claims);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
