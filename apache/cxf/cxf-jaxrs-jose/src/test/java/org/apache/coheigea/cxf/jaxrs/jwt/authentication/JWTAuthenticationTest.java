@@ -90,11 +90,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
         properties.put("rs.security.jws.content.signature.algorithm", "RS256");
-
-        // Token must be on the filter properties
-        Map<String, Object> jaxrsProperties = new HashMap<String, Object>();
-        jaxrsProperties.put(JwtConstants.JWT_TOKEN, token);
-        properties.put("jaxrs.filter.properties", jaxrsProperties);
+        properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
 
@@ -140,11 +136,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.keystore.file", "imposter.jks");
         properties.put("rs.security.key.password", "ikpass");
         properties.put("rs.security.jws.content.signature.algorithm", "RS256");
-
-        // Token must be on the filter properties
-        Map<String, Object> jaxrsProperties = new HashMap<String, Object>();
-        jaxrsProperties.put(JwtConstants.JWT_TOKEN, token);
-        properties.put("jaxrs.filter.properties", jaxrsProperties);
+        properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
 
