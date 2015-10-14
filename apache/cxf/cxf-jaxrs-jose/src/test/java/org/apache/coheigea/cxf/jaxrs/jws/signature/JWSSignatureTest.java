@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.jaxrs.json.signature;
+package org.apache.coheigea.cxf.jaxrs.jws.signature;
 
 import java.net.URL;
 import java.security.Security;
@@ -39,7 +39,7 @@ import org.junit.BeforeClass;
 /**
  * Test JAX-RS JSON Signature. Only the client -> service request is signed, not the response.
  */
-public class JSONSignatureTest extends AbstractBusClientServerTestBase {
+public class JWSSignatureTest extends AbstractBusClientServerTestBase {
 
     private static final String PORT = allocatePort(Server.class);
     private static final String PORT2 = allocatePort(Server.class, 2);
@@ -60,7 +60,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testSignatureListProperties() throws Exception {
 
-        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+        URL busFile = JWSSignatureTest.class.getResource("cxf-client.xml");
 
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -73,7 +73,6 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
         WebClient client = 
             WebClient.create(address, providers, busFile.toString());
         client.type("application/json").accept("application/json");
-
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.signature.out.list.properties", "clientKeystore.properties");
@@ -91,7 +90,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testSignatureCompact() throws Exception {
 
-        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+        URL busFile = JWSSignatureTest.class.getResource("cxf-client.xml");
 
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -103,7 +102,6 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
         WebClient client = 
             WebClient.create(address, providers, busFile.toString());
         client.type("application/json").accept("application/json");
-
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.signature.out.properties", "clientKeystore.properties");
@@ -121,7 +119,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testSignatureCompactDynamicProperties() throws Exception {
 
-        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+        URL busFile = JWSSignatureTest.class.getResource("cxf-client.xml");
 
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -134,15 +132,12 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
             WebClient.create(address, providers, busFile.toString());
         client.type("application/json").accept("application/json");
 
-
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jks");
         properties.put("rs.security.keystore.password", "cspass");
         properties.put("rs.security.keystore.alias", "myclientkey");
         properties.put("rs.security.keystore.file", "clientstore.jks");
         properties.put("rs.security.key.password", "ckpass");
-        // properties.put("rs.security.key.password.provider", 
-        //                  new org.apache.coheigea.cxf.jaxrs.json.common.PrivateKeyPasswordProviderImpl());
         properties.put("rs.security.jws.content.signature.algorithm", "RS256");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
 
@@ -158,7 +153,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testHMACSignatureCompact() throws Exception {
 
-        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+        URL busFile = JWSSignatureTest.class.getResource("cxf-client.xml");
 
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -174,7 +169,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jwk");
-        properties.put("rs.security.keystore.alias.jws", "HMACKey");
+        properties.put("rs.security.keystore.alias", "HMACKey");
         properties.put("rs.security.keystore.file", "jwkHMAC.txt");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
 
@@ -192,7 +187,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
         try {
             Security.addProvider(new BouncyCastleProvider());  
 
-            URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+            URL busFile = JWSSignatureTest.class.getResource("cxf-client.xml");
 
             List<Object> providers = new ArrayList<Object>();
             providers.add(new JacksonJsonProvider());
@@ -212,8 +207,6 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
             properties.put("rs.security.keystore.alias", "myclientkey");
             properties.put("rs.security.keystore.file", "clientstore.jks");
             properties.put("rs.security.key.password", "ckpass");
-            // properties.put("rs.security.key.password.provider", 
-            //                  new org.apache.coheigea.cxf.jaxrs.json.common.PrivateKeyPasswordProviderImpl());
             properties.put("rs.security.jws.content.signature.algorithm", "PS256");
             WebClient.getConfig(client).getRequestContext().putAll(properties);
 
@@ -236,7 +229,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
         try {
             Security.addProvider(new BouncyCastleProvider());  
 
-            URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+            URL busFile = JWSSignatureTest.class.getResource("cxf-client.xml");
 
             List<Object> providers = new ArrayList<Object>();
             providers.add(new JacksonJsonProvider());
@@ -274,7 +267,7 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testImposterSignature() throws Exception {
 
-        URL busFile = JSONSignatureTest.class.getResource("cxf-client.xml");
+        URL busFile = JWSSignatureTest.class.getResource("cxf-client.xml");
 
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -286,7 +279,6 @@ public class JSONSignatureTest extends AbstractBusClientServerTestBase {
         WebClient client = 
             WebClient.create(address, providers, busFile.toString());
         client.type("application/json").accept("application/json");
-
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jks");
