@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.jaxrs.json.signature;
+package org.apache.coheigea.cxf.jaxrs.jws.signature;
 
 import java.net.URL;
 
