@@ -46,6 +46,7 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
     private static final String PORT3 = allocatePort(Server.class, 3);
     private static final String PORT4 = allocatePort(Server.class, 4);
     private static final String PORT5 = allocatePort(Server.class, 5);
+    private static final String PORT6 = allocatePort(Server.class, 6);
 
     @BeforeClass
     public static void startServers() throws Exception {
@@ -295,5 +296,33 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
         Response response = client.post(numberToDouble);
         assertNotEquals(response.getStatus(), 200);
     }
+    
+    @org.junit.Test
+    public void testSigningXMLPayload() throws Exception {
 
+        URL busFile = JWSSignatureTest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+
+        JwsWriterInterceptor writer = new JwsWriterInterceptor();
+        providers.add(writer);
+
+        String address = "http://localhost:" + PORT6 + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/xml").accept("application/xml");
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.signature.out.properties", "clientKeystore.properties");
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
 }

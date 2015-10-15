@@ -89,5 +89,20 @@
        </jaxrs:properties>
    </jaxrs:server>
    
+   <bean id="xmlServiceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItXMLService"/>
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.3}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="xmlServiceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="jwsInFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.encryption.in.properties"  value="serviceDecKeystore.properties"/>
+       </jaxrs:properties>
+   </jaxrs:server>
+   
 </beans>
 

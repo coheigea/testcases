@@ -133,6 +133,21 @@
             <entry key="rs.security.signature.algorithm" value="ES256" />
        </jaxrs:properties>
    </jaxrs:server>
+   
+   <bean id="xmlServiceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItXMLService"/>
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.6}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="xmlServiceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="compactJwsInFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.signature.in.properties"  value="serviceKeystore.properties"/>
+       </jaxrs:properties>
+   </jaxrs:server>
   
 </beans>
 
