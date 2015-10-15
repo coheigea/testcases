@@ -43,6 +43,7 @@ public class DoubleItAuthenticationService {
     public Number doubleIt(Number numberToDouble) {
         // Check the context was set up correctly etc.
         Assert.assertNotNull(jaxrsContext.getSecurityContext().getUserPrincipal());
+        System.out.println("PRINC: " + jaxrsContext.getSecurityContext().getUserPrincipal());
         
         JwtTokenSecurityContext securityContext = 
             (JwtTokenSecurityContext)jaxrsContext.get(SecurityContext.class.getName());

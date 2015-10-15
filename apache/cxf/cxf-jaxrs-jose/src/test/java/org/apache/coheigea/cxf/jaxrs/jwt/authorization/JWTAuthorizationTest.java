@@ -29,10 +29,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.jaxrs.json.common.Number;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.rs.security.jose.common.JoseType;
 import org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationClientFilter;
-import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
-import org.apache.cxf.rs.security.jose.jws.JwsHeaders;
 import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
 import org.apache.cxf.rs.security.jose.jwt.JwtToken;
@@ -78,11 +75,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
         claims.setIssuedAt(new Date().getTime() / 1000L);
         claims.setProperty("role", "boss");
         
-        JwsHeaders headers = new JwsHeaders();
-        headers.setType(JoseType.JWT);
-        headers.setSignatureAlgorithm(SignatureAlgorithm.RS256);
-        
-        JwtToken token = new JwtToken(headers, claims);
+        JwtToken token = new JwtToken(claims);
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jks");
@@ -124,11 +117,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
         
-        JwsHeaders headers = new JwsHeaders();
-        headers.setType(JoseType.JWT);
-        headers.setSignatureAlgorithm(SignatureAlgorithm.RS256);
-        
-        JwtToken token = new JwtToken(headers, claims);
+        JwtToken token = new JwtToken(claims);
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jks");
@@ -170,11 +159,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
         claims.setIssuedAt(new Date().getTime() / 1000L);
         claims.setProperty("role", "employee");
         
-        JwsHeaders headers = new JwsHeaders();
-        headers.setType(JoseType.JWT);
-        headers.setSignatureAlgorithm(SignatureAlgorithm.RS256);
-        
-        JwtToken token = new JwtToken(headers, claims);
+        JwtToken token = new JwtToken(claims);
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jks");
