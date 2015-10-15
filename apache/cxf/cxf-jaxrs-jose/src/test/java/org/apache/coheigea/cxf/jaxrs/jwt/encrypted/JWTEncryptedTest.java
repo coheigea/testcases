@@ -31,10 +31,7 @@ import javax.ws.rs.core.Response;
 import org.apache.coheigea.cxf.jaxrs.json.common.Number;
 import org.apache.coheigea.cxf.jaxrs.jwe.JWETest;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.rs.security.jose.common.JoseType;
 import org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationClientFilter;
-import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
-import org.apache.cxf.rs.security.jose.jws.JwsHeaders;
 import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
 import org.apache.cxf.rs.security.jose.jwt.JwtToken;
@@ -50,6 +47,7 @@ import org.junit.BeforeClass;
 public class JWTEncryptedTest extends AbstractBusClientServerTestBase {
 
     private static final String PORT = allocatePort(Server.class);
+    private static final String PORT2 = allocatePort(Server.class, 2);
 
     @BeforeClass
     public static void startServers() throws Exception {
@@ -91,10 +89,6 @@ public class JWTEncryptedTest extends AbstractBusClientServerTestBase {
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
         
-        //JwsHeaders headers = new JwsHeaders();
-        //headers.setType(JoseType.JWT);
-        //headers.setSignatureAlgorithm(SignatureAlgorithm.NONE);
-        
         JwtToken token = new JwtToken(claims);
 
         Map<String, Object> properties = new HashMap<String, Object>();
@@ -110,4 +104,84 @@ public class JWTEncryptedTest extends AbstractBusClientServerTestBase {
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
+    
+    @org.junit.Test
+    public void testEncryptedClaims() throws Exception {
+
+        URL busFile = JWETest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        JwtAuthenticationClientFilter jwtFilter = new JwtAuthenticationClientFilter();
+        jwtFilter.setJwsRequired(false);
+        jwtFilter.setJweRequired(true);
+        providers.add(jwtFilter);
+
+        String address = "http://localhost:" + PORT + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        // Create the JWT Token
+        JwtClaims claims = new JwtClaims();
+        claims.setSubject("alice");
+        claims.setIssuer("DoubleItSTSIssuer");
+        claims.setIssuedAt(new Date().getTime() / 1000L);
+        
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.encryption.properties", "clientEncKeystore.properties");
+        properties.put(JwtConstants.JWT_CLAIMS, claims);
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
+    
+    @org.junit.Test
+    public void testSignedEncryptedToken() throws Exception {
+
+        URL busFile = JWETest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        JwtAuthenticationClientFilter jwtFilter = new JwtAuthenticationClientFilter();
+        jwtFilter.setJwsRequired(true);
+        jwtFilter.setJweRequired(true);
+        providers.add(jwtFilter);
+
+        String address = "http://localhost:" + PORT2 + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        // Create the JWT Token
+        JwtClaims claims = new JwtClaims();
+        claims.setSubject("alice");
+        claims.setIssuer("DoubleItSTSIssuer");
+        claims.setIssuedAt(new Date().getTime() / 1000L);
+        
+        JwtToken token = new JwtToken(claims);
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.signature.out.properties", "clientKeystore.properties");
+        properties.put("rs.security.encryption.properties", "clientEncKeystore.properties");
+        properties.put(JwtConstants.JWT_TOKEN, token);
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
+    
 }

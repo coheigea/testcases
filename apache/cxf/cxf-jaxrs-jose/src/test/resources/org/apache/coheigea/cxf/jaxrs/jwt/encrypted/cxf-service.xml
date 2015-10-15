@@ -70,5 +70,24 @@
        </jaxrs:properties>
    </jaxrs:server>
    
+   <bean id="jwtSignedEncryptionFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter">
+       <property name="jwsRequired" value="true"/>
+       <property name="jweRequired" value="true"/>
+   </bean>
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.2}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="jwtSignedEncryptionFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.signature.in.properties"  value="serviceKeystore.properties"/>
+            <entry key="rs.security.encryption.in.properties"  value="serviceDecKeystore.properties"/>
+       </jaxrs:properties>
+   </jaxrs:server>
+   
 </beans>
 
