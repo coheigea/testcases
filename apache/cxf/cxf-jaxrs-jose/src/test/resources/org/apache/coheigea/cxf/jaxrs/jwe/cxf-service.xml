@@ -70,7 +70,7 @@
        </jaxrs:properties>
    </jaxrs:server>
    
-    <jaxrs:server address="http://localhost:${testutil.ports.Server.2}/doubleit">
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.2}/doubleit">
        <jaxrs:serviceBeans>
           <ref bean="serviceBean"/>
        </jaxrs:serviceBeans>
@@ -101,6 +101,41 @@
        </jaxrs:providers>
        <jaxrs:properties>
             <entry key="rs.security.encryption.in.properties"  value="serviceDecKeystore.properties"/>
+       </jaxrs:properties>
+   </jaxrs:server>
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.4}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="jweInFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.keystore.type" value="jks"/>
+            <entry key="rs.security.keystore.password" value="sspass"/>
+            <entry key="rs.security.keystore.alias" value="myservicekey"/>
+            <entry key="rs.security.keystore.file" value="servicestore.jks"/>
+            <entry key="rs.security.key.password" value="skpass"/>
+            <entry key="rs.security.encryption.key.algorithm" value="RSA1_5"/>
+            <entry key="rs.security.encryption.content.algorithm" value="A128CBC-HS256"/>
+       </jaxrs:properties>
+   </jaxrs:server>
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server.5}/doubleit">
+       <jaxrs:serviceBeans>
+          <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="jweInFilter"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.keystore.type" value="jwk"/>
+            <entry key="rs.security.keystore.alias" value="AesWrapKey"/>
+            <entry key="rs.security.keystore.file" value="jwk.txt"/>
+            <entry key="rs.security.encryption.content.algorithm" value="A128CBC-HS256"/>
        </jaxrs:properties>
    </jaxrs:server>
    

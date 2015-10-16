@@ -171,7 +171,7 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jwk");
         properties.put("rs.security.keystore.alias", "HMACKey");
-        properties.put("rs.security.keystore.file", "jwkHMAC.txt");
+        properties.put("rs.security.keystore.file", "jwk.txt");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
 
         Number numberToDouble = new Number();
