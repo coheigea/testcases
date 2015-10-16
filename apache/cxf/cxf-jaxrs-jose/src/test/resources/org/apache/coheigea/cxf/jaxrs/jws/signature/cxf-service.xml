@@ -96,7 +96,7 @@
        <jaxrs:properties>
             <entry key="rs.security.keystore.type" value="jwk" />
             <entry key="rs.security.keystore.alias" value="HMACKey"/>
-            <entry key="rs.security.keystore.file" value="jwkHMAC.txt" />
+            <entry key="rs.security.keystore.file" value="jwk.txt" />
        </jaxrs:properties>
    </jaxrs:server>
   
