@@ -101,7 +101,7 @@
           <ref bean="jwtFilter"/>
        </jaxrs:providers>
        <jaxrs:properties>
-           <entry key="rs.security.signature.allow.none" value="true"/>
+            <entry key="rs.security.signature.algorithm" value="none" />
        </jaxrs:properties>
    </jaxrs:server>
    
