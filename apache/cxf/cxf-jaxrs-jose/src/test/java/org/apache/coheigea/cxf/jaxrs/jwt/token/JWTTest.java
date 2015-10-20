@@ -51,6 +51,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
     private static final String PORT = allocatePort(Server.class);
     private static final String PORT2 = allocatePort(Server.class, 2);
     private static final String PORT3 = allocatePort(Server.class, 3);
+    private static final String PORT4 = allocatePort(Server.class, 4);
 
     @BeforeClass
     public static void startServers() throws Exception {
@@ -407,6 +408,45 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         providers.add(new JwtAuthenticationClientFilter());
         
         String address = "http://localhost:" + PORT + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        // Create the JWT Token
+        JwtClaims claims = new JwtClaims();
+        claims.setSubject("alice");
+        claims.setIssuer("DoubleItSTSIssuer");
+        claims.setIssuedAt(new Date().getTime() / 1000L);
+        
+        JwsHeaders headers = new JwsHeaders();
+        headers.setType(JoseType.JWT);
+        headers.setSignatureAlgorithm(SignatureAlgorithm.NONE);
+        
+        JwtToken token = new JwtToken(headers, claims);
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JwtConstants.JWT_TOKEN, token);
+        
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Response response = client.post(numberToDouble);
+        assertNotEquals(response.getStatus(), 200);
+    }
+    
+    @org.junit.Test
+    public void testUnsignedTokenSuccessButNoSecurityContext() throws Exception {
+
+        URL busFile = JWTTest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        providers.add(new JwtAuthenticationClientFilter());
+        
+        String address = "http://localhost:" + PORT4 + "/doubleit/services";
         WebClient client = 
             WebClient.create(address, providers, busFile.toString());
         client.type("application/json").accept("application/json");

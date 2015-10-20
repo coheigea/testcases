@@ -52,7 +52,10 @@
    
    <bean id="jackson" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
    
-   <bean id="jwtFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter" />
+   <bean id="jwsInFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwsJsonContainerRequestFilter" />
+   
+   <bean id="keyPasswordProvider" 
+         class="org.apache.coheigea.cxf.jaxrs.json.common.PrivateKeyPasswordProviderImpl"/>
    
    <jaxrs:server address="http://localhost:${testutil.ports.Server}/doubleit">
        <jaxrs:serviceBeans>
@@ -60,20 +63,14 @@
        </jaxrs:serviceBeans>
        <jaxrs:providers>
           <ref bean="jackson"/>
-          <ref bean="jwtFilter"/>
+          <ref bean="jwsInFilter"/>
        </jaxrs:providers>
        <jaxrs:properties>
-            <entry key="rs.security.keystore.type" value="jks" />
-            <entry key="rs.security.keystore.alias" value="myclientkey"/>
-            <entry key="rs.security.keystore.password" value="cspass"/>
-            <entry key="rs.security.keystore.file" value="clientstore.jks" />
-            <entry key="rs.security.signature.algorithm" value="RS256" />
+            <entry key="rs.security.signature.in.list.properties"  value="serviceKeystore.properties"/>
        </jaxrs:properties>
    </jaxrs:server>
    
-   <bean id="newfutureFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter">
-       <property name="clockOffset" value="60" />
-   </bean>
+   <bean id="compactJwsInFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwsContainerRequestFilter" />
    
    <jaxrs:server address="http://localhost:${testutil.ports.Server.2}/doubleit">
        <jaxrs:serviceBeans>
@@ -81,45 +78,12 @@
        </jaxrs:serviceBeans>
        <jaxrs:providers>
           <ref bean="jackson"/>
-          <ref bean="newfutureFilter"/>
+          <ref bean="compactJwsInFilter"/>
        </jaxrs:providers>
        <jaxrs:properties>
-            <entry key="rs.security.keystore.type" value="jks" />
-            <entry key="rs.security.keystore.alias" value="myclientkey"/>
-            <entry key="rs.security.keystore.password" value="cspass"/>
-            <entry key="rs.security.keystore.file" value="clientstore.jks" />
-            <entry key="rs.security.signature.algorithm" value="RS256" />
+            <entry key="rs.security.signature.in.properties"  value="serviceKeystore.properties"/>
        </jaxrs:properties>
    </jaxrs:server>
-   
-   <bean id="unsignedServiceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItService"/>
-    
-   <jaxrs:server address="http://localhost:${testutil.ports.Server.3}/doubleit">
-       <jaxrs:serviceBeans>
-          <ref bean="unsignedServiceBean"/>
-       </jaxrs:serviceBeans>
-       <jaxrs:providers>
-          <ref bean="jackson"/>
-          <ref bean="jwtFilter"/>
-       </jaxrs:providers>
-       <jaxrs:properties>
-            <entry key="rs.security.signature.algorithm" value="none" />
-       </jaxrs:properties>
-   </jaxrs:server>
-    
-   <jaxrs:server address="http://localhost:${testutil.ports.Server.4}/doubleit">
-       <jaxrs:serviceBeans>
-          <ref bean="serviceBean"/>
-       </jaxrs:serviceBeans>
-       <jaxrs:providers>
-          <ref bean="jackson"/>
-          <ref bean="jwtFilter"/>
-       </jaxrs:providers>
-       <jaxrs:properties>
-            <entry key="rs.security.signature.algorithm" value="none" />
-       </jaxrs:properties>
-   </jaxrs:server>
-   
-   
+  
 </beans>
 

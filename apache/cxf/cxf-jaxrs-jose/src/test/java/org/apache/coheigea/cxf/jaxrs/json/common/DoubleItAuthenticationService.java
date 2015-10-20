@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.jaxrs.jwt.authentication;
+package org.apache.coheigea.cxf.jaxrs.json.common;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
