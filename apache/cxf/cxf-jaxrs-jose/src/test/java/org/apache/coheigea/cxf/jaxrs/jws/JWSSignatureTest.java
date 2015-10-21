@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.jaxrs.jws.signature;
+package org.apache.coheigea.cxf.jaxrs.jws;
 
 import java.net.URL;
 import java.security.Security;
@@ -325,4 +325,5 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
+    
 }
