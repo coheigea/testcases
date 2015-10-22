@@ -59,8 +59,8 @@ public class SignatureCRLUnitTest extends org.junit.Assert {
         assertNotNull(certs);
         assertEquals(certs.length, 2);
         
-        List<Certificate> certList = Arrays.asList(certs[0]); // WORKS
-        //List<Certificate> certList = Arrays.asList(certs); // DOESN'T WORK!
+        //List<Certificate> certList = Arrays.asList(certs[0]); // WORKS
+        List<Certificate> certList = Arrays.asList(certs); // DOESN'T WORK!
         CertPath path = certificateFactory.generateCertPath(certList);
         
         // CA cert
