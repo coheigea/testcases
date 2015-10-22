@@ -57,7 +57,7 @@ public class SignatureCRLUnitTest extends org.junit.Assert {
         certKeyStore.load(certInputStream, "security".toCharArray());
         Certificate[] certs = certKeyStore.getCertificateChain("wss40rev");
         assertNotNull(certs);
-        assertFalse(certs.length < 1);
+        assertEquals(certs.length, 2);
         
         List<Certificate> certList = Arrays.asList(certs[0]); // WORKS
         //List<Certificate> certList = Arrays.asList(certs); // DOESN'T WORK!
