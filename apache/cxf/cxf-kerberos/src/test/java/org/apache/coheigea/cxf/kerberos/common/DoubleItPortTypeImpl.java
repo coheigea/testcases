@@ -18,8 +18,6 @@
  */
 package org.apache.coheigea.cxf.kerberos.common;
 
-import java.security.Principal;
-
 import javax.annotation.Resource;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
