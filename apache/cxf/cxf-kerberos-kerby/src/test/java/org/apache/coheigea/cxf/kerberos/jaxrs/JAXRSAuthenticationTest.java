@@ -34,7 +34,6 @@ import org.apache.cxf.testutil.common.TestUtil;
 import org.apache.cxf.transport.http.auth.SpnegoAuthSupplier;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
-import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.wss4j.dom.WSSConfig;
 import org.ietf.jgss.GSSName;
 import org.junit.AfterClass;
