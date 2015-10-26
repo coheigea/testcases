@@ -46,6 +46,7 @@ public class JWETest extends AbstractBusClientServerTestBase {
     private static final String PORT3 = allocatePort(Server.class, 3);
     private static final String PORT4 = allocatePort(Server.class, 4);
     private static final String PORT5 = allocatePort(Server.class, 5);
+    private static final String PORT6 = allocatePort(Server.class, 6);
 
     @BeforeClass
     public static void startServers() throws Exception {
@@ -244,4 +245,75 @@ public class JWETest extends AbstractBusClientServerTestBase {
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
+    
+    // Include the cert in the "x5c" header
+    @org.junit.Test
+    public void testEncryptionCertificateTest() throws Exception {
+
+        URL busFile = JWETest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        providers.add(new JweWriterInterceptor());
+
+        String address = "http://localhost:" + PORT6 + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.keystore.type", "jks");
+        properties.put("rs.security.keystore.password", "sspass");
+        properties.put("rs.security.keystore.alias", "myservicekey");
+        properties.put("rs.security.keystore.file", "servicestore.jks");
+        properties.put("rs.security.encryption.key.algorithm", "RSA-OAEP");
+        properties.put("rs.security.encryption.content.algorithm", "A128CBC-HS256");
+        properties.put("rs.security.encryption.include.cert", "true");
+
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
+    
+    // Include the cert digest in the "x5t" header
+    @org.junit.Test
+    public void testEncryptionCertificateSha1Test() throws Exception {
+
+        URL busFile = JWETest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        providers.add(new JweWriterInterceptor());
+
+        String address = "http://localhost:" + PORT6 + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.keystore.type", "jks");
+        properties.put("rs.security.keystore.password", "sspass");
+        properties.put("rs.security.keystore.alias", "myservicekey");
+        properties.put("rs.security.keystore.file", "servicestore.jks");
+        properties.put("rs.security.encryption.key.algorithm", "RSA-OAEP");
+        properties.put("rs.security.encryption.content.algorithm", "A128CBC-HS256");
+        properties.put("rs.security.encryption.include.cert.sha1", "true");
+
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
+
 }
