@@ -32,7 +32,6 @@ import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
 import org.apache.directory.server.annotations.CreateKdcServer;
-import org.apache.directory.server.annotations.CreateLdapServer;
 import org.apache.directory.server.annotations.CreateTransport;
 import org.apache.directory.server.core.annotations.ApplyLdifFiles;
 import org.apache.directory.server.core.annotations.CreateDS;
@@ -80,16 +79,9 @@ import org.junit.runner.RunWith;
   }
 )
 
-@CreateLdapServer(
-  transports = {
-      @CreateTransport(protocol = "LDAP")
-  }
-)
-
 @CreateKdcServer(
   transports = {
-      // @CreateTransport(protocol = "TCP", address = "127.0.0.1", port=1024)
-      @CreateTransport(protocol = "UDP", address = "127.0.0.1")
+      @CreateTransport(protocol = "KRB", address = "127.0.0.1")
   },
   primaryRealm = "service.ws.apache.org",
   kdcPrincipal = "krbtgt/service.ws.apache.org@service.ws.apache.org"

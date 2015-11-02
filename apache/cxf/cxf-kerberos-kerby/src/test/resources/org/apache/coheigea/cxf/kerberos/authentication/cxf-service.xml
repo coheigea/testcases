@@ -79,7 +79,7 @@
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
-          <entry key="security.kerberos.jaas.context" value="bob"/>
+          <entry key="ws-security.kerberos.jaas.context" value="bob"/>
           <entry key="security.callback-handler" value-ref="kerberosCallbackHandler"/>
       </jaxws:properties> 
    </jaxws:endpoint>
