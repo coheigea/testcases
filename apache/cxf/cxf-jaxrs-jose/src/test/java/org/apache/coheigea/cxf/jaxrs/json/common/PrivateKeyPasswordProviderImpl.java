@@ -24,8 +24,14 @@ import org.apache.cxf.rs.security.jose.common.PrivateKeyPasswordProvider;
 
 public class PrivateKeyPasswordProviderImpl implements PrivateKeyPasswordProvider {
 
-    public char[] getPassword(Properties storeProperties) {
-        return "ckpass".toCharArray();
+    public char[] getPassword(String alias, Properties storeProperties) {
+        if ("myclientkey".equals(alias)) {
+            return "ckpass".toCharArray();
+        } else if ("myservicekey".equals(alias)) {
+            return "skpass".toCharArray();
+        }
+        
+        return "".toCharArray();
     }
     
 }
