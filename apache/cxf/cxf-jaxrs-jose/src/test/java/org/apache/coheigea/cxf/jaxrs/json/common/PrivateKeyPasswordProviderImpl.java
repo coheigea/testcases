@@ -20,11 +20,13 @@ package org.apache.coheigea.cxf.jaxrs.json.common;
 
 import java.util.Properties;
 
+import org.apache.cxf.rs.security.jose.common.JoseConstants;
 import org.apache.cxf.rs.security.jose.common.PrivateKeyPasswordProvider;
 
 public class PrivateKeyPasswordProviderImpl implements PrivateKeyPasswordProvider {
 
-    public char[] getPassword(String alias, Properties storeProperties) {
+    public char[] getPassword(Properties storeProperties) {
+        String alias = storeProperties.getProperty(JoseConstants.RSSEC_KEY_STORE_ALIAS);
         if ("myclientkey".equals(alias)) {
             return "ckpass".toCharArray();
         } else if ("myservicekey".equals(alias)) {
