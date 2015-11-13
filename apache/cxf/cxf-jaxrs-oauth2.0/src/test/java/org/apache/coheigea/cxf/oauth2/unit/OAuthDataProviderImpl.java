@@ -23,14 +23,16 @@ import java.util.Map;
 
 import org.apache.cxf.rs.security.oauth2.common.Client;
 import org.apache.cxf.rs.security.oauth2.common.ServerAccessToken;
-import org.apache.cxf.rs.security.oauth2.provider.AbstractOAuthDataProvider;
+import org.apache.cxf.rs.security.oauth2.grants.code.AbstractCodeDataProvider;
+import org.apache.cxf.rs.security.oauth2.grants.code.ServerAuthorizationCodeGrant;
 import org.apache.cxf.rs.security.oauth2.provider.OAuthServiceException;
 import org.apache.cxf.rs.security.oauth2.tokens.refresh.RefreshToken;
 
-public class OAuthDataProviderImpl extends AbstractOAuthDataProvider {
+public class OAuthDataProviderImpl extends AbstractCodeDataProvider {
     
     private Map<String, Client> clients = new HashMap<>();
     private Map<String, ServerAccessToken> accessTokens = new HashMap<>();
+    private Map<String, ServerAuthorizationCodeGrant> codeGrants = new HashMap<>();
     
     
     public OAuthDataProviderImpl() {
@@ -88,6 +90,22 @@ public class OAuthDataProviderImpl extends AbstractOAuthDataProvider {
 
     public void setClients(Map<String, Client> clients) {
         this.clients = clients;
+    }
+
+    @Override
+    public ServerAuthorizationCodeGrant removeCodeGrant(String code) throws OAuthServiceException {
+        if (codeGrants.containsKey(code)) {
+            return codeGrants.remove(code);
+        }
+        return null;
+    }
+
+    @Override
+    protected void saveCodeGrant(ServerAuthorizationCodeGrant grant) {
+        if (grant != null) {
+            codeGrants.put(grant.getCode(), grant);
+        }
+        
     }
 
 }

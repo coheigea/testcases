@@ -73,6 +73,10 @@
    <bean id="authorizationService" class="org.apache.cxf.rs.security.oauth2.services.AuthorizationCodeGrantService">
       <property name="dataProvider" ref="oauthProvider"/>
    </bean>
+   
+   <bean id="tokenService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenService">
+      <property name="dataProvider" ref="oauthProvider"/>
+   </bean>
     
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth2.unit.ServiceCallbackHandler"/>
    <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth2.unit.BasicAuthFilter">
@@ -86,6 +90,7 @@
        address="https://localhost:${testutil.ports.Server}/services">
        <jaxrs:serviceBeans>
            <ref bean="authorizationService"/>
+           <ref bean="tokenService"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
            <ref bean="jackson"/>

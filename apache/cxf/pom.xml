@@ -33,7 +33,8 @@
         <module>cxf-jaxrs-jaas-sts</module>
         <module>cxf-jaxrs-xmlsecurity</module>
         <module>cxf-jaxrs-jose</module>
-        <module>cxf-oauth1</module>
+        <module>cxf-jaxrs-oauth1</module>
+        <module>cxf-jaxrs-oauth2.0</module>
         <module>cxf-spring-security</module>
         <module>cxf-syncope</module>
         <module>cxf-syncope2</module>
