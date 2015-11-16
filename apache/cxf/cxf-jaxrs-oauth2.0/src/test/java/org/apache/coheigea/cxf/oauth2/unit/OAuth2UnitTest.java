@@ -71,8 +71,49 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
-        String accessToken = getAccessTokenWithAuthorizationCode(client, code);
-        assertNotNull(accessToken);
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
+        assertNotNull(accessToken.getTokenKey());
+    }
+    
+    @org.junit.Test
+    public void testAuthorizationCodeGrantRefresh() throws Exception {
+        URL busFile = OAuth2UnitTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Get Authorization Code
+        String code = getAuthorizationCode(client);
+        assertNotNull(code);
+        
+        // Now get the access token
+        client = WebClient.create(address, providers, "bob", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
+        assertNotNull(accessToken.getTokenKey());
+        assertNotNull(accessToken.getRefreshToken());
+        
+        // Refresh the access token
+        client.type("application/x-www-form-urlencoded").accept("application/json");
+        
+        Form form = new Form();
+        form.param("grant_type", "refresh_token");
+        form.param("refresh_token", accessToken.getRefreshToken());
+        form.param("client_id", "consumer-id");
+        Response response = client.post(form);
+        
+        accessToken = response.readEntity(ClientAccessToken.class);
+        assertNotNull(accessToken.getTokenKey());
+        assertNotNull(accessToken.getRefreshToken());
     }
     
     private String getAuthorizationCode(WebClient client) {
@@ -97,11 +138,11 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
         form.param("oauthDecision", "allow");
         
         response = client.post(form);
-        String location = response.getHeaderString("Location");
+        String location = response.getHeaderString("Location"); 
         return location.substring(location.indexOf("code=") + "code=".length());
     }
     
-    private String getAccessTokenWithAuthorizationCode(WebClient client, String code) {
+    private ClientAccessToken getAccessTokenWithAuthorizationCode(WebClient client, String code) {
         client.type("application/x-www-form-urlencoded").accept("application/json");
         client.path("token");
         
@@ -111,9 +152,7 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
         form.param("client_id", "consumer-id");
         Response response = client.post(form);
         
-        ClientAccessToken accessToken = response.readEntity(ClientAccessToken.class);
-        
-        return accessToken.getTokenKey();
+        return response.readEntity(ClientAccessToken.class);
     }
     
     

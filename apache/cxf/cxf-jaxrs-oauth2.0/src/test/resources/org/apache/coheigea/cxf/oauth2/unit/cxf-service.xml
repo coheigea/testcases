@@ -60,6 +60,12 @@
                <value>http://www.blah.apache.org</value>
            </util:list>
        </property>
+       <property name="allowedGrantTypes">
+           <util:list value-type="java.lang.String">
+               <value>authorization_code</value>
+               <value>refresh_token</value>
+           </util:list>
+       </property>
    </bean>
    
    <bean id="oauthProvider" class="org.apache.coheigea.cxf.oauth2.unit.OAuthDataProviderImpl">
@@ -74,8 +80,13 @@
       <property name="dataProvider" ref="oauthProvider"/>
    </bean>
    
+   <bean id="refreshGrantHandler" class="org.apache.cxf.rs.security.oauth2.grants.refresh.RefreshTokenGrantHandler">
+      <property name="dataProvider" ref="oauthProvider"/>
+   </bean>
+   
    <bean id="tokenService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenService">
       <property name="dataProvider" ref="oauthProvider"/>
+      <property name="grantHandlers" ref="refreshGrantHandler"/>
    </bean>
     
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth2.unit.ServiceCallbackHandler"/>
