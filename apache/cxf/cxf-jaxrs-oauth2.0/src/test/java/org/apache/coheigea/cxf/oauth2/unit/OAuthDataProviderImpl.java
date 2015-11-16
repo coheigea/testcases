@@ -19,6 +19,7 @@
 package org.apache.coheigea.cxf.oauth2.unit;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cxf.rs.security.oauth2.common.Client;
@@ -33,6 +34,7 @@ public class OAuthDataProviderImpl extends AbstractCodeDataProvider {
     private Map<String, Client> clients = new HashMap<>();
     private Map<String, ServerAccessToken> accessTokens = new HashMap<>();
     private Map<String, ServerAuthorizationCodeGrant> codeGrants = new HashMap<>();
+    private Map<String, RefreshToken> refreshTokens = new HashMap<>();
     
     
     public OAuthDataProviderImpl() {
@@ -67,7 +69,9 @@ public class OAuthDataProviderImpl extends AbstractCodeDataProvider {
 
     @Override
     protected RefreshToken revokeRefreshToken(Client client, String refreshTokenKey) {
-        // TODO Auto-generated method stub
+        if (refreshTokens.containsKey(client.getClientId())) {
+            return refreshTokens.remove(client.getClientId());
+        }
         return null;
     }
 
@@ -80,8 +84,8 @@ public class OAuthDataProviderImpl extends AbstractCodeDataProvider {
 
     @Override
     protected void saveRefreshToken(ServerAccessToken at, RefreshToken refreshToken) {
-        // TODO Auto-generated method stub
-        
+        Client client = at.getClient();
+        refreshTokens.put(client.getClientId(), refreshToken);
     }
     
     public Map<String, Client> getClients() {
@@ -106,6 +110,11 @@ public class OAuthDataProviderImpl extends AbstractCodeDataProvider {
             codeGrants.put(grant.getCode(), grant);
         }
         
+    }
+    
+    @Override
+    protected boolean isRefreshTokenSupported(List<String> theScopes) {
+        return true;
     }
 
 }
