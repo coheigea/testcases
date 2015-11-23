@@ -116,6 +116,47 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
         assertNotNull(accessToken.getRefreshToken());
     }
     
+    @org.junit.Test
+    public void testImplicitCodeGrant() throws Exception {
+        URL busFile = OAuth2UnitTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Get Access Token
+        client.type("application/json").accept("application/json");
+        client.query("client_id", "consumer-id");
+        client.query("redirect_uri", "http://www.blah.apache.org");
+        client.query("response_type", "token");
+        client.path("authorize-implicit/");
+        Response response = client.get();
+        
+        OAuthAuthorizationData authzData = response.readEntity(OAuthAuthorizationData.class);
+        
+        // Now call "decision" to get the access token
+        client.path("decision");
+        client.type("application/x-www-form-urlencoded");
+        
+        Form form = new Form();
+        form.param("session_authenticity_token", authzData.getAuthenticityToken());
+        form.param("client_id", authzData.getClientId());
+        form.param("redirect_uri", authzData.getRedirectUri());
+        form.param("oauthDecision", "allow");
+        
+        response = client.post(form);
+        
+        String location = response.getHeaderString("Location"); 
+        String accessToken = location.substring(location.indexOf("access_token=") + "access_token=".length());
+        accessToken = accessToken.substring(0, accessToken.indexOf('&'));
+        assertNotNull(accessToken);
+    }
+    
     private String getAuthorizationCode(WebClient client) {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
