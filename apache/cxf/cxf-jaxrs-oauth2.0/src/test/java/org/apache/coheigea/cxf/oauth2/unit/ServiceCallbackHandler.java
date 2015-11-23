@@ -39,6 +39,9 @@ public class ServiceCallbackHandler implements CallbackHandler {
                 } else if ("bob".equals(pc.getIdentifier())) {
                     pc.setPassword("security");
                     break;
+                } else if ("consumer-id".equals(pc.getIdentifier())) {
+                    pc.setPassword("this-is-a-secret");
+                    break;
                 }
             }
         }

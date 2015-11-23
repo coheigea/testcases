@@ -33,9 +33,9 @@ import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.junit.BeforeClass;
 
 /**
- * Some unit tests OAuth 2.0
+ * Some unit tests to test different authorization grants in OAuth 2.0.
  */
-public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
+public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
     
     static final String PORT = allocatePort(Server.class);
     @BeforeClass
@@ -50,7 +50,7 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
     
     @org.junit.Test
     public void testAuthorizationCodeGrant() throws Exception {
-        URL busFile = OAuth2UnitTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -66,7 +66,7 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "bob", "security", busFile.toString());
+        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -77,7 +77,7 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
     
     @org.junit.Test
     public void testAuthorizationCodeGrantRefresh() throws Exception {
-        URL busFile = OAuth2UnitTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -93,7 +93,7 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "bob", "security", busFile.toString());
+        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -117,8 +117,8 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    public void testImplicitCodeGrant() throws Exception {
-        URL busFile = OAuth2UnitTest.class.getResource("cxf-client.xml");
+    public void testImplicitGrant() throws Exception {
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -128,7 +128,7 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        
+       
         // Get Access Token
         client.type("application/json").accept("application/json");
         client.query("client_id", "consumer-id");
@@ -155,6 +155,31 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
         String accessToken = location.substring(location.indexOf("access_token=") + "access_token=".length());
         accessToken = accessToken.substring(0, accessToken.indexOf('&'));
         assertNotNull(accessToken);
+    }
+    
+    @org.junit.Test
+    public void testPasswordsCredentialsGrant() throws Exception {
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+
+        // Get Access Token
+        client.type("application/x-www-form-urlencoded").accept("application/json");
+        client.path("token");
+        
+        Form form = new Form();
+        form.param("grant_type", "password");
+        form.param("username", "alice");
+        form.param("password", "security");
+        Response response = client.post(form);
+        
+        ClientAccessToken accessToken = response.readEntity(ClientAccessToken.class);
+        assertNotNull(accessToken.getTokenKey());
+        assertNotNull(accessToken.getRefreshToken());
     }
     
     private String getAuthorizationCode(WebClient client) {
@@ -200,7 +225,7 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
     /*
     @org.junit.Test
     public void testCustomerBankService() throws Exception {
-        URL busFile = OAuth2UnitTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
 
         String address = "https://localhost:" + BANK_SERVICE_PORT + "/bankservice/customers/balance";
         WebClient client = WebClient.create(address, "alice", "security", busFile.toString());
@@ -230,7 +255,7 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
    
     @org.junit.Test
     public void testPartnerBankService() throws Exception {
-        URL busFile = OAuth2UnitTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
 
         String address = "https://localhost:" + BANK_SERVICE_PORT + "/bankservice/partners/balance";
         WebClient client = WebClient.create(address, "alice", "security", busFile.toString());
@@ -243,7 +268,7 @@ public class OAuth2UnitTest extends AbstractBusClientServerTestBase {
     
     @org.junit.Test
     public void testPartnerServiceWithToken() throws Exception {
-        URL busFile = OAuth2UnitTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
         
         // Create an initial account at the bank
         String address = "https://localhost:" + BANK_SERVICE_PORT + "/bankservice/customers/balance";

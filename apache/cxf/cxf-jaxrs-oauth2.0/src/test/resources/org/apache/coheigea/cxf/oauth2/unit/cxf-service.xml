@@ -65,6 +65,7 @@
                <value>authorization_code</value>
                <value>refresh_token</value>
                <value>implicit</value>
+               <value>password</value>
            </util:list>
        </property>
    </bean>
@@ -89,9 +90,23 @@
       <property name="dataProvider" ref="oauthProvider"/>
    </bean>
    
+   <bean id="callbackHandlerLoginHandler" class="org.apache.coheigea.cxf.oauth2.unit.CallbackHandlerLoginHandler">
+      <property name="callbackHandler" ref="callbackHandler"/>
+   </bean>
+   
+   <bean id="passwordGrantHandler" class="org.apache.cxf.rs.security.oauth2.grants.owner.ResourceOwnerGrantHandler">
+      <property name="dataProvider" ref="oauthProvider"/>
+      <property name="loginHandler" ref="callbackHandlerLoginHandler"/>
+   </bean>
+   
    <bean id="tokenService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenService">
       <property name="dataProvider" ref="oauthProvider"/>
-      <property name="grantHandlers" ref="refreshGrantHandler"/>
+      <property name="grantHandlers">
+         <list>
+             <ref bean="refreshGrantHandler"/>
+             <ref bean="passwordGrantHandler"/>
+         </list>
+      </property>
    </bean>
     
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth2.unit.ServiceCallbackHandler"/>
