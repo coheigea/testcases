@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.oauth2.unit;
+package org.apache.coheigea.cxf.oauth2.grants;
 
 import java.util.HashMap;
 import java.util.List;
