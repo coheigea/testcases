@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.oauth2.grants;
+package org.apache.coheigea.cxf.oauth2.common;
 
 import java.io.IOException;
 
@@ -41,6 +41,9 @@ public class ServiceCallbackHandler implements CallbackHandler {
                     break;
                 } else if ("consumer-id".equals(pc.getIdentifier())) {
                     pc.setPassword("this-is-a-secret");
+                    break;
+                } else if ("service".equals(pc.getIdentifier())) {
+                    pc.setPassword("service-pass");
                     break;
                 }
             }

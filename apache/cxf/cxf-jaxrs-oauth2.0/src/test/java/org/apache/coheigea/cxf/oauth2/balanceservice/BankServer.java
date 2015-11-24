@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.oauth2.grants;
+package org.apache.coheigea.cxf.oauth2.balanceservice;
 
 import java.net.URL;
 
@@ -25,20 +25,20 @@ import org.apache.cxf.BusFactory;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.testutil.common.AbstractBusTestServerBase;
 
-public class Server extends AbstractBusTestServerBase {
+public class BankServer extends AbstractBusTestServerBase {
 
-    public Server() {
+    public BankServer() {
 
     }
 
     protected void run()  {
-        URL busFile = Server.class.getResource("cxf-service.xml");
+        URL busFile = BankServer.class.getResource("cxf-bank-service.xml");
         Bus busLocal = new SpringBusFactory().createBus(busFile);
         BusFactory.setDefaultBus(busLocal);
         setBus(busLocal);
 
         try {
-            new Server();
+            new BankServer();
         } catch (Exception e) {
             e.printStackTrace();
         }

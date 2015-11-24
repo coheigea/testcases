@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.oauth2.grants;
+package org.apache.coheigea.cxf.oauth2.oauthservice;
 
 import javax.security.auth.callback.CallbackHandler;
 

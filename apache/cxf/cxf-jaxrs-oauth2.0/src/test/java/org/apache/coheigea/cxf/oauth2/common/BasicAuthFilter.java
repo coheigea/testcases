@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.oauth2.grants;
+package org.apache.coheigea.cxf.oauth2.common;
 
 import java.io.IOException;
 import java.security.Principal;

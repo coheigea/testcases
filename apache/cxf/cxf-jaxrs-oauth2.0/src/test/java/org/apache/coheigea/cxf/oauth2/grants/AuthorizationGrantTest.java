@@ -25,6 +25,7 @@ import java.util.List;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
+import org.apache.coheigea.cxf.oauth2.oauthservice.OAuthServer;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
@@ -37,14 +38,14 @@ import org.junit.BeforeClass;
  */
 public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
     
-    static final String PORT = allocatePort(Server.class);
+    static final String PORT = allocatePort(OAuthServer.class);
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
                 "Server failed to launch",
                 // run the server in the same process
                 // set this to false to fork
-                launchServer(Server.class, true)
+                launchServer(OAuthServer.class, true)
         );
     }
     
@@ -244,108 +245,4 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         return response.readEntity(ClientAccessToken.class);
     }
     
-    
-    /*
-    @org.junit.Test
-    public void testCustomerBankService() throws Exception {
-        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
-
-        String address = "https://localhost:" + BANK_SERVICE_PORT + "/bankservice/customers/balance";
-        WebClient client = WebClient.create(address, "alice", "security", busFile.toString());
-        client.type("text/plain").accept("text/plain");
-        
-        client.path("/alice");
-        Response response =  client.post(25);
-        assertEquals(response.getStatus(), 204);
-        
-        response = client.get();
-        assertEquals(response.getStatus(), 200);
-        assertEquals(response.readEntity(Integer.class).intValue(), 25);
-        
-        // Test that "bob" can't read Alice's account
-        client = WebClient.create(address, "bob", "security", busFile.toString());
-        client.type("text/plain").accept("text/plain");
-        
-        client.path("/bob");
-        response = client.post(35);
-        assertEquals(response.getStatus(), 204);
-        
-        client.reset();
-        client.path("alice");
-        response = client.get();
-        assertEquals(response.getStatus(), 403);
-    }
-   
-    @org.junit.Test
-    public void testPartnerBankService() throws Exception {
-        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
-
-        String address = "https://localhost:" + BANK_SERVICE_PORT + "/bankservice/partners/balance";
-        WebClient client = WebClient.create(address, "alice", "security", busFile.toString());
-        client.type("text/plain").accept("text/plain");
-        
-        client.path("/alice");
-        Response response =  client.post(25);
-        assertEquals(response.getStatus(), 401);
-    }
-    
-    @org.junit.Test
-    public void testPartnerServiceWithToken() throws Exception {
-        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
-        
-        // Create an initial account at the bank
-        String address = "https://localhost:" + BANK_SERVICE_PORT + "/bankservice/customers/balance";
-        WebClient client = WebClient.create(address, "bob", "security", busFile.toString());
-        client.type("text/plain").accept("text/plain");
-        
-        client.path("/bob");
-        client.post(40);
-
-        Response response = makeRequestTokenInvocation(busFile);
-        assertEquals(response.getStatus(), 200);
-        
-        // Extract RequestToken + Secret
-        String responseString = response.readEntity(String.class);
-        String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token="),
-                                     responseString.indexOf("&oauth_token_secret"));
-        requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
-        assertNotNull(requestToken);
-        
-        String requestTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        requestTokenSecret = requestTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
-        assertNotNull(requestTokenSecret);
-        
-        Response authorizationResponse = makeAuthorizationInvocation(busFile, requestToken, "bob");
-        
-        // Extract verifier
-        String location = authorizationResponse.getHeaderString("Location");
-        String oauthVerifier = location.substring(location.indexOf("oauth_verifier="));
-        oauthVerifier = oauthVerifier.substring(oauthVerifier.indexOf("=") + 1);
-        
-        Response accessTokenResponse = 
-            makeAccessTokenInvocation(busFile, requestToken, requestTokenSecret, oauthVerifier);
-        
-        // Extract AccessToken + Secret
-        responseString = accessTokenResponse.readEntity(String.class);
-        String accessToken = 
-            responseString.substring(responseString.indexOf("oauth_token="),
-                                     responseString.indexOf("&oauth_token_secret"));
-        accessToken = accessToken.substring(accessToken.indexOf("=") + 1);
-        assertNotNull(accessToken);
-        
-        String accessTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        accessTokenSecret = accessTokenSecret.substring(accessTokenSecret.indexOf("=") + 1);
-        assertNotNull(accessTokenSecret);
-        
-        // Now make a service invocation with the access token
-        Response serviceResponse = 
-            makeServiceInvocation(busFile, accessToken, accessTokenSecret, "bob");
-        assertEquals(serviceResponse.getStatus(), 200);
-        assertEquals(serviceResponse.readEntity(Integer.class).intValue(), 40);
-    }
-    
-    */
 }
