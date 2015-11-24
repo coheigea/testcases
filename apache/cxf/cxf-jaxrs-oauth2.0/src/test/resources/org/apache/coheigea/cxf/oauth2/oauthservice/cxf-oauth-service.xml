@@ -71,7 +71,7 @@
        </property>
    </bean>
    
-   <bean id="oauthProvider" class="org.apache.coheigea.cxf.oauth2.grants.OAuthDataProviderImpl">
+   <bean id="oauthProvider" class="org.apache.coheigea.cxf.oauth2.oauthservice.OAuthDataProviderImpl">
        <property name="clients">
            <map>
                <entry key="consumer-id" value-ref="client" />
@@ -91,7 +91,7 @@
       <property name="dataProvider" ref="oauthProvider"/>
    </bean>
    
-   <bean id="callbackHandlerLoginHandler" class="org.apache.coheigea.cxf.oauth2.grants.CallbackHandlerLoginHandler">
+   <bean id="callbackHandlerLoginHandler" class="org.apache.coheigea.cxf.oauth2.oauthservice.CallbackHandlerLoginHandler">
       <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    
@@ -114,6 +114,10 @@
          </list>
       </property>
    </bean>
+   
+   <bean id="tokenValidateService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenValidatorService">
+       <property name="dataProvider" ref="oauthProvider"/>
+   </bean>
     
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth2.common.ServiceCallbackHandler"/>
    <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth2.common.BasicAuthFilter">
@@ -124,11 +128,12 @@
    
    <jaxrs:server 
        depends-on="OAuthServerTLS" 
-       address="https://localhost:${testutil.ports.Server}/services">
+       address="https://localhost:${testutil.ports.OAuthServer}/services">
        <jaxrs:serviceBeans>
            <ref bean="authorizationService"/>
            <ref bean="implicitService"/>
            <ref bean="tokenService"/>
+           <ref bean="tokenValidateService"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
            <ref bean="jackson"/>
@@ -137,7 +142,7 @@
    </jaxrs:server>
    
     <httpj:engine-factory id="OAuthServerTLS" bus="cxf">
-   <httpj:engine port="${testutil.ports.Server}">
+   <httpj:engine port="${testutil.ports.OAuthServer}">
     <httpj:tlsServerParameters>
       <sec:keyManagers keyPassword="skpass">
           <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
