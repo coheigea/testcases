@@ -71,7 +71,7 @@
        </property>
    </bean>
    
-   <bean id="oauthProvider" class="org.apache.coheigea.cxf.oauth2.unit.OAuthDataProviderImpl">
+   <bean id="oauthProvider" class="org.apache.coheigea.cxf.oauth2.grants.OAuthDataProviderImpl">
        <property name="clients">
            <map>
                <entry key="consumer-id" value-ref="client" />
@@ -91,7 +91,7 @@
       <property name="dataProvider" ref="oauthProvider"/>
    </bean>
    
-   <bean id="callbackHandlerLoginHandler" class="org.apache.coheigea.cxf.oauth2.unit.CallbackHandlerLoginHandler">
+   <bean id="callbackHandlerLoginHandler" class="org.apache.coheigea.cxf.oauth2.grants.CallbackHandlerLoginHandler">
       <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    
@@ -115,8 +115,8 @@
       </property>
    </bean>
     
-   <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth2.unit.ServiceCallbackHandler"/>
-   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth2.unit.BasicAuthFilter">
+   <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth2.grants.ServiceCallbackHandler"/>
+   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth2.grants.BasicAuthFilter">
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    
