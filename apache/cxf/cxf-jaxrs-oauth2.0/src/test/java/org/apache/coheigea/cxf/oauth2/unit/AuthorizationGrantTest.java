@@ -182,6 +182,29 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         assertNotNull(accessToken.getRefreshToken());
     }
     
+    @org.junit.Test
+    public void testClientCredentialsGrant() throws Exception {
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+
+        // Get Access Token
+        client.type("application/x-www-form-urlencoded").accept("application/json");
+        client.path("token");
+        
+        Form form = new Form();
+        form.param("grant_type", "client_credentials");
+        Response response = client.post(form);
+        
+        ClientAccessToken accessToken = response.readEntity(ClientAccessToken.class);
+        assertNotNull(accessToken.getTokenKey());
+        assertNotNull(accessToken.getRefreshToken());
+    }
+    
     private String getAuthorizationCode(WebClient client) {
         // Make initial authorization request
         client.type("application/json").accept("application/json");

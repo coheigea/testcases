@@ -66,6 +66,7 @@
                <value>refresh_token</value>
                <value>implicit</value>
                <value>password</value>
+               <value>client_credentials</value>
            </util:list>
        </property>
    </bean>
@@ -99,12 +100,17 @@
       <property name="loginHandler" ref="callbackHandlerLoginHandler"/>
    </bean>
    
+   <bean id="clientCredsGrantHandler" class="org.apache.cxf.rs.security.oauth2.grants.clientcred.ClientCredentialsGrantHandler">
+      <property name="dataProvider" ref="oauthProvider"/>
+   </bean>
+   
    <bean id="tokenService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenService">
       <property name="dataProvider" ref="oauthProvider"/>
       <property name="grantHandlers">
          <list>
              <ref bean="refreshGrantHandler"/>
              <ref bean="passwordGrantHandler"/>
+             <ref bean="clientCredsGrantHandler"/>
          </list>
       </property>
    </bean>
