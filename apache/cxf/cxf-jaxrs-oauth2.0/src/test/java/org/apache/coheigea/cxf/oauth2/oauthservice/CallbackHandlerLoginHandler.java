@@ -47,13 +47,11 @@ public class CallbackHandlerLoginHandler implements ResourceOwnerLoginHandler {
     
     @Override
     public UserSubject createSubject(String user, String pass) {
-        System.out.println("HERE!");
         Document doc = DOMUtils.createDocument();
         UsernameToken token = new UsernameToken(false, doc, 
                                                 WSConstants.PASSWORD_TEXT);
         token.setName(user);
         token.setPassword(pass);
-        System.out.println("USER: " + user  + " " + pass);
         
         Credential credential = new Credential();
         credential.setUsernametoken(token);
