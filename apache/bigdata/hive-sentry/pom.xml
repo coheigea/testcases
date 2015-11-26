@@ -19,9 +19,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.coheigea.bigdata</groupId>
-    <artifactId>hive-demo</artifactId>
+    <artifactId>bigdata-hive-sentry-demo</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Hive Demo</name>
+    <name>Apache Hive Sentry Demo</name>
     <version>1.0</version>
 
     <parent>
@@ -311,52 +311,12 @@
     
     <profiles>
    <profile>
-     <id>link-hadoop</id>
+     <id>sentry</id>
      <activation>
        <activeByDefault>true</activeByDefault>
      </activation>
      <build>
      <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
-        <configuration>
-          <exportAntProperties>true</exportAntProperties>
-          <skipTests>true</skipTests>
-        </configuration>
-        <executions>
-          <execution>
-            <id>link-hadoop</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <echo file="target/hadoop-setup.sh">
-                  set -e
-                  set -x
-                  /bin/pwd
-                  BASE_DIR=./target
-                  TEST_UTIL_DIR=./testutil
-                  setup_hadoop() {
-                    set -e
-                    set -x
-                    /bin/pwd
-                    cp -f $TEST_UTIL_DIR/* $BASE_DIR/.
-                    chmod 777 $BASE_DIR/hadoop
-                  }
-                  setup_hadoop
-                </echo>
-                <exec executable="bash" dir="${basedir}" failonerror="true">
-                  <arg line="target/hadoop-setup.sh"/>
-                </exec>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
                     <plugin>
                          <groupId>org.apache.maven.plugins</groupId>
                          <artifactId>maven-surefire-plugin</artifactId>
