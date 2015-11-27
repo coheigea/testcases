@@ -93,6 +93,12 @@
        </dependency>
        <dependency>
            <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-rs-security-oauth2-saml</artifactId>
+           <version>${cxf.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.cxf</groupId>
            <artifactId>cxf-testutils</artifactId>
            <version>${cxf.version}</version>
            <scope>test</scope>

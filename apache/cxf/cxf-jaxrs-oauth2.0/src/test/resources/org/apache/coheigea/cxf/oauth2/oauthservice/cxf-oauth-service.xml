@@ -137,6 +137,23 @@
        </jaxrs:providers>
    </jaxrs:server>
    
+   <bean id="samlAuthHandler" class="org.apache.cxf.rs.security.oauth2.auth.saml.Saml2BearerAuthHandler"/>
+   
+   <jaxrs:server 
+       depends-on="OAuthServerTLS" 
+       address="https://localhost:${testutil.ports.OAuthServer}/samlservices">
+       <jaxrs:serviceBeans>
+           <ref bean="tokenService"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+           <ref bean="samlAuthHandler"/>
+           <ref bean="jackson"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+           <entry key="security.signature.properties" value="serviceKeystore.properties"/>
+       </jaxrs:properties>
+   </jaxrs:server>
+   
     <httpj:engine-factory id="OAuthServerTLS" bus="cxf">
    <httpj:engine port="${testutil.ports.OAuthServer}">
     <httpj:tlsServerParameters>
