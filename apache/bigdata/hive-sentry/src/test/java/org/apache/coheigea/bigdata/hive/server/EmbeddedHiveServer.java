@@ -15,35 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.server;
 
-import org.apache.hadoop.hive.conf.HiveConf;
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 import org.apache.hadoop.hive.metastore.HiveMetaStore;
-import org.apache.hive.service.server.HiveServer2;
 import org.fest.reflect.core.Reflection;
 
-public class InternalHiveServer extends AbstractHiveServer {
+public class EmbeddedHiveServer implements HiveServer {
 
-  private final HiveServer2 hiveServer2;
-  private final HiveConf conf;
+  @Override
+  public void start() {
+    // Fix for ACCESS-148. Resets a static field
+    // so the default database is created even
+    // though is has been created before in this JVM
+    Reflection.staticField("createDefaultDB")
+    .ofType(boolean.class)
+    .in(HiveMetaStore.HMSHandler.class)
+    .set(false);
+  }
 
-  public InternalHiveServer(HiveConf conf) throws Exception {
-    super(conf, getHostname(conf), getPort(conf));
-    hiveServer2 = new HiveServer2();
-    this.conf = conf;
+  public Connection createConnection(String user, String password) throws Exception{
+    String url = getURL();
+    DriverManager.setLoginTimeout(30);
+    Connection connection =  DriverManager.getConnection(url, user, password);
+    return connection;
   }
 
   @Override
-  public synchronized void start() throws Exception {
-    hiveServer2.init(conf);
-    hiveServer2.start();
-    waitForStartup(this);
+  public void shutdown() {
+
   }
 
   @Override
-  public synchronized void shutdown() throws Exception {
-    if (hiveServer2 != null) {
-      hiveServer2.stop();
-    }
+  public String getURL() {
+    return "jdbc:hive2://";
+  }
+
+  @Override
+  public String getProperty(String key) {
+    throw new UnsupportedOperationException();
   }
 }

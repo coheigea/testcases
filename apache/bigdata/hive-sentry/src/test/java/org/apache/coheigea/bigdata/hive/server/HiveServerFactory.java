@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.server;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.Files;
 import com.google.common.io.Resources;
 
 public class HiveServerFactory {

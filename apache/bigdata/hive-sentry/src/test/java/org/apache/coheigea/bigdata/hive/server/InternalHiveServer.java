@@ -15,20 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.server;
 
-import java.sql.Connection;
+import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.hive.service.server.HiveServer2;
 
-public interface HiveServer {
+public class InternalHiveServer extends AbstractHiveServer {
 
-  public void start() throws Exception;
+  private final HiveServer2 hiveServer2;
+  private final HiveConf conf;
 
-  public void shutdown() throws Exception;
+  public InternalHiveServer(HiveConf conf) throws Exception {
+    super(conf, getHostname(conf), getPort(conf));
+    hiveServer2 = new HiveServer2();
+    this.conf = conf;
+  }
 
-  public String getURL();
+  @Override
+  public synchronized void start() throws Exception {
+    hiveServer2.init(conf);
+    hiveServer2.start();
+    waitForStartup(this);
+  }
 
-  public String getProperty(String key);
-
-  public Connection createConnection(String user, String password) throws Exception;
-
+  @Override
+  public synchronized void shutdown() throws Exception {
+    if (hiveServer2 != null) {
+      hiveServer2.stop();
+    }
+  }
 }
