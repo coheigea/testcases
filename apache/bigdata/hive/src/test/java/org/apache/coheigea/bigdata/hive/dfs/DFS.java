@@ -14,13 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.dfs;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-
-import java.io.File;
-import java.io.IOException;
 
 public interface DFS {
   public FileSystem getFileSystem();
@@ -28,5 +25,4 @@ public interface DFS {
   public Path assertCreateDir(String dir) throws Exception;
   public Path getBaseDir();
   public void createBaseDir() throws Exception;
-  public void writePolicyFile(File srcFile) throws IOException;
 }

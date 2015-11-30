@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.coheigea.bigdata.hive.dfs.DFS;
+import org.apache.coheigea.bigdata.hive.dfs.MiniDFS;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -84,10 +86,7 @@ public abstract class AbstractTestWithStaticConfiguration {
   protected static final String SERVER_HOST = "localhost";
   protected static final String EXTERNAL_HIVE_LIB = "sentry.e2etest.hive.lib";
 
-  protected static boolean policyOnHdfs = false;
-  protected static boolean useSentryService = false;
   protected static boolean setMetastoreListener = true;
-  protected static String testServerType = null;
   protected static boolean enableHiveConcurrency = false;
   // indicate if the database need to be clear for every test case in one test class
   protected static boolean clearDbPerTest = true;
@@ -162,20 +161,13 @@ public abstract class AbstractTestWithStaticConfiguration {
   public static void setupTestStaticConfiguration() throws Exception {
     LOGGER.info("AbstractTestWithStaticConfiguration setupTestStaticConfiguration");
     properties = Maps.newHashMap();
-    if(!policyOnHdfs) {
-      policyOnHdfs = new Boolean(System.getProperty("sentry.e2etest.policyonhdfs", "false"));
-    }
-    if (testServerType != null) {
-      properties.put("sentry.e2etest.hiveServer2Type", testServerType);
-    }
     baseDir = Files.createTempDir();
     LOGGER.info("BaseDir = " + baseDir);
     logDir = assertCreateDir(new File(baseDir, "log"));
     confDir = assertCreateDir(new File(baseDir, "etc"));
     dataDir = assertCreateDir(new File(baseDir, "data"));
 
-    String dfsType = System.getProperty(DFSFactory.FS_TYPE);
-    dfs = DFSFactory.create(dfsType, baseDir, testServerType);
+    dfs = new MiniDFS(baseDir);
     fileSystem = dfs.getFileSystem();
 
     if (enableHiveConcurrency) {
@@ -254,43 +246,9 @@ public abstract class AbstractTestWithStaticConfiguration {
       }
     }
 
-    if(useSentryService) {
-      LOGGER.info("About to clear all roles");
-      resultSet = statement.executeQuery("SHOW roles");
-      List<String> roles = new ArrayList<String>();
-      while (resultSet.next()) {
-        String roleName = resultSet.getString(1);
-        if (!roleName.toLowerCase().contains("admin")) {
-          roles.add(roleName);
-        }
-      }
-      for (String role : roles) {
-        String sql = "DROP Role " + role;
-        LOGGER.info("Running [" + sql + "]");
-        statement.execute(sql);
-      }
-    }
     statement.close();
     connection.close();
 
-  }
-
-  protected static void setupAdmin() throws Exception {
-    if(useSentryService) {
-      LOGGER.info("setupAdmin to create admin_role");
-      Connection connection = context.createConnection(ADMIN1);
-      Statement statement = connection.createStatement();
-      try {
-        statement.execute("CREATE ROLE admin_role");
-      } catch ( Exception e) {
-        //It is ok if admin_role already exists
-      }
-      statement.execute("GRANT ALL ON SERVER "
-          + HiveServerFactory.DEFAULT_AUTHZ_SERVER_NAME + " TO ROLE admin_role");
-      statement.execute("GRANT ROLE admin_role TO GROUP " + ADMINGROUP);
-      statement.close();
-      connection.close();
-    }
   }
 
   @AfterClass

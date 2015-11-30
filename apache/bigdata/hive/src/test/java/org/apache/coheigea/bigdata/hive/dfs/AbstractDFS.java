@@ -14,23 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.dfs;
+
+import java.io.IOException;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
 
 public abstract class AbstractDFS implements DFS{
-  private static final Logger LOGGER = LoggerFactory
-      .getLogger(AbstractDFS.class);
   protected static FileSystem fileSystem;
   protected static Path dfsBaseDir;
-  public Path sentryDir;
 
 
   @Override
@@ -57,14 +51,6 @@ public abstract class AbstractDFS implements DFS{
   @Override
   public Path getBaseDir(){
     return dfsBaseDir;
-  }
-
-  @Override
-  public void writePolicyFile(File srcFile) throws IOException {
-    String policyFileName = srcFile.getName();
-    Path destPath = new Path(sentryDir, policyFileName);
-    fileSystem.copyFromLocalFile(true, true, new Path(srcFile.getAbsolutePath()), destPath);
-    LOGGER.info("Copied file to HDFS: " + destPath.toString());
   }
 
   protected void cleanBaseDir() throws Exception {
