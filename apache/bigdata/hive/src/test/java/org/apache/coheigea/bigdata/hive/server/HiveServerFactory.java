@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.server;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,11 +41,8 @@ public class HiveServerFactory {
       .getLogger(HiveServerFactory.class);
   private static final String HIVE_DRIVER_NAME = "org.apache.hive.jdbc.HiveDriver";
   private static final String DERBY_DRIVER_NAME = "org.apache.derby.jdbc.EmbeddedDriver";
-  public static final String HIVESERVER2_TYPE = "sentry.e2etest.hiveServer2Type";
-  public static final String KEEP_BASEDIR = "sentry.e2etest.keepBaseDir";
   public static final String METASTORE_CONNECTION_URL = HiveConf.ConfVars.METASTORECONNECTURLKEY.varname;
   public static final String WAREHOUSE_DIR = HiveConf.ConfVars.METASTOREWAREHOUSE.varname;
-  public static final String AUTHZ_PROVIDER_FILENAME = "sentry-provider.ini";
   public static final String HS2_PORT = ConfVars.HIVE_SERVER2_THRIFT_PORT.toString();
   public static final String SUPPORT_CONCURRENCY = HiveConf.ConfVars.HIVE_SUPPORT_CONCURRENCY.varname;
   public static final String HADOOPBIN = ConfVars.HADOOPBIN.toString();
@@ -72,8 +69,7 @@ public class HiveServerFactory {
     if(!properties.containsKey(WAREHOUSE_DIR)) {
       LOGGER.info("fileSystem " + fileSystem.getClass().getSimpleName());
       if (fileSystem instanceof DistributedFileSystem) {
-        @SuppressWarnings("static-access")
-        String dfsUri = fileSystem.getDefaultUri(fileSystem.getConf()).toString();
+        String dfsUri = FileSystem.getDefaultUri(fileSystem.getConf()).toString();
         LOGGER.info("dfsUri " + dfsUri);
         properties.put(WAREHOUSE_DIR, dfsUri + "/data");
         fileSystem.mkdirs(new Path("/data/"), new FsPermission((short) 0777));
@@ -82,20 +78,9 @@ public class HiveServerFactory {
         fileSystem.mkdirs(new Path("/", "warehouse"), new FsPermission((short) 0777));
       }
     }
-    Boolean policyOnHDFS = new Boolean(System.getProperty("sentry.e2etest.policyonhdfs", "false"));
-    if (policyOnHDFS) {
-      // Initialize "hive.exec.scratchdir", according the description of
-      // "hive.exec.scratchdir", the permission should be (733).
-      // <description>HDFS root scratch dir for Hive jobs which gets created with write
-      // all (733) permission. For each connecting user, an HDFS scratch dir:
-      // ${hive.exec.scratchdir}/&lt;username&gt; is created,
-      // with ${hive.scratch.dir.permission}.</description>
-      fileSystem.mkdirs(new Path("/tmp/hive/"));
-      fileSystem.setPermission(new Path("/tmp/hive/"), new FsPermission((short) 0733));
-    } else {
-      LOGGER.info("Setting an readable path to hive.exec.scratchdir");
-      properties.put("hive.exec.scratchdir", new File(baseDir, "scratchdir").getPath());
-    }
+    LOGGER.info("Setting an readable path to hive.exec.scratchdir");
+    properties.put("hive.exec.scratchdir", new File(baseDir, "scratchdir").getPath());
+    
     if(!properties.containsKey(METASTORE_CONNECTION_URL)) {
       properties.put(METASTORE_CONNECTION_URL,
           String.format("jdbc:derby:;databaseName=%s;create=true",

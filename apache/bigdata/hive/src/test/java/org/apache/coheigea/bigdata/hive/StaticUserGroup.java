@@ -16,9 +16,6 @@
  */
 package org.apache.coheigea.bigdata.hive;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class StaticUserGroup {
   public static String ADMIN1,ADMINGROUP;
   public static final String
@@ -32,24 +29,11 @@ public class StaticUserGroup {
       USERGROUP2 = "user_group2",
       USERGROUP3 = "user_group3",
       USERGROUP4 = "user_group4";
-  private static final Map<String, String> staticMapping;
 
   static {
 
-    ADMIN1 = System.getProperty("sentry.e2etest.admin.user", "admin1");
-    ADMINGROUP = System.getProperty("sentry.e2etest.admin.group", "admin");
-    staticMapping = new HashMap<String, String>();
-    staticMapping.put(ADMIN1, ADMINGROUP);
-    staticMapping.put(HIVE, HIVE);
-    staticMapping.put(USER1_1, USERGROUP1);
-    staticMapping.put(USER1_2, USERGROUP1);
-    staticMapping.put(USER2_1, USERGROUP2);
-    staticMapping.put(USER3_1, USERGROUP3);
-    staticMapping.put(USER4_1, USERGROUP4);
-  }
-
-  public static Map<String, String> getStaticMapping(){
-    return staticMapping;
+    ADMIN1 = "admin1";
+    ADMINGROUP = "admin";
   }
 
 }

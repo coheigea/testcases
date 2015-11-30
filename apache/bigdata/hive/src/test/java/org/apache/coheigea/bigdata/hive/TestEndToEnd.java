@@ -107,5 +107,6 @@ public class TestEndToEnd extends AbstractTestWithStaticConfiguration {
         + "." + tableName1);
     statement.close();
     connection.close();
+    
   }
 }
