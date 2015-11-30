@@ -48,7 +48,9 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItService"/>
+   <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItAuthenticationService"/>
+   
+   <bean id="noAuthServiceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItService"/>
    
    <bean id="jackson" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
    
@@ -59,7 +61,7 @@
    
    <jaxrs:server address="http://localhost:${testutil.ports.Server}/doubleit">
        <jaxrs:serviceBeans>
-          <ref bean="serviceBean"/>
+          <ref bean="noAuthServiceBean"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
           <ref bean="jackson"/>
@@ -87,7 +89,7 @@
   
   <jaxrs:server address="http://localhost:${testutil.ports.Server.3}/doubleit">
        <jaxrs:serviceBeans>
-          <ref bean="serviceBean"/>
+          <ref bean="noAuthServiceBean"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
           <ref bean="jackson"/>
