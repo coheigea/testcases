@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.dfs;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class MiniDFS extends AbstractDFS {
 
   private static MiniDFSCluster dfsCluster;
 
-  MiniDFS(File baseDir, String serverType) throws Exception {
+  public MiniDFS(File baseDir) throws Exception {
     Configuration conf = new Configuration();
     File dfsDir = assertCreateDir(new File(baseDir, "dfs"));
     conf.set(MiniDFSCluster.HDFS_MINIDFS_BASEDIR, dfsDir.getPath());
@@ -60,8 +60,6 @@ public class MiniDFS extends AbstractDFS {
     Configuration.addDefaultResource("test.xml");
     dfsCluster = new MiniDFSCluster.Builder(conf).numDataNodes(2).build();
     fileSystem = dfsCluster.getFileSystem();
-    String policyDir = System.getProperty("sentry.e2etest.hive.policy.location", "/user/hive/sentry");
-    sentryDir = super.assertCreateDfsDir(new Path(fileSystem.getUri() + policyDir));
     dfsBaseDir = assertCreateDfsDir(new Path(new Path(fileSystem.getUri()), "/base"));
   }
 
@@ -71,6 +69,7 @@ public class MiniDFS extends AbstractDFS {
       dfsCluster.shutdown();
       dfsCluster = null;
     }
+    super.tearDown();
   }
 
   //Utilities
