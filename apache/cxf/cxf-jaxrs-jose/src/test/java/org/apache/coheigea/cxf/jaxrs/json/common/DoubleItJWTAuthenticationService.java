@@ -26,10 +26,13 @@ import javax.ws.rs.core.Context;
 
 import org.apache.coheigea.cxf.jaxrs.json.common.Number;
 import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.apache.cxf.rs.security.jose.jaxrs.JwtTokenSecurityContext;
+import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
+import org.apache.cxf.security.SecurityContext;
 import org.junit.Assert;
 
 @Path("/services")
-public class DoubleItAuthenticationService {
+public class DoubleItJWTAuthenticationService {
     
     @Context 
     MessageContext jaxrsContext;
@@ -40,6 +43,12 @@ public class DoubleItAuthenticationService {
     public Number doubleIt(Number numberToDouble) {
         // Check the context was set up correctly etc.
         Assert.assertNotNull(jaxrsContext.getSecurityContext().getUserPrincipal());
+        
+        JwtTokenSecurityContext securityContext = 
+            (JwtTokenSecurityContext)jaxrsContext.get(SecurityContext.class.getName());
+        Assert.assertNotNull(securityContext);
+        Assert.assertEquals("DoubleItSTSIssuer",
+                            securityContext.getToken().getClaim(JwtConstants.CLAIM_ISSUER));
         
         Number newNumber = new Number();
         newNumber.setDescription(numberToDouble.getDescription());

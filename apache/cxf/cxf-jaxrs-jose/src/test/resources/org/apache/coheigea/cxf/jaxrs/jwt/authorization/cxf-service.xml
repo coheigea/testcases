@@ -48,7 +48,7 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItAuthenticationService"/>
+   <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItJWTAuthenticationService"/>
    
    <bean id="jackson" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
    
