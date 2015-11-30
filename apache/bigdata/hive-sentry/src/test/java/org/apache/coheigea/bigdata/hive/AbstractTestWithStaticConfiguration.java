@@ -34,6 +34,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.coheigea.bigdata.hive.SentrySrvFactory.SentrySrvType;
+import org.apache.coheigea.bigdata.hive.dfs.DFS;
+import org.apache.coheigea.bigdata.hive.dfs.MiniDFS;
+import org.apache.coheigea.bigdata.hive.server.HiveServer;
+import org.apache.coheigea.bigdata.hive.server.HiveServerFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -200,8 +204,7 @@ public abstract class AbstractTestWithStaticConfiguration {
     dataDir = assertCreateDir(new File(baseDir, "data"));
     policyFileLocation = new File(confDir, HiveServerFactory.AUTHZ_PROVIDER_FILENAME);
 
-    String dfsType = System.getProperty(DFSFactory.FS_TYPE);
-    dfs = DFSFactory.create(dfsType, baseDir, testServerType);
+    dfs = new MiniDFS(baseDir, testServerType);
     fileSystem = dfs.getFileSystem();
 
     PolicyFile policyFile = PolicyFile.setAdminOnServer1(ADMIN1)

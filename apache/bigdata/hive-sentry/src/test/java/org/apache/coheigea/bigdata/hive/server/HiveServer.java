@@ -14,36 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.coheigea.bigdata.hive;
 
-import java.io.File;
+package org.apache.coheigea.bigdata.hive.server;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.sql.Connection;
 
-public class DFSFactory {
-  public static final String FS_TYPE = "sentry.e2etest.DFSType";
+public interface HiveServer {
 
-  public static DFS create(String dfsType, File baseDir,
-      String serverType) throws Exception {
-    DFSType type;
-    if(dfsType!=null) {
-      type = DFSType.valueOf(dfsType.trim());
-    }else {
-      type = DFSType.MiniDFS;
-    }
-    switch (type) {
-      case MiniDFS:
-        return new MiniDFS(baseDir, serverType);
-      case ClusterDFS:
-        return new ClusterDFS();
-      default:
-        throw new UnsupportedOperationException(type.name());
-    }
-  }
+  public void start() throws Exception;
 
-  @VisibleForTesting
-  public static enum DFSType {
-    MiniDFS,
-    ClusterDFS;
-  };
+  public void shutdown() throws Exception;
+
+  public String getURL();
+
+  public String getProperty(String key);
+
+  public Connection createConnection(String user, String password) throws Exception;
+
 }

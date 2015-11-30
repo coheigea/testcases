@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.dfs;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.coheigea.bigdata.hive.HiveServerFactory.HiveServer2Type;
+import org.apache.coheigea.bigdata.hive.server.HiveServerFactory.HiveServer2Type;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
@@ -53,7 +53,7 @@ public class MiniDFS extends AbstractDFS {
 
   private static MiniDFSCluster dfsCluster;
 
-  MiniDFS(File baseDir, String serverType) throws Exception {
+  public MiniDFS(File baseDir, String serverType) throws Exception {
     Configuration conf = new Configuration();
     if (HiveServer2Type.InternalMetastore.name().equalsIgnoreCase(serverType)) {
       // set the test group mapping that maps user to a group of same name

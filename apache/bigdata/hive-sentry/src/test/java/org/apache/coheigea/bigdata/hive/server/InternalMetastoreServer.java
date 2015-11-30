@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.server;
 
 import java.net.URI;
 import java.util.concurrent.Callable;
@@ -26,7 +26,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.HiveMetaStore;
 import org.apache.hadoop.hive.shims.ShimLoader;
-import org.fest.reflect.core.Reflection;
 
 public class InternalMetastoreServer extends AbstractHiveServer {
   private final HiveConf conf;
