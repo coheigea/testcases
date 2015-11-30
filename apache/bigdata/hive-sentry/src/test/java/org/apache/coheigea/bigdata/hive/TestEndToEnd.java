@@ -83,11 +83,10 @@ public class TestEndToEnd extends AbstractTestWithStaticConfiguration {
 
     // 3
     policyFile
-        .addRolesToGroup(USERGROUP1, "all_db1", "data_uri", "select_tb1", "insert_tb1")
+        .addRolesToGroup(USERGROUP1, "all_db1", "data_uri", "select_tb1", "insert_tb2")
         .addPermissionsToRole("all_db1", "server=server1->db=" + DB1)
         .addPermissionsToRole("select_tb1", "server=server1->db=" + DB2 + "->table=tb_1->action=select")
         .addPermissionsToRole("insert_tb2", "server=server1->db=" + DB2 + "->table=tb_2->action=insert")
-        .addPermissionsToRole("insert_tb1", "server=server1->db=" + DB2 + "->table=tb_2->action=insert")
         .addPermissionsToRole("data_uri", "server=server1->uri=file://" + dataDir.getPath());
     writePolicyFile(policyFile);
 
