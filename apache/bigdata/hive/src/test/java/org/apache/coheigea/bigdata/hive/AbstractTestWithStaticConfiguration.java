@@ -23,14 +23,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.coheigea.bigdata.hive.dfs.DFS;
 import org.apache.coheigea.bigdata.hive.dfs.MiniDFS;
+import org.apache.coheigea.bigdata.hive.server.HiveServer;
+import org.apache.coheigea.bigdata.hive.server.HiveServerFactory;
 import org.apache.commons.io.FileUtils;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsAction;
@@ -84,7 +84,6 @@ public abstract class AbstractTestWithStaticConfiguration {
       INDEX1 = "index_1";
 
   protected static final String SERVER_HOST = "localhost";
-  protected static final String EXTERNAL_HIVE_LIB = "sentry.e2etest.hive.lib";
 
   protected static boolean setMetastoreListener = true;
   protected static boolean enableHiveConcurrency = false;
@@ -99,55 +98,12 @@ public abstract class AbstractTestWithStaticConfiguration {
   protected static FileSystem fileSystem;
   protected static DFS dfs;
   protected static Map<String, String> properties;
-  protected static Configuration sentryConf;
-  protected static boolean enableSentryHA = false;
   protected static Context context;
   protected final String semanticException = "SemanticException No valid privileges";
 
   public static void createContext() throws Exception {
     context = new Context(hiveServer, fileSystem,
         baseDir, confDir, dataDir);
-  }
-  protected void dropDb(String user, String...dbs) throws Exception {
-    Connection connection = context.createConnection(user);
-    Statement statement = connection.createStatement();
-    for(String db : dbs) {
-      statement.execute("DROP DATABASE IF EXISTS " + db + " CASCADE");
-    }
-    statement.close();
-    connection.close();
-  }
-  protected void createDb(String user, String...dbs) throws Exception {
-    Connection connection = context.createConnection(user);
-    Statement statement = connection.createStatement();
-    ArrayList<String> allowedDBs = new ArrayList<String>(Arrays.asList(DB1, DB2, DB3));
-    for(String db : dbs) {
-      assertTrue(db + " is not part of known test dbs which will be cleaned up after the test", allowedDBs.contains(db));
-      statement.execute("CREATE DATABASE " + db);
-    }
-    statement.close();
-    connection.close();
-  }
-
-  protected void createTable(String user, String db, File dataFile, String...tables)
-      throws Exception {
-    Connection connection = context.createConnection(user);
-    Statement statement = connection.createStatement();
-    statement.execute("USE " + db);
-    for(String table : tables) {
-      statement.execute("DROP TABLE IF EXISTS " + table);
-      statement.execute("create table " + table
-          + " (under_col int comment 'the under column', value string)");
-      if(dataFile != null) {
-        statement.execute("load data local inpath '" + dataFile.getPath()
-            + "' into table " + table);
-        ResultSet res = statement.executeQuery("select * from " + table);
-        Assert.assertTrue("Table should have data after load", res.next());
-        res.close();
-      }
-    }
-    statement.close();
-    connection.close();
   }
 
   protected static File assertCreateDir(File dir) {
@@ -226,8 +182,9 @@ public abstract class AbstractTestWithStaticConfiguration {
       resultSet = statement.executeQuery("SHOW DATABASES");
       ArrayList<String> dbs = new ArrayList<String>();
       while(resultSet.next()) {
-        dbs.add(resultSet.getString(1));
+          dbs.add(resultSet.getString(1));
       }
+      
       for (String db : dbs) {
         if(!db.equalsIgnoreCase("default")) {
           String sql = "DROP DATABASE if exists " + db + " CASCADE";
@@ -259,9 +216,7 @@ public abstract class AbstractTestWithStaticConfiguration {
     }
 
     if(baseDir != null) {
-      if(System.getProperty(HiveServerFactory.KEEP_BASEDIR) == null) {
-        FileUtils.deleteQuietly(baseDir);
-      }
+      FileUtils.deleteQuietly(baseDir);
       baseDir = null;
     }
     if(dfs != null) {

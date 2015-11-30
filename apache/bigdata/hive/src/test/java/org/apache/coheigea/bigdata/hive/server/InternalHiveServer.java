@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.server;
 
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hive.service.server.HiveServer2;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.server;
 
 import java.sql.Connection;
 
