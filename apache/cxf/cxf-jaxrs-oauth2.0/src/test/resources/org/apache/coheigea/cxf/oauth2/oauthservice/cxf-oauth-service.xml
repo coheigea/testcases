@@ -163,6 +163,27 @@
        </jaxrs:properties>
    </jaxrs:server>
    
+   <bean id="jwtAuthHandler" class="org.apache.cxf.rs.security.oauth2.grants.jwt.JwtBearerAuthHandler"/>
+   
+   <jaxrs:server 
+       depends-on="OAuthServerTLS" 
+       address="https://localhost:${testutil.ports.OAuthServer}/jwtservices">
+       <jaxrs:serviceBeans>
+           <ref bean="tokenService"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+           <ref bean="jwtAuthHandler"/>
+           <ref bean="jackson"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+           <entry key="rs.security.keystore.type" value="jks" />
+           <entry key="rs.security.keystore.alias" value="myclientkey"/>
+           <entry key="rs.security.keystore.password" value="cspass"/>
+           <entry key="rs.security.keystore.file" value="clientstore.jks" />
+           <entry key="rs.security.signature.algorithm" value="RS256" />
+       </jaxrs:properties>
+   </jaxrs:server>
+   
     <httpj:engine-factory id="OAuthServerTLS" bus="cxf">
    <httpj:engine port="${testutil.ports.OAuthServer}">
     <httpj:tlsServerParameters>
