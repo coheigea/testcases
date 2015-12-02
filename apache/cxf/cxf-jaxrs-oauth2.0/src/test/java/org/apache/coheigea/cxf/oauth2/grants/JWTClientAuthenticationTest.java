@@ -83,30 +83,7 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        JwtClaims claims = new JwtClaims();
-        claims.setSubject("consumer-id");
-        claims.setIssuer("DoubleItSTSIssuer");
-        claims.setIssuedAt(new Date().getTime() / 1000L);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, 60);
-        claims.setExpiryTime(cal.getTimeInMillis() / 1000L);
-        
-        // Sign the JWT Token
-        Properties signingProperties = new Properties();
-        signingProperties.put("rs.security.keystore.type", "jks");
-        signingProperties.put("rs.security.keystore.password", "cspass");
-        signingProperties.put("rs.security.keystore.alias", "myclientkey");
-        signingProperties.put("rs.security.keystore.file", "clientstore.jks");
-        signingProperties.put("rs.security.key.password", "ckpass");
-        signingProperties.put("rs.security.signature.algorithm", "RS256");
-        
-        JwsHeaders jwsHeaders = new JwsHeaders(signingProperties);
-        JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
-        
-        JwsSignatureProvider sigProvider = 
-            JwsUtils.loadSignatureProvider(signingProperties, jwsHeaders);
-        
-        String token = jws.signWith(sigProvider);
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", true, true);
         
         ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code, token);
         assertNotNull(accessToken.getTokenKey());
@@ -137,30 +114,7 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        JwtClaims claims = new JwtClaims();
-        claims.setSubject("consumer2-id");
-        claims.setIssuer("DoubleItSTSIssuer");
-        claims.setIssuedAt(new Date().getTime() / 1000L);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, 60);
-        claims.setExpiryTime(cal.getTimeInMillis() / 1000L);
-        
-        // Sign the JWT Token
-        Properties signingProperties = new Properties();
-        signingProperties.put("rs.security.keystore.type", "jks");
-        signingProperties.put("rs.security.keystore.password", "cspass");
-        signingProperties.put("rs.security.keystore.alias", "myclientkey");
-        signingProperties.put("rs.security.keystore.file", "clientstore.jks");
-        signingProperties.put("rs.security.key.password", "ckpass");
-        signingProperties.put("rs.security.signature.algorithm", "RS256");
-        
-        JwsHeaders jwsHeaders = new JwsHeaders(signingProperties);
-        JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
-        
-        JwsSignatureProvider sigProvider = 
-            JwsUtils.loadSignatureProvider(signingProperties, jwsHeaders);
-        
-        String token = jws.signWith(sigProvider);
+        String token = createToken("DoubleItSTSIssuer", "consumer2-id", true, true);
         
         try {
             getAccessTokenWithAuthorizationCode(client, code, token);
@@ -195,26 +149,7 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        JwtClaims claims = new JwtClaims();
-        claims.setSubject("consumer-id");
-        claims.setIssuer("DoubleItSTSIssuer");
-        claims.setIssuedAt(new Date().getTime() / 1000L);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, 60);
-        claims.setExpiryTime(cal.getTimeInMillis() / 1000L);
-        
-        // Sign the JWT Token
-        Properties signingProperties = new Properties();
-        signingProperties.put("rs.security.keystore.type", "jks");
-        signingProperties.put("rs.security.keystore.password", "cspass");
-        signingProperties.put("rs.security.keystore.alias", "myclientkey");
-        signingProperties.put("rs.security.keystore.file", "clientstore.jks");
-        signingProperties.put("rs.security.key.password", "ckpass");
-        signingProperties.put("rs.security.signature.algorithm", "RS256");
-        
-        JwsHeaders jwsHeaders = new JwsHeaders(SignatureAlgorithm.NONE);
-        JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
-        String token = jws.getSignedEncodedJws();
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", true, false);
         
         try {
             getAccessTokenWithAuthorizationCode(client, code, token);
@@ -249,29 +184,7 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        JwtClaims claims = new JwtClaims();
-        claims.setSubject("consumer-id");
-        claims.setIssuedAt(new Date().getTime() / 1000L);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, 60);
-        claims.setExpiryTime(cal.getTimeInMillis() / 1000L);
-        
-        // Sign the JWT Token
-        Properties signingProperties = new Properties();
-        signingProperties.put("rs.security.keystore.type", "jks");
-        signingProperties.put("rs.security.keystore.password", "cspass");
-        signingProperties.put("rs.security.keystore.alias", "myclientkey");
-        signingProperties.put("rs.security.keystore.file", "clientstore.jks");
-        signingProperties.put("rs.security.key.password", "ckpass");
-        signingProperties.put("rs.security.signature.algorithm", "RS256");
-        
-        JwsHeaders jwsHeaders = new JwsHeaders(signingProperties);
-        JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
-        
-        JwsSignatureProvider sigProvider = 
-            JwsUtils.loadSignatureProvider(signingProperties, jwsHeaders);
-        
-        String token = jws.signWith(sigProvider);
+        String token = createToken(null, "consumer-id", true, true);
         
         try {
             getAccessTokenWithAuthorizationCode(client, code, token);
@@ -306,27 +219,7 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        JwtClaims claims = new JwtClaims();
-        claims.setIssuer("DoubleItSTSIssuer");
-        claims.setSubject("consumer-id");
-        claims.setIssuedAt(new Date().getTime() / 1000L);
-        
-        // Sign the JWT Token
-        Properties signingProperties = new Properties();
-        signingProperties.put("rs.security.keystore.type", "jks");
-        signingProperties.put("rs.security.keystore.password", "cspass");
-        signingProperties.put("rs.security.keystore.alias", "myclientkey");
-        signingProperties.put("rs.security.keystore.file", "clientstore.jks");
-        signingProperties.put("rs.security.key.password", "ckpass");
-        signingProperties.put("rs.security.signature.algorithm", "RS256");
-        
-        JwsHeaders jwsHeaders = new JwsHeaders(signingProperties);
-        JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
-        
-        JwsSignatureProvider sigProvider = 
-            JwsUtils.loadSignatureProvider(signingProperties, jwsHeaders);
-        
-        String token = jws.signWith(sigProvider);
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", false, true);
         
         try {
             getAccessTokenWithAuthorizationCode(client, code, token);
@@ -376,4 +269,41 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
         return response.readEntity(ClientAccessToken.class);
     }
     
+    private String createToken(String issuer, String subject, boolean expiry, boolean sign) {
+        // Create the JWT Token
+        JwtClaims claims = new JwtClaims();
+        claims.setSubject(subject);
+        if (issuer != null) {
+            claims.setIssuer(issuer);
+        }
+        claims.setIssuedAt(new Date().getTime() / 1000L);
+        if (expiry) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.SECOND, 60);
+            claims.setExpiryTime(cal.getTimeInMillis() / 1000L);
+        }
+        
+        if (sign) {
+            // Sign the JWT Token
+            Properties signingProperties = new Properties();
+            signingProperties.put("rs.security.keystore.type", "jks");
+            signingProperties.put("rs.security.keystore.password", "cspass");
+            signingProperties.put("rs.security.keystore.alias", "myclientkey");
+            signingProperties.put("rs.security.keystore.file", "clientstore.jks");
+            signingProperties.put("rs.security.key.password", "ckpass");
+            signingProperties.put("rs.security.signature.algorithm", "RS256");
+            
+            JwsHeaders jwsHeaders = new JwsHeaders(signingProperties);
+            JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
+            
+            JwsSignatureProvider sigProvider = 
+                JwsUtils.loadSignatureProvider(signingProperties, jwsHeaders);
+            
+            return jws.signWith(sigProvider);
+        }
+        
+        JwsHeaders jwsHeaders = new JwsHeaders(SignatureAlgorithm.NONE);
+        JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
+        return jws.getSignedEncodedJws();
+    }
 }

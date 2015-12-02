@@ -31,6 +31,7 @@ import org.apache.cxf.common.util.Base64UrlUtility;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
+import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.common.saml.SAMLCallback;
 import org.apache.wss4j.common.saml.SAMLUtil;
 import org.apache.wss4j.common.saml.SamlAssertionWrapper;
@@ -67,31 +68,7 @@ public class SAMLAuthorizationGrantTest extends AbstractBusClientServerTestBase 
         WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
         
         // Create the SAML Assertion
-        SamlCallbackHandler samlCallbackHandler = new SamlCallbackHandler();
-        samlCallbackHandler.setSignAssertion(true);
-        
-        ConditionsBean conditions = new ConditionsBean();
-        AudienceRestrictionBean audienceRestriction = new AudienceRestrictionBean();
-        audienceRestriction.setAudienceURIs(Collections.singletonList(address + "token"));
-        conditions.setAudienceRestrictions(Collections.singletonList(audienceRestriction));
-        samlCallbackHandler.setConditions(conditions);
-        
-        SAMLCallback samlCallback = new SAMLCallback();
-        SAMLUtil.doSAMLCallback(samlCallbackHandler, samlCallback);
-
-        SamlAssertionWrapper samlAssertion = new SamlAssertionWrapper(samlCallback);
-        if (samlCallback.isSignAssertion()) {
-            samlAssertion.signAssertion(
-                samlCallback.getIssuerKeyName(),
-                samlCallback.getIssuerKeyPassword(),
-                samlCallback.getIssuerCrypto(),
-                samlCallback.isSendKeyValue(),
-                samlCallback.getCanonicalizationAlgorithm(),
-                samlCallback.getSignatureAlgorithm()
-            );
-        }
-        
-        String assertion = samlAssertion.assertionToString();
+        String assertion = createToken(address + "token", true, true);
 
         // Get Access Token
         client.type("application/x-www-form-urlencoded").accept("application/json");
@@ -119,31 +96,7 @@ public class SAMLAuthorizationGrantTest extends AbstractBusClientServerTestBase 
         WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
         
         // Create the SAML Assertion
-        SamlCallbackHandler samlCallbackHandler = new SamlCallbackHandler(false);
-        samlCallbackHandler.setSignAssertion(true);
-        
-        ConditionsBean conditions = new ConditionsBean();
-        AudienceRestrictionBean audienceRestriction = new AudienceRestrictionBean();
-        audienceRestriction.setAudienceURIs(Collections.singletonList(address + "token"));
-        conditions.setAudienceRestrictions(Collections.singletonList(audienceRestriction));
-        samlCallbackHandler.setConditions(conditions);
-        
-        SAMLCallback samlCallback = new SAMLCallback();
-        SAMLUtil.doSAMLCallback(samlCallbackHandler, samlCallback);
-
-        SamlAssertionWrapper samlAssertion = new SamlAssertionWrapper(samlCallback);
-        if (samlCallback.isSignAssertion()) {
-            samlAssertion.signAssertion(
-                samlCallback.getIssuerKeyName(),
-                samlCallback.getIssuerKeyPassword(),
-                samlCallback.getIssuerCrypto(),
-                samlCallback.isSendKeyValue(),
-                samlCallback.getCanonicalizationAlgorithm(),
-                samlCallback.getSignatureAlgorithm()
-            );
-        }
-        
-        String assertion = samlAssertion.assertionToString();
+        String assertion = createToken(address + "token", false, true);
 
         // Get Access Token
         client.type("application/x-www-form-urlencoded").accept("application/json");
@@ -174,31 +127,7 @@ public class SAMLAuthorizationGrantTest extends AbstractBusClientServerTestBase 
         WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
         
         // Create the SAML Assertion
-        SamlCallbackHandler samlCallbackHandler = new SamlCallbackHandler();
-        samlCallbackHandler.setSignAssertion(true);
-        
-        ConditionsBean conditions = new ConditionsBean();
-        AudienceRestrictionBean audienceRestriction = new AudienceRestrictionBean();
-        audienceRestriction.setAudienceURIs(Collections.singletonList(address + "token2"));
-        conditions.setAudienceRestrictions(Collections.singletonList(audienceRestriction));
-        samlCallbackHandler.setConditions(conditions);
-        
-        SAMLCallback samlCallback = new SAMLCallback();
-        SAMLUtil.doSAMLCallback(samlCallbackHandler, samlCallback);
-
-        SamlAssertionWrapper samlAssertion = new SamlAssertionWrapper(samlCallback);
-        if (samlCallback.isSignAssertion()) {
-            samlAssertion.signAssertion(
-                samlCallback.getIssuerKeyName(),
-                samlCallback.getIssuerKeyPassword(),
-                samlCallback.getIssuerCrypto(),
-                samlCallback.isSendKeyValue(),
-                samlCallback.getCanonicalizationAlgorithm(),
-                samlCallback.getSignatureAlgorithm()
-            );
-        }
-        
-        String assertion = samlAssertion.assertionToString();
+        String assertion = createToken(address + "token2", true, true);
 
         // Get Access Token
         client.type("application/x-www-form-urlencoded").accept("application/json");
@@ -229,20 +158,7 @@ public class SAMLAuthorizationGrantTest extends AbstractBusClientServerTestBase 
         WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
         
         // Create the SAML Assertion
-        SamlCallbackHandler samlCallbackHandler = new SamlCallbackHandler();
-        samlCallbackHandler.setSignAssertion(false);
-        
-        ConditionsBean conditions = new ConditionsBean();
-        AudienceRestrictionBean audienceRestriction = new AudienceRestrictionBean();
-        audienceRestriction.setAudienceURIs(Collections.singletonList(address + "token"));
-        conditions.setAudienceRestrictions(Collections.singletonList(audienceRestriction));
-        samlCallbackHandler.setConditions(conditions);
-        
-        SAMLCallback samlCallback = new SAMLCallback();
-        SAMLUtil.doSAMLCallback(samlCallbackHandler, samlCallback);
-
-        SamlAssertionWrapper samlAssertion = new SamlAssertionWrapper(samlCallback);
-        String assertion = samlAssertion.assertionToString();
+        String assertion = createToken(address + "token", true, false);
 
         // Get Access Token
         client.type("application/x-www-form-urlencoded").accept("application/json");
@@ -305,6 +221,34 @@ public class SAMLAuthorizationGrantTest extends AbstractBusClientServerTestBase 
         } catch (Exception ex) {
             // expected
         }
+    }
+    
+    private String createToken(String audRestr, boolean saml2, boolean sign) throws WSSecurityException {
+        SamlCallbackHandler samlCallbackHandler = new SamlCallbackHandler(saml2);
+        samlCallbackHandler.setSignAssertion(sign);
+        
+        ConditionsBean conditions = new ConditionsBean();
+        AudienceRestrictionBean audienceRestriction = new AudienceRestrictionBean();
+        audienceRestriction.setAudienceURIs(Collections.singletonList(audRestr));
+        conditions.setAudienceRestrictions(Collections.singletonList(audienceRestriction));
+        samlCallbackHandler.setConditions(conditions);
+        
+        SAMLCallback samlCallback = new SAMLCallback();
+        SAMLUtil.doSAMLCallback(samlCallbackHandler, samlCallback);
+
+        SamlAssertionWrapper samlAssertion = new SamlAssertionWrapper(samlCallback);
+        if (samlCallback.isSignAssertion()) {
+            samlAssertion.signAssertion(
+                samlCallback.getIssuerKeyName(),
+                samlCallback.getIssuerKeyPassword(),
+                samlCallback.getIssuerCrypto(),
+                samlCallback.isSendKeyValue(),
+                samlCallback.getCanonicalizationAlgorithm(),
+                samlCallback.getSignatureAlgorithm()
+            );
+        }
+        
+        return samlAssertion.assertionToString();
     }
     
 }
