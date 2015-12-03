@@ -88,6 +88,7 @@ public class JWTEncryptedTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         JwtToken token = new JwtToken(claims);
 
@@ -128,6 +129,7 @@ public class JWTEncryptedTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.encryption.properties", "clientEncKeystore.properties");
@@ -166,6 +168,7 @@ public class JWTEncryptedTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT2 + "/doubleit/services");
         
         JwtToken token = new JwtToken(claims);
 
