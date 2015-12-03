@@ -68,7 +68,8 @@ public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
         WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
         
         // Create the JWT Token
-        String token = createToken("DoubleItSTSIssuer", "consumer-id", true, true);
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", 
+                                   "https://localhost:" + PORT + "/services/token", true, true);
 
         // Get Access Token
         client.type("application/x-www-form-urlencoded").accept("application/json");
@@ -96,7 +97,8 @@ public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
         WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
         
         // Create the JWT Token
-        String token = createToken("DoubleItSTSIssuer", "consumer-id", true, false);
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", 
+                                   "https://localhost:" + PORT + "/services/token", true, false);
         
         // Get Access Token
         client.type("application/x-www-form-urlencoded").accept("application/json");
@@ -127,7 +129,8 @@ public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
         WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
         
         // Create the JWT Token
-        String token = createToken(null, "consumer-id", true, true);
+        String token = createToken(null, "consumer-id", 
+                                   "https://localhost:" + PORT + "/services/token", true, true);
 
         // Get Access Token
         client.type("application/x-www-form-urlencoded").accept("application/json");
@@ -158,7 +161,8 @@ public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
         WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
         
         // Create the JWT Token
-        String token = createToken("DoubleItSTSIssuer", "consumer-id", false, true);
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", 
+                                   "https://localhost:" + PORT + "/services/token", false, true);
 
         // Get Access Token
         client.type("application/x-www-form-urlencoded").accept("application/json");
@@ -178,7 +182,40 @@ public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
         }
     }
     
-    private String createToken(String issuer, String subject, boolean expiry, boolean sign) {
+    @org.junit.Test
+    public void testJWTBadAudienceRestriction() throws Exception {
+        URL busFile = JWTAuthorizationGrantTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        
+        // Create the JWT Token
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", 
+                                   "https://localhost:" + PORT + "/services/badtoken", true, true);
+
+        // Get Access Token
+        client.type("application/x-www-form-urlencoded").accept("application/json");
+        client.path("token");
+        
+        Form form = new Form();
+        form.param("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer");
+        form.param("assertion", token);
+        form.param("client_id", "consumer-id");
+        Response response = client.post(form);
+        
+        try {
+            response.readEntity(ClientAccessToken.class);
+            fail("Failure expected on a bad audience restriction");
+        } catch (Exception ex) {
+            // expected
+        }
+    }
+    
+    private String createToken(String issuer, String subject, String audience, 
+                               boolean expiry, boolean sign) {
         // Create the JWT Token
         JwtClaims claims = new JwtClaims();
         claims.setSubject(subject);
@@ -190,6 +227,9 @@ public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.SECOND, 60);
             claims.setExpiryTime(cal.getTimeInMillis() / 1000L);
+        }
+        if (audience != null) {
+            claims.setAudience(audience);
         }
         
         if (sign) {
