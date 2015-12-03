@@ -74,6 +74,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
         claims.setProperty("role", "boss");
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         JwtToken token = new JwtToken(claims);
 
@@ -116,6 +117,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         JwtToken token = new JwtToken(claims);
 
@@ -158,6 +160,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
         claims.setProperty("role", "employee");
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         JwtToken token = new JwtToken(claims);
 

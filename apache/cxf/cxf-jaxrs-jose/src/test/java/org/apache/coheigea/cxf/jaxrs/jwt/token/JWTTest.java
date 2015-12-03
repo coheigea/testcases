@@ -82,6 +82,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         // Set the expiry date to be yesterday
         Calendar cal = Calendar.getInstance();
@@ -131,6 +132,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         // Set the issued date to be in the future
         Calendar cal = Calendar.getInstance();
@@ -180,6 +182,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         // Set the issued date to be in the near future
         Calendar cal = Calendar.getInstance();
@@ -229,6 +232,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
+        claims.setAudience("http://localhost:" + PORT2 + "/doubleit/services");
         
         // Set the issued date to be in the near future
         Calendar cal = Calendar.getInstance();
@@ -278,6 +282,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         // Set the issued date to be in the near future
         Calendar cal = Calendar.getInstance();
@@ -328,6 +333,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
+        claims.setAudience("http://localhost:" + PORT2 + "/doubleit/services");
         
         // Set the issued date to be in the near future
         Calendar cal = Calendar.getInstance();
@@ -379,6 +385,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT3 + "/doubleit/services");
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
@@ -418,6 +425,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
@@ -457,6 +465,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT4 + "/doubleit/services");
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
@@ -496,6 +505,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
         
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jks");
@@ -536,6 +546,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
             claims.setSubject("alice");
             claims.setIssuer("DoubleItSTSIssuer");
             claims.setIssuedAt(new Date().getTime() / 1000L);
+            claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
             
             JwsHeaders headers = new JwsHeaders();
             headers.setType(JoseType.JWT);
@@ -585,6 +596,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT5 + "/doubleit/services");
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
@@ -600,6 +612,146 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         properties.put("rs.security.key.password", "ckpass");
         properties.put("rs.security.signature.algorithm", "RS256");
         properties.put("rs.security.signature.include.cert", "true");
+        properties.put(JwtConstants.JWT_TOKEN, token);
+        
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+    }
+    
+    @org.junit.Test
+    public void testBadAudienceRestriction() throws Exception {
+
+        URL busFile = JWTTest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        providers.add(new JwtAuthenticationClientFilter());
+        
+        String address = "http://localhost:" + PORT + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        // Create the JWT Token
+        JwtClaims claims = new JwtClaims();
+        claims.setSubject("alice");
+        claims.setIssuer("DoubleItSTSIssuer");
+        claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setAudience("http://localhost:" + PORT + "/doubleit/badservices");
+        
+        JwsHeaders headers = new JwsHeaders();
+        headers.setType(JoseType.JWT);
+        headers.setSignatureAlgorithm(SignatureAlgorithm.RS256);
+        
+        JwtToken token = new JwtToken(headers, claims);
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.keystore.type", "jks");
+        properties.put("rs.security.keystore.password", "cspass");
+        properties.put("rs.security.keystore.alias", "myclientkey");
+        properties.put("rs.security.keystore.file", "clientstore.jks");
+        properties.put("rs.security.key.password", "ckpass");
+        properties.put("rs.security.signature.algorithm", "RS256");
+        properties.put(JwtConstants.JWT_TOKEN, token);
+        
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Response response = client.post(numberToDouble);
+        assertNotEquals(response.getStatus(), 200);
+    }
+    
+    @org.junit.Test
+    public void testNoAudienceRestriction() throws Exception {
+
+        URL busFile = JWTTest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        providers.add(new JwtAuthenticationClientFilter());
+        
+        String address = "http://localhost:" + PORT + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        // Create the JWT Token
+        JwtClaims claims = new JwtClaims();
+        claims.setSubject("alice");
+        claims.setIssuer("DoubleItSTSIssuer");
+        claims.setIssuedAt(new Date().getTime() / 1000L);
+        
+        JwsHeaders headers = new JwsHeaders();
+        headers.setType(JoseType.JWT);
+        headers.setSignatureAlgorithm(SignatureAlgorithm.RS256);
+        
+        JwtToken token = new JwtToken(headers, claims);
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.keystore.type", "jks");
+        properties.put("rs.security.keystore.password", "cspass");
+        properties.put("rs.security.keystore.alias", "myclientkey");
+        properties.put("rs.security.keystore.file", "clientstore.jks");
+        properties.put("rs.security.key.password", "ckpass");
+        properties.put("rs.security.signature.algorithm", "RS256");
+        properties.put(JwtConstants.JWT_TOKEN, token);
+        
+        WebClient.getConfig(client).getRequestContext().putAll(properties);
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Response response = client.post(numberToDouble);
+        assertNotEquals(response.getStatus(), 200);
+    }
+    
+    @org.junit.Test
+    public void testMultipleAudienceRestrictions() throws Exception {
+
+        URL busFile = JWTTest.class.getResource("cxf-client.xml");
+
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        providers.add(new JwtAuthenticationClientFilter());
+        
+        String address = "http://localhost:" + PORT + "/doubleit/services";
+        WebClient client = 
+            WebClient.create(address, providers, busFile.toString());
+        client.type("application/json").accept("application/json");
+        
+        // Create the JWT Token
+        JwtClaims claims = new JwtClaims();
+        claims.setSubject("alice");
+        claims.setIssuer("DoubleItSTSIssuer");
+        claims.setIssuedAt(new Date().getTime() / 1000L);
+        List<String> audiences = new ArrayList<>();
+        audiences.add("http://localhost:" + PORT + "/doubleit/badservices");
+        audiences.add("http://localhost:" + PORT + "/doubleit/services");
+        claims.setProperty(JwtConstants.CLAIM_AUDIENCE, audiences);
+        
+        JwsHeaders headers = new JwsHeaders();
+        headers.setType(JoseType.JWT);
+        headers.setSignatureAlgorithm(SignatureAlgorithm.RS256);
+        
+        JwtToken token = new JwtToken(headers, claims);
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("rs.security.keystore.type", "jks");
+        properties.put("rs.security.keystore.password", "cspass");
+        properties.put("rs.security.keystore.alias", "myclientkey");
+        properties.put("rs.security.keystore.file", "clientstore.jks");
+        properties.put("rs.security.key.password", "ckpass");
+        properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
         WebClient.getConfig(client).getRequestContext().putAll(properties);
