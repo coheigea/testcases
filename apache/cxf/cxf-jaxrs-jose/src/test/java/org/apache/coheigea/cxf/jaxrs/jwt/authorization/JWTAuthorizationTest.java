@@ -20,6 +20,7 @@ package org.apache.coheigea.cxf.jaxrs.jwt.authorization;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +75,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
         claims.setProperty("role", "boss");
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwtToken token = new JwtToken(claims);
 
@@ -117,7 +118,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwtToken token = new JwtToken(claims);
 
@@ -160,7 +161,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
         claims.setProperty("role", "employee");
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwtToken token = new JwtToken(claims);
 
