@@ -76,14 +76,15 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
         assertNotNull(code);
         
         // Now get the access token
-        String samlAddress = "https://localhost:" + PORT + "/jwtservices/";
-        client = WebClient.create(samlAddress, providers, busFile.toString());
+        String jwtAddress = "https://localhost:" + PORT + "/jwtservices/";
+        client = WebClient.create(jwtAddress, providers, busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        String token = createToken("DoubleItSTSIssuer", "consumer-id", true, true);
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", 
+                                   jwtAddress + "token", true, true);
         
         ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code, token);
         assertNotNull(accessToken.getTokenKey());
@@ -107,14 +108,15 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
         assertNotNull(code);
         
         // Now get the access token
-        String samlAddress = "https://localhost:" + PORT + "/jwtservices/";
-        client = WebClient.create(samlAddress, providers, busFile.toString());
+        String jwtAddress = "https://localhost:" + PORT + "/jwtservices/";
+        client = WebClient.create(jwtAddress, providers, busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        String token = createToken("DoubleItSTSIssuer", "consumer2-id", true, true);
+        String token = createToken("DoubleItSTSIssuer", "consumer2-id", 
+                                   jwtAddress + "token", true, true);
         
         try {
             getAccessTokenWithAuthorizationCode(client, code, token);
@@ -142,14 +144,15 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
         assertNotNull(code);
         
         // Now get the access token
-        String samlAddress = "https://localhost:" + PORT + "/jwtservices/";
-        client = WebClient.create(samlAddress, providers, busFile.toString());
+        String jwtAddress = "https://localhost:" + PORT + "/jwtservices/";
+        client = WebClient.create(jwtAddress, providers, busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        String token = createToken("DoubleItSTSIssuer", "consumer-id", true, false);
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", 
+                                   jwtAddress + "token", true, false);
         
         try {
             getAccessTokenWithAuthorizationCode(client, code, token);
@@ -177,14 +180,15 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
         assertNotNull(code);
         
         // Now get the access token
-        String samlAddress = "https://localhost:" + PORT + "/jwtservices/";
-        client = WebClient.create(samlAddress, providers, busFile.toString());
+        String jwtAddress = "https://localhost:" + PORT + "/jwtservices/";
+        client = WebClient.create(jwtAddress, providers, busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        String token = createToken(null, "consumer-id", true, true);
+        String token = createToken(null, "consumer-id", 
+                                   jwtAddress + "token", true, true);
         
         try {
             getAccessTokenWithAuthorizationCode(client, code, token);
@@ -212,18 +216,55 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
         assertNotNull(code);
         
         // Now get the access token
-        String samlAddress = "https://localhost:" + PORT + "/jwtservices/";
-        client = WebClient.create(samlAddress, providers, busFile.toString());
+        String jwtAddress = "https://localhost:" + PORT + "/jwtservices/";
+        client = WebClient.create(jwtAddress, providers, busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Create the JWT Token
-        String token = createToken("DoubleItSTSIssuer", "consumer-id", false, true);
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", 
+                                   jwtAddress + "token", false, true);
         
         try {
             getAccessTokenWithAuthorizationCode(client, code, token);
             fail("Failure expected on no expiry");
+        } catch (Exception ex) {
+            // expected
+        }
+    }
+    
+    @org.junit.Test
+    public void testJWTBadAudienceRestriction() throws Exception {
+        URL busFile = JWTClientAuthenticationTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Get Authorization Code
+        String code = getAuthorizationCode(client);
+        assertNotNull(code);
+        
+        // Now get the access token
+        String jwtAddress = "https://localhost:" + PORT + "/jwtservices/";
+        client = WebClient.create(jwtAddress, providers, busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Create the JWT Token
+        String token = createToken("DoubleItSTSIssuer", "consumer-id", 
+                                   jwtAddress + "badtoken", true, true);
+        
+        try {
+            getAccessTokenWithAuthorizationCode(client, code, token);
+            fail("Failure expected on a bad audience restriction");
         } catch (Exception ex) {
             // expected
         }
@@ -269,7 +310,8 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
         return response.readEntity(ClientAccessToken.class);
     }
     
-    private String createToken(String issuer, String subject, boolean expiry, boolean sign) {
+    private String createToken(String issuer, String subject, String audience, 
+                               boolean expiry, boolean sign) {
         // Create the JWT Token
         JwtClaims claims = new JwtClaims();
         claims.setSubject(subject);
@@ -281,6 +323,9 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.SECOND, 60);
             claims.setExpiryTime(cal.getTimeInMillis() / 1000L);
+        }
+        if (audience != null) {
+            claims.setAudience(audience);
         }
         
         if (sign) {
