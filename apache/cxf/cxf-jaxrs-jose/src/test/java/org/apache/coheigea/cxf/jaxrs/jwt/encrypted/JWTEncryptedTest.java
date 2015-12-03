@@ -21,6 +21,7 @@ package org.apache.coheigea.cxf.jaxrs.jwt.encrypted;
 import java.net.URL;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +89,7 @@ public class JWTEncryptedTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwtToken token = new JwtToken(claims);
 
@@ -129,7 +130,7 @@ public class JWTEncryptedTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.encryption.properties", "clientEncKeystore.properties");
@@ -168,7 +169,7 @@ public class JWTEncryptedTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT2 + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwtToken token = new JwtToken(claims);
 

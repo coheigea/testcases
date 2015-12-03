@@ -21,6 +21,7 @@ package org.apache.coheigea.cxf.oauth2.grants;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -325,7 +326,7 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
             claims.setExpiryTime(cal.getTimeInMillis() / 1000L);
         }
         if (audience != null) {
-            claims.setAudience(audience);
+            claims.setAudiences(Collections.singletonList(audience));
         }
         
         if (sign) {

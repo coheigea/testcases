@@ -22,6 +22,7 @@ import java.net.URL;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -82,7 +83,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         // Set the expiry date to be yesterday
         Calendar cal = Calendar.getInstance();
@@ -132,7 +133,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         // Set the issued date to be in the future
         Calendar cal = Calendar.getInstance();
@@ -182,7 +183,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         // Set the issued date to be in the near future
         Calendar cal = Calendar.getInstance();
@@ -232,7 +233,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
-        claims.setAudience("http://localhost:" + PORT2 + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         // Set the issued date to be in the near future
         Calendar cal = Calendar.getInstance();
@@ -282,7 +283,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         // Set the issued date to be in the near future
         Calendar cal = Calendar.getInstance();
@@ -333,7 +334,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
-        claims.setAudience("http://localhost:" + PORT2 + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         // Set the issued date to be in the near future
         Calendar cal = Calendar.getInstance();
@@ -385,7 +386,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT3 + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
@@ -425,7 +426,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
@@ -465,7 +466,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT4 + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
@@ -505,7 +506,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jks");
@@ -546,7 +547,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
             claims.setSubject("alice");
             claims.setIssuer("DoubleItSTSIssuer");
             claims.setIssuedAt(new Date().getTime() / 1000L);
-            claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+            claims.setAudiences(Collections.singletonList(address));
             
             JwsHeaders headers = new JwsHeaders();
             headers.setType(JoseType.JWT);
@@ -596,7 +597,7 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT5 + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);
@@ -643,7 +644,8 @@ public class JWTTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/badservices");
+        claims.setAudiences(
+            Collections.singletonList("http://localhost:" + PORT + "/doubleit/badservices"));
         
         JwsHeaders headers = new JwsHeaders();
         headers.setType(JoseType.JWT);

@@ -20,6 +20,7 @@ package org.apache.coheigea.cxf.jaxrs.jwt.authentication;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +74,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwtToken token = new JwtToken(claims);
 
@@ -116,7 +117,7 @@ public class JWTAuthenticationTest extends AbstractBusClientServerTestBase {
         claims.setSubject("alice");
         claims.setIssuer("DoubleItSTSIssuer");
         claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setAudience("http://localhost:" + PORT + "/doubleit/services");
+        claims.setAudiences(Collections.singletonList(address));
         
         JwtToken token = new JwtToken(claims);
 
