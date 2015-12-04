@@ -18,9 +18,15 @@
  */
 package org.apache.coheigea.cxf.oauth2.oauthservice;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.coheigea.cxf.oauth2.balanceservice.BalanceServiceTest;
+import org.apache.cxf.rs.security.oauth2.common.Client;
+import org.apache.cxf.rs.security.oauth2.common.OAuthPermission;
 import org.apache.cxf.rs.security.oauth2.grants.code.DefaultEHCacheCodeDataProvider;
+import org.apache.cxf.rs.security.oauth2.provider.OAuthServiceException;
 
 /**
  * Extend the DefaultEHCacheCodeDataProvider to allow refreshing of tokens
@@ -32,19 +38,21 @@ public class EHCacheRefreshTokenProvider extends DefaultEHCacheCodeDataProvider 
         return true;
     }
     
-    /*
     @Override
     public List<OAuthPermission> convertScopeToPermissions(Client client, List<String> requestedScope) {
         if (requestedScope.size() == 1 && "read_balance".equals(requestedScope.get(0))) {
             OAuthPermission permission = new OAuthPermission();
             permission.setHttpVerbs(Collections.singletonList("GET"));
+            List<String> uris = new ArrayList<>();
             String partnerAddress = "https://localhost:" + BalanceServiceTest.PORT + "/bankservice/partners/balance";
-            permission.setUris(Collections.singletonList(partnerAddress));
+            uris.add(partnerAddress);
+            permission.setUris(uris);
             
             return Collections.singletonList(permission);
+        } else if (requestedScope.isEmpty()) {
+            return Collections.emptyList();
         }
         
         throw new OAuthServiceException("invalid_scope");
     }
-    */
 }
