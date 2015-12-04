@@ -71,6 +71,13 @@
                <value>urn:ietf:params:oauth:grant-type:jwt-bearer</value>
            </util:list>
        </property>
+       <!-- 
+       <property name="registeredScopes">
+           <util:list value-type="java.lang.String">
+               <value>read_balance</value>
+           </util:list>
+       </property>
+       -->
    </bean>
    
    <bean id="oauthProvider" class="org.apache.coheigea.cxf.oauth2.oauthservice.EHCacheRefreshTokenProvider">
@@ -132,7 +139,7 @@
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    
-   <bean id="jackson" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+   <bean id="jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
    
    <jaxrs:server 
        depends-on="OAuthServerTLS" 

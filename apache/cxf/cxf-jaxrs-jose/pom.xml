@@ -32,7 +32,6 @@
     </parent>
 
    <properties>
-        <jackson.version>1.9.0</jackson.version>
         <cxf.version>3.2.0-SNAPSHOT</cxf.version>
    </properties>
 
@@ -85,8 +84,8 @@
            <scope>test</scope>
        </dependency>
        <dependency>
-           <groupId>org.codehaus.jackson</groupId>
-           <artifactId>jackson-jaxrs</artifactId>
+           <groupId>com.fasterxml.jackson.jaxrs</groupId>
+           <artifactId>jackson-jaxrs-json-provider</artifactId>
            <version>${jackson.version}</version>
            <scope>test</scope>
        </dependency>

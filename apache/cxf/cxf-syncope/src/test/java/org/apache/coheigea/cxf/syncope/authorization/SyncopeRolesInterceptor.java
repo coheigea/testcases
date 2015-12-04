@@ -38,7 +38,7 @@ import org.apache.cxf.phase.Phase;
 import org.apache.cxf.security.SecurityContext;
 import org.apache.syncope.common.to.MembershipTO;
 import org.apache.syncope.common.to.UserTO;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Take the received usernametoken and authenticate the username/password credential. Then read the

@@ -38,7 +38,7 @@ import org.apache.wss4j.common.saml.SamlAssertionWrapper;
 import org.apache.wss4j.common.saml.bean.AudienceRestrictionBean;
 import org.apache.wss4j.common.saml.bean.ConditionsBean;
 import org.apache.wss4j.common.saml.builder.SAML2Constants;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.junit.BeforeClass;
 
 /**

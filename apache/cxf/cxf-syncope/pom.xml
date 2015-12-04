@@ -32,7 +32,6 @@
     </parent>
     <properties>
         <karaf.version>4.0.1</karaf.version>
-        <jackson.version>1.9.0</jackson.version>
         <syncope.version>1.2.5</syncope.version>
         <cargo.core.dir>${project.build.directory}/syncope-core</cargo.core.dir>
         <cargo.console.dir>${project.build.directory}/syncope-console</cargo.console.dir>
@@ -146,10 +145,10 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
-            <version>${jackson.version}</version>
-            <scope>test</scope>
+           <groupId>com.fasterxml.jackson.jaxrs</groupId>
+           <artifactId>jackson-jaxrs-json-provider</artifactId>
+           <version>${jackson.version}</version>
+           <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

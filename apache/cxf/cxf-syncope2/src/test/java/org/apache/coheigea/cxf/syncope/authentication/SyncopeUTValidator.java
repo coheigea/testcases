@@ -30,7 +30,7 @@ import org.apache.wss4j.dom.handler.RequestData;
 import org.apache.wss4j.dom.message.token.UsernameToken;
 import org.apache.wss4j.dom.validate.Credential;
 import org.apache.wss4j.dom.validate.Validator;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * This is a custom Validator that authenticates to a Syncope IDM and checks to see whether the

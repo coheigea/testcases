@@ -50,7 +50,7 @@
    
    <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItJWTAuthenticationService"/>
    
-   <bean id="jackson" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+   <bean id="jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
    
    <bean id="jwtFilter" class="org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter" />
    

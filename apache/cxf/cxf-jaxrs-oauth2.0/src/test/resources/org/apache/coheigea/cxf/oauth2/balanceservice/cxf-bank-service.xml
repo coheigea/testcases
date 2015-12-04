@@ -73,7 +73,7 @@
    <bean id="partnerServiceBean" 
          class="org.apache.coheigea.cxf.oauth2.balanceservice.PartnerBalanceService" />
    
-   <bean id="jackson" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+   <bean id="jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
     
    <bean id="tvServiceClientFactory" class="org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean">
          <property name="address" value="https://localhost:${testutil.ports.OAuthServer}/services/validate"/>

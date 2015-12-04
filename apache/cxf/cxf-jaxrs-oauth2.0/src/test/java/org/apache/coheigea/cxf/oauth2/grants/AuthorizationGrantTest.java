@@ -30,8 +30,9 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.junit.BeforeClass;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Some unit tests to test different authorization grants in OAuth 2.0.
@@ -115,6 +116,35 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         accessToken = response.readEntity(ClientAccessToken.class);
         assertNotNull(accessToken.getTokenKey());
         assertNotNull(accessToken.getRefreshToken());
+    }
+    
+    @org.junit.Test
+    @org.junit.Ignore
+    public void testAuthorizationCodeGrantWithScope() throws Exception {
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        // providers.add(new JacksonJaxbJsonProvider());
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Get Authorization Code
+        String code = getAuthorizationCode(client, "read_balance");
+        assertNotNull(code);
+        
+        // Now get the access token
+        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
+        assertNotNull(accessToken.getTokenKey());
     }
     
     @org.junit.Test
@@ -207,11 +237,18 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
     }
     
     private String getAuthorizationCode(WebClient client) {
+        return getAuthorizationCode(client, null);
+    }
+    
+    private String getAuthorizationCode(WebClient client, String scope) {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
         client.query("client_id", "consumer-id");
         client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
         client.query("response_type", "code");
+        if (scope != null) {
+            client.query("scope", scope);
+        }
         client.path("authorize/");
         Response response = client.get();
         
