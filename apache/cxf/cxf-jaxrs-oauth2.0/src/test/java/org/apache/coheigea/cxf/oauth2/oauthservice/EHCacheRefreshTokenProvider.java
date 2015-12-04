@@ -31,4 +31,20 @@ public class EHCacheRefreshTokenProvider extends DefaultEHCacheCodeDataProvider 
     protected boolean isRefreshTokenSupported(List<String> theScopes) {
         return true;
     }
+    
+    /*
+    @Override
+    public List<OAuthPermission> convertScopeToPermissions(Client client, List<String> requestedScope) {
+        if (requestedScope.size() == 1 && "read_balance".equals(requestedScope.get(0))) {
+            OAuthPermission permission = new OAuthPermission();
+            permission.setHttpVerbs(Collections.singletonList("GET"));
+            String partnerAddress = "https://localhost:" + BalanceServiceTest.PORT + "/bankservice/partners/balance";
+            permission.setUris(Collections.singletonList(partnerAddress));
+            
+            return Collections.singletonList(permission);
+        }
+        
+        throw new OAuthServiceException("invalid_scope");
+    }
+    */
 }

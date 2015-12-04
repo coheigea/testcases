@@ -39,8 +39,9 @@ import org.apache.cxf.rs.security.jose.jws.JwsUtils;
 import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.junit.BeforeClass;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Test the JWT authorization grant.

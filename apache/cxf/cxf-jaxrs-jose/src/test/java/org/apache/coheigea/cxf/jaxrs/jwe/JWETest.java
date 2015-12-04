@@ -32,7 +32,7 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.jose.jaxrs.JweWriterInterceptor;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
