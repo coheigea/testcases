@@ -119,7 +119,48 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
+    public void testAuthorizationCodeGrantRefreshWithScope() throws Exception {
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Get Authorization Code
+        String code = getAuthorizationCode(client, "read_balance");
+        assertNotNull(code);
+        
+        // Now get the access token
+        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
+        assertNotNull(accessToken.getTokenKey());
+        assertNotNull(accessToken.getRefreshToken());
+        
+        // Refresh the access token
+        client.type("application/x-www-form-urlencoded").accept("application/json");
+        
+        Form form = new Form();
+        form.param("grant_type", "refresh_token");
+        form.param("refresh_token", accessToken.getRefreshToken());
+        form.param("client_id", "consumer-id");
+        form.param("scope", "read_balance");
+        Response response = client.post(form);
+        
+        accessToken = response.readEntity(ClientAccessToken.class);
+        assertNotNull(accessToken.getTokenKey());
+        assertNotNull(accessToken.getRefreshToken());
+    }
+
+    @org.junit.Test
     public void testAuthorizationCodeGrantWithScope() throws Exception {
         URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
         
@@ -262,6 +303,9 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         form.param("session_authenticity_token", authzData.getAuthenticityToken());
         form.param("client_id", authzData.getClientId());
         form.param("redirect_uri", authzData.getRedirectUri());
+        if (authzData.getProposedScope() != null) {
+            form.param("scope", authzData.getProposedScope());
+        }
         form.param("oauthDecision", "allow");
         
         response = client.post(form);
