@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.coheigea.cxf.oauth2.balanceservice.BalanceServiceTest;
 import org.apache.cxf.rs.security.oauth2.common.Client;
 import org.apache.cxf.rs.security.oauth2.common.OAuthPermission;
 import org.apache.cxf.rs.security.oauth2.grants.code.DefaultEHCacheCodeDataProvider;
@@ -44,7 +43,7 @@ public class EHCacheRefreshTokenProvider extends DefaultEHCacheCodeDataProvider 
             OAuthPermission permission = new OAuthPermission();
             permission.setHttpVerbs(Collections.singletonList("GET"));
             List<String> uris = new ArrayList<>();
-            String partnerAddress = "https://localhost:" + BalanceServiceTest.PORT + "/bankservice/partners/balance";
+            String partnerAddress = "/partners/balance/*";
             uris.add(partnerAddress);
             permission.setUris(uris);
             

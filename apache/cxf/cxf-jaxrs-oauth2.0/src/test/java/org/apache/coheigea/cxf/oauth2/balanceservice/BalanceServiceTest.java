@@ -153,12 +153,66 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         assertNotEquals(serviceResponse.getStatus(), 200);
     }
     
+    @org.junit.Test
+    public void testPartnerServiceWithTokenAndScope() throws Exception {
+        URL busFile = BalanceServiceTest.class.getResource("cxf-client.xml");
+        
+        // Create an initial account at the bank
+        String address = "https://localhost:" + PORT + "/bankservice/customers/balance";
+        WebClient client = WebClient.create(address, "bob", "security", busFile.toString());
+        client.type("text/plain").accept("text/plain");
+        
+        client.path("/bob");
+        client.post(40);
+        
+        // Get Authorization Code (as "bob")
+        String oauthService = "https://localhost:" + OAUTH_PORT + "/services/";
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        WebClient oauthClient = WebClient.create(oauthService, providers, "bob", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(oauthClient).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        String code = getAuthorizationCode(oauthClient, "read_balance");
+        assertNotNull(code);
+        
+        // Now get the access token
+        oauthClient = WebClient.create(oauthService, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(oauthClient).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code);
+        assertNotNull(accessToken.getTokenKey());
+
+        // Now invoke on the service with the access token
+        String partnerAddress = "https://localhost:" + PORT + "/bankservice/partners/balance";
+        WebClient partnerClient = WebClient.create(partnerAddress, busFile.toString());
+        partnerClient.type("text/plain").accept("text/plain");
+        partnerClient.header("Authorization", "Bearer " + accessToken.getTokenKey());
+        
+        partnerClient.path("/bob");
+        // Now make a service invocation with the access token
+        Response serviceResponse = partnerClient.get();
+        assertEquals(serviceResponse.getStatus(), 200);
+        assertEquals(serviceResponse.readEntity(Integer.class).intValue(), 40);
+    }
+    
     private String getAuthorizationCode(WebClient client) {
+        return getAuthorizationCode(client, null);
+    }
+    
+    private String getAuthorizationCode(WebClient client, String scope) {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
         client.query("client_id", "consumer-id");
         client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
         client.query("response_type", "code");
+        if (scope != null) {
+            client.query("scope", scope);
+        }
         client.path("authorize/");
         Response response = client.get();
         
@@ -172,6 +226,9 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         form.param("session_authenticity_token", authzData.getAuthenticityToken());
         form.param("client_id", authzData.getClientId());
         form.param("redirect_uri", authzData.getRedirectUri());
+        if (authzData.getProposedScope() != null) {
+            form.param("scope", authzData.getProposedScope());
+        }
         form.param("oauthDecision", "allow");
         
         response = client.post(form);
