@@ -74,6 +74,8 @@
        <property name="registeredScopes">
            <util:list value-type="java.lang.String">
                <value>read_balance</value>
+               <value>create_balance</value>
+               <value>read_data</value>
            </util:list>
        </property>
    </bean>

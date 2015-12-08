@@ -38,20 +38,45 @@ public class EHCacheRefreshTokenProvider extends DefaultEHCacheCodeDataProvider 
     }
     
     @Override
-    public List<OAuthPermission> convertScopeToPermissions(Client client, List<String> requestedScope) {
-        if (requestedScope.size() == 1 && "read_balance".equals(requestedScope.get(0))) {
-            OAuthPermission permission = new OAuthPermission();
-            permission.setHttpVerbs(Collections.singletonList("GET"));
-            List<String> uris = new ArrayList<>();
-            String partnerAddress = "/partners/balance/*";
-            uris.add(partnerAddress);
-            permission.setUris(uris);
-            
-            return Collections.singletonList(permission);
-        } else if (requestedScope.isEmpty()) {
+    public List<OAuthPermission> convertScopeToPermissions(Client client, List<String> requestedScopes) {
+        if (requestedScopes.isEmpty()) {
             return Collections.emptyList();
         }
         
-        throw new OAuthServiceException("invalid_scope");
+        List<OAuthPermission> permissions = new ArrayList<>();
+        for (String requestedScope : requestedScopes) {
+            if ("read_balance".equals(requestedScope)) {
+                OAuthPermission permission = new OAuthPermission();
+                permission.setHttpVerbs(Collections.singletonList("GET"));
+                List<String> uris = new ArrayList<>();
+                String partnerAddress = "/partners/balance/*";
+                uris.add(partnerAddress);
+                permission.setUris(uris);
+                
+                permissions.add(permission);
+            } else if ("create_balance".equals(requestedScope)) {
+                OAuthPermission permission = new OAuthPermission();
+                permission.setHttpVerbs(Collections.singletonList("POST"));
+                List<String> uris = new ArrayList<>();
+                String partnerAddress = "/partners/balance/*";
+                uris.add(partnerAddress);
+                permission.setUris(uris);
+                
+                permissions.add(permission);
+            } else if ("read_data".equals(requestedScope)) {
+                OAuthPermission permission = new OAuthPermission();
+                permission.setHttpVerbs(Collections.singletonList("GET"));
+                List<String> uris = new ArrayList<>();
+                String partnerAddress = "/partners/data/*";
+                uris.add(partnerAddress);
+                permission.setUris(uris);
+                
+                permissions.add(permission);
+            } else {
+                throw new OAuthServiceException("invalid_scope");
+            }
+        }
+        
+        return permissions;
     }
 }
