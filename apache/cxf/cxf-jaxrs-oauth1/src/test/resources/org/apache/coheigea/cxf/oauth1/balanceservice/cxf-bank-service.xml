@@ -43,8 +43,69 @@
             http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans.xsd">
    
-   <import resource="classpath:org/apache/coheigea/cxf/oauth1/balanceservice/cxf-balance-service.xml"/>
-   <import resource="classpath:org/apache/coheigea/cxf/oauth1/balanceservice/cxf-oauth-service.xml"/>
+   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
    
+   <!-- Needed for the OAuthDataProvider implementation -->
+   <import resource="classpath:org/apache/coheigea/cxf/oauth1/oauthservice/cxf-oauth-service.xml"/>
+   
+   <cxf:bus>
+        <cxf:features>
+            <cxf:logging/>
+        </cxf:features>
+   </cxf:bus>
+   
+   <bean id="customerServiceBean" 
+         class="org.apache.coheigea.cxf.oauth1.balanceservice.CustomerBalanceService" />
+   
+   <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth1.common.ServiceCallbackHandler"/>
+   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth1.common.BasicAuthFilter">
+       <property name="callbackHandler" ref="callbackHandler"/>
+   </bean>
+   
+   <jaxrs:server 
+        depends-on="BankServerTLS" 
+        address="https://localhost:${testutil.ports.BankServer}/bankservice/customers">
+        <jaxrs:serviceBeans>
+            <ref bean="customerServiceBean"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="basicAuthFilter"/>
+        </jaxrs:providers>
+   </jaxrs:server>
+   
+   <bean id="partnerServiceBean" 
+         class="org.apache.coheigea.cxf.oauth1.balanceservice.PartnerBalanceService" />
+   
+   <bean id="oAuthFilter" class="org.apache.cxf.rs.security.oauth.filters.OAuthRequestFilter">
+       <property name="dataProvider" ref="oauthProvider"/>
+      <!-- <property name="useUserSubject" value="true"/>-->
+   </bean>
+   
+   <jaxrs:server 
+        depends-on="BankServerTLS" 
+        address="https://localhost:${testutil.ports.BankServer}/bankservice/partners">
+        <jaxrs:serviceBeans>
+            <ref bean="partnerServiceBean"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="oAuthFilter"/>
+        </jaxrs:providers>
+   </jaxrs:server>
+   
+   <httpj:engine-factory id="BankServerTLS" bus="cxf">
+   <httpj:engine port="${testutil.ports.BankServer}">
+    <httpj:tlsServerParameters>
+      <sec:keyManagers keyPassword="skpass">
+          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
+      </sec:keyManagers>
+      <sec:trustManagers>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
+      </sec:trustManagers>
+      <sec:clientAuthentication want="true" required="false"/>
+    </httpj:tlsServerParameters>
+    <httpj:sessionSupport>true</httpj:sessionSupport> 
+   </httpj:engine>
+  </httpj:engine-factory>
+  
 </beans>
 

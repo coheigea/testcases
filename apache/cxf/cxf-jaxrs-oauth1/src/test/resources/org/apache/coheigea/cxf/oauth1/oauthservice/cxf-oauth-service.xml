@@ -44,45 +44,57 @@
             http://www.springframework.org/schema/beans/spring-beans.xsd">
    
    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
-   
-   <!-- Needed for the OAuthDataProvider implementation -->
-   <import resource="classpath:org/apache/coheigea/cxf/oauth1/balanceservice/cxf-oauth-data-provider.xml"/>
- 
+  
    <cxf:bus>
-        <cxf:features>
-            <cxf:logging/>
-        </cxf:features>
+       <cxf:features>
+           <cxf:logging/>
+       </cxf:features>
    </cxf:bus>
+    
+   <bean id="client" class="org.apache.cxf.rs.security.oauth.data.Client">
+       <constructor-arg><value>consumer-id</value></constructor-arg>
+       <constructor-arg><value>this-is-a-secret</value></constructor-arg>
+       <constructor-arg><value>invoice service</value></constructor-arg>
+       <constructor-arg><value>https://localhost:12345/callback</value></constructor-arg>
+   </bean>
+   
+   <bean id="oauthProvider" class="org.apache.coheigea.cxf.oauth1.oauthservice.OAuthDataProviderImpl">
+       <property name="clients">
+           <map>
+               <entry key="consumer-id" value-ref="client" />
+           </map>
+       </property>
+   </bean>
    
    <bean id="requestTokenService" class="org.apache.cxf.rs.security.oauth.services.RequestTokenService">
-      <property name="dataProvider" ref="oauthProvider"/>
+       <property name="dataProvider" ref="oauthProvider"/>
    </bean>
       
    <bean id="accessTokenService" class="org.apache.cxf.rs.security.oauth.services.AccessTokenService">
-     <property name="dataProvider" ref="oauthProvider"/>
+       <property name="dataProvider" ref="oauthProvider"/>
    </bean>
-
+   
+   <bean id="authorizationService" class="org.apache.cxf.rs.security.oauth.services.AuthorizationRequestService">
+       <property name="dataProvider" ref="oauthProvider"/>
+   </bean>
+ 
    <jaxrs:server 
         depends-on="OAuthServerTLS" 
-        address="https://localhost:${testutil.ports.BankServer.2}/oauth">
+        address="https://localhost:${testutil.ports.OAuthServer}/oauth">
         <jaxrs:serviceBeans>
             <ref bean="requestTokenService"/>
             <ref bean="accessTokenService"/>
         </jaxrs:serviceBeans>
    </jaxrs:server>
    
-   <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth1.balanceservice.ServiceCallbackHandler"/>
-   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth1.balanceservice.BasicAuthFilter">
+   <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth1.common.ServiceCallbackHandler"/>
+   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth1.common.BasicAuthFilter">
        <property name="callbackHandler" ref="callbackHandler"/>
-   </bean>
-   
-   <bean id="authorizationService" class="org.apache.cxf.rs.security.oauth.services.AuthorizationRequestService">
-     <property name="dataProvider" ref="oauthProvider"/>
    </bean>
    
    <jaxrs:server 
         depends-on="OAuthServerTLS" 
-        address="https://localhost:${testutil.ports.BankServer.2}/authorization">
+        address="https://localhost:${testutil.ports.OAuthServer}/authorization">
         <jaxrs:serviceBeans>
             <ref bean="authorizationService"/>
         </jaxrs:serviceBeans>
@@ -92,7 +104,7 @@
    </jaxrs:server>
    
    <httpj:engine-factory id="OAuthServerTLS" bus="cxf">
-   <httpj:engine port="${testutil.ports.BankServer.2}">
+   <httpj:engine port="${testutil.ports.OAuthServer}">
     <httpj:tlsServerParameters>
       <sec:keyManagers keyPassword="skpass">
           <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
