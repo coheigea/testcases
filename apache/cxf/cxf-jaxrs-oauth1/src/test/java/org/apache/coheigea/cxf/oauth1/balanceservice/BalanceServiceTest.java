@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.oauth1;
+package org.apache.coheigea.cxf.oauth1.balanceservice;
 
 import java.net.URL;
 import java.util.Date;
@@ -26,18 +26,19 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.oauth1.balanceservice.BankServer;
+import org.apache.coheigea.cxf.oauth1.oauthservice.OAuthServer;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.ext.xml.XMLSource;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
 /**
- * Some unit tests for the services to check everything is working ok
+ * A test for the BalanceService, which is secured using OAuth
  */
-public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
+public class BalanceServiceTest extends AbstractBusClientServerTestBase {
     
     static final String BANK_SERVICE_PORT = allocatePort(BankServer.class);
-    static final String OAUTH_SERVICE_PORT = allocatePort(BankServer.class, 2);
+    static final String OAUTH_SERVICE_PORT = allocatePort(OAuthServer.class);
     
     @BeforeClass
     public static void startServers() throws Exception {
@@ -51,7 +52,7 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
     
     @org.junit.Test
     public void testCustomerBankService() throws Exception {
-        URL busFile = OAuth1UnitTest.class.getResource("cxf-client.xml");
+        URL busFile = BalanceServiceTest.class.getResource("cxf-client.xml");
 
         String address = "https://localhost:" + BANK_SERVICE_PORT + "/bankservice/customers/balance";
         WebClient client = WebClient.create(address, "alice", "security", busFile.toString());
@@ -81,7 +82,7 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
    
     @org.junit.Test
     public void testPartnerBankService() throws Exception {
-        URL busFile = OAuth1UnitTest.class.getResource("cxf-client.xml");
+        URL busFile = BalanceServiceTest.class.getResource("cxf-client.xml");
 
         String address = "https://localhost:" + BANK_SERVICE_PORT + "/bankservice/partners/balance";
         WebClient client = WebClient.create(address, "alice", "security", busFile.toString());
@@ -93,95 +94,8 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    public void testRequestTokenService() throws Exception {
-        URL busFile = OAuth1UnitTest.class.getResource("cxf-client.xml");
-
-        Response response = makeRequestTokenInvocation(busFile);
-        assertEquals(response.getStatus(), 200);
-        
-        String responseString = response.readEntity(String.class);
-        String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token="),
-                                     responseString.indexOf("&oauth_token_secret"));
-        requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
-        assertNotNull(requestToken);
-        
-        String requestTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        requestTokenSecret = requestTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
-        assertNotNull(requestTokenSecret);
-    }
-    
-    @org.junit.Test
-    public void testAuthorizationService() throws Exception {
-        URL busFile = OAuth1UnitTest.class.getResource("cxf-client.xml");
-
-        Response response = makeRequestTokenInvocation(busFile);
-        assertEquals(response.getStatus(), 200);
-        
-        // Extract RequestToken + Secret
-        String responseString = response.readEntity(String.class);
-        String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
-        requestToken = requestToken.split("&")[0];
-        
-        requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
-        assertNotNull(requestToken);
-        
-        String requestTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        requestTokenSecret = requestTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
-        assertNotNull(requestTokenSecret);
-        
-        makeAuthorizationInvocation(busFile, requestToken, "alice");
-    }
-    
-    @org.junit.Test
-    public void testAccessTokenService() throws Exception {
-        URL busFile = OAuth1UnitTest.class.getResource("cxf-client.xml");
-
-        Response response = makeRequestTokenInvocation(busFile);
-        assertEquals(response.getStatus(), 200);
-        
-        // Extract RequestToken + Secret
-        String responseString = response.readEntity(String.class);
-        String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
-        requestToken = requestToken.split("&")[0];
-        assertNotNull(requestToken);
-        
-        String requestTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret=") + "oauth_token_secret=".length());
-        requestTokenSecret = requestTokenSecret.split("&")[0];
-        assertNotNull(requestTokenSecret);
-        
-        Response authorizationResponse = makeAuthorizationInvocation(busFile, requestToken, "alice");
-        
-        // Extract verifier
-        String location = authorizationResponse.getHeaderString("Location");
-        String oauthVerifier = location.substring(location.indexOf("oauth_verifier="));
-        oauthVerifier = oauthVerifier.substring(oauthVerifier.indexOf("=") + 1);
-        oauthVerifier = oauthVerifier.split("&")[0];
-        
-        Response accessTokenResponse = 
-            makeAccessTokenInvocation(busFile, requestToken, requestTokenSecret, oauthVerifier);
-        
-        // Extract AccessToken + Secret
-        responseString = accessTokenResponse.readEntity(String.class);
-        String accessToken = 
-            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
-        accessToken = accessToken.split("&")[0];
-        assertNotNull(accessToken);
-        
-        String accessTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret=") + "oauth_token_secret=".length());
-        accessTokenSecret = accessTokenSecret.split("&")[0];
-        assertNotNull(accessTokenSecret);
-    }
-    
-    @org.junit.Test
     public void testPartnerServiceWithToken() throws Exception {
-        URL busFile = OAuth1UnitTest.class.getResource("cxf-client.xml");
+        URL busFile = BalanceServiceTest.class.getResource("cxf-client.xml");
         
         // Create an initial account at the bank
         String address = "https://localhost:" + BANK_SERVICE_PORT + "/bankservice/customers/balance";

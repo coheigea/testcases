@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.coheigea.cxf.oauth1.balanceservice;
+package org.apache.coheigea.cxf.oauth1.oauthservice;
 
 
 import java.security.SecureRandom;
