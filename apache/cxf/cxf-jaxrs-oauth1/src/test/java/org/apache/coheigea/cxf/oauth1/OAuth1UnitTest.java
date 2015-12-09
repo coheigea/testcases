@@ -26,7 +26,6 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.oauth1.balanceservice.BankServer;
-import org.apache.coheigea.cxf.oauth1.invoiceservice.InvoiceServer;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.ext.xml.XMLSource;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
@@ -39,7 +38,6 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
     
     static final String BANK_SERVICE_PORT = allocatePort(BankServer.class);
     static final String OAUTH_SERVICE_PORT = allocatePort(BankServer.class, 2);
-    static final String INVOICE_SERVICE_PORT = allocatePort(InvoiceServer.class);
     
     @BeforeClass
     public static void startServers() throws Exception {
@@ -48,12 +46,6 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
                 // run the server in the same process
                 // set this to false to fork
                 launchServer(BankServer.class, true)
-        );
-        assertTrue(
-                   "Server failed to launch",
-                   // run the server in the same process
-                   // set this to false to fork
-                   launchServer(InvoiceServer.class, true)
         );
     }
     
@@ -130,8 +122,9 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
         // Extract RequestToken + Secret
         String responseString = response.readEntity(String.class);
         String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token="),
-                                     responseString.indexOf("&oauth_token_secret"));
+            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
+        requestToken = requestToken.split("&")[0];
+        
         requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
         assertNotNull(requestToken);
         
@@ -153,14 +146,13 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
         // Extract RequestToken + Secret
         String responseString = response.readEntity(String.class);
         String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token="),
-                                     responseString.indexOf("&oauth_token_secret"));
-        requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
+            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
+        requestToken = requestToken.split("&")[0];
         assertNotNull(requestToken);
         
         String requestTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        requestTokenSecret = requestTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
+            responseString.substring(responseString.indexOf("oauth_token_secret=") + "oauth_token_secret=".length());
+        requestTokenSecret = requestTokenSecret.split("&")[0];
         assertNotNull(requestTokenSecret);
         
         Response authorizationResponse = makeAuthorizationInvocation(busFile, requestToken, "alice");
@@ -169,6 +161,7 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
         String location = authorizationResponse.getHeaderString("Location");
         String oauthVerifier = location.substring(location.indexOf("oauth_verifier="));
         oauthVerifier = oauthVerifier.substring(oauthVerifier.indexOf("=") + 1);
+        oauthVerifier = oauthVerifier.split("&")[0];
         
         Response accessTokenResponse = 
             makeAccessTokenInvocation(busFile, requestToken, requestTokenSecret, oauthVerifier);
@@ -176,14 +169,13 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
         // Extract AccessToken + Secret
         responseString = accessTokenResponse.readEntity(String.class);
         String accessToken = 
-            responseString.substring(responseString.indexOf("oauth_token="),
-                                     responseString.indexOf("&oauth_token_secret"));
-        accessToken = accessToken.substring(requestToken.indexOf("=") + 1);
+            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
+        accessToken = accessToken.split("&")[0];
         assertNotNull(accessToken);
         
         String accessTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        accessTokenSecret = accessTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
+            responseString.substring(responseString.indexOf("oauth_token_secret=") + "oauth_token_secret=".length());
+        accessTokenSecret = accessTokenSecret.split("&")[0];
         assertNotNull(accessTokenSecret);
     }
     
@@ -205,14 +197,13 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
         // Extract RequestToken + Secret
         String responseString = response.readEntity(String.class);
         String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token="),
-                                     responseString.indexOf("&oauth_token_secret"));
-        requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
+            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
+        requestToken = requestToken.split("&")[0];
         assertNotNull(requestToken);
         
         String requestTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        requestTokenSecret = requestTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
+            responseString.substring(responseString.indexOf("oauth_token_secret=") + "oauth_token_secret=".length());
+        requestTokenSecret = requestTokenSecret.split("&")[0];
         assertNotNull(requestTokenSecret);
         
         Response authorizationResponse = makeAuthorizationInvocation(busFile, requestToken, "bob");
@@ -221,6 +212,7 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
         String location = authorizationResponse.getHeaderString("Location");
         String oauthVerifier = location.substring(location.indexOf("oauth_verifier="));
         oauthVerifier = oauthVerifier.substring(oauthVerifier.indexOf("=") + 1);
+        oauthVerifier = oauthVerifier.split("&")[0];
         
         Response accessTokenResponse = 
             makeAccessTokenInvocation(busFile, requestToken, requestTokenSecret, oauthVerifier);
@@ -228,14 +220,13 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
         // Extract AccessToken + Secret
         responseString = accessTokenResponse.readEntity(String.class);
         String accessToken = 
-            responseString.substring(responseString.indexOf("oauth_token="),
-                                     responseString.indexOf("&oauth_token_secret"));
-        accessToken = accessToken.substring(accessToken.indexOf("=") + 1);
+            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
+        accessToken = accessToken.split("&")[0];
         assertNotNull(accessToken);
         
         String accessTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        accessTokenSecret = accessTokenSecret.substring(accessTokenSecret.indexOf("=") + 1);
+            responseString.substring(responseString.indexOf("oauth_token_secret=") + "oauth_token_secret=".length());
+        accessTokenSecret = accessTokenSecret.split("&")[0];
         assertNotNull(accessTokenSecret);
         
         // Now make a service invocation with the access token
@@ -254,7 +245,7 @@ public class OAuth1UnitTest extends AbstractBusClientServerTestBase {
             + "oauth_consumer_key=\"consumer-id\", "
             + "oauth_signature_method=\"PLAINTEXT\", "
             + "oauth_nonce=\"" + nonce + "\", "
-            + "oauth_callback=\"https://localhost:" + INVOICE_SERVICE_PORT + "/callback\", "
+            + "oauth_callback=\"https://localhost:12345/callback\", "
             + "oauth_timestamp=\"" + new Date().getTime() / 1000L + "\", "
             + "oauth_signature=\"" + "this-is-a-secret&\", "
             + "scope=\"get_balance\"";

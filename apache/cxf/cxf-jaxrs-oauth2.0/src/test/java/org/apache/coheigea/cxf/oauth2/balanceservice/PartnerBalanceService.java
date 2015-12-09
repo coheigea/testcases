@@ -41,8 +41,6 @@ public class PartnerBalanceService extends BalanceService {
     protected void authenticateUser(String user) {
         OAuthContext oauthContext = messageContext.getContent(OAuthContext.class);
         
-        System.out.println("USER: " + user);
-        System.out.println("OAUTH: " + oauthContext.getSubject().getLogin());
         if (oauthContext == null || oauthContext.getSubject() == null
             || !user.equals(oauthContext.getSubject().getLogin())) {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
