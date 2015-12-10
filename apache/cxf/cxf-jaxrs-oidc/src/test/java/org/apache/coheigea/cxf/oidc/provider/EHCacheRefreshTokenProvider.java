@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.oauth2.oauthservice;
+package org.apache.coheigea.cxf.oidc.provider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,6 +74,9 @@ public class EHCacheRefreshTokenProvider extends DefaultEHCacheCodeDataProvider 
                 uris.add(partnerAddress);
                 permission.setUris(uris);
                 
+                permissions.add(permission);
+            } else if ("openid".equals(requestedScope)) {
+                OAuthPermission permission = new OAuthPermission("openid", "Authenticate user");
                 permissions.add(permission);
             } else {
                 throw new OAuthServiceException("invalid_scope");

@@ -35,6 +35,7 @@
         <module>cxf-jaxrs-jose</module>
         <module>cxf-jaxrs-oauth1</module>
         <module>cxf-jaxrs-oauth2.0</module>
+        <module>cxf-jaxrs-oidc</module>
         <module>cxf-spring-security</module>
         <module>cxf-syncope</module>
         <module>cxf-syncope2</module>
