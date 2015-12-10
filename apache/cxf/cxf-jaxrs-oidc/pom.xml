@@ -19,9 +19,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.coheigea.cxf</groupId>
-    <artifactId>cxf-jaxrs-oauth2.0-demo</artifactId>
+    <artifactId>cxf-jaxrs-oidc-demo</artifactId>
     <packaging>jar</packaging>
-    <name>Apache CXF JAX-RS OAuth 2.0 Demo</name>
+    <name>Apache CXF JAX-RS OpenId Connect Demo</name>
     <version>1.0</version>
 
    <parent>
@@ -74,19 +74,19 @@
        </dependency>
        <dependency>
            <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-ws-security</artifactId>
+           <version>${cxf.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.cxf</groupId>
            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
            <version>${cxf.version}</version>
            <scope>test</scope>
        </dependency>
        <dependency>
            <groupId>org.apache.cxf</groupId>
-           <artifactId>cxf-rt-rs-security-oauth2</artifactId>
-           <version>${cxf.version}</version>
-           <scope>test</scope>
-       </dependency>
-       <dependency>
-           <groupId>org.apache.cxf</groupId>
-           <artifactId>cxf-rt-rs-security-oauth2-saml</artifactId>
+           <artifactId>cxf-rt-rs-security-sso-oidc</artifactId>
            <version>${cxf.version}</version>
            <scope>test</scope>
        </dependency>
