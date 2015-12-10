@@ -51,7 +51,6 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testAuthorizationCodeFlow() throws Exception {
         URL busFile = AuthenticationFlowTest.class.getResource("cxf-client.xml");
         
