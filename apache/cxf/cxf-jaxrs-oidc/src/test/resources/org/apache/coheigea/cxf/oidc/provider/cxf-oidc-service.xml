@@ -139,7 +139,7 @@
            <entry key="rs.security.keystore.password" value="sspass"/>
            <entry key="rs.security.key.password" value="skpass"/>
            <entry key="rs.security.keystore.file" value="servicestore.jks" />
-           <entry key="rs.security.signature.algorithm" value="RS512" />
+           <entry key="rs.security.signature.algorithm" value="RS256" />
        </jaxrs:properties>
    </jaxrs:server>
    
