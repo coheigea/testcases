@@ -158,6 +158,7 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         accessToken = response.readEntity(ClientAccessToken.class);
         assertNotNull(accessToken.getTokenKey());
         assertNotNull(accessToken.getRefreshToken());
+        assertTrue(accessToken.getApprovedScope().contains("read_balance"));
     }
 
     @org.junit.Test
@@ -186,6 +187,7 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         
         ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
         assertNotNull(accessToken.getTokenKey());
+        assertTrue(accessToken.getApprovedScope().contains("read_balance"));
     }
     
     @org.junit.Test
