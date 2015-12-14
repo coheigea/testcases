@@ -272,6 +272,67 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
         validateIdToken(idToken, null);
     }
     
+    @org.junit.Test
+    public void testImplicitGrant() throws Exception {
+        URL busFile = AuthenticationFlowTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+       
+        // Get Access Token
+        client.type("application/json").accept("application/json");
+        client.query("client_id", "consumer-id");
+        client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        client.query("scope", "openid");
+        client.query("response_type", "id_token token");
+        client.query("nonce", "123456789");
+        client.path("authorize-implicit/");
+        Response response = client.get();
+        
+        OAuthAuthorizationData authzData = response.readEntity(OAuthAuthorizationData.class);
+        
+        // Now call "decision" to get the access token
+        client.path("decision");
+        client.type("application/x-www-form-urlencoded");
+        
+        Form form = new Form();
+        form.param("session_authenticity_token", authzData.getAuthenticityToken());
+        form.param("client_id", authzData.getClientId());
+        form.param("redirect_uri", authzData.getRedirectUri());
+        form.param("scope", authzData.getProposedScope());
+        if (authzData.getResponseType() != null) {
+            form.param("response_type", authzData.getResponseType());
+        }
+        if (authzData.getNonce() != null) {
+            form.param("nonce", authzData.getNonce());
+        }
+        form.param("oauthDecision", "allow");
+        
+        response = client.post(form);
+        
+        String location = response.getHeaderString("Location"); 
+        
+        // Check Access Token
+        String accessToken = getSubstring(location, "access_token");
+        assertNotNull(accessToken);
+        
+        // Check IdToken
+        String idToken = getSubstring(location, "id_token");
+        assertNotNull(idToken);
+        validateIdToken(idToken, null);
+        
+        JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(idToken);
+        JwtToken jwt = jwtConsumer.getJwtToken();
+        Assert.assertNotNull(jwt.getClaims().getClaim(IdToken.ACCESS_TOKEN_HASH_CLAIM));
+        Assert.assertNotNull(jwt.getClaims().getClaim(IdToken.NONCE_CLAIM));
+    }
+    
     private String getAuthorizationCode(WebClient client, String scope) {
         return getAuthorizationCode(client, scope, true, null, null);
     }
@@ -329,7 +390,7 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
             Assert.assertTrue(location.contains("state=" + state));
         }
         
-        return location.substring(location.indexOf("code=") + "code=".length());
+        return getSubstring(location, "code");
     }
     
     private ClientAccessToken getAccessTokenWithAuthorizationCode(WebClient client, String code) {
@@ -343,6 +404,16 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
         Response response = client.post(form);
         
         return response.readEntity(ClientAccessToken.class);
+    }
+    
+    private String getSubstring(String parentString, String substringName) {
+        String foundString = 
+            parentString.substring(parentString.indexOf(substringName + "=") + (substringName + "=").length());
+        int ampersandIndex = foundString.indexOf('&');
+        if (ampersandIndex < 1) {
+            ampersandIndex = foundString.length();
+        }
+        return foundString.substring(0, ampersandIndex);
     }
     
     private void validateIdToken(String idToken, String nonce) 

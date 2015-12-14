@@ -55,15 +55,10 @@ public class OAuthServiceTest extends AbstractBusClientServerTestBase {
         assertEquals(response.getStatus(), 200);
         
         String responseString = response.readEntity(String.class);
-        String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token="),
-                                     responseString.indexOf("&oauth_token_secret"));
-        requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
+        String requestToken = getSubstring(responseString, "oauth_token");
         assertNotNull(requestToken);
         
-        String requestTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        requestTokenSecret = requestTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
+        String requestTokenSecret = getSubstring(responseString, "oauth_token_secret");
         assertNotNull(requestTokenSecret);
     }
     
@@ -76,16 +71,12 @@ public class OAuthServiceTest extends AbstractBusClientServerTestBase {
         
         // Extract RequestToken + Secret
         String responseString = response.readEntity(String.class);
-        String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
-        requestToken = requestToken.split("&")[0];
+        String requestToken = getSubstring(responseString, "oauth_token");
         
         requestToken = requestToken.substring(requestToken.indexOf("=") + 1);
         assertNotNull(requestToken);
         
-        String requestTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret="));
-        requestTokenSecret = requestTokenSecret.substring(requestTokenSecret.indexOf("=") + 1);
+        String requestTokenSecret = getSubstring(responseString, "oauth_token_secret");
         assertNotNull(requestTokenSecret);
         
         makeAuthorizationInvocation(busFile, requestToken, "alice");
@@ -100,37 +91,27 @@ public class OAuthServiceTest extends AbstractBusClientServerTestBase {
         
         // Extract RequestToken + Secret
         String responseString = response.readEntity(String.class);
-        String requestToken = 
-            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
-        requestToken = requestToken.split("&")[0];
+        String requestToken = getSubstring(responseString, "oauth_token");
         assertNotNull(requestToken);
         
-        String requestTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret=") + "oauth_token_secret=".length());
-        requestTokenSecret = requestTokenSecret.split("&")[0];
+        String requestTokenSecret = getSubstring(responseString, "oauth_token_secret");
         assertNotNull(requestTokenSecret);
         
         Response authorizationResponse = makeAuthorizationInvocation(busFile, requestToken, "alice");
         
         // Extract verifier
         String location = authorizationResponse.getHeaderString("Location");
-        String oauthVerifier = location.substring(location.indexOf("oauth_verifier="));
-        oauthVerifier = oauthVerifier.substring(oauthVerifier.indexOf("=") + 1);
-        oauthVerifier = oauthVerifier.split("&")[0];
+        String oauthVerifier = getSubstring(location, "oauth_verifier");
         
         Response accessTokenResponse = 
             makeAccessTokenInvocation(busFile, requestToken, requestTokenSecret, oauthVerifier);
         
         // Extract AccessToken + Secret
         responseString = accessTokenResponse.readEntity(String.class);
-        String accessToken = 
-            responseString.substring(responseString.indexOf("oauth_token=") + "oauth_token=".length());
-        accessToken = accessToken.split("&")[0];
+        String accessToken = getSubstring(responseString, "oauth_token");
         assertNotNull(accessToken);
         
-        String accessTokenSecret = 
-            responseString.substring(responseString.indexOf("oauth_token_secret=") + "oauth_token_secret=".length());
-        accessTokenSecret = accessTokenSecret.split("&")[0];
+        String accessTokenSecret = getSubstring(responseString, "oauth_token_secret");
         assertNotNull(accessTokenSecret);
     }
     
@@ -204,5 +185,14 @@ public class OAuthServiceTest extends AbstractBusClientServerTestBase {
         return client.post(null);
     }
     
+    private String getSubstring(String parentString, String substringName) {
+        String foundString = 
+            parentString.substring(parentString.indexOf(substringName + "=") + (substringName + "=").length());
+        int ampersandIndex = foundString.indexOf('&');
+        if (ampersandIndex < 1) {
+            ampersandIndex = foundString.length();
+        }
+        return foundString.substring(0, ampersandIndex);
+    }
     
 }

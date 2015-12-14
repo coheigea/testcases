@@ -294,7 +294,17 @@ public class JWTClientAuthenticationTest extends AbstractBusClientServerTestBase
         
         response = client.post(form);
         String location = response.getHeaderString("Location"); 
-        return location.substring(location.indexOf("code=") + "code=".length());
+        return getSubstring(location, "code");
+    }
+    
+    private String getSubstring(String parentString, String substringName) {
+        String foundString = 
+            parentString.substring(parentString.indexOf(substringName + "=") + (substringName + "=").length());
+        int ampersandIndex = foundString.indexOf('&');
+        if (ampersandIndex < 1) {
+            ampersandIndex = foundString.length();
+        }
+        return foundString.substring(0, ampersandIndex);
     }
     
     private ClientAccessToken getAccessTokenWithAuthorizationCode(WebClient client, String code, String token) {
