@@ -19,10 +19,10 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.coheigea.cxf</groupId>
-    <artifactId>cxf-syncope2-demo</artifactId>
+    <groupId>org.apache.coheigea.cxf.syncope</groupId>
+    <artifactId>cxf-syncope-demo</artifactId>
     <packaging>jar</packaging>
-    <name>Apache CXF Syncope 2.0.0 Demo</name>
+    <name>Apache CXF Syncope Demo</name>
     <version>1.0</version>
     <parent>
         <groupId>org.apache.coheigea.cxf</groupId>
@@ -32,14 +32,14 @@
     </parent>
     <properties>
         <karaf.version>4.0.1</karaf.version>
-        <syncope.version>2.0.0-SNAPSHOT</syncope.version>
+        <syncope.version>1.2.5</syncope.version>
         <cargo.core.dir>${project.build.directory}/syncope-core</cargo.core.dir>
+        <cargo.console.dir>${project.build.directory}/syncope-console</cargo.console.dir>
         <log.directory>${project.build.directory}/log</log.directory>
         <cargo.log>${log.directory}/cargo.log</cargo.log>
         <cargo.output>${log.directory}/cargo-output.log</cargo.output>
         <conf.directory>${project.build.directory}/test-classes</conf.directory>
         <h2.version>1.4.187</h2.version>
-        <tomcat.version>8.0.26</tomcat.version>
     </properties>
     <dependencies>
         <dependency>
@@ -102,10 +102,32 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.syncope.common</groupId>
-            <artifactId>syncope-common-lib</artifactId>
+            <groupId>org.apache.syncope</groupId>
+            <artifactId>syncope-client</artifactId>
             <version>${syncope.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-webmvc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.thoughtworks.xstream</groupId>
+                    <artifactId>xstream</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -153,8 +175,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.syncope.fit</groupId>
-            <artifactId>syncope-fit-core-reference</artifactId>
+            <groupId>org.apache.syncope</groupId>
+            <artifactId>syncope-core</artifactId>
             <type>war</type>
             <version>${syncope.version}</version>
         </dependency>
@@ -263,8 +285,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.apache.syncope.fit</groupId>
-                                    <artifactId>syncope-fit-core-reference</artifactId>
+                                    <groupId>org.apache.syncope</groupId>
+                                    <artifactId>syncope-core</artifactId>
                                     <version>${syncope.version}</version>
                                     <type>war</type>
                                     <overWrite>true</overWrite>
@@ -295,56 +317,12 @@
                                 <resource>
                                     <directory>${basedir}/target/test-classes/core</directory>
                                     <includes>
-                                        <include>connid.properties</include>
                                         <include>persistence.properties</include>
-                                        <include>coreContext.xml</include>
-                                        <include>workflow.properties</include>
-                                        <include>provisioning.properties</include>
-                                        <include>log4j2.xml</include>
-                                    </includes>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-core-resources2</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${cargo.core.dir}/WEB-INF/classes/domains</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/target/test-classes/core</directory>
-                                    <includes>
-                                        <include>MasterContent.xml</include>
                                     </includes>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                       <phase>pre-integration-test</phase>
-                       <goals>
-                           <goal>run</goal>
-                       </goals>
-                       <configuration>
-                           <tasks>
-                               <delete>
-                                   <fileset dir="${cargo.core.dir}/WEB-INF/classes/domains" includes="Two*" />
-                               </delete>
-                           </tasks>
-                       </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -360,9 +338,9 @@
                                 <artifactId>h2</artifactId>
                             </dependency>
                         </dependencies>
-                        <containerId>tomcat8x</containerId>
+                        <containerId>tomcat7x</containerId>
                         <zipUrlInstaller>
-                            <url>http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip</url>
+                            <url>http://archive.apache.org/dist/tomcat/tomcat-7/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip</url>
                             <downloadDir>${settings.localRepository}/org/codehaus/cargo/cargo-container-archives</downloadDir>
                             <extractDir>${project.build.directory}/cargo/extract</extractDir>
                         </zipUrlInstaller>
