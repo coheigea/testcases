@@ -156,6 +156,12 @@
            <scope>test</scope>
            <classifier>tests</classifier>
        </dependency>
+        <dependency>
+           <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-features-clustering</artifactId>
+           <version>${cxf.version}</version>
+           <scope>test</scope>
+       </dependency>
 
     </dependencies>
     <build>

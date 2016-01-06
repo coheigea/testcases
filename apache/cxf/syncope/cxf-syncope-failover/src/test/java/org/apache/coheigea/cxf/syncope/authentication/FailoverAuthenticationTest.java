@@ -23,7 +23,6 @@ import java.net.URL;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
-import org.apache.coheigea.cxf.syncope.common.SyncopeDeployer;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.endpoint.Client;
@@ -78,34 +77,12 @@ public class FailoverAuthenticationTest extends AbstractBusClientServerTestBase 
         client.getRequestContext().put("ws-security.username", "alice");
         
         doubleIt(transportPort, 25);
-    }
-    
-    @org.junit.Test
-    public void testUnauthenticatedRequest() throws Exception {
-
-        SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = FailoverAuthenticationTest.class.getResource("cxf-client.xml");
-
-        Bus bus = bf.createBus(busFile.toString());
-        SpringBusFactory.setDefaultBus(bus);
-        SpringBusFactory.setThreadDefaultBus(bus);
         
-        URL wsdl = FailoverAuthenticationTest.class.getResource("DoubleIt.wsdl");
-        Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
-        DoubleItPortType transportPort = 
-            service.getPort(portQName, DoubleItPortType.class);
-        updateAddressPort(transportPort, PORT);
+        System.out.println("Kill first Tomcat instance...sleeping for 10s...");
         
-        Client client = ClientProxy.getClient(transportPort);
-        client.getRequestContext().put("ws-security.username", "bob");
+        Thread.sleep(10L * 1000L);
         
-        try {
-            doubleIt(transportPort, 25);
-            fail("Failure expected on harry");
-        } catch (Exception ex) {
-            // expected
-        }
+        doubleIt(transportPort, 30);
     }
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
