@@ -55,10 +55,6 @@ public class FailoverAuthenticationTest extends AbstractBusClientServerTestBase 
                    launchServer(Server.class, true)
         );
         WSSConfig.init();
-        
-        SyncopeDeployer deployer = new SyncopeDeployer();
-        deployer.setAddress("http://localhost:8080/syncope/rest/");
-        deployer.deployUserData();
     }
    
     @org.junit.Test
@@ -110,26 +106,6 @@ public class FailoverAuthenticationTest extends AbstractBusClientServerTestBase 
         } catch (Exception ex) {
             // expected
         }
-    }
-    
-    @org.junit.Test
-    public void testAuthenticatedRequestBasicAuthentication() throws Exception {
-
-        SpringBusFactory bf = new SpringBusFactory();
-        URL busFile = FailoverAuthenticationTest.class.getResource("cxf-client.xml");
-
-        Bus bus = bf.createBus(busFile.toString());
-        SpringBusFactory.setDefaultBus(bus);
-        SpringBusFactory.setThreadDefaultBus(bus);
-        
-        URL wsdl = FailoverAuthenticationTest.class.getResource("DoubleIt.wsdl");
-        Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportBasicAuthPort");
-        DoubleItPortType transportPort = 
-            service.getPort(portQName, DoubleItPortType.class);
-        updateAddressPort(transportPort, PORT);
-        
-        doubleIt(transportPort, 25);
     }
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
