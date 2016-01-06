@@ -2,7 +2,8 @@ cxf-syncope-failover
 ====================
 
 This project contains a number of tests that show how an Apache CXF service
-endpoint can authenticate to two different Apache Syncope instances.
+endpoint can use the CXF Failover feature, to authenticate to different Apache
+Syncope instances.
 
 1) Pre-requisites
 
@@ -13,7 +14,6 @@ Install MySQL in $SQL_HOME and create a new user for Apache Syncope. We will cre
     Start: sudo $SQL_HOME/bin/mysqld_safe --user=mysql
     Log on: $SQL_HOME/bin/mysql -u syncope_user -p
     Create a Syncope database: create database syncope; 
-
 
 1.b) Apache Tomcat
 
@@ -56,7 +56,6 @@ and for the second instance:
 
 <entry key="openjpa.RemoteCommitProvider" value="tcp(Port=12346, Addresses=127.0.0.1:12345;127.0.0.1:12346)"/>
 
-
 1.c) Install Syncope
 
 Download and run the Syncope installer:
@@ -73,12 +72,21 @@ Run this twice to install Syncope in both Apache Tomcat instances.
 
 In the first Tomcat instance running on 8080, go to http://localhost:8080/syncope-console, and add two new roles "employee" and "boss". Add two new users, "alice" and "bob" both with password "security". "alice" has both roles, but "bob" is only an "employee".
 
-2) AuthenticationTest
+2) FailoverAuthenticationTest
 
 This tests using Syncope as an IDM for authentication. A CXF client sends a
 SOAP UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured
 (see cxf-service.xml) to validate the UsernameToken via the
 SyncopeUTValidator, which dispatches the username/passwords to Syncope for
-authentication via Syncope's REST API. A test that passes username/passwords 
-via Basic Authentication to the CXF endpoint is also added.
+authentication via Syncope's REST API. 
+
+The SyncopeUTValidator is configured with the address of the primary Syncope
+instance ("first-instance" above running on 8080). It is also configured with
+a list of alternative addresses to try if the first instance is down (in this
+case the "second-instance" running on 9080). 
+
+The test makes two invocations. The first should successfully authenticate to
+the first Syncope instance. Now the test sleeps for 10 seconds after prompting
+you to kill the first Syncope instance. It should successfully failover to the
+second Syncope instance.
 

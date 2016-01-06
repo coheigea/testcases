@@ -20,7 +20,10 @@
 package org.apache.coheigea.cxf.syncope.authentication;
 
 import java.util.Collections;
+import java.util.List;
 
+import org.apache.cxf.clustering.FailoverFeature;
+import org.apache.cxf.clustering.SequentialStrategy;
 import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.syncope.common.to.UserTO;
@@ -34,14 +37,17 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * This is a custom Validator that authenticates to a Syncope IDM and checks to see whether the
- * supplied username and password are in the system.
+ * supplied username and password are in the system. It takes in a list of addresses and uses the
+ * CXF failover feature so that it can failover to other instances, if the first instance is down,
+ * etc.
  */
 public class SyncopeUTValidator implements Validator {
     
     private static org.apache.commons.logging.Log log = 
             org.apache.commons.logging.LogFactory.getLog(SyncopeUTValidator.class);
     
-    private String address;
+    private String primaryAddress;
+    private List<String> alternativeAddresses;
     
     public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
         if (credential == null || credential.getUsernametoken() == null) {
@@ -57,7 +63,7 @@ public class SyncopeUTValidator implements Validator {
         }
         if (!WSConstants.PASSWORD_TEXT.equals(pwType)) {
             if (log.isDebugEnabled()) {
-                log.debug("Authentication failed - digest passwords are not accepted");
+                log.debug("Auaddressesthentication failed - digest passwords are not accepted");
             }
             throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
@@ -68,9 +74,18 @@ public class SyncopeUTValidator implements Validator {
             throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
         
+        // Set up failover feature
+        FailoverFeature failoverFeature = new FailoverFeature();
+        
+        SequentialStrategy strategy = new SequentialStrategy();
+        strategy.setAlternateAddresses(alternativeAddresses);
+        failoverFeature.setStrategy(strategy);
+         
+        
         // Send it off to Syncope for validation
         WebClient client = 
-            WebClient.create(address, Collections.singletonList(new JacksonJsonProvider()));
+            WebClient.create(primaryAddress, Collections.singletonList(new JacksonJsonProvider()),
+                             Collections.singletonList(failoverFeature), null);
         
         String authorizationHeader = 
             "Basic " + Base64Utility.encode(
@@ -97,13 +112,22 @@ public class SyncopeUTValidator implements Validator {
         
         return credential;
     }
-    
-    public void setAddress(String newAddress) {
-        address = newAddress;
+
+    public String getPrimaryAddress() {
+        return primaryAddress;
+    }
+
+    public void setPrimaryAddress(String primaryAddress) {
+        this.primaryAddress = primaryAddress;
+    }
+
+    public List<String> getAlternativeAddresses() {
+        return alternativeAddresses;
+    }
+
+    public void setAlternativeAddresses(List<String> alternativeAddresses) {
+        this.alternativeAddresses = alternativeAddresses;
     }
     
-    public String getAddress() {
-        return address;
-    }
     
 }

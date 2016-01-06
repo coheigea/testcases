@@ -23,6 +23,7 @@
   xmlns:http="http://cxf.apache.org/transports/http/configuration"
   xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
   xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xmlns:util="http://www.springframework.org/schema/util"
   xsi:schemaLocation="
             http://cxf.apache.org/core
             http://cxf.apache.org/schemas/core.xsd
@@ -35,7 +36,9 @@
             http://cxf.apache.org/transports/http-jetty/configuration
             http://cxf.apache.org/schemas/configuration/http-jetty.xsd
             http://www.springframework.org/schema/beans
-            http://www.springframework.org/schema/beans/spring-beans.xsd">
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/util         
+            http://www.springframework.org/schema/util/spring-util-2.0.xsd">
    
    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
    
@@ -45,8 +48,13 @@
         </cxf:features>
    </cxf:bus>
    
+   <util:list id="syncopeAlternativeAddresses" value-type="java.lang.String">
+       <value>http://localhost:9080/syncope/rest/</value>
+   </util:list>
+   
    <bean class="org.apache.coheigea.cxf.syncope.authentication.SyncopeUTValidator" id="utValidator">
-       <property name="address" value="http://localhost:8080/syncope/rest/"/>
+       <property name="alternativeAddresses" ref="syncopeAlternativeAddresses"/>
+       <property name="primaryAddress" value="http://localhost:8080/syncope/rest/"/>
    </bean>
    
    <jaxws:endpoint id="doubleittransport"
@@ -61,24 +69,6 @@
       <jaxws:properties>
          <entry key="ws-security.ut.validator" value-ref="utValidator"/>
       </jaxws:properties> 
-   </jaxws:endpoint>
-   
-   <bean id="basicAuthValidator" class="org.apache.coheigea.cxf.syncope.authentication.SyncopeBasicAuthInterceptor">
-        <property name="validator" ref="utValidator" />
-   </bean>
-   
-   <jaxws:endpoint id="doubleittransportbasicauth"
-      implementor="org.apache.coheigea.cxf.syncope.common.DoubleItPortTypeImpl"
-      endpointName="s:DoubleItTransportBasicAuthPort"
-      serviceName="s:DoubleItService"
-      depends-on="ClientAuthHttpsSettings"
-      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportbasicauth"
-      wsdlLocation="org/apache/coheigea/cxf/syncope/authentication/DoubleIt.wsdl"
-      xmlns:s="http://www.example.org/contract/DoubleIt">
-        
-      <jaxws:inInterceptors>
-         <ref bean="basicAuthValidator"/>
-      </jaxws:inInterceptors>
    </jaxws:endpoint>
    
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
