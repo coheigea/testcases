@@ -142,13 +142,14 @@ public class AuthenticationTest extends org.junit.Assert {
 
         System.setProperty("java.security.krb5.conf", f2.getPath());
     }
-/*
+
     @org.junit.Test
+    @org.junit.Ignore
     public void launchKDCTest() throws Exception {
         System.out.println("Sleeping...");
         Thread.sleep(3 * 60 * 1000);
     }
-*/
+    
     @org.junit.Test
     public void unitTest() throws Exception {
         KrbClient client = new KrbClient();
