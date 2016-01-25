@@ -25,8 +25,8 @@ import org.apache.kerby.kerberos.kerb.KrbException;
 import org.apache.kerby.kerberos.kerb.common.EncryptionUtil;
 import org.apache.kerby.kerberos.kerb.identity.KrbIdentity;
 import org.apache.kerby.kerberos.kerb.server.KdcServer;
-import org.apache.kerby.kerberos.kerb.spec.base.EncryptionKey;
-import org.apache.kerby.kerberos.kerb.spec.base.EncryptionType;
+import org.apache.kerby.kerberos.kerb.type.base.EncryptionKey;
+import org.apache.kerby.kerberos.kerb.type.base.EncryptionType;
 
 /**
  * A simple extension of the KdcServer which just creates some principals

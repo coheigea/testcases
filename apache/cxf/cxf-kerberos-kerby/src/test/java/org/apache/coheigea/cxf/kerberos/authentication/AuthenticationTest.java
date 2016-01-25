@@ -41,8 +41,8 @@ import org.apache.cxf.testutil.common.TestUtil;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
-import org.apache.kerby.kerberos.kerb.spec.ticket.ServiceTicket;
-import org.apache.kerby.kerberos.kerb.spec.ticket.TgtTicket;
+import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
+import org.apache.kerby.kerberos.kerb.type.ticket.TgtTicket;
 import org.apache.wss4j.dom.engine.WSSConfig;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.ietf.jgss.GSSContext;
@@ -72,7 +72,6 @@ public class AuthenticationTest extends org.junit.Assert {
     private static final String PORT = TestUtil.getPortNumber(Server.class);
     private static final String KDC_PORT = TestUtil.getPortNumber(Server.class, 2);
     private static final String KDC_UDP_PORT = TestUtil.getPortNumber(Server.class, 3);
-
     private static KerbyServer kerbyServer;
 
     @BeforeClass
@@ -106,6 +105,7 @@ public class AuthenticationTest extends org.junit.Assert {
         kerbyServer.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
         
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
+
         kerbyServer.init();
 
         // Create principals
@@ -142,7 +142,13 @@ public class AuthenticationTest extends org.junit.Assert {
 
         System.setProperty("java.security.krb5.conf", f2.getPath());
     }
-
+/*
+    @org.junit.Test
+    public void launchKDCTest() throws Exception {
+        System.out.println("Sleeping...");
+        Thread.sleep(3 * 60 * 1000);
+    }
+*/
     @org.junit.Test
     public void unitTest() throws Exception {
         KrbClient client = new KrbClient();
@@ -156,13 +162,13 @@ public class AuthenticationTest extends org.junit.Assert {
         client.init();
 
         TgtTicket tgt;
-        ServiceTicket tkt;
+        SgtTicket tkt;
 
         try {
-            tgt = client.requestTgtWithPassword("alice@service.ws.apache.org", "alice");
+            tgt = client.requestTgt("alice@service.ws.apache.org", "alice");
             assertTrue(tgt != null);
 
-            tkt = client.requestServiceTicketWithTgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
+            tkt = client.requestSgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
             assertTrue(tkt != null);
         } catch (Exception e) {
             e.printStackTrace();
