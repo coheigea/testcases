@@ -32,7 +32,7 @@
    </parent>
 
    <properties>
-       <kerby.version>1.0.0-RC1</kerby.version>
+       <kerby.version>1.0.0-RC2-SNAPSHOT</kerby.version>
    </properties>
 
    <dependencies>
