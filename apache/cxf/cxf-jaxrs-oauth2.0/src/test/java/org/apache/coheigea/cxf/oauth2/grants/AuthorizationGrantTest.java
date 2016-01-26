@@ -25,6 +25,7 @@ import java.util.List;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
+import org.apache.coheigea.cxf.oauth2.balanceservice.BankServer;
 import org.apache.coheigea.cxf.oauth2.oauthservice.OAuthServer;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
@@ -39,7 +40,9 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
  */
 public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
     
+    public static final String BANK_PORT = allocatePort(BankServer.class);
     static final String PORT = allocatePort(OAuthServer.class);
+    
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -191,6 +194,35 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
+    public void testAuthorizationCodeGrantWithAudience() throws Exception {
+        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Get Authorization Code
+        String code = getAuthorizationCode(client, null, "consumer-id-aud");
+        assertNotNull(code);
+        
+        // Now get the access token
+        client = WebClient.create(address, providers, "consumer-id-aud", "this-is-a-secret", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        String audience = "https://localhost:" + BANK_PORT + "/bankservice/partners/balance";
+        ClientAccessToken accessToken = 
+            getAccessTokenWithAuthorizationCode(client, code, "consumer-id-aud", audience);
+        assertNotNull(accessToken.getTokenKey());
+    }
+    
+    @org.junit.Test
     public void testImplicitGrant() throws Exception {
         URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
         
@@ -283,9 +315,13 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
     }
     
     private String getAuthorizationCode(WebClient client, String scope) {
+        return getAuthorizationCode(client, scope, "consumer-id");
+    }
+    
+    private String getAuthorizationCode(WebClient client, String scope, String consumerId) {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
-        client.query("client_id", "consumer-id");
+        client.query("client_id", consumerId);
         client.query("redirect_uri", "http://www.blah.apache.org");
         client.query("response_type", "code");
         if (scope != null) {
@@ -325,13 +361,23 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
     }
     
     private ClientAccessToken getAccessTokenWithAuthorizationCode(WebClient client, String code) {
+        return getAccessTokenWithAuthorizationCode(client, code, "consumer-id", null);
+    }
+    
+    private ClientAccessToken getAccessTokenWithAuthorizationCode(WebClient client, 
+                                                                  String code,
+                                                                  String consumerId,
+                                                                  String audience) {
         client.type("application/x-www-form-urlencoded").accept("application/json");
         client.path("token");
         
         Form form = new Form();
         form.param("grant_type", "authorization_code");
         form.param("code", code);
-        form.param("client_id", "consumer-id");
+        form.param("client_id", consumerId);
+        if (audience != null) {
+            form.param("audience", audience);
+        }
         Response response = client.post(form);
         
         return response.readEntity(ClientAccessToken.class);

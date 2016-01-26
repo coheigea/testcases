@@ -200,14 +200,67 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         assertEquals(serviceResponse.readEntity(Integer.class).intValue(), 40);
     }
     
+    @org.junit.Test
+    public void testPartnerServiceWithTokenUsingAudience() throws Exception {
+        URL busFile = BalanceServiceTest.class.getResource("cxf-client.xml");
+        
+        // Create an initial account at the bank
+        String address = "https://localhost:" + PORT + "/bankservice/customers/balance";
+        WebClient client = WebClient.create(address, "bob", "security", busFile.toString());
+        client.type("text/plain").accept("text/plain");
+        
+        client.path("/bob");
+        client.post(40);
+        
+        // Get Authorization Code (as "bob")
+        String oauthService = "https://localhost:" + OAUTH_PORT + "/services/";
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        WebClient oauthClient = WebClient.create(oauthService, providers, "bob", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(oauthClient).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        String code = getAuthorizationCode(oauthClient, null, "consumer-id-aud");
+        assertNotNull(code);
+        
+        // Now get the access token
+        oauthClient = WebClient.create(oauthService, providers, "consumer-id-aud", "this-is-a-secret", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(oauthClient).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        String partnerAddress = "https://localhost:" + PORT + "/bankservice/partners/balance";
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code,
+                                                                            "consumer-id-aud",
+                                                                            partnerAddress);
+        assertNotNull(accessToken.getTokenKey());
+
+        // Now invoke on the service with the access token
+        WebClient partnerClient = WebClient.create(partnerAddress, busFile.toString());
+        partnerClient.type("text/plain").accept("text/plain");
+        partnerClient.header("Authorization", "Bearer " + accessToken.getTokenKey());
+        
+        partnerClient.path("/bob");
+        // Now make a service invocation with the access token
+        Response serviceResponse = partnerClient.get();
+        assertEquals(serviceResponse.getStatus(), 200);
+        assertEquals(serviceResponse.readEntity(Integer.class).intValue(), 40);
+    }
+    
     private String getAuthorizationCode(WebClient client) {
         return getAuthorizationCode(client, null);
     }
     
     private String getAuthorizationCode(WebClient client, String scope) {
+        return getAuthorizationCode(client, scope, "consumer-id");
+    }
+    
+    private String getAuthorizationCode(WebClient client, String scope, String consumerId) {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
-        client.query("client_id", "consumer-id");
+        client.query("client_id", consumerId);
         client.query("redirect_uri", "http://www.blah.apache.org");
         client.query("response_type", "code");
         if (scope != null) {
@@ -247,13 +300,23 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
     }
     
     private ClientAccessToken getAccessTokenWithAuthorizationCode(WebClient client, String code) {
+        return getAccessTokenWithAuthorizationCode(client, code, "consumer-id", null);
+    }
+    
+    private ClientAccessToken getAccessTokenWithAuthorizationCode(WebClient client, 
+                                                                  String code,
+                                                                  String consumerId,
+                                                                  String audience) {
         client.type("application/x-www-form-urlencoded").accept("application/json");
         client.path("token");
         
         Form form = new Form();
         form.param("grant_type", "authorization_code");
         form.param("code", code);
-        form.param("client_id", "consumer-id");
+        form.param("client_id", consumerId);
+        if (audience != null) {
+            form.param("audience", audience);
+        }
         Response response = client.post(form);
         
         return response.readEntity(ClientAccessToken.class);
