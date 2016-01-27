@@ -27,7 +27,7 @@
    <parent>
         <groupId>org.apache.coheigea.cxf</groupId>
         <artifactId>cxf-parent</artifactId>
-        <relativePath>../parent/pom.xml</relativePath>
+        <relativePath>../../parent/pom.xml</relativePath>
         <version>1.0</version>
    </parent>
  
