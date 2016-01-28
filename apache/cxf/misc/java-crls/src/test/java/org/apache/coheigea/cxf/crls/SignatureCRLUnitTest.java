@@ -98,7 +98,8 @@ public class SignatureCRLUnitTest extends org.junit.Assert {
             validator.validate(path, param);
             fail("Failure expected on a revoked certificate");
         } catch (CertPathValidatorException ex) {
-            assertTrue(ex.getMessage().contains("Certificate has been revoked"));
+            assertTrue(ex.getMessage().contains("revoked")
+              || ex.getMessage().contains("revocation"));
         }
     }
     
