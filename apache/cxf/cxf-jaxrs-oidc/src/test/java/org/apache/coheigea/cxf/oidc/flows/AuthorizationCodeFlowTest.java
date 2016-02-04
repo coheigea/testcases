@@ -49,9 +49,9 @@ import org.junit.BeforeClass;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
- * Some unit tests to test different authentication flows in OpenID Connect.
+ * Some unit tests to test the authorization code flow in OpenID Connect.
  */
-public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
+public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
     
     static final String PORT = allocatePort(OIDCProviderServer.class);
     @BeforeClass
@@ -66,7 +66,7 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
     
     @org.junit.Test
     public void testAuthorizationCodeFlow() throws Exception {
-        URL busFile = AuthenticationFlowTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -99,7 +99,7 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
     // Just a normal OAuth invocation, check it all works ok
     @org.junit.Test
     public void testAuthorizationCodeOAuth() throws Exception {
-        URL busFile = AuthenticationFlowTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -130,7 +130,7 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
     
     @org.junit.Test
     public void testAuthorizationCodeFlowWithNonce() throws Exception {
-        URL busFile = AuthenticationFlowTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -162,7 +162,7 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
     
     @org.junit.Test
     public void testAuthorizationCodeFlowWithScope() throws Exception {
-        URL busFile = AuthenticationFlowTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -195,7 +195,7 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
     
     @org.junit.Test
     public void testAuthorizationCodeFlowWithRefresh() throws Exception {
-        URL busFile = AuthenticationFlowTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -242,7 +242,7 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
     
     @org.junit.Test
     public void testAuthorizationCodeFlowWithState() throws Exception {
-        URL busFile = AuthenticationFlowTest.class.getResource("cxf-client.xml");
+        URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -270,67 +270,6 @@ public class AuthenticationFlowTest extends AbstractBusClientServerTestBase {
         String idToken = accessToken.getParameters().get("id_token");
         assertNotNull(idToken);
         validateIdToken(idToken, null);
-    }
-    
-    @org.junit.Test
-    public void testImplicitGrant() throws Exception {
-        URL busFile = AuthenticationFlowTest.class.getResource("cxf-client.xml");
-        
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
-        String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
-        // Save the Cookie for the second request...
-        WebClient.getConfig(client).getRequestContext().put(
-            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-       
-        // Get Access Token
-        client.type("application/json").accept("application/json");
-        client.query("client_id", "consumer-id");
-        client.query("redirect_uri", "http://www.blah.apache.org");
-        client.query("scope", "openid");
-        client.query("response_type", "id_token token");
-        client.query("nonce", "123456789");
-        client.path("authorize-implicit/");
-        Response response = client.get();
-        
-        OAuthAuthorizationData authzData = response.readEntity(OAuthAuthorizationData.class);
-        
-        // Now call "decision" to get the access token
-        client.path("decision");
-        client.type("application/x-www-form-urlencoded");
-        
-        Form form = new Form();
-        form.param("session_authenticity_token", authzData.getAuthenticityToken());
-        form.param("client_id", authzData.getClientId());
-        form.param("redirect_uri", authzData.getRedirectUri());
-        form.param("scope", authzData.getProposedScope());
-        if (authzData.getResponseType() != null) {
-            form.param("response_type", authzData.getResponseType());
-        }
-        if (authzData.getNonce() != null) {
-            form.param("nonce", authzData.getNonce());
-        }
-        form.param("oauthDecision", "allow");
-        
-        response = client.post(form);
-        
-        String location = response.getHeaderString("Location"); 
-        
-        // Check Access Token
-        String accessToken = getSubstring(location, "access_token");
-        assertNotNull(accessToken);
-        
-        // Check IdToken
-        String idToken = getSubstring(location, "id_token");
-        assertNotNull(idToken);
-        validateIdToken(idToken, null);
-        
-        JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(idToken);
-        JwtToken jwt = jwtConsumer.getJwtToken();
-        Assert.assertNotNull(jwt.getClaims().getClaim(IdToken.ACCESS_TOKEN_HASH_CLAIM));
-        Assert.assertNotNull(jwt.getClaims().getClaim(IdToken.NONCE_CLAIM));
     }
     
     private String getAuthorizationCode(WebClient client, String scope) {
