@@ -77,8 +77,41 @@
        </property>
    </bean>
    
+   <bean id="audClient" class="org.apache.cxf.rs.security.oauth2.common.Client">
+       <constructor-arg><value>consumer-id-aud</value></constructor-arg>
+       <constructor-arg><value>this-is-a-secret</value></constructor-arg>
+       <constructor-arg><value>true</value></constructor-arg>
+       <property name="redirectUris">
+           <util:list value-type="java.lang.String">
+               <value>http://www.b***REMOVED***.apache.org</value>
+           </util:list>
+       </property>
+       <property name="allowedGrantTypes">
+           <util:list value-type="java.lang.String">
+               <value>authorization_code</value>
+               <value>refresh_token</value>
+           </util:list>
+       </property>
+       <property name="registeredAudiences">
+           <util:list value-type="java.lang.String">
+               <value>https://localhost:12345/bankservice/partners/balance</value>
+               <value>https://127.0.0.1/test</value>
+           </util:list>
+       </property>
+       <property name="registeredScopes">
+           <util:list value-type="java.lang.String">
+               <value>openid</value>
+           </util:list>
+       </property>
+   </bean>
+   
+   <util:list id="clients">
+       <ref bean="client"/>
+       <ref bean="audClient"/>
+   </util:list>
+   
    <bean id="oauthProvider" class="org.apache.coheigea.cxf.oidc.provider.EHCacheRefreshTokenProvider">
-      <property name="client" ref="client"/>
+      <property name="clients" ref="clients"/>
    </bean>
    
    <bean id="authorizationService" class="org.apache.cxf.rs.security.oauth2.services.AuthorizationCodeGrantService">
