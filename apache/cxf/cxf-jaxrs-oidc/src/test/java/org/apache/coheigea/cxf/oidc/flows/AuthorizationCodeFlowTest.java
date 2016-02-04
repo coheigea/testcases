@@ -111,7 +111,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Get Authorization Code
-        String code = getAuthorizationCode(client, null, false, null, null);
+        String code = getAuthorizationCode(client, "read_balance", null, null);
         assertNotNull(code);
         
         // Now get the access token
@@ -142,7 +142,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Get Authorization Code
-        String code = getAuthorizationCode(client, "openid", true, "123456789", null);
+        String code = getAuthorizationCode(client, "openid", "123456789", null);
         assertNotNull(code);
         
         // Now get the access token
@@ -254,7 +254,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Get Authorization Code
-        String code = getAuthorizationCode(client, "openid", true, null, "123456789");
+        String code = getAuthorizationCode(client, "openid", null, "123456789");
         assertNotNull(code);
         
         // Now get the access token
@@ -273,10 +273,10 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
     }
     
     private String getAuthorizationCode(WebClient client, String scope) {
-        return getAuthorizationCode(client, scope, true, null, null);
+        return getAuthorizationCode(client, scope, null, null);
     }
     
-    private String getAuthorizationCode(WebClient client, String scope, boolean openId,
+    private String getAuthorizationCode(WebClient client, String scope,
                                         String nonce, String state) {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
@@ -309,14 +309,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
             form.param("nonce", authzData.getNonce());
         }
         if (authzData.getProposedScope() != null) {
-            if (openId || !authzData.getProposedScope().contains("openid")) {
-                form.param("scope", authzData.getProposedScope());
-            } else {
-                String proposedScope = authzData.getProposedScope();
-                proposedScope = proposedScope.replaceFirst("openid", "");
-                proposedScope = proposedScope.replaceAll("  ", " ");
-                form.param("scope", proposedScope);
-            }
+            form.param("scope", authzData.getProposedScope());
         }
         if (authzData.getState() != null) {
             form.param("state", authzData.getState());
