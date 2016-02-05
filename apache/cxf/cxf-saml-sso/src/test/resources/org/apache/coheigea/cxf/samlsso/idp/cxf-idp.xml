@@ -67,7 +67,7 @@
    </bean>
    
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.samlsso.common.CommonCallbackHandler"/>
-   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.samlsso.idp.BasicAuthFilter">
+   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.samlsso.idp.WSS4JBasicAuthFilter">
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    
