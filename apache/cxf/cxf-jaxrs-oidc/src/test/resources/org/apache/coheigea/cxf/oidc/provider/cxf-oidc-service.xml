@@ -148,7 +148,7 @@
    </bean>
     
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.oidc.common.ServiceCallbackHandler"/>
-   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oidc.common.BasicAuthFilter">
+   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oidc.common.WSS4JBasicAuthFilter">
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    

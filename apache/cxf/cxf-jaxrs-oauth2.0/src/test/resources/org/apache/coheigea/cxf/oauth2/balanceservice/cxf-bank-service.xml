@@ -55,7 +55,7 @@
          class="org.apache.coheigea.cxf.oauth2.balanceservice.CustomerBalanceService" />
    
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth2.common.ServiceCallbackHandler"/>
-   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth2.common.BasicAuthFilter">
+   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth2.common.WSS4JBasicAuthFilter">
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    

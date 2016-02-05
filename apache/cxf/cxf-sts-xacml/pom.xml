@@ -33,6 +33,7 @@
 
    <properties>
        <openaz.version>0.0.1-SNAPSHOT</openaz.version>
+       <cxf.version>3.1.6-SNAPSHOT</cxf.version>
    </properties>
    
    <dependencies>

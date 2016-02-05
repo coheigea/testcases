@@ -88,7 +88,7 @@
    </jaxrs:server>
    
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth1.common.ServiceCallbackHandler"/>
-   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth1.common.BasicAuthFilter">
+   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth1.common.WSS4JBasicAuthFilter">
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    

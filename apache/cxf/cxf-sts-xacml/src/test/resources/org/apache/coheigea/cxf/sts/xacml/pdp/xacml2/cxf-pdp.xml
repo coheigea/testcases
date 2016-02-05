@@ -51,7 +51,7 @@
    <bean id="serviceProviderBean" class="org.apache.coheigea.cxf.sts.xacml.pdp.xacml2.MockPDPImpl" />
    
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.sts.xacml.common.CommonCallbackHandler"/>
-   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.sts.xacml.pdp.xacml2.BasicAuthFilter">
+   <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.sts.xacml.pdp.xacml2.WSS4JBasicAuthFilter">
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    
