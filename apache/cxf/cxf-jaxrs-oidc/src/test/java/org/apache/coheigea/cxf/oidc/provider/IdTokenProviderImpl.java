@@ -26,16 +26,16 @@ import org.apache.cxf.rs.security.oauth2.common.OAuthPermission;
 import org.apache.cxf.rs.security.oauth2.common.UserSubject;
 import org.apache.cxf.rs.security.oidc.common.IdToken;
 import org.apache.cxf.rs.security.oidc.common.UserInfo;
-import org.apache.cxf.rs.security.oidc.idp.UserInfoProvider;
+import org.apache.cxf.rs.security.oidc.idp.IdTokenProvider;
 
-public class UserInfoProviderImpl implements UserInfoProvider {
+public class IdTokenProviderImpl implements IdTokenProvider {
 
-    public UserInfoProviderImpl() {
+    public IdTokenProviderImpl() {
 
     }
 
     @Override
-    public IdToken getIdToken(String clientId, UserSubject authenticatedUser, List<OAuthPermission> scopes) {
+    public IdToken getIdToken(String clientId, UserSubject authenticatedUser, List<String> scopes) {
         IdToken token = new IdToken();
         
         Calendar cal = Calendar.getInstance();
@@ -47,12 +47,6 @@ public class UserInfoProviderImpl implements UserInfoProvider {
         token.setIssuer("OIDC IdP");
         
         return token;
-    }
-
-    @Override
-    public UserInfo getUserInfo(String clientId, UserSubject authenticatedUser, List<OAuthPermission> scopes) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }
