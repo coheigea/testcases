@@ -121,6 +121,7 @@
    <bean id="implicitService" class="org.apache.cxf.rs.security.oidc.idp.OidcImplicitService">
       <property name="dataProvider" ref="oauthProvider"/>
       <property name="responseFilter" ref="idTokenFilter"/>
+      <property name="userInfoProvider" ref="userInfoProviderImpl"/>
    </bean>
    
    <bean id="refreshGrantHandler" class="org.apache.cxf.rs.security.oauth2.grants.refresh.RefreshTokenGrantHandler">
