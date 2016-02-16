@@ -26,13 +26,12 @@ import org.apache.cxf.rs.security.oidc.idp.UserInfoProvider;
 
 public class UserInfoProviderImpl implements UserInfoProvider {
     
-    public UserInfoProviderImpl() {
-
-    }
-
     @Override
     public UserInfo getUserInfo(String clientId, UserSubject authenticatedUser, List<String> scopes) {
-        // TODO Auto-generated method stub
-        return null;
+        UserInfo userInfo = new UserInfo();
+        userInfo.setSubject(authenticatedUser.getLogin());
+        userInfo.setAudience(clientId);
+        userInfo.setIssuer("xyz");
+        return userInfo;
     }
 }
