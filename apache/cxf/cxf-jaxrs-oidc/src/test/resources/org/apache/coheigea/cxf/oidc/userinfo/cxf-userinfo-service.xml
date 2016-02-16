@@ -51,11 +51,6 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="userInfoProvider" class="org.apache.coheigea.cxf.oidc.userinfo.UserInfoProviderImpl" />
-   <bean id="userInfoService" class="org.apache.cxf.rs.security.oidc.idp.UserInfoService">
-       <property name="userInfoProvider" ref="userInfoProvider" />
-   </bean>
-   
    <bean id="jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
     
    <bean id="tvServiceClientFactory" class="org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean">
@@ -85,15 +80,48 @@
        <property name="tokenValidator" ref="tokenValidator"/>
    </bean>
    
+   <bean id="userInfoProvider" class="org.apache.coheigea.cxf.oidc.userinfo.UserInfoProviderImpl" />
+   <bean id="userInfoService" class="org.apache.cxf.rs.security.oidc.idp.UserInfoService">
+       <property name="userInfoProvider" ref="userInfoProvider"/>
+       <property name="jwsRequired" value="false"/>
+   </bean>
+   
+   <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JsonMapObjectProvider"/>
+   
    <jaxrs:server 
         depends-on="UserInfoServerTLS" 
-        address="https://localhost:${testutil.ports.UserInfoServer}/services">
+        address="https://localhost:${testutil.ports.UserInfoServer}/services/plain">
         <jaxrs:serviceBeans>
             <ref bean="userInfoService"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="oAuthFilter"/>
+            <ref bean="jsonProvider"/>
         </jaxrs:providers>
+   </jaxrs:server>
+   
+   <bean id="signedUserInfoService" class="org.apache.cxf.rs.security.oidc.idp.UserInfoService">
+       <property name="userInfoProvider" ref="userInfoProvider"/>
+   </bean>
+   
+   <jaxrs:server 
+        depends-on="UserInfoServerTLS" 
+        address="https://localhost:${testutil.ports.UserInfoServer}/services/signed">
+        <jaxrs:serviceBeans>
+            <ref bean="signedUserInfoService"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="oAuthFilter"/>
+        </jaxrs:providers>
+        <jaxrs:properties>
+            <entry key="rs.security.keystore.type" value="jks" />
+            <entry key="rs.security.keystore.alias" value="myservicekey"/>
+            <entry key="rs.security.keystore.password" value="sspass"/>
+            <entry key="rs.security.keystore.file" value="servicestore.jks" />
+            <entry key="rs.security.key.password" value="skpass" />
+            <entry key="rs.security.signature.algorithm" value="RS256" />
+       </jaxrs:properties>
+
    </jaxrs:server>
    
    <httpj:engine-factory id="UserInfoServerTLS" bus="cxf">

@@ -18,15 +18,9 @@
  */
 package org.apache.coheigea.cxf.oidc.userinfo;
 
-import java.io.IOException;
 import java.net.URL;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Form;
@@ -34,22 +28,22 @@ import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.oidc.provider.OIDCProviderServer;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
+import org.apache.cxf.jaxrs.provider.json.JsonMapObjectProvider;
 import org.apache.cxf.rs.security.jose.jws.JwsJwtCompactConsumer;
 import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
 import org.apache.cxf.rs.security.jose.jwt.JwtToken;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
-import org.apache.cxf.rs.security.oidc.common.IdToken;
+import org.apache.cxf.rs.security.oidc.common.UserInfo;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
-import org.apache.wss4j.common.util.Loader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
- * Some unit tests for the UserInfo Service in OpenId Connect.
+ * Some unit tests for the UserInfo Service in OpenId Connect. This can be used to return the User's claims given
+ * an access token.
  */
 public class UserInfoTest extends AbstractBusClientServerTestBase {
     
@@ -59,21 +53,21 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
+                   "Server failed to launch",
+                   // run the server in the same process
+                   // set this to false to fork
+                   launchServer(UserInfoServer.class, true)
+        );
+        assertTrue(
                 "Server failed to launch",
                 // run the server in the same process
                 // set this to false to fork
                 launchServer(OIDCProviderServer.class, true)
         );
-        assertTrue(
-                   "Server failed to launch",
-                   // run the server in the same process
-                   // set this to false to fork
-                   launchServer(UserInfoServer.class, true)
-       );
     }
     
     @org.junit.Test
-    public void testUserInfo() throws Exception {
+    public void testPlainUserInfo() throws Exception {
         URL busFile = UserInfoTest.class.getResource("cxf-client.xml");
         
         List<Object> providers = new ArrayList<Object>();
@@ -100,14 +94,67 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
         assertTrue(accessToken.getApprovedScope().contains("openid"));
         
         // Now invoke on the UserInfo service with the access token
-        String userInfoAddress = "https://localhost:" + USERINFO_PORT + "/services/userinfo";
-        WebClient userInfoClient = WebClient.create(userInfoAddress, busFile.toString());
+        String userInfoAddress = "https://localhost:" + USERINFO_PORT + "/services/plain/userinfo";
+        WebClient userInfoClient = WebClient.create(userInfoAddress, Collections.singletonList(new JsonMapObjectProvider()), 
+                                                    busFile.toString());
         userInfoClient.accept("application/json");
         userInfoClient.header("Authorization", "Bearer " + accessToken.getTokenKey());
         
         Response serviceResponse = userInfoClient.get();
         assertEquals(serviceResponse.getStatus(), 200);
-        // assertEquals(serviceResponse.readEntity(Integer.class).intValue(), 40);
+        
+        UserInfo userInfo = serviceResponse.readEntity(UserInfo.class);
+        assertNotNull(userInfo);
+        
+        assertEquals("alice", userInfo.getSubject());
+        assertEquals("consumer-id", userInfo.getAudience());
+    }
+    
+    @org.junit.Test
+    public void testSignedUserInfo() throws Exception {
+        URL busFile = UserInfoTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Get Authorization Code
+        String code = getAuthorizationCode(client, "openid");
+        assertNotNull(code);
+        
+        // Now get the access token
+        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
+        assertNotNull(accessToken.getTokenKey());
+        assertTrue(accessToken.getApprovedScope().contains("openid"));
+        
+        // Now invoke on the UserInfo service with the access token
+        String userInfoAddress = "https://localhost:" + USERINFO_PORT + "/services/signed/userinfo";
+        WebClient userInfoClient = WebClient.create(userInfoAddress, busFile.toString());
+        
+        userInfoClient.accept("application/jwt");
+        userInfoClient.header("Authorization", "Bearer " + accessToken.getTokenKey());
+        
+        Response serviceResponse = userInfoClient.get();
+        assertEquals(serviceResponse.getStatus(), 200);
+        
+        String token = serviceResponse.readEntity(String.class);
+        assertNotNull(token);
+        
+        JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(token);
+        JwtToken jwt = jwtConsumer.getJwtToken();
+
+        assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
+        assertEquals("consumer-id", jwt.getClaim(JwtConstants.CLAIM_AUDIENCE));
     }
     
     private String getAuthorizationCode(WebClient client, String scope) {
@@ -196,27 +243,4 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
         return foundString.substring(0, ampersandIndex);
     }
     
-    private void validateIdToken(String idToken, String nonce) 
-        throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
-        JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(idToken);
-        JwtToken jwt = jwtConsumer.getJwtToken();
-        
-        // Validate claims
-        Assert.assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
-        Assert.assertEquals("OIDC IdP", jwt.getClaim(JwtConstants.CLAIM_ISSUER));
-        Assert.assertEquals("consumer-id", jwt.getClaim(JwtConstants.CLAIM_AUDIENCE));
-        Assert.assertNotNull(jwt.getClaim(JwtConstants.CLAIM_EXPIRY));
-        Assert.assertNotNull(jwt.getClaim(JwtConstants.CLAIM_ISSUED_AT));
-        if (nonce != null) {
-            Assert.assertEquals(nonce, jwt.getClaim(IdToken.NONCE_CLAIM));
-        }
-        
-        KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(Loader.getResource("servicestore.jks").openStream(), "sspass".toCharArray());
-        Certificate cert = keystore.getCertificate("myservicekey");
-        Assert.assertNotNull(cert);
-        
-        Assert.assertTrue(jwtConsumer.verifySignatureWith((X509Certificate)cert, 
-                                                          SignatureAlgorithm.RS256));
-    }
 }
