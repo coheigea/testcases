@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
@@ -65,7 +66,7 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
                 launchServer(OIDCProviderServer.class, true)
         );
     }
-    
+    /*
     @org.junit.Test
     public void testPlainUserInfo() throws Exception {
         URL busFile = UserInfoTest.class.getResource("cxf-client.xml");
@@ -155,6 +156,79 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
 
         assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
         assertEquals("consumer-id", jwt.getClaim(JwtConstants.CLAIM_AUDIENCE));
+    }
+    */
+    @org.junit.Test
+    public void testRefreshToken() throws Exception {
+        URL busFile = UserInfoTest.class.getResource("cxf-client.xml");
+        
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new JacksonJsonProvider());
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Get Authorization Code
+        String code = getAuthorizationCode(client, "openid");
+        assertNotNull(code);
+        
+        // Now get the access token
+        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
+        assertNotNull(accessToken.getTokenKey());
+        assertTrue(accessToken.getApprovedScope().contains("openid"));
+        assertNotNull(accessToken.getRefreshToken());
+        String oldAccessToken = accessToken.getTokenKey();
+        
+        String idToken = accessToken.getParameters().get("id_token");
+        assertNotNull(idToken);
+        
+        // Refresh the access token
+        client.type("application/x-www-form-urlencoded").accept("application/json");
+        
+        Form form = new Form();
+        form.param("grant_type", "refresh_token");
+        form.param("refresh_token", accessToken.getRefreshToken());
+        form.param("client_id", "consumer-id");
+        form.param("scope", "openid");
+        Response response = client.post(form);
+        
+        accessToken = response.readEntity(ClientAccessToken.class);
+        assertNotNull(accessToken.getTokenKey());
+        assertNotNull(accessToken.getRefreshToken());
+        accessToken.getParameters().get("id_token");
+        assertNotNull(idToken);
+        String newAccessToken =  accessToken.getTokenKey();
+        
+        // Now test the UserInfoService.
+        
+        // The old Access Token should fail
+        String userInfoAddress = "https://localhost:" + USERINFO_PORT + "/services/plain/userinfo";
+        WebClient userInfoClient = WebClient.create(userInfoAddress, Collections.singletonList(new JsonMapObjectProvider()), 
+                                                    busFile.toString());
+        userInfoClient.accept("application/json");
+        userInfoClient.header("Authorization", "Bearer " + oldAccessToken);
+        
+        Response serviceResponse = userInfoClient.get();
+        assertEquals(serviceResponse.getStatus(), 401);
+        
+        // The refreshed Access Token should work
+        userInfoClient.replaceHeader("Authorization", "Bearer " + newAccessToken);
+        serviceResponse = userInfoClient.get();
+        assertEquals(serviceResponse.getStatus(), 200);
+        
+        UserInfo userInfo = serviceResponse.readEntity(UserInfo.class);
+        assertNotNull(userInfo);
+        
+        assertEquals("alice", userInfo.getSubject());
+        assertEquals("consumer-id", userInfo.getAudience());
     }
     
     private String getAuthorizationCode(WebClient client, String scope) {
