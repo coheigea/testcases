@@ -22,10 +22,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.cxf.rs.security.oauth2.common.OAuthPermission;
 import org.apache.cxf.rs.security.oauth2.common.UserSubject;
 import org.apache.cxf.rs.security.oidc.common.IdToken;
-import org.apache.cxf.rs.security.oidc.common.UserInfo;
 import org.apache.cxf.rs.security.oidc.idp.IdTokenProvider;
 
 public class IdTokenProviderImpl implements IdTokenProvider {
