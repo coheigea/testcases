@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
@@ -66,7 +65,7 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
                 launchServer(OIDCProviderServer.class, true)
         );
     }
-    /*
+    
     @org.junit.Test
     public void testPlainUserInfo() throws Exception {
         URL busFile = UserInfoTest.class.getResource("cxf-client.xml");
@@ -157,7 +156,7 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
         assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
         assertEquals("consumer-id", jwt.getClaim(JwtConstants.CLAIM_AUDIENCE));
     }
-    */
+    
     @org.junit.Test
     public void testRefreshToken() throws Exception {
         URL busFile = UserInfoTest.class.getResource("cxf-client.xml");
