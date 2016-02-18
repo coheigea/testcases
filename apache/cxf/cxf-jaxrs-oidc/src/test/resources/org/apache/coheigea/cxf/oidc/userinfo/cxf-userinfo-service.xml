@@ -124,6 +124,30 @@
 
    </jaxrs:server>
    
+   <bean id="encryptedUserInfoService" class="org.apache.cxf.rs.security.oidc.idp.UserInfoService">
+       <property name="userInfoProvider" ref="userInfoProvider"/>
+       <property name="jwsRequired" value="false"/>
+       <property name="jweRequired" value="true"/>
+   </bean>
+   
+   <jaxrs:server 
+        depends-on="UserInfoServerTLS" 
+        address="https://localhost:${testutil.ports.UserInfoServer}/services/encrypted">
+        <jaxrs:serviceBeans>
+            <ref bean="encryptedUserInfoService"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="oAuthFilter"/>
+        </jaxrs:providers>
+        <jaxrs:properties>
+            <entry key="rs.security.keystore.type" value="jks" />
+            <entry key="rs.security.keystore.alias" value="myclientkey"/>
+            <entry key="rs.security.keystore.password" value="cspass"/>
+            <entry key="rs.security.keystore.file" value="clientstore.jks" />
+       </jaxrs:properties>
+
+   </jaxrs:server>
+   
    <httpj:engine-factory id="UserInfoServerTLS" bus="cxf">
    <httpj:engine port="${testutil.ports.UserInfoServer}">
     <httpj:tlsServerParameters>
