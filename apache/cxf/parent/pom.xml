@@ -43,7 +43,7 @@
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.14</slf4j.version>
         <spring.version>4.1.7.RELEASE</spring.version>
-        <tomcat.version>7.0.65</tomcat.version>
+        <tomcat.version>7.0.68</tomcat.version>
     </properties>
 
 
