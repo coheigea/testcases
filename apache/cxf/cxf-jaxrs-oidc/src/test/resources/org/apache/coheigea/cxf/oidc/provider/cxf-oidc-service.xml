@@ -155,6 +155,8 @@
    
    <bean id="jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
    
+   <bean id="oidcKeysService" class="org.apache.cxf.rs.security.oidc.idp.OidcKeysService"/>
+   
    <jaxrs:server 
        depends-on="OIDCTLS" 
        address="https://localhost:${testutil.ports.OIDCProviderServer}/services">
@@ -163,10 +165,12 @@
            <ref bean="implicitService"/>
            <ref bean="tokenService"/>
            <ref bean="tokenValidateService"/>
+           <ref bean="oidcKeysService"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
            <ref bean="jackson"/>
            <ref bean="basicAuthFilter"/>
+           <bean class="org.apache.cxf.rs.security.jose.jaxrs.JsonWebKeysProvider"/>
        </jaxrs:providers>
        <jaxrs:properties>
            <entry key="rs.security.keystore.type" value="jks" />
