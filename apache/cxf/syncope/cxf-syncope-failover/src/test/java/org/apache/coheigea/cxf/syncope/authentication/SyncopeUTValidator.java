@@ -81,7 +81,6 @@ public class SyncopeUTValidator implements Validator {
         strategy.setAlternateAddresses(alternativeAddresses);
         failoverFeature.setStrategy(strategy);
          
-        
         // Send it off to Syncope for validation
         WebClient client = 
             WebClient.create(primaryAddress, Collections.singletonList(new JacksonJsonProvider()),
