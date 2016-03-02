@@ -47,6 +47,21 @@ Edit 'conf/tomcat-users.xml' of both instances and add the following:
 Next download the MySQL JDBC jar and place it in the lib directory of both
 Tomcat instances.
 
+
+1.c) Install Syncope
+
+Download and run the Syncope installer:
+
+www.apache.org/dyn/closer.cgi/syncope/1.2.7/syncope-installer-1.2.7-uber.jar
+
+Install it to Tomcat using MySQL as the database. For more info on this, follow this link:
+
+coheigea.blogspot.ie/2014/11/apache-syncope-12-tutorial-part-i.html
+
+Run this twice to install Syncope in both Apache Tomcat instances.
+
+1.d) Update the Syncope instances to share the same database
+
 Next edit 'webapps/syncope/WEB-INF/classes/persistenceContextEMFactory.xml' and
 change the openjpa.RemoteCommitProvider to:
 
@@ -56,19 +71,7 @@ and for the second instance:
 
 <entry key="openjpa.RemoteCommitProvider" value="tcp(Port=12346, Addresses=127.0.0.1:12345;127.0.0.1:12346)"/>
 
-1.c) Install Syncope
-
-Download and run the Syncope installer:
-
-www.apache.org/dyn/closer.cgi/syncope/1.2.6/syncope-installer-1.2.6-uber.jar
-
-Install it to Tomcat using MySQL as the database. For more info on this, follow this link:
-
-coheigea.blogspot.ie/2014/11/apache-syncope-12-tutorial-part-i.html
-
-Run this twice to install Syncope in both Apache Tomcat instances.
-
-1.d) Add users
+1.e) Add users
 
 In the first Tomcat instance running on 8080, go to http://localhost:8080/syncope-console, and add two new roles "employee" and "boss". Add two new users, "alice" and "bob" both with password "security". "alice" has both roles, but "bob" is only an "employee".
 

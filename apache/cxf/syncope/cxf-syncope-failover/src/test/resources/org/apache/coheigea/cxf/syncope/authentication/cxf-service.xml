@@ -53,8 +53,8 @@
    </util:list>
    
    <bean class="org.apache.coheigea.cxf.syncope.authentication.SyncopeUTValidator" id="utValidator">
-       <property name="alternativeAddresses" ref="syncopeAlternativeAddresses"/>
        <property name="primaryAddress" value="http://localhost:8080/syncope/rest/"/>
+       <property name="alternativeAddresses" ref="syncopeAlternativeAddresses"/>
    </bean>
    
    <jaxws:endpoint id="doubleittransport"

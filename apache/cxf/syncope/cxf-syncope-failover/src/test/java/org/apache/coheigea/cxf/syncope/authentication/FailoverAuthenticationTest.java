@@ -35,8 +35,8 @@ import org.junit.BeforeClass;
 /**
  * This tests using Syncope as an IDM for authentication. A cxf client sends a SOAP UsernameToken to a CXF
  * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken via
- * the SyncopeUTValidator, which dispatches it to Syncope for authentication. A test that passes
- * username/passwords via Basic Authentication to the CXF endpoint is also added.
+ * the SyncopeUTValidator, which dispatches it to Syncope for authentication. See the README for more
+ * information
  */
 public class FailoverAuthenticationTest extends AbstractBusClientServerTestBase {
     
