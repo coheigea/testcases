@@ -78,7 +78,7 @@ public class JWSSignatureTest extends AbstractBusClientServerTestBase {
         client.type("application/json").accept("application/json");
 
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put("rs.security.signature.out.list.properties", "clientKeystore.properties");
+        properties.put("rs.security.signature.out.properties", "clientKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
 
         Number numberToDouble = new Number();

@@ -68,7 +68,7 @@
           <ref bean="jwsInFilter"/>
        </jaxrs:providers>
        <jaxrs:properties>
-            <entry key="rs.security.signature.in.list.properties"  value="serviceKeystore.properties"/>
+            <entry key="rs.security.signature.in.properties"  value="serviceKeystore.properties"/>
        </jaxrs:properties>
    </jaxrs:server>
    

@@ -83,7 +83,7 @@ public class JWEJWSTest extends AbstractBusClientServerTestBase {
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.encryption.properties", "clientEncKeystore.properties");
-        properties.put("rs.security.signature.out.list.properties", "clientKeystore.properties");
+        properties.put("rs.security.signature.out.properties", "clientKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
 
         Number numberToDouble = new Number();
