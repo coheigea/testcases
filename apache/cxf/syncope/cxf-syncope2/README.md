@@ -34,16 +34,3 @@ reads the current Subject's roles from the SecurityContext, and requires that
 a user must have role "boss" to access the "doubleIt" operation ("alice" has
 this role, "bob" does not). 
 
-3) KarafLoginModuleTest
-
-This test does the same as the AuthorizationTest above, except that it uses
-the new SyncopeLoginModule in Apache Karaf instead. The CXF
-JAASAuthenticationFeature is set on the service bus, which selects the "karaf"
-JAAS realm by default. The JAAS configuration file is simply:
-
-karaf {
-    org.apache.karaf.jaas.modules.syncope.SyncopeLoginModule required
-    debug="true"
-    address="http://localhost:${syncope.port}/syncope/cxf";
-};
-

@@ -16,7 +16,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 --><dataset>
-  <SyncopeDomain name="Two" adminCipherAlgorithm="SHA" adminPwd="2AA60A8FF7FCD473D321E0146AFD9E26DF395147"/>  
+  <Realm id="1" name="/"/>
   
   <SyncopeConf id="1" creator="admin" lastModifier="admin" creationDate="2014-06-20 11:00:00" lastChangeDate="2014-06-20 11:00:00"/>
 
@@ -69,6 +69,13 @@ under the License.
   <PlainSchema name="tasks.interruptMaxRetries" type="Long" mandatoryCondition="true" multivalue="0" uniqueConstraint="0" readonly="0"/>
   <CPlainAttr id="12" owner_id="1" schema_name="tasks.interruptMaxRetries"/>
   <CPlainAttrValue id="12" attribute_id="12" longValue="20"/>
+
+  <!-- Return hashed password values when reading users -->
+  <PlainSchema name="return.password.value" type="Boolean"
+               mandatoryCondition="false" multivalue="0" uniqueConstraint="0" readonly="0"/>
+  <CPlainAttr id="14" owner_id="1" schema_name="return.password.value"/>
+  <CPlainAttrValue id="14" attribute_id="14" booleanValue="0"/>
+
 
   <!-- For usage with admin console -->
   <PlainSchema name="admin.user.layout" type="String" mandatoryCondition="false" multivalue="1" uniqueConstraint="0" readonly="0"/>
