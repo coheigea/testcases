@@ -26,6 +26,7 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.syncope.common.lib.to.GroupTO;
 import org.apache.syncope.common.lib.to.MembershipTO;
 import org.apache.syncope.common.lib.to.PagedResult;
+import org.apache.syncope.common.lib.to.ProvisioningResult;
 import org.apache.syncope.common.lib.to.UserTO;
 
 /**
@@ -43,6 +44,7 @@ public class SyncopeDeployer {
             "Basic " + Base64Utility.encode(("admin" + ":" + "password").getBytes());
 
         client.header("Authorization", authorizationHeader);
+        client.accept("application/xml");
 
         // Create the groups first
         client = client.path("groups");
@@ -65,16 +67,14 @@ public class SyncopeDeployer {
             user.setRealm("/");
 
             MembershipTO membership = new MembershipTO();
-            membership.setLeftKey(user.getKey());
             membership.setRightKey(employeeGroup.getKey());
             // membership.setGroupName(employeeGroup.getName());
             user.getMemberships().add(membership);
             membership = new MembershipTO();
             // membership.setGroupName(bossGroup.getName());
-            membership.setLeftKey(user.getKey());
             membership.setRightKey(bossGroup.getKey());
             user.getMemberships().add(membership);
-            client.post(user, UserTO.class);
+            client.post(user, ProvisioningResult.class);
         }
 
         if (!doesUserAlreadyExist("bob", existingUsers.getResult())) {
@@ -84,11 +84,10 @@ public class SyncopeDeployer {
             user.setRealm("/");
 
             MembershipTO membership = new MembershipTO();
-            membership.setLeftKey(user.getKey());
             membership.setRightKey(employeeGroup.getKey());
             // membership.setGroupName(employeeGroup.getName());
             user.getMemberships().add(membership);
-            client.post(user, UserTO.class);
+            client.post(user, ProvisioningResult.class);
         }
     }
 
@@ -107,7 +106,9 @@ public class SyncopeDeployer {
         GroupTO role = new GroupTO();
         role.setName(roleName);
         role.setRealm("/");
-        return client.post(role, GroupTO.class);
+        @SuppressWarnings("unchecked")
+        ProvisioningResult<GroupTO> result = client.post(role, ProvisioningResult.class);
+        return (GroupTO)result.getAny();
     }
 
     private boolean doesUserAlreadyExist(String username, Collection<? extends UserTO> users) {
