@@ -19,9 +19,12 @@
 package org.apache.coheigea.cxf.fediz.service;
 
 import javax.annotation.security.RolesAllowed;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 
 import org.apache.coheigea.cxf.fediz.service.Number;
@@ -38,6 +41,15 @@ public class DoubleItService {
         newNumber.setDescription("This is the double number response");
         newNumber.setNumber(numberToDouble * 2);
         return newNumber;
+    }
+
+    @POST
+    @Produces("application/xml")
+    @Consumes("application/x-www-form-urlencoded")
+    @Path("/{numberToDouble}/")
+    @RolesAllowed({ "User", "Admin", "Manager" })
+    public Number doubleItPost(@PathParam("numberToDouble") int numberToDouble) {
+        return doubleIt(numberToDouble);
     }
     
 }
