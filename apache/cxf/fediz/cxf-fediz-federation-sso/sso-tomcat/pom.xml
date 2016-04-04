@@ -40,12 +40,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.cxf.fediz</groupId>
-            <artifactId>fediz-cxf</artifactId>
-            <version>${fediz.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-testutils</artifactId>
             <version>${cxf.version}</version>
