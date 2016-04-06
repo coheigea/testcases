@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.cxf.systest.ws.common;
+package org.apache.coheigea.cxf.fediz.service;
 
 import java.io.IOException;
 import java.util.HashMap;

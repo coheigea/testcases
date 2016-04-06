@@ -51,23 +51,23 @@
    
    <bean id="serviceBean" class="org.apache.coheigea.cxf.fediz.service.DoubleItService"/>
 
+   <bean id="callbackHandler" class="org.apache.coheigea.cxf.fediz.service.KeystorePasswordCallback"/>
+
    <bean id="stateManager" class="org.apache.cxf.rs.security.saml.sso.state.EHCacheSPStateManager">
         <constructor-arg ref="cxf"/>
     </bean>
 
-    <bean id="ssoRedirectURI" class="org.apache.cxf.rs.security.saml.sso.SamlRedirectBindingFilter">
+    <bean id="ssoFilter" class="org.apache.cxf.rs.security.saml.sso.SamlRedirectBindingFilter">
         <property name="idpServiceAddress" value="https://localhost:${idp.https.port}/fediz-idp/saml"/>
         <property name="assertionConsumerServiceAddress" 
                   value="/racs/sso"/>
         <property name="stateProvider" ref="stateManager"/>
         <property name="addEndpointAddressToContext" value="true"/>
-    </bean>
-
-    <bean id="consumerService" class="org.apache.cxf.rs.security.saml.sso.RequestAssertionConsumerService">
-        <property name="stateProvider" ref="stateManager"/>
+        <property name="signRequest" value="true"/>
         <property name="signaturePropertiesFile" value="stsKeystoreA.properties"/>
-        <!--<property name="enforceKnownIssuer" value="false"/>-->
-        <property name="callbackHandlerClass" value="org.apache.coheigea.cxf.fediz.service.KeystorePasswordCallback" />
+        <property name="callbackHandler" ref="callbackHandler"/>
+        <property name="signatureUsername" value="realma" />
+        <property name="issuerId" value="urn:org:apache:cxf:fediz:fedizhelloworld" />
     </bean>
 
    <bean id="authorizationInterceptor"
@@ -75,16 +75,29 @@
        <property name="securedObject" ref="serviceBean" />
    </bean>
    
-   <jaxrs:server address="/">
+   <jaxrs:server address="/app1">
        <jaxrs:serviceBeans>
             <ref bean="serviceBean"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
-            <ref bean="ssoRedirectURI"/>
+            <ref bean="ssoFilter"/>
        </jaxrs:providers>
        <jaxrs:inInterceptors>
             <ref bean="authorizationInterceptor"/>
        </jaxrs:inInterceptors>
+   </jaxrs:server>
+
+   <bean id="consumerService" class="org.apache.cxf.rs.security.saml.sso.RequestAssertionConsumerService">
+        <property name="stateProvider" ref="stateManager"/>
+        <property name="signaturePropertiesFile" value="stsKeystoreA.properties"/>
+        <!--<property name="enforceKnownIssuer" value="false"/>-->
+        <property name="callbackHandlerClass" value="org.apache.coheigea.cxf.fediz.service.KeystorePasswordCallback" />
+   </bean>
+
+   <jaxrs:server address="/racs">
+       <jaxrs:serviceBeans>
+          <ref bean="consumerService"/>
+       </jaxrs:serviceBeans>
    </jaxrs:server>
    
 </beans>
