@@ -99,6 +99,7 @@
         <property name="lifeTime" value="3600" />
         <property name="passiveRequestorEndpointConstraint" 
                   value="https://localhost:?(\d)*/.*" />
+        <property name="validatingCertificate" value="realma.cert" />
     </bean>
     
     <bean class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationClaimEntity">

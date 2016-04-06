@@ -179,7 +179,7 @@ public class SAMLSSOTest {
     @org.junit.Test
     // @org.junit.Ignore
     public void testInBrowser() throws Exception {
-        String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/services/25";
+        String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/services/25";
         // Use "alice/ecila"
         
         System.out.println("URL: " + url);
