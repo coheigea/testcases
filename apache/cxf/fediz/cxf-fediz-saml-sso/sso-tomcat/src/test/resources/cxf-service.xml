@@ -90,7 +90,7 @@
    <bean id="consumerService" class="org.apache.cxf.rs.security.saml.sso.RequestAssertionConsumerService">
         <property name="stateProvider" ref="stateManager"/>
         <property name="signaturePropertiesFile" value="stsKeystoreA.properties"/>
-        <!--<property name="enforceKnownIssuer" value="false"/>-->
+        <property name="enforceKnownIssuer" value="false"/>
         <property name="callbackHandlerClass" value="org.apache.coheigea.cxf.fediz.service.KeystorePasswordCallback" />
    </bean>
 
