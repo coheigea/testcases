@@ -222,6 +222,25 @@
                         </configuration>            
                   </execution>
                   <execution>
+                        <id>copy-entities-to-idp2</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/tomcat/idp/webapps/fediz-idp/WEB-INF</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>${basedir}/src/test/resources/realma</directory>
+                                    <includes>
+                                        <include>idp-servlet.xml</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                  </execution>
+                  <execution>
                     <id>copy-resources</id>
                     <phase>pre-integration-test</phase>
                     <goals>
