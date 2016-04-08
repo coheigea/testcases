@@ -1,8 +1,8 @@
-cxf-fediz-federation-sso
+cxf-fediz-saml-sso
 ===========
 
-This project shows how to use the new CXF plugin of Apache Fediz 1.2.0 to 
-authenticate and authorize clients of a JAX-RS service using WS-Federation.
+This project shows how to use the SAML SSO interceptors of Apache CXF to
+authenticate and authorize clients of a JAX-RS service.
 It consists of two submodules:
 
 a) double-it:
@@ -13,10 +13,10 @@ a @RolesAllowed annotation, meaning that only a user in roles "User", "Admin",
 or "Manager" can access the service. This is enforced via CXF's
 SecureAnnotationsInterceptor.
 
-In addition, the FedizRedirectBindingFilter of the new CXF plugin in Fediz
-1.2.0 is used to redirect the user to an IdP for authentication, and
-subsequently parse the response + set up a security context. The user can then
-access the service repeatedly without having to re-authenticate.
+In addition, the SamlRedirectBindingFilter is used to redirect the user to an
+IdP for authentication, and subsequently parse the response + set up a
+security context. The user can then access the service repeatedly without
+having to re-authenticate.
 
 b) fediz-sso-tomcat:
 

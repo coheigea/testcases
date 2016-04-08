@@ -26,6 +26,7 @@
 
     <modules>
         <module>cxf-fediz-federation-sso</module>
+        <module>cxf-fediz-saml-sso</module>
     </modules>
 
 </project>

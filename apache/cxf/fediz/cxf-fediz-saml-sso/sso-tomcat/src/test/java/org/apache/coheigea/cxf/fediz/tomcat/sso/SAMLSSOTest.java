@@ -149,7 +149,7 @@ public class SAMLSSOTest {
     }
     
     @org.junit.Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testInBrowser() throws Exception {
         String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/services/25";
         // Use "alice/ecila"
@@ -159,9 +159,9 @@ public class SAMLSSOTest {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testAlice() throws Exception {
-        String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/services/25";
+        String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/services/25";
         String user = "alice";
         String password = "ecila";
         
@@ -188,7 +188,7 @@ public class SAMLSSOTest {
         webClient.getOptions().setJavaScriptEnabled(true);
         Assert.assertEquals("IDP SignIn Response Form", idpPage.getTitleText());
 
-        final HtmlForm form = idpPage.getFormByName("signinresponseform");
+        final HtmlForm form = idpPage.getFormByName("samlsigninresponseform");
         final HtmlSubmitInput button = form.getInputByName("_eventId_submit");
 
         final XmlPage rpPage = button.click();
