@@ -27,7 +27,7 @@
     <modules>
         <module>camel-dns</module>
         <module>camel-geocoder</module>
-        <module>camel-weather</module>
+        <!--<module>camel-weather</module>-->
         <module>camel-pdf</module>
     </modules>
 
