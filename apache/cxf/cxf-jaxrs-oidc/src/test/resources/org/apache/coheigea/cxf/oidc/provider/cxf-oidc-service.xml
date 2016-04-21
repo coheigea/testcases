@@ -65,6 +65,7 @@
                <value>authorization_code</value>
                <value>refresh_token</value>
                <value>implicit</value>
+               <value>Hybrid</value>
            </util:list>
        </property>
        <property name="registeredScopes">
@@ -114,7 +115,7 @@
       <property name="clients" ref="clients"/>
    </bean>
    
-   <bean id="authorizationService" class="org.apache.cxf.rs.security.oauth2.services.AuthorizationCodeGrantService">
+   <bean id="authorizationService" class="org.apache.cxf.rs.security.oidc.idp.OidcAuthorizationCodeService">
       <property name="dataProvider" ref="oauthProvider"/>
    </bean>
    
@@ -122,6 +123,13 @@
       <property name="dataProvider" ref="oauthProvider"/>
       <property name="responseFilter" ref="idTokenFilter"/>
       <property name="idTokenProvider" ref="idTokenProviderImpl"/>
+   </bean>
+   
+   <bean id="hybridService" class="org.apache.cxf.rs.security.oidc.idp.OidcHybridService">
+      <property name="dataProvider" ref="oauthProvider"/>
+      <property name="responseFilter" ref="idTokenFilter"/>
+      <property name="idTokenProvider" ref="idTokenProviderImpl"/>
+      <property name="codeService" ref="authorizationService"/>
    </bean>
    
    <bean id="refreshGrantHandler" class="org.apache.cxf.rs.security.oauth2.grants.refresh.RefreshTokenGrantHandler">
@@ -163,6 +171,7 @@
        <jaxrs:serviceBeans>
            <ref bean="authorizationService"/>
            <ref bean="implicitService"/>
+           <ref bean="hybridService"/>
            <ref bean="tokenService"/>
            <ref bean="tokenValidateService"/>
            <ref bean="oidcKeysService"/>
