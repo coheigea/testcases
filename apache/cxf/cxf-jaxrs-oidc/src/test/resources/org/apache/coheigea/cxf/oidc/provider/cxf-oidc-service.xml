@@ -65,7 +65,7 @@
                <value>authorization_code</value>
                <value>refresh_token</value>
                <value>implicit</value>
-               <value>Hybrid</value>
+               <value>hybrid</value>
            </util:list>
        </property>
        <property name="registeredScopes">
