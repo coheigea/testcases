@@ -18,14 +18,19 @@
 package org.apache.coheigea.bigdata.hdfs;
 
 import java.io.File;
+import java.security.PrivilegedExceptionAction;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.permission.FsAction;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
+import org.apache.hadoop.security.UserGroupInformation;
 
 public class HDFSTest {
     
@@ -40,6 +45,7 @@ public class HDFSTest {
         MiniDFSCluster hdfsCluster = builder.build();
         // String hdfsURI = "hdfs://localhost:"+ hdfsCluster.getNameNodePort() + "/";
         FileSystem fileSystem = hdfsCluster.getFileSystem();
+        final String defaultFs = conf.get("fs.defaultFS");
         
         // Write a file
         final Path file = new Path(new File("target/hdfs/data-file").getAbsolutePath());
@@ -50,11 +56,37 @@ public class HDFSTest {
         }
         out.close();
         
+        // Set permission
+        fileSystem.setPermission(file, new FsPermission(FsAction.READ, FsAction.NONE, FsAction.NONE));
+        // fileSystem.setOwner(file, "bob", null);
+        
         // Read the file
-        FSDataInputStream in = fileSystem.open(file);
+        // FSDataInputStream in = fileSystem.open(file);
         
         // Print it out
-        IOUtils.copy(in, System.out);
+        // IOUtils.copy(in, System.out);
+        
+        // Check status
+        FileStatus status = fileSystem.getFileStatus(file);
+        System.out.println("OWNER: " + status.getOwner());
+        System.out.println("PERM: " + status.getPermission().toString());
+        
+        UserGroupInformation ugi = UserGroupInformation.createRemoteUser("bob");
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                FSDataInputStream in = fs.open(file);
+                
+                // Print it out
+                IOUtils.copy(in, System.out);
+                
+                return null;
+            }
+        });
     }
     
     // TODO teardown, shutdown the cluster. Move the creation above to a setUp
