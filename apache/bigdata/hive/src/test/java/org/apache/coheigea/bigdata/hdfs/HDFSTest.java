@@ -38,14 +38,14 @@ public class HDFSTest {
         conf.set(MiniDFSCluster.HDFS_MINIDFS_BASEDIR, baseDir.getAbsolutePath());
         MiniDFSCluster.Builder builder = new MiniDFSCluster.Builder(conf);
         MiniDFSCluster hdfsCluster = builder.build();
-        String hdfsURI = "hdfs://localhost:"+ hdfsCluster.getNameNodePort() + "/";
+        // String hdfsURI = "hdfs://localhost:"+ hdfsCluster.getNameNodePort() + "/";
         FileSystem fileSystem = hdfsCluster.getFileSystem();
         
         // Write a file
         final Path file = new Path(new File("target/hdfs/data-file").getAbsolutePath());
         FSDataOutputStream out = fileSystem.create(file);
         for (int i = 0; i < 1024; ++i) {
-            out.write(("data" + i).getBytes("UTF-8"));
+            out.write(("data" + i + "\n").getBytes("UTF-8"));
             out.flush();
         }
         out.close();
@@ -57,5 +57,5 @@ public class HDFSTest {
         IOUtils.copy(in, System.out);
     }
     
-    // TODO teardown
+    // TODO teardown, shutdown the cluster. Move the creation above to a setUp
 }
