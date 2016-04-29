@@ -65,7 +65,7 @@ public class HDFSTest {
         FileSystem fileSystem = hdfsCluster.getFileSystem();
         
         // Write a file
-        final Path file = new Path(baseDir.getAbsolutePath() + "/data-file");
+        final Path file = new Path("/tmp/tmpdir/data-file");
         FSDataOutputStream out = fileSystem.create(file);
         for (int i = 0; i < 1024; ++i) {
             out.write(("data" + i + "\n").getBytes("UTF-8"));
@@ -97,7 +97,7 @@ public class HDFSTest {
         FileSystem fileSystem = hdfsCluster.getFileSystem();
         
         // Write a file
-        final Path file = new Path(baseDir.getAbsolutePath() + "/data-file2");
+        final Path file = new Path("/tmp/tmpdir/data-file2");
         FSDataOutputStream out = fileSystem.create(file);
         for (int i = 0; i < 1024; ++i) {
             out.write(("data" + i + "\n").getBytes("UTF-8"));
@@ -167,7 +167,7 @@ public class HDFSTest {
         FileSystem fileSystem = hdfsCluster.getFileSystem();
         
         // Write a file
-        final Path file = new Path(baseDir.getAbsolutePath() + "/data-file3");
+        final Path file = new Path("/tmp/tmpdir/data-file3");
         FSDataOutputStream out = fileSystem.create(file);
         for (int i = 0; i < 1024; ++i) {
             out.write(("data" + i + "\n").getBytes("UTF-8"));
@@ -209,7 +209,7 @@ public class HDFSTest {
         FileSystem fileSystem = hdfsCluster.getFileSystem();
         
         // Write a file
-        final Path file = new Path(baseDir.getAbsolutePath() + "/data-file4");
+        final Path file = new Path("/tmp/tmpdir/data-file4");
         FSDataOutputStream out = fileSystem.create(file);
         for (int i = 0; i < 1024; ++i) {
             out.write(("data" + i + "\n").getBytes("UTF-8"));
