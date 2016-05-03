@@ -27,6 +27,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Form;
@@ -34,19 +35,21 @@ import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.oidc.provider.OIDCProviderServer;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
+import org.apache.cxf.jaxrs.provider.json.JsonMapObjectProvider;
+import org.apache.cxf.rs.security.jose.jaxrs.JsonWebKeysProvider;
 import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
 import org.apache.cxf.rs.security.jose.jws.JwsJwtCompactConsumer;
 import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
 import org.apache.cxf.rs.security.jose.jwt.JwtToken;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
+import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.rs.security.oidc.common.IdToken;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.wss4j.common.util.Loader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Some unit tests to test the authorization code flow in OpenID Connect.
@@ -68,11 +71,8 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
     public void testAuthorizationCodeFlow() throws Exception {
         URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -82,7 +82,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -101,11 +101,8 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
     public void testAuthorizationCodeOAuth() throws Exception {
         URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -115,7 +112,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -132,11 +129,8 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
     public void testAuthorizationCodeFlowWithNonce() throws Exception {
         URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -146,7 +140,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -164,11 +158,8 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
     public void testAuthorizationCodeFlowWithScope() throws Exception {
         URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -178,7 +169,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -197,11 +188,8 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
     public void testAuthorizationCodeFlowWithRefresh() throws Exception {
         URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -211,7 +199,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -246,11 +234,8 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
     public void testAuthorizationCodeFlowWithState() throws Exception {
         URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -260,7 +245,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -278,11 +263,8 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
     public void testAuthorizationCodeFlowWithAudience() throws Exception {
         URL busFile = AuthorizationCodeFlowTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -292,7 +274,7 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id-aud", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id-aud", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -411,5 +393,18 @@ public class AuthorizationCodeFlowTest extends AbstractBusClientServerTestBase {
         
         Assert.assertTrue(jwtConsumer.verifySignatureWith((X509Certificate)cert, 
                                                           SignatureAlgorithm.RS256));
+    }
+    
+    private static List<Object> setupProviders() {
+        List<Object> providers = new ArrayList<Object>();
+        JSONProvider<OAuthAuthorizationData> jsonP = new JSONProvider<OAuthAuthorizationData>();
+        jsonP.setNamespaceMap(Collections.singletonMap("http://org.apache.cxf.rs.security.oauth",
+                                                       "ns2"));
+        providers.add(jsonP);
+        providers.add(new OAuthJSONProvider());
+        providers.add(new JsonWebKeysProvider());
+        providers.add(new JsonMapObjectProvider());
+        
+        return providers;
     }
 }

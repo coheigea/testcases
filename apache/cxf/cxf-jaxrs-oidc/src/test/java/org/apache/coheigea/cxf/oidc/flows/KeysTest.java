@@ -20,6 +20,7 @@ package org.apache.coheigea.cxf.oidc.flows;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Form;
@@ -27,17 +28,18 @@ import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.oidc.provider.OIDCProviderServer;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
+import org.apache.cxf.jaxrs.provider.json.JsonMapObjectProvider;
 import org.apache.cxf.rs.security.jose.jaxrs.JsonWebKeysProvider;
 import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
 import org.apache.cxf.rs.security.jose.jwk.JsonWebKeys;
 import org.apache.cxf.rs.security.jose.jws.JwsJwtCompactConsumer;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
+import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Test the OIDC Keys Service + test verifying the signature of an IdToken by retrieving a key from the KeyService
@@ -60,11 +62,8 @@ public class KeysTest extends AbstractBusClientServerTestBase {
     public void testGetKeys() throws Exception {
         URL busFile = KeysTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JsonWebKeysProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         client.accept("application/json");
         
         client.path("keys/");
@@ -78,11 +77,8 @@ public class KeysTest extends AbstractBusClientServerTestBase {
     public void testAuthorizationCodeFlowWithKey() throws Exception {
         URL busFile = KeysTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -92,7 +88,7 @@ public class KeysTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -107,10 +103,7 @@ public class KeysTest extends AbstractBusClientServerTestBase {
         JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(idToken);
         
         // Now get the key to validate the token
-        List<Object> jsonKeyProviders = new ArrayList<Object>();
-        jsonKeyProviders.add(new JsonWebKeysProvider());
-        
-        client = WebClient.create(address, jsonKeyProviders, "alice", "security", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         client.accept("application/json");
         
         client.path("keys/");
@@ -205,5 +198,18 @@ public class KeysTest extends AbstractBusClientServerTestBase {
             ampersandIndex = foundString.length();
         }
         return foundString.substring(0, ampersandIndex);
+    }
+    
+    private static List<Object> setupProviders() {
+        List<Object> providers = new ArrayList<Object>();
+        JSONProvider<OAuthAuthorizationData> jsonP = new JSONProvider<OAuthAuthorizationData>();
+        jsonP.setNamespaceMap(Collections.singletonMap("http://org.apache.cxf.rs.security.oauth",
+                                                       "ns2"));
+        providers.add(jsonP);
+        providers.add(new OAuthJSONProvider());
+        providers.add(new JsonWebKeysProvider());
+        providers.add(new JsonMapObjectProvider());
+        
+        return providers;
     }
 }
