@@ -32,7 +32,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.oidc.provider.OIDCProviderServer;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 import org.apache.cxf.jaxrs.provider.json.JsonMapObjectProvider;
+import org.apache.cxf.rs.security.jose.jaxrs.JsonWebKeysProvider;
 import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
 import org.apache.cxf.rs.security.jose.jwe.JweJwtCompactConsumer;
 import org.apache.cxf.rs.security.jose.jws.JwsJwtCompactConsumer;
@@ -40,13 +42,12 @@ import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
 import org.apache.cxf.rs.security.jose.jwt.JwtToken;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
+import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.rs.security.oidc.common.UserInfo;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.wss4j.common.util.Loader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Some unit tests for the UserInfo Service in OpenId Connect. This can be used to return the User's claims given
@@ -77,11 +78,8 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
     public void testPlainUserInfo() throws Exception {
         URL busFile = UserInfoTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -91,7 +89,7 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -121,11 +119,8 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
     public void testSignedUserInfo() throws Exception {
         URL busFile = UserInfoTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -135,7 +130,7 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -176,11 +171,8 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
     public void testEncryptedUserInfo() throws Exception {
         URL busFile = UserInfoTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -190,7 +182,7 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        client = WebClient.create(address, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -307,6 +299,19 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
             ampersandIndex = foundString.length();
         }
         return foundString.substring(0, ampersandIndex);
+    }
+    
+    private static List<Object> setupProviders() {
+        List<Object> providers = new ArrayList<Object>();
+        JSONProvider<OAuthAuthorizationData> jsonP = new JSONProvider<OAuthAuthorizationData>();
+        jsonP.setNamespaceMap(Collections.singletonMap("http://org.apache.cxf.rs.security.oauth",
+                                                       "ns2"));
+        providers.add(jsonP);
+        providers.add(new OAuthJSONProvider());
+        providers.add(new JsonWebKeysProvider());
+        providers.add(new JsonMapObjectProvider());
+        
+        return providers;
     }
     
 }

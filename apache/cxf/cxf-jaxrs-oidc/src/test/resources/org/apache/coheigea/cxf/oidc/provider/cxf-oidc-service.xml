@@ -49,7 +49,16 @@
         <cxf:features>
             <cxf:logging/>
         </cxf:features>
-   </cxf:bus>
+        <cxf:properties>
+          <entry key="org.apache.cxf.jaxrs.bus.providers" value-ref="busProviders"/>
+        </cxf:properties>
+    </cxf:bus>
+    <!-- providers -->
+    <util:list id="busProviders">
+        <ref bean="oauthJson"/>
+    </util:list>
+    <bean id="oauthJson" class="org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider"/>
+
    
    <bean id="client" class="org.apache.cxf.rs.security.oauth2.common.Client">
        <constructor-arg><value>consumer-id</value></constructor-arg>
@@ -161,8 +170,6 @@
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
    
-   <bean id="jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-   
    <bean id="oidcKeysService" class="org.apache.cxf.rs.security.oidc.idp.OidcKeysService"/>
    
    <jaxrs:server 
@@ -177,7 +184,6 @@
            <ref bean="oidcKeysService"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
-           <ref bean="jackson"/>
            <ref bean="basicAuthFilter"/>
            <bean class="org.apache.cxf.rs.security.jose.jaxrs.JsonWebKeysProvider"/>
        </jaxrs:providers>
@@ -205,7 +211,6 @@
            <ref bean="jwtAuthorizationService"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
-           <ref bean="jackson"/>
            <ref bean="basicAuthFilter"/>
        </jaxrs:providers>
        <jaxrs:properties>
