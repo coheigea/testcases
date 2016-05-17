@@ -24,13 +24,11 @@
 			http://www.springframework.org/schema/security
 			http://www.springframework.org/schema/security/spring-security.xsd">
 
+    <bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter"/>
+
     <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <constructor-arg ref="roleVoter"/>
         <property name="allowIfAllAbstainDecisions" value="true"/>
-        <property name="decisionVoters">
-            <list>
-                <bean class="org.springframework.security.access.vote.RoleVoter"/>
-            </list>
-        </property>
     </bean>
     
     <spring-security:authentication-manager alias="authenticationManager">

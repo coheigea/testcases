@@ -32,7 +32,7 @@
    </parent>
 
    <properties>
-        <spring.security.version>3.1.4.RELEASE</spring.security.version>
+        <spring.security.version>4.1.0.RELEASE</spring.security.version>
    </properties>
 
    <dependencies>
