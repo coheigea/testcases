@@ -32,6 +32,7 @@
     </parent>
     <properties>
         <hadoop.version>2.7.2</hadoop.version>
+        <ranger.version>0.6.0-SNAPSHOT</ranger.version>
     </properties>
     <dependencies>
         <dependency>
@@ -56,6 +57,12 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-minicluster</artifactId>
             <version>${hadoop.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ranger</groupId>
+            <artifactId>ranger-hdfs-plugin</artifactId>
+            <version>${ranger.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
