@@ -32,7 +32,7 @@
    </parent>
 
    <properties>
-       <jmh.version>1.10.3</jmh.version>
+       <jmh.version>1.12</jmh.version>
    </properties>
 
    <dependencies>
