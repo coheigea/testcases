@@ -64,7 +64,7 @@ public class EncryptionAlgorithmBenchmark {
     @Fork(1)
     @Warmup(iterations = 5)
     public void encryptionRSAOAEP() throws Exception {
-        doEncryption(WSConstants.KEYTRANSPORT_RSAOEP, serviceCrypto);
+        doEncryption(WSConstants.KEYTRANSPORT_RSAOAEP, serviceCrypto);
     }
     
     @Benchmark
