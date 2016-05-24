@@ -18,8 +18,10 @@
  */
 package org.apache.coheigea.cxf.jmh.benchmark.wssec;
 
+import java.io.StringReader;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.cxf.staxutils.StaxUtils;
 import org.apache.cxf.ws.security.wss4j.StaxSerializer;
 import org.apache.wss4j.common.crypto.Crypto;
 import org.apache.wss4j.common.crypto.CryptoFactory;
@@ -37,6 +39,7 @@ import org.junit.Assert;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Warmup;
@@ -65,6 +68,7 @@ public class EncryptionSerializerBenchmark {
     @Benchmark
     @Fork(1)
     @Warmup(iterations = 5)
+    @Measurement(iterations = 20)
     public void encryptionDefaultSerializer() throws Exception {
         doEncryption(null);
     }
@@ -72,6 +76,7 @@ public class EncryptionSerializerBenchmark {
     @Benchmark
     @Fork(1)
     @Warmup(iterations = 5)
+    @Measurement(iterations = 20)
     public void encryptionStaxSerializer() throws Exception {
         doEncryption(new StaxSerializer());
     }
@@ -79,6 +84,7 @@ public class EncryptionSerializerBenchmark {
     @Benchmark
     @Fork(1)
     @Warmup(iterations = 5)
+    @Measurement(iterations = 20)
     public void decryptionDefaultSerializer() throws Exception {
         Document encryptedDoc = doEncryption(null);
         doDecryption(encryptedDoc, null);
@@ -87,9 +93,10 @@ public class EncryptionSerializerBenchmark {
     @Benchmark
     @Fork(1)
     @Warmup(iterations = 5)
+    @Measurement(iterations = 20)
     public void decryptionStaxSerializer() throws Exception {
         Serializer serializer = new StaxSerializer();
-        Document encryptedDoc = doEncryption(serializer);
+        Document encryptedDoc = doEncryption(null);
         doDecryption(encryptedDoc, serializer);
     }
     
@@ -98,7 +105,7 @@ public class EncryptionSerializerBenchmark {
         builder.setUserInfo("myservicekey", "skpass");
         builder.setKeyIdentifierType(WSConstants.ISSUER_SERIAL);
         builder.setEncryptionSerializer(serializer);
-        Document doc = SOAPUtil.toSOAPPart(SOAPUtil.SAMPLE_SOAP_MSG);
+        Document doc = StaxUtils.read(new StringReader(SOAPUtil.SAMPLE_SOAP_MSG));
         WSSecHeader secHeader = new WSSecHeader(doc);
         secHeader.insertSecurityHeader();
         return builder.build(doc, serviceCrypto, secHeader);
@@ -110,6 +117,8 @@ public class EncryptionSerializerBenchmark {
         RequestData data = new RequestData();
         data.setWssConfig(WSSConfig.getNewInstance());
         data.setDecCrypto(serviceCrypto);
+        data.setEnableNonceReplayCache(false);
+        data.setEnableSamlOneTimeUseReplayCache(false);
         data.setEnableTimestampReplayCache(false);
         data.setCallbackHandler(new CommonCallbackHandler());
         data.setEncryptionSerializer(serializer);
