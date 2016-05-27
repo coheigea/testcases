@@ -41,7 +41,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 
 /**
- * A test for SAML SSO using the CXF plugin (deployed in Tomcat).
+ * A test for SAML SSO using the CXF SAML SSO interceptors (deployed in Tomcat).
  */
 public class SAMLSSOTest {
 
