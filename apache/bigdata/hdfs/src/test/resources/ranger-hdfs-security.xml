@@ -27,7 +27,7 @@
 
 	<property>
 		<name>ranger.plugin.hdfs.service.name</name>
-		<value>Sandbox_hadoop</value>
+		<value>HDFSTest</value>
 		<description>
 			Name of the Ranger service containing policies for this SampleApp instance
 		</description>
@@ -59,7 +59,7 @@
 
 	<property>
 		<name>ranger.plugin.hdfs.policy.cache.dir</name>
-		<value>/tmp</value>
+		<value>${project.build.directory}</value>
 		<description>
 			Directory where Ranger policies are cached after successful retrieval from the source
 		</description>

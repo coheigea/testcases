@@ -92,6 +92,7 @@ public class HDFSAccessControlEnforcerTest {
                 String content = new String(output.toByteArray());
                 Assert.assertTrue(content.startsWith("data0"));
                 
+                fs.close();
                 return null;
             }
         });
@@ -114,6 +115,7 @@ public class HDFSAccessControlEnforcerTest {
                     // expected
                 }
                 
+                fs.close();
                 return null;
             }
         });
@@ -141,6 +143,7 @@ public class HDFSAccessControlEnforcerTest {
                     // expected
                 }
                 
+                fs.close();
                 return null;
             }
         });
