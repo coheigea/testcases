@@ -29,17 +29,23 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsAction;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
-import org.apache.hadoop.hdfs.server.namenode.INode;
-import org.apache.hadoop.hdfs.server.namenode.INodeAttributeProvider;
-import org.apache.hadoop.hdfs.server.namenode.INodeAttributes;
-import org.apache.hadoop.security.AccessControlException;
+import org.apache.hadoop.ipc.RemoteException;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.ranger.authorization.hadoop.RangerHdfsAuthorizer;
+import org.apache.ranger.authorization.hadoop.exceptions.RangerAccessControlException;
 import org.junit.Assert;
 
 /**
- * Here we plug the Ranger AccessControlEnforcer into HDFS.
+ * Here we plug the Ranger AccessControlEnforcer into HDFS. The "HDFSTest" service in the Ranger Admin defines a policy called "TmpdirRead",
+ * which grants read access to all (recursive) content in /tmp/tmpdir for the group "IT" and for the user "bob". The users "alice", "bob"
+ * and "dave" already exist in the RangerAdmin UI. In addition, there is a policy called "Tmpdir2Write" which grants write access to content
+ * in /tmp/tmpdir2 for the group "IT" and for the user "bob".
+ * 
+ * Policies available from admin via:
+ * 
+ * http://localhost:6080/service/plugins/policies/download/HDFSTest
  */
 public class HDFSRangerTest {
     
@@ -64,7 +70,8 @@ public class HDFSRangerTest {
     }
     
     @org.junit.Test
-    public void customPermissionsTest() throws Exception {
+    @org.junit.Ignore
+    public void readTest() throws Exception {
         FileSystem fileSystem = hdfsCluster.getFileSystem();
         
         // Write a file - the AccessControlEnforcer won't be invoked as we are the "superuser"
@@ -76,9 +83,11 @@ public class HDFSRangerTest {
         }
         out.close();
         
-        /*
-        // Now try to read the file as "bob" - this should be allowed
-        UserGroupInformation ugi = UserGroupInformation.createRemoteUser("bob");
+        // Change permissions to read-only
+        fileSystem.setPermission(file, new FsPermission(FsAction.READ, FsAction.NONE, FsAction.NONE));
+        
+        // Now try to read the file as "bob" - this should be allowed (by the policy - user)
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("bob", new String[] {});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
 
             public Void run() throws Exception {
@@ -94,12 +103,35 @@ public class HDFSRangerTest {
                 String content = new String(output.toByteArray());
                 Assert.assertTrue(content.startsWith("data0"));
                 
+                fs.close();
                 return null;
             }
         });
         
-        // Now try to read the file as "eve" - this should not be allowed
-        ugi = UserGroupInformation.createRemoteUser("eve");
+        // Now try to read the file as "alice" - this should be allowed (by the policy - group)
+        ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                
+                // Read the file
+                FSDataInputStream in = fs.open(file);
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                IOUtils.copy(in, output);
+                String content = new String(output.toByteArray());
+                Assert.assertTrue(content.startsWith("data0"));
+                
+                fs.close();
+                return null;
+            }
+        });
+        
+        // Now try to read the file as unknown user "eve" - this should not be allowed
+        ugi = UserGroupInformation.createUserForTesting("eve", new String[] {});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
 
             public Void run() throws Exception {
@@ -112,21 +144,93 @@ public class HDFSRangerTest {
                 try {
                     fs.open(file);
                     Assert.fail("Failure expected on an incorrect permission");
-                } catch (AccessControlException ex) {
+                } catch (RemoteException ex) {
                     // expected
+                    Assert.assertTrue(RangerAccessControlException.class.getName().equals(ex.getClassName()));
                 }
                 
+                fs.close();
+                return null;
+            }
+        });
+
+        // Now try to read the file as known user "dave" - this should not be allowed, as he doesn't have the correct permissions
+        ugi = UserGroupInformation.createUserForTesting("dave", new String[] {});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                
+                // Read the file
+                try {
+                    fs.open(file);
+                    Assert.fail("Failure expected on an incorrect permission");
+                } catch (RemoteException ex) {
+                    // expected
+                    Assert.assertTrue(RangerAccessControlException.class.getName().equals(ex.getClassName()));
+                }
+                
+                fs.close();
+                return null;
+            }
+        });
+    }
+    
+    @org.junit.Test
+    public void writeTest() throws Exception {
+        
+        FileSystem fileSystem = hdfsCluster.getFileSystem();
+        
+        // Write a file - the AccessControlEnforcer won't be invoked as we are the "superuser"
+        final Path file = new Path("/tmp/tmpdir2/data-file3");
+        FSDataOutputStream out = fileSystem.create(file);
+        for (int i = 0; i < 1024; ++i) {
+            out.write(("data" + i + "\n").getBytes("UTF-8"));
+            out.flush();
+        }
+        out.close();
+        
+        // Now try to write to the file as "bob" - this should be allowed (by the policy - user)
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("bob", new String[] {});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                
+                // Write to the file
+                fs.append(file);
+                
+                fs.close();
                 return null;
             }
         });
         
-        // Write to the file as the owner, this should be allowed
-        out = fileSystem.append(file);
-        out.write(("new data\n").getBytes("UTF-8"));
-        out.flush();
-        out.close();
+        // Now try to write to the file as "alice" - this should be allowed (by the policy - group)
+        ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                
+                // Write to the file
+                fs.append(file);
+                
+                fs.close();
+                return null;
+            }
+        });
         
-        // Now try to write to the file as "bob" - this should not be allowed
+        // Now try to read the file as unknown user "eve" - this should not be allowed
+        ugi = UserGroupInformation.createUserForTesting("eve", new String[] {});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
 
             public Void run() throws Exception {
@@ -139,14 +243,39 @@ public class HDFSRangerTest {
                 try {
                     fs.append(file);
                     Assert.fail("Failure expected on an incorrect permission");
-                } catch (AccessControlException ex) {
+                } catch (RemoteException ex) {
                     // expected
+                    Assert.assertTrue(RangerAccessControlException.class.getName().equals(ex.getClassName()));
                 }
                 
+                fs.close();
                 return null;
             }
         });
-        */
+        
+        // Now try to read the file as known user "dave" - this should not be allowed, as he doesn't have the correct permissions
+        ugi = UserGroupInformation.createUserForTesting("dave", new String[] {});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                
+                // Write to the file
+                try {
+                    fs.append(file);
+                    Assert.fail("Failure expected on an incorrect permission");
+                } catch (RemoteException ex) {
+                    // expected
+                    Assert.assertTrue(RangerAccessControlException.class.getName().equals(ex.getClassName()));
+                }
+                
+                fs.close();
+                return null;
+            }
+        });
     }
  
     

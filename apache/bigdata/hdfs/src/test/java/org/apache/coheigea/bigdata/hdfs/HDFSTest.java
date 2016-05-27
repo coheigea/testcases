@@ -130,6 +130,7 @@ public class HDFSTest {
                 String content = new String(output.toByteArray());
                 Assert.assertTrue(content.startsWith("data0"));
                 
+                fs.close();
                 return null;
             }
         });
@@ -157,6 +158,7 @@ public class HDFSTest {
                     // expected
                 }
                 
+                fs.close();
                 return null;
             }
         });
@@ -198,6 +200,7 @@ public class HDFSTest {
                     // expected
                 } 
                 
+                fs.close();
                 return null;
             }
         });
@@ -230,6 +233,7 @@ public class HDFSTest {
                 RemoteIterator<LocatedFileStatus> iter = fs.listFiles(file.getParent(), false);
                 Assert.assertTrue(iter.hasNext());
                 
+                fs.close();
                 return null;
             }
         });
@@ -258,6 +262,7 @@ public class HDFSTest {
                     // expected
                 } 
                 
+                fs.close();
                 return null;
             }
         });
