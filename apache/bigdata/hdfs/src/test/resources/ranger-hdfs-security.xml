@@ -38,18 +38,10 @@
         <value>org.apache.coheigea.bigdata.hdfs.ranger.RangerAdminClientImpl</value>
         <!-- <value>org.apache.ranger.admin.client.RangerAdminRESTClient</value> -->
         <description>
-            Policy source. Comment this property out to use the default RangerAdminRESTClient.
+            Policy source.
         </description>
     </property>
     
-    <property>
-        <name>ranger.plugin.hdfs.policy.source.impl</name>
-        <value>org.apache.ranger.admin.client.RangerAdminRESTClient</value>
-        <description>
-            Class to retrieve policies from the source
-        </description>
-    </property>
-
 	<property>
 		<name>ranger.plugin.hdfs.policy.rest.ssl.config.file</name>
 		<value>ranger-policymgr-ssl.xml</value>
