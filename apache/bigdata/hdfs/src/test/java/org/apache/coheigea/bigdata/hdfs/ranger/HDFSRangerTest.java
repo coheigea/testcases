@@ -40,11 +40,11 @@ import org.apache.ranger.authorization.hadoop.exceptions.RangerAccessControlExce
 import org.junit.Assert;
 
 /**
- * Here we plug the Ranger AccessControlEnforcer into HDFS. The "HDFSTest" service in the Ranger Admin defines a policy called "TmpdirRead",
- * which grants read access to all (recursive) content in /tmp/tmpdir for the group "IT" and for the user "bob". The users "alice", "bob"
- * and "dave" already exist in the RangerAdmin UI. In addition, there is a policy called "TmpdirWrite" which grants write access to content
- * in /tmp/tmpdir2 for the group "IT" and for the user "bob". Similarly, there is a policy called "TmpdirExecute" which grants execute
- * access to content in /tmp/tmpdir3 for the group "IT" and the user "bob".
+ * Here we plug the Ranger AccessControlEnforcer into HDFS. 
+ * 
+ * A custom RangerAdminClient is plugged into Ranger in turn, which loads security policies from a local file. These policies were 
+ * generated in the Ranger Admin UI for a service called "HDFSTest". It contains three policies, each of which grants read, write and
+ * execute permissions in turn to "/tmp/tmpdir", "/tmp/tmpdir2" and "/tmp/tmpdir3" to a user called "bob" and to a group called "IT".
  * 
  * Policies available from admin via:
  * 
