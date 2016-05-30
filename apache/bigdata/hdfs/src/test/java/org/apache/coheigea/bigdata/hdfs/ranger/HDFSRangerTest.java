@@ -27,7 +27,9 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
+import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
@@ -40,8 +42,9 @@ import org.junit.Assert;
 /**
  * Here we plug the Ranger AccessControlEnforcer into HDFS. The "HDFSTest" service in the Ranger Admin defines a policy called "TmpdirRead",
  * which grants read access to all (recursive) content in /tmp/tmpdir for the group "IT" and for the user "bob". The users "alice", "bob"
- * and "dave" already exist in the RangerAdmin UI. In addition, there is a policy called "Tmpdir2Write" which grants write access to content
- * in /tmp/tmpdir2 for the group "IT" and for the user "bob".
+ * and "dave" already exist in the RangerAdmin UI. In addition, there is a policy called "TmpdirWrite" which grants write access to content
+ * in /tmp/tmpdir2 for the group "IT" and for the user "bob". Similarly, there is a policy called "TmpdirExecute" which grants execute
+ * access to content in /tmp/tmpdir3 for the group "IT" and the user "bob".
  * 
  * Policies available from admin via:
  * 
@@ -70,7 +73,6 @@ public class HDFSRangerTest {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void readTest() throws Exception {
         FileSystem fileSystem = hdfsCluster.getFileSystem();
         
@@ -278,5 +280,111 @@ public class HDFSRangerTest {
         });
     }
  
+    @org.junit.Test
+    public void executeTest() throws Exception {
+        FileSystem fileSystem = hdfsCluster.getFileSystem();
+        
+        // Write a file - the AccessControlEnforcer won't be invoked as we are the "superuser"
+        final Path file = new Path("/tmp/tmpdir3/data-file2");
+        FSDataOutputStream out = fileSystem.create(file);
+        for (int i = 0; i < 1024; ++i) {
+            out.write(("data" + i + "\n").getBytes("UTF-8"));
+            out.flush();
+        }
+        out.close();
+        
+        // Change permissions to read-only
+        fileSystem.setPermission(file, new FsPermission(FsAction.READ, FsAction.NONE, FsAction.NONE));
+        
+        // Change the parent directory permissions to be execute only for the owner
+        Path parentDir = new Path("/tmp/tmpdir3");
+        fileSystem.setPermission(parentDir, new FsPermission(FsAction.EXECUTE, FsAction.NONE, FsAction.NONE));
+        
+        // Try to read the directory as "bob" - this should be allowed (by the policy - user)
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("bob", new String[] {});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                
+                RemoteIterator<LocatedFileStatus> iter = fs.listFiles(file.getParent(), false);
+                Assert.assertTrue(iter.hasNext());
+                
+                fs.close();
+                return null;
+            }
+        });
+        
+        // Try to read the directory as "alice" - this should be allowed (by the policy - group)
+        ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                
+                RemoteIterator<LocatedFileStatus> iter = fs.listFiles(file.getParent(), false);
+                Assert.assertTrue(iter.hasNext());
+                
+                fs.close();
+                return null;
+            }
+        });
+        
+        // Now try to read the directory as unknown user "eve" - this should not be allowed
+        ugi = UserGroupInformation.createUserForTesting("eve", new String[] {});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                
+                // Write to the file
+                try {
+                    RemoteIterator<LocatedFileStatus> iter = fs.listFiles(file.getParent(), false);
+                    Assert.assertTrue(iter.hasNext());
+                    Assert.fail("Failure expected on an incorrect permission");
+                } catch (RemoteException ex) {
+                    // expected
+                    Assert.assertTrue(RangerAccessControlException.class.getName().equals(ex.getClassName()));
+                }
+                
+                fs.close();
+                return null;
+            }
+        });
+        
+        // Now try to read the directory as known user "dave" - this should not be allowed, as he doesn't have the correct permissions
+        ugi = UserGroupInformation.createUserForTesting("dave", new String[] {});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                Configuration conf = new Configuration();
+                conf.set("fs.defaultFS", defaultFs);
+                
+                FileSystem fs = FileSystem.get(conf);
+                
+                // Write to the file
+                try {
+                    RemoteIterator<LocatedFileStatus> iter = fs.listFiles(file.getParent(), false);
+                    Assert.assertTrue(iter.hasNext());
+                    Assert.fail("Failure expected on an incorrect permission");
+                } catch (RemoteException ex) {
+                    // expected
+                    Assert.assertTrue(RangerAccessControlException.class.getName().equals(ex.getClassName()));
+                }
+                
+                fs.close();
+                return null;
+            }
+        });
+    }
     
 }
