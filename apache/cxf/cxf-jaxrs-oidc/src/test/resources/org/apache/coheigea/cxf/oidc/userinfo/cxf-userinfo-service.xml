@@ -51,8 +51,6 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-    
    <bean id="tvServiceClientFactory" class="org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean">
          <property name="address" value="https://localhost:${testutil.ports.OIDCProviderServer}/services/validate"/>
          <property name="headers">
@@ -60,11 +58,6 @@
                <entry key="Accept" value="application/json"/>
                <entry key="Content-Type" value="application/x-www-form-urlencoded"/>
             </map>
-         </property>
-         <property name="providers">
-             <list>
-                 <ref bean="jackson"/>
-             </list>
          </property>
          <property name="username" value="service"/>
          <property name="password" value="service-pass"/>

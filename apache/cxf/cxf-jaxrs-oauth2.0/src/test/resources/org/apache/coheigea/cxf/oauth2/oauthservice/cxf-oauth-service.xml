@@ -49,7 +49,15 @@
         <cxf:features>
             <cxf:logging/>
         </cxf:features>
-   </cxf:bus>
+        <cxf:properties>
+          <entry key="org.apache.cxf.jaxrs.bus.providers" value-ref="busProviders"/>
+        </cxf:properties>
+    </cxf:bus>
+    <!-- providers -->
+    <util:list id="busProviders">
+        <ref bean="oauthJson"/>
+    </util:list>
+    <bean id="oauthJson" class="org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider"/>
    
    <bean id="client" class="org.apache.cxf.rs.security.oauth2.common.Client">
        <constructor-arg><value>consumer-id</value></constructor-arg>
@@ -161,13 +169,15 @@
    <bean id="tokenValidateService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenValidatorService">
        <property name="dataProvider" ref="oauthProvider"/>
    </bean>
+   
+   <bean id="tokenIntrospectionService" class="org.apache.cxf.rs.security.oauth2.services.TokenIntrospectionService">
+       <property name="dataProvider" ref="oauthProvider"/>
+   </bean>
     
    <bean id="callbackHandler" class="org.apache.coheigea.cxf.oauth2.common.ServiceCallbackHandler"/>
    <bean id="basicAuthFilter" class="org.apache.coheigea.cxf.oauth2.common.WSS4JBasicAuthFilter">
        <property name="callbackHandler" ref="callbackHandler"/>
    </bean>
-   
-   <bean id="jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
    
    <jaxrs:server 
        depends-on="OAuthServerTLS" 
@@ -177,9 +187,9 @@
            <ref bean="implicitService"/>
            <ref bean="tokenService"/>
            <ref bean="tokenValidateService"/>
+           <ref bean="tokenIntrospectionService"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
-           <ref bean="jackson"/>
            <ref bean="basicAuthFilter"/>
        </jaxrs:providers>
        <jaxrs:properties>
@@ -202,7 +212,6 @@
        </jaxrs:serviceBeans>
        <jaxrs:providers>
            <ref bean="samlAuthHandler"/>
-           <ref bean="jackson"/>
        </jaxrs:providers>
        <jaxrs:properties>
            <entry key="security.signature.properties" value="serviceKeystore.properties"/>
@@ -219,7 +228,6 @@
        </jaxrs:serviceBeans>
        <jaxrs:providers>
            <ref bean="jwtAuthHandler"/>
-           <ref bean="jackson"/>
        </jaxrs:providers>
        <jaxrs:properties>
            <entry key="rs.security.keystore.type" value="jks" />

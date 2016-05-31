@@ -32,14 +32,15 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
+import org.apache.cxf.rs.security.oauth2.common.TokenIntrospection;
 import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
 /**
- * Some unit tests to test different authorization grants in OAuth 2.0.
+ * Some unit tests for the token introspection service in CXF.
  */
-public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
+public class IntrospectionServiceTest extends AbstractBusClientServerTestBase {
     
     public static final String BANK_PORT = allocatePort(BankServer.class);
     static final String PORT = allocatePort(OAuthServer.class);
@@ -55,8 +56,8 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
     }
     
     @org.junit.Test
-    public void testAuthorizationCodeGrant() throws Exception {
-        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
+    public void testTokenIntrospection() throws Exception {
+        URL busFile = IntrospectionServiceTest.class.getResource("cxf-client.xml");
         
         String address = "https://localhost:" + PORT + "/services/";
         WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
@@ -76,113 +77,26 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         
         ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
         assertNotNull(accessToken.getTokenKey());
-    }
-    
-    @org.junit.Test
-    public void testAuthorizationCodeGrantRefresh() throws Exception {
-        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
         
-        String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
-        // Save the Cookie for the second request...
-        WebClient.getConfig(client).getRequestContext().put(
-            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        
-        // Get Authorization Code
-        String code = getAuthorizationCode(client);
-        assertNotNull(code);
-        
-        // Now get the access token
+        // Now query the token introspection service
         client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
-        // Save the Cookie for the second request...
-        WebClient.getConfig(client).getRequestContext().put(
-            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        
-        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
-        assertNotNull(accessToken.getTokenKey());
-        assertNotNull(accessToken.getRefreshToken());
-        
-        // Refresh the access token
-        client.type("application/x-www-form-urlencoded").accept("application/json");
-        
+        client.accept("application/json").type("application/x-www-form-urlencoded");
         Form form = new Form();
-        form.param("grant_type", "refresh_token");
-        form.param("refresh_token", accessToken.getRefreshToken());
-        form.param("client_id", "consumer-id");
+        form.param("token", accessToken.getTokenKey());
+        client.path("introspect/");
         Response response = client.post(form);
         
-        accessToken = response.readEntity(ClientAccessToken.class);
-        assertNotNull(accessToken.getTokenKey());
-        assertNotNull(accessToken.getRefreshToken());
+        TokenIntrospection tokenIntrospection = response.readEntity(TokenIntrospection.class);
+        assertEquals(tokenIntrospection.isActive(), true);
+        assertEquals(tokenIntrospection.getUsername(), "alice");
+        assertEquals(tokenIntrospection.getClientId(), "consumer-id");
+        assertEquals(tokenIntrospection.getScope(), accessToken.getApprovedScope());
+        Long validity = tokenIntrospection.getExp() - tokenIntrospection.getIat();
+        assertTrue(validity == accessToken.getExpiresIn());
     }
     
     @org.junit.Test
-    public void testAuthorizationCodeGrantRefreshWithScope() throws Exception {
-        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
-        
-        String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
-        // Save the Cookie for the second request...
-        WebClient.getConfig(client).getRequestContext().put(
-            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        
-        // Get Authorization Code
-        String code = getAuthorizationCode(client, "read_balance");
-        assertNotNull(code);
-        
-        // Now get the access token
-        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
-        // Save the Cookie for the second request...
-        WebClient.getConfig(client).getRequestContext().put(
-            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        
-        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
-        assertNotNull(accessToken.getTokenKey());
-        assertNotNull(accessToken.getRefreshToken());
-        
-        // Refresh the access token
-        client.type("application/x-www-form-urlencoded").accept("application/json");
-        
-        Form form = new Form();
-        form.param("grant_type", "refresh_token");
-        form.param("refresh_token", accessToken.getRefreshToken());
-        form.param("client_id", "consumer-id");
-        form.param("scope", "read_balance");
-        Response response = client.post(form);
-        
-        accessToken = response.readEntity(ClientAccessToken.class);
-        assertNotNull(accessToken.getTokenKey());
-        assertNotNull(accessToken.getRefreshToken());
-        assertTrue(accessToken.getApprovedScope().contains("read_balance"));
-    }
-
-    @org.junit.Test
-    public void testAuthorizationCodeGrantWithScope() throws Exception {
-        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
-        
-        String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
-        // Save the Cookie for the second request...
-        WebClient.getConfig(client).getRequestContext().put(
-            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        
-        // Get Authorization Code
-        String code = getAuthorizationCode(client, "read_balance");
-        assertNotNull(code);
-        
-        // Now get the access token
-        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
-        // Save the Cookie for the second request...
-        WebClient.getConfig(client).getRequestContext().put(
-            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-        
-        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
-        assertNotNull(accessToken.getTokenKey());
-        assertTrue(accessToken.getApprovedScope().contains("read_balance"));
-    }
-    
-    @org.junit.Test
-    public void testAuthorizationCodeGrantWithAudience() throws Exception {
+    public void testTokenIntrospectionWithAudience() throws Exception {
         URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
         
         String address = "https://localhost:" + PORT + "/services/";
@@ -205,10 +119,62 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         ClientAccessToken accessToken = 
             getAccessTokenWithAuthorizationCode(client, code, "consumer-id-aud", audience);
         assertNotNull(accessToken.getTokenKey());
+        
+        // Now query the token introspection service
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
+        client.accept("application/json").type("application/x-www-form-urlencoded");
+        Form form = new Form();
+        form.param("token", accessToken.getTokenKey());
+        client.path("introspect/");
+        Response response = client.post(form);
+        
+        TokenIntrospection tokenIntrospection = response.readEntity(TokenIntrospection.class);
+        assertEquals(tokenIntrospection.isActive(), true);
+        assertEquals(tokenIntrospection.getUsername(), "alice");
+        assertEquals(tokenIntrospection.getClientId(), "consumer-id-aud");
+        assertEquals(tokenIntrospection.getScope(), accessToken.getApprovedScope());
+        Long validity = tokenIntrospection.getExp() - tokenIntrospection.getIat();
+        assertTrue(validity == accessToken.getExpiresIn());
+        assertEquals(tokenIntrospection.getAud().get(0), audience);
     }
     
     @org.junit.Test
-    public void testImplicitGrant() throws Exception {
+    public void testInvalidToken() throws Exception {
+        URL busFile = IntrospectionServiceTest.class.getResource("cxf-client.xml");
+        
+        String address = "https://localhost:" + PORT + "/services/";
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        // Get Authorization Code
+        String code = getAuthorizationCode(client);
+        assertNotNull(code);
+        
+        // Now get the access token
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
+        assertNotNull(accessToken.getTokenKey());
+        
+        // Now query the token introspection service
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
+        client.accept("application/json").type("application/x-www-form-urlencoded");
+        Form form = new Form();
+        form.param("token", accessToken.getTokenKey() + "-xyz");
+        client.path("introspect/");
+        Response response = client.post(form);
+        
+        TokenIntrospection tokenIntrospection = response.readEntity(TokenIntrospection.class);
+        assertEquals(tokenIntrospection.isActive(), false);
+    }
+    
+    @org.junit.Test
+    public void testRefreshedToken() throws Exception {
         URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
         
         String address = "https://localhost:" + PORT + "/services/";
@@ -216,74 +182,55 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
-       
-        // Get Access Token
-        client.type("application/json").accept("application/json");
-        client.query("client_id", "consumer-id");
-        client.query("redirect_uri", "http://www.blah.apache.org");
-        client.query("response_type", "token");
-        client.path("authorize-implicit/");
-        Response response = client.get();
         
-        OAuthAuthorizationData authzData = response.readEntity(OAuthAuthorizationData.class);
+        // Get Authorization Code
+        String code = getAuthorizationCode(client);
+        assertNotNull(code);
         
-        // Now call "decision" to get the access token
-        client.path("decision");
-        client.type("application/x-www-form-urlencoded");
+        // Now get the access token
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
+        // Save the Cookie for the second request...
+        WebClient.getConfig(client).getRequestContext().put(
+            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(client, code);
+        assertNotNull(accessToken.getTokenKey());
+        assertNotNull(accessToken.getRefreshToken());
+        String originalAccessToken = accessToken.getTokenKey();
+        
+        // Refresh the access token
+        client.type("application/x-www-form-urlencoded").accept("application/json");
         
         Form form = new Form();
-        form.param("session_authenticity_token", authzData.getAuthenticityToken());
-        form.param("client_id", authzData.getClientId());
-        form.param("redirect_uri", authzData.getRedirectUri());
-        form.param("oauthDecision", "allow");
+        form.param("grant_type", "refresh_token");
+        form.param("refresh_token", accessToken.getRefreshToken());
+        form.param("client_id", "consumer-id");
+        Response response = client.post(form);
         
+        accessToken = response.readEntity(ClientAccessToken.class);
+        assertNotNull(accessToken.getTokenKey());
+        assertNotNull(accessToken.getRefreshToken());
+        
+        // Now query the token introspection service
+        client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
+        client.accept("application/json").type("application/x-www-form-urlencoded");
+        
+        // Refreshed token should be ok
+        form = new Form();
+        form.param("token", accessToken.getTokenKey());
+        client.path("introspect/");
         response = client.post(form);
         
-        String location = response.getHeaderString("Location"); 
-        String accessToken = getSubstring(location, "access_token");
-        assertNotNull(accessToken);
-    }
-    
-    @org.junit.Test
-    public void testPasswordsCredentialsGrant() throws Exception {
-        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
+        TokenIntrospection tokenIntrospection = response.readEntity(TokenIntrospection.class);
+        assertEquals(tokenIntrospection.isActive(), true);
         
-        String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
-
-        // Get Access Token
-        client.type("application/x-www-form-urlencoded").accept("application/json");
-        client.path("token");
+        // Original token should not be ok
+        form = new Form();
+        form.param("token", originalAccessToken);
+        response = client.post(form);
         
-        Form form = new Form();
-        form.param("grant_type", "password");
-        form.param("username", "alice");
-        form.param("password", "security");
-        Response response = client.post(form);
-        
-        ClientAccessToken accessToken = response.readEntity(ClientAccessToken.class);
-        assertNotNull(accessToken.getTokenKey());
-        assertNotNull(accessToken.getRefreshToken());
-    }
-    
-    @org.junit.Test
-    public void testClientCredentialsGrant() throws Exception {
-        URL busFile = AuthorizationGrantTest.class.getResource("cxf-client.xml");
-        
-        String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
-
-        // Get Access Token
-        client.type("application/x-www-form-urlencoded").accept("application/json");
-        client.path("token");
-        
-        Form form = new Form();
-        form.param("grant_type", "client_credentials");
-        Response response = client.post(form);
-        
-        ClientAccessToken accessToken = response.readEntity(ClientAccessToken.class);
-        assertNotNull(accessToken.getTokenKey());
-        assertNotNull(accessToken.getRefreshToken());
+        tokenIntrospection = response.readEntity(TokenIntrospection.class);
+        assertEquals(tokenIntrospection.isActive(), false);
     }
     
     private String getAuthorizationCode(WebClient client) {

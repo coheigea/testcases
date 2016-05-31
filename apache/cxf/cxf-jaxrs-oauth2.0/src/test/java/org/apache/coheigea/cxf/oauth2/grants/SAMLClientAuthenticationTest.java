@@ -29,8 +29,10 @@ import javax.ws.rs.core.Response;
 import org.apache.coheigea.cxf.oauth2.oauthservice.OAuthServer;
 import org.apache.cxf.common.util.Base64UrlUtility;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
+import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.common.saml.SAMLCallback;
@@ -39,8 +41,6 @@ import org.apache.wss4j.common.saml.SamlAssertionWrapper;
 import org.apache.wss4j.common.saml.bean.AudienceRestrictionBean;
 import org.apache.wss4j.common.saml.bean.ConditionsBean;
 import org.junit.BeforeClass;
-
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Test the authorization code grant, where the client authenticates to the access token service using SAML.
@@ -62,11 +62,8 @@ public class SAMLClientAuthenticationTest extends AbstractBusClientServerTestBas
     public void testSAML() throws Exception {
         URL busFile = SAMLClientAuthenticationTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -77,7 +74,7 @@ public class SAMLClientAuthenticationTest extends AbstractBusClientServerTestBas
         
         // Now get the access token
         String samlAddress = "https://localhost:" + PORT + "/samlservices/";
-        client = WebClient.create(samlAddress, providers, busFile.toString());
+        client = WebClient.create(samlAddress, setupProviders(), busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(client).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -165,5 +162,16 @@ public class SAMLClientAuthenticationTest extends AbstractBusClientServerTestBas
         }
         
         return samlAssertion.assertionToString();
+    }
+    
+    private static List<Object> setupProviders() {
+        List<Object> providers = new ArrayList<Object>();
+        JSONProvider<OAuthAuthorizationData> jsonP = new JSONProvider<OAuthAuthorizationData>();
+        jsonP.setNamespaceMap(Collections.singletonMap("http://org.apache.cxf.rs.security.oauth",
+                                                       "ns2"));
+        providers.add(jsonP);
+        providers.add(new OAuthJSONProvider());
+        
+        return providers;
     }
 }
