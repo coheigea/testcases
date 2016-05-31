@@ -29,7 +29,10 @@ import javax.ws.rs.core.Response;
 import org.apache.coheigea.cxf.oauth2.oauthservice.OAuthServer;
 import org.apache.cxf.common.util.Base64UrlUtility;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
+import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
+import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.common.saml.SAMLCallback;
@@ -38,8 +41,6 @@ import org.apache.wss4j.common.saml.SamlAssertionWrapper;
 import org.apache.wss4j.common.saml.bean.AudienceRestrictionBean;
 import org.apache.wss4j.common.saml.bean.ConditionsBean;
 import org.junit.BeforeClass;
-
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Test the SAML Authorization grant
@@ -61,11 +62,8 @@ public class SAMLAuthorizationGrantTest extends AbstractBusClientServerTestBase 
     public void testSAMLAuthorizationGrant() throws Exception {
         URL busFile = SAMLAuthorizationGrantTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         
         // Create the SAML Assertion
         String assertion = createToken(address + "token", true, true);
@@ -113,4 +111,14 @@ public class SAMLAuthorizationGrantTest extends AbstractBusClientServerTestBase 
         return samlAssertion.assertionToString();
     }
     
+    private static List<Object> setupProviders() {
+        List<Object> providers = new ArrayList<Object>();
+        JSONProvider<OAuthAuthorizationData> jsonP = new JSONProvider<OAuthAuthorizationData>();
+        jsonP.setNamespaceMap(Collections.singletonMap("http://org.apache.cxf.rs.security.oauth",
+                                                       "ns2"));
+        providers.add(jsonP);
+        providers.add(new OAuthJSONProvider());
+        
+        return providers;
+    }
 }

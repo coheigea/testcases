@@ -20,6 +20,7 @@ package org.apache.coheigea.cxf.oauth2.balanceservice;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Form;
@@ -27,10 +28,11 @@ import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.oauth2.oauthservice.OAuthServer;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
+import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.junit.BeforeClass;
 
 /**
@@ -73,10 +75,8 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         
         // Get Authorization Code (as "bob")
         String oauthService = "https://localhost:" + OAUTH_PORT + "/services/";
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
         
-        WebClient oauthClient = WebClient.create(oauthService, providers, "bob", "security", busFile.toString());
+        WebClient oauthClient = WebClient.create(oauthService, setupProviders(), "bob", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -85,7 +85,7 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        oauthClient = WebClient.create(oauthService, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        oauthClient = WebClient.create(oauthService, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -120,10 +120,8 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         
         // Get Authorization Code (as "bob")
         String oauthService = "https://localhost:" + OAUTH_PORT + "/services/";
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
         
-        WebClient oauthClient = WebClient.create(oauthService, providers, "bob", "security", busFile.toString());
+        WebClient oauthClient = WebClient.create(oauthService, setupProviders(), "bob", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -132,7 +130,7 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        oauthClient = WebClient.create(oauthService, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        oauthClient = WebClient.create(oauthService, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -167,10 +165,8 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         
         // Get Authorization Code (as "bob")
         String oauthService = "https://localhost:" + OAUTH_PORT + "/services/";
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
         
-        WebClient oauthClient = WebClient.create(oauthService, providers, "bob", "security", busFile.toString());
+        WebClient oauthClient = WebClient.create(oauthService, setupProviders(), "bob", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -179,7 +175,7 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        oauthClient = WebClient.create(oauthService, providers, "consumer-id", "this-is-a-secret", busFile.toString());
+        oauthClient = WebClient.create(oauthService, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -214,10 +210,8 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         
         // Get Authorization Code (as "bob")
         String oauthService = "https://localhost:" + OAUTH_PORT + "/services/";
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
         
-        WebClient oauthClient = WebClient.create(oauthService, providers, "bob", "security", busFile.toString());
+        WebClient oauthClient = WebClient.create(oauthService, setupProviders(), "bob", "security", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -226,7 +220,7 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         assertNotNull(code);
         
         // Now get the access token
-        oauthClient = WebClient.create(oauthService, providers, "consumer-id-aud", "this-is-a-secret", busFile.toString());
+        oauthClient = WebClient.create(oauthService, setupProviders(), "consumer-id-aud", "this-is-a-secret", busFile.toString());
         // Save the Cookie for the second request...
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
@@ -322,4 +316,14 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         return response.readEntity(ClientAccessToken.class);
     }
     
+    private static List<Object> setupProviders() {
+        List<Object> providers = new ArrayList<Object>();
+        JSONProvider<OAuthAuthorizationData> jsonP = new JSONProvider<OAuthAuthorizationData>();
+        jsonP.setNamespaceMap(Collections.singletonMap("http://org.apache.cxf.rs.security.oauth",
+                                                       "ns2"));
+        providers.add(jsonP);
+        providers.add(new OAuthJSONProvider());
+        
+        return providers;
+    }
 }

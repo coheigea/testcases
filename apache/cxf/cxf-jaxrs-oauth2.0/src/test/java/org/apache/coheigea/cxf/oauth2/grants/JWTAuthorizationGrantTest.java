@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.oauth2.oauthservice.OAuthServer;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
 import org.apache.cxf.rs.security.jose.jws.JwsHeaders;
 import org.apache.cxf.rs.security.jose.jws.JwsJwtCompactProducer;
@@ -38,10 +39,10 @@ import org.apache.cxf.rs.security.jose.jws.JwsSignatureProvider;
 import org.apache.cxf.rs.security.jose.jws.JwsUtils;
 import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
+import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
+import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
-
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * Test the JWT authorization grant.
@@ -63,11 +64,8 @@ public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
     public void testJWTAuthorizationGrant() throws Exception {
         URL busFile = JWTAuthorizationGrantTest.class.getResource("cxf-client.xml");
         
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(new JacksonJsonProvider());
-        
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, providers, "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
         
         // Create the JWT Token
         String token = createToken("DoubleItSTSIssuer", "consumer-id", 
@@ -128,5 +126,16 @@ public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
         JwsHeaders jwsHeaders = new JwsHeaders(SignatureAlgorithm.NONE);
         JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
         return jws.getSignedEncodedJws();
+    }
+    
+    private static List<Object> setupProviders() {
+        List<Object> providers = new ArrayList<Object>();
+        JSONProvider<OAuthAuthorizationData> jsonP = new JSONProvider<OAuthAuthorizationData>();
+        jsonP.setNamespaceMap(Collections.singletonMap("http://org.apache.cxf.rs.security.oauth",
+                                                       "ns2"));
+        providers.add(jsonP);
+        providers.add(new OAuthJSONProvider());
+        
+        return providers;
     }
 }
