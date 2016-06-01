@@ -31,6 +31,10 @@
         <version>1.0</version>
    </parent>
 
+   <properties>
+       <cxf.version>3.2.0-SNAPSHOT</cxf.version>
+   </properties>
+
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>
@@ -130,6 +134,42 @@
            <scope>test</scope>
            <classifier>tests</classifier>
        </dependency>
+       <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-server</artifactId>
+            <version>9.3.5.v20151012</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.ning</groupId>
+            <artifactId>async-http-client</artifactId>
+            <version>1.9.8</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+<dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>3.9.2.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-runtime</artifactId>
+            <version>2.4.3</version>
+        </dependency>
+        -->
+
 
     </dependencies>
 
