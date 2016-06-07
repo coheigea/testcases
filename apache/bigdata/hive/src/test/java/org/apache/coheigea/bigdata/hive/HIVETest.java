@@ -29,6 +29,9 @@ import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hive.service.server.HiveServer2;
 import org.junit.Assert;
 
+/**
+ * A basic test that launches Hive, writes a table + then queries it
+ */
 public class HIVETest {
     
     private static final File hdfsBaseDir = new File("./target/hdfs/").getAbsoluteFile();
@@ -60,37 +63,58 @@ public class HIVETest {
         conf.set(HiveConf.ConfVars.METASTORE_AUTO_CREATE_ALL.varname, "true");
         conf.set(HiveConf.ConfVars.HIVE_SERVER2_THRIFT_PORT.varname, "" + port);
         
+        // Enable authorization
+        //conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_ENABLED.varname, "true");
+        //conf.set(HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS.varname, "true");
+        //conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_MANAGER.varname, 
+        //         "org.apache.hadoop.hive.ql.security.authorization.StorageBasedAuthorizationProvider");
+        //conf.set(HiveConf.ConfVars.HIVE_METASTORE_AUTHORIZATION_MANAGER.varname, 
+        //         "org.apache.hadoop.hive.ql.security.authorization.StorageBasedAuthorizationProvider");
+        
         hiveServer = new HiveServer2();
         hiveServer.init(conf);
         hiveServer.start();
         
         Class.forName("org.apache.hive.jdbc.HiveDriver");
+        
+        // Load data into HIVE
+        String url = "jdbc:hive2://localhost:" + port + "/default";
+        Connection connection = DriverManager.getConnection(url, "colm", "alice");
+        Statement statement = connection.createStatement();
+        // statement.execute("CREATE TABLE WORDS (word STRING, count INT)");
+        statement.execute("create table words (word STRING, count INT) row format delimited fields terminated by '\t' stored as textfile");
+        java.io.File inputFile = new java.io.File(HIVETest.class.getResource("../../../../../wordcount.txt").toURI());
+        statement.execute("LOAD DATA INPATH '" + inputFile.getAbsolutePath() + "' OVERWRITE INTO TABLE words");
+        
+        // Just test to make sure it's working
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM words where count == '100'");
+        resultSet.next();
+        Assert.assertEquals("Mr.", resultSet.getString(1));
     }
     
     @org.junit.AfterClass
     public static void cleanup() throws Exception {
         hiveServer.stop();
         FileUtil.fullyDelete(hdfsBaseDir);
+        File metastoreDir = new File("./target/metastore/").getAbsoluteFile();
+        FileUtil.fullyDelete(metastoreDir);
     }
     
     @org.junit.Test
-    public void basicHIVETest() throws Exception {
+    public void testHiveQuery() throws Exception {
         
         // Load data into HIVE
         String url = "jdbc:hive2://localhost:" + port + "/default";
         Connection connection = DriverManager.getConnection(url, "alice", "alice");
-        Statement statement  = connection.createStatement();
-        // statement.execute("CREATE TABLE WORDS (word STRING, count INT)");
-        statement.execute("create table words (word STRING, count INT) row format delimited fields terminated by '\t' stored as textfile");
-        java.io.File inputFile = new java.io.File(this.getClass().getResource("../../../../../wordcount.txt").toURI());
-        statement.execute("LOAD DATA INPATH '" + inputFile.getAbsolutePath() + "' OVERWRITE INTO TABLE words");
-        
+        Statement statement = connection.createStatement();
+
         ResultSet resultSet = statement.executeQuery("SELECT * FROM words where count == '100'");
         resultSet.next();
         Assert.assertEquals("Mr.", resultSet.getString(1));
         Assert.assertEquals(100, resultSet.getInt(2));
-        
+
         statement.close();
+        
     }
     
     
