@@ -18,17 +18,13 @@
 package org.apache.coheigea.bigdata.hive;
 
 import java.io.File;
+import java.net.ServerSocket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.permission.FsPermission;
-import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hive.service.server.HiveServer2;
 import org.junit.Assert;
@@ -36,55 +32,52 @@ import org.junit.Assert;
 public class HIVETest {
     
     private static final File hdfsBaseDir = new File("./target/hdfs/").getAbsoluteFile();
-    private static MiniDFSCluster hdfsCluster;
-    private static String defaultFs;
+    private static HiveServer2 hiveServer;
+    private static int port;
     
     @org.junit.BeforeClass
     public static void setup() throws Exception {
-        Configuration conf = new Configuration();
-        conf.set(MiniDFSCluster.HDFS_MINIDFS_BASEDIR, hdfsBaseDir.getAbsolutePath());
-        MiniDFSCluster.Builder builder = new MiniDFSCluster.Builder(conf);
-        hdfsCluster = builder.build();
-        defaultFs = conf.get("fs.defaultFS");
-    }
-    
-    @org.junit.AfterClass
-    public static void cleanup() throws Exception {
-        FileUtil.fullyDelete(hdfsBaseDir);
-        hdfsCluster.shutdown();
-    }
-    
-    @org.junit.Test
-    public void basicHIVETest() throws Exception {
+        // Get a random port
+        ServerSocket serverSocket = new ServerSocket(0);
+        port = serverSocket.getLocalPort();
+        serverSocket.close();
         
         HiveConf conf = new HiveConf();
-       
+        
         // Warehouse
         File warehouseDir = new File("./target/hdfs/warehouse").getAbsoluteFile();
         conf.set(HiveConf.ConfVars.METASTOREWAREHOUSE.varname, warehouseDir.getPath());
         
-        FileSystem fileSystem = hdfsCluster.getFileSystem();
-        fileSystem.mkdirs(new Path("/", "warehouse"), new FsPermission((short) 0777));
-        
         // Scratchdir
         File scratchDir = new File("./target/hdfs/scratchdir").getAbsoluteFile();
         conf.set("hive.exec.scratchdir", scratchDir.getPath());
-        
-        fileSystem.mkdirs(new Path("/", "scratchdir"), new FsPermission((short) 0777));
-        
+     
         // Create a temporary directory for the Hive metastore
         File metastoreDir = new File("./target/metastore/").getAbsoluteFile();
         conf.set(HiveConf.ConfVars.METASTORECONNECTURLKEY.varname,
                  String.format("jdbc:derby:;databaseName=%s;create=true",  metastoreDir.getPath()));
         
-        HiveServer2 hiveServer2 = new HiveServer2();
-        hiveServer2.init(conf);
-        hiveServer2.start();
+        conf.set(HiveConf.ConfVars.METASTORE_AUTO_CREATE_ALL.varname, "true");
+        conf.set(HiveConf.ConfVars.HIVE_SERVER2_THRIFT_PORT.varname, "" + port);
+        
+        hiveServer = new HiveServer2();
+        hiveServer.init(conf);
+        hiveServer.start();
         
         Class.forName("org.apache.hive.jdbc.HiveDriver");
+    }
+    
+    @org.junit.AfterClass
+    public static void cleanup() throws Exception {
+        hiveServer.stop();
+        FileUtil.fullyDelete(hdfsBaseDir);
+    }
+    
+    @org.junit.Test
+    public void basicHIVETest() throws Exception {
         
-        // Load data into HIVE (from local filesystem, HIVE is not setup to talk to the HDFS)
-        String url = "jdbc:hive2://localhost:10000/default";
+        // Load data into HIVE
+        String url = "jdbc:hive2://localhost:" + port + "/default";
         Connection connection = DriverManager.getConnection(url, "alice", "alice");
         Statement statement  = connection.createStatement();
         // statement.execute("CREATE TABLE WORDS (word STRING, count INT)");
@@ -98,8 +91,6 @@ public class HIVETest {
         Assert.assertEquals(100, resultSet.getInt(2));
         
         statement.close();
-        
-        hiveServer2.stop();
     }
     
     
