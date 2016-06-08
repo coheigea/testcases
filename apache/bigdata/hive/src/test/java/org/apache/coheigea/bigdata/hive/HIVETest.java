@@ -19,6 +19,9 @@ package org.apache.coheigea.bigdata.hive;
 
 import java.io.File;
 import java.net.ServerSocket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -63,14 +66,6 @@ public class HIVETest {
         conf.set(HiveConf.ConfVars.METASTORE_AUTO_CREATE_ALL.varname, "true");
         conf.set(HiveConf.ConfVars.HIVE_SERVER2_THRIFT_PORT.varname, "" + port);
         
-        // Enable authorization
-        //conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_ENABLED.varname, "true");
-        //conf.set(HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS.varname, "true");
-        //conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_MANAGER.varname, 
-        //         "org.apache.hadoop.hive.ql.security.authorization.StorageBasedAuthorizationProvider");
-        //conf.set(HiveConf.ConfVars.HIVE_METASTORE_AUTHORIZATION_MANAGER.varname, 
-        //         "org.apache.hadoop.hive.ql.security.authorization.StorageBasedAuthorizationProvider");
-        
         hiveServer = new HiveServer2();
         hiveServer.init(conf);
         hiveServer.start();
@@ -79,17 +74,25 @@ public class HIVETest {
         
         // Load data into HIVE
         String url = "jdbc:hive2://localhost:" + port + "/default";
-        Connection connection = DriverManager.getConnection(url, "colm", "alice");
+        Connection connection = DriverManager.getConnection(url, "colm", "colm");
         Statement statement = connection.createStatement();
         // statement.execute("CREATE TABLE WORDS (word STRING, count INT)");
         statement.execute("create table words (word STRING, count INT) row format delimited fields terminated by '\t' stored as textfile");
-        java.io.File inputFile = new java.io.File(HIVETest.class.getResource("../../../../../wordcount.txt").toURI());
-        statement.execute("LOAD DATA INPATH '" + inputFile.getAbsolutePath() + "' OVERWRITE INTO TABLE words");
+        
+        // Copy "wordcount.txt" to "target" to avoid overwriting it during load
+        java.io.File inputFile = new java.io.File(HIVEAuthorizerTest.class.getResource("../../../../../wordcount.txt").toURI());
+        Path outputPath = Paths.get(inputFile.toPath().getParent().getParent().toString() + java.io.File.separator + "wordcountout.txt");
+        Files.copy(inputFile.toPath(), outputPath);
+        
+        statement.execute("LOAD DATA INPATH '" + outputPath + "' OVERWRITE INTO TABLE words");
         
         // Just test to make sure it's working
         ResultSet resultSet = statement.executeQuery("SELECT * FROM words where count == '100'");
         resultSet.next();
         Assert.assertEquals("Mr.", resultSet.getString(1));
+        
+        statement.close();
+        connection.close();
     }
     
     @org.junit.AfterClass
