@@ -303,4 +303,90 @@ public class HIVERangerAuthorizerTest {
         connection.close();
     }
     
+    @org.junit.Test
+    public void testBobSelectOnDifferentDatabase() throws Exception {
+        
+        String url = "jdbc:hive2://localhost:" + port;
+        
+        // Create a database as "admin"
+        Connection connection = DriverManager.getConnection(url, "admin", "admin");
+        Statement statement = connection.createStatement();
+
+        statement.execute("CREATE DATABASE admintemp");
+
+        statement.close();
+        connection.close();
+        
+        // Create a "words" table in "admintemp"
+        url = "jdbc:hive2://localhost:" + port + "/admintemp";
+        connection = DriverManager.getConnection(url, "admin", "admin");
+        statement = connection.createStatement();
+        statement.execute("CREATE TABLE WORDS (word STRING, count INT)");
+        
+        statement.close();
+        connection.close();
+        
+        // Now try to read it as "bob"
+        connection = DriverManager.getConnection(url, "bob", "bob");
+        statement = connection.createStatement();
+
+        try {
+            statement.executeQuery("SELECT count FROM words where count == '100'");
+            Assert.fail("Failure expected on an unauthorized call");
+        } catch (SQLException ex) {
+            // expected
+        }
+
+        statement.close();
+        connection.close();
+        
+        // Drop the table and database as "admin"
+        connection = DriverManager.getConnection(url, "admin", "admin");
+        statement = connection.createStatement();
+
+        statement.execute("drop TABLE words");
+        statement.execute("drop DATABASE admintemp");
+
+        statement.close();
+        connection.close();
+    }
+    
+    @org.junit.Test
+    public void testBobSelectOnDifferentTables() throws Exception {
+        
+        String url = "jdbc:hive2://localhost:" + port;
+        
+        // Create a "words2" table in "rangerauthz"
+        url = "jdbc:hive2://localhost:" + port + "/rangerauthz";
+        Connection connection = DriverManager.getConnection(url, "admin", "admin");
+        Statement statement = connection.createStatement();
+        statement.execute("CREATE TABLE WORDS2 (word STRING, count INT)");
+        
+        statement.close();
+        connection.close();
+        
+        // Now try to read it as "bob"
+        connection = DriverManager.getConnection(url, "bob", "bob");
+        statement = connection.createStatement();
+
+        try {
+            statement.executeQuery("SELECT count FROM words2 where count == '100'");
+            Assert.fail("Failure expected on an unauthorized call");
+        } catch (SQLException ex) {
+            // expected
+        }
+
+        statement.close();
+        connection.close();
+        
+        // Drop the table as "admin"
+        connection = DriverManager.getConnection(url, "admin", "admin");
+        statement = connection.createStatement();
+
+        statement.execute("drop TABLE words2");
+
+        statement.close();
+        connection.close();
+    }
+    
 }
