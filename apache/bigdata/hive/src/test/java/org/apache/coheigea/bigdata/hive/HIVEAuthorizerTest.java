@@ -84,9 +84,11 @@ public class HIVEAuthorizerTest {
         
         Class.forName("org.apache.hive.jdbc.HiveDriver");
         
+        String processOwner = System.getProperty("user.name");
+        
         // Create database
         String initialUrl = "jdbc:hive2://localhost:" + port;
-        Connection connection = DriverManager.getConnection(initialUrl, "admin", "admin");
+        Connection connection = DriverManager.getConnection(initialUrl, processOwner, processOwner);
         Statement statement = connection.createStatement();
         
         statement.execute("CREATE DATABASE authz");
@@ -96,7 +98,7 @@ public class HIVEAuthorizerTest {
         
         // Load data into HIVE
         String url = "jdbc:hive2://localhost:" + port + "/authz";
-        connection = DriverManager.getConnection(url, "admin", "admin");
+        connection = DriverManager.getConnection(url, processOwner, processOwner);
         statement = connection.createStatement();
         // statement.execute("CREATE TABLE WORDS (word STRING, count INT)");
         statement.execute("create table words (word STRING, count INT) row format delimited fields terminated by '\t' stored as textfile");
