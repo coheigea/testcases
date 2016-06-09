@@ -66,14 +66,12 @@
             <version>${hive.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>org.apache.ranger</groupId>
             <artifactId>ranger-hive-plugin</artifactId>
             <version>${ranger.version}</version>
             <scope>test</scope>
         </dependency>
-        -->
     </dependencies>
     <build>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
