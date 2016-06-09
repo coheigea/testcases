@@ -32,6 +32,7 @@
    </parent>
 
    <properties>
+       <activemq.version>5.12.1</activemq.version>
        <cxf.version>3.2.0-SNAPSHOT</cxf.version>
    </properties>
 
@@ -68,6 +69,12 @@
        <dependency>
            <groupId>org.apache.cxf</groupId>
            <artifactId>cxf-rt-transports-websocket</artifactId>
+           <version>${cxf.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-transports-jms</artifactId>
            <version>${cxf.version}</version>
            <scope>test</scope>
        </dependency>
@@ -157,6 +164,13 @@
             <version>2.4.3</version>
         </dependency>
         -->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-broker</artifactId>
+            <version>${activemq.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
 
     </dependencies>
