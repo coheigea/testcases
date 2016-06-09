@@ -50,7 +50,9 @@ public class WSSecurityWebsocketTest extends AbstractBusClientServerTestBase {
         );
     }
    
+    // TODO - See CXF-6932 - https://issues.apache.org/jira/browse/CXF-6932
     @org.junit.Test
+    @org.junit.Ignore
     public void testAsymmetricOverWebsocket() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
