@@ -74,7 +74,7 @@ public class HIVETest {
         
         // Load data into HIVE
         String url = "jdbc:hive2://localhost:" + port + "/default";
-        Connection connection = DriverManager.getConnection(url, "colm", "colm");
+        Connection connection = DriverManager.getConnection(url, "admin", "admin");
         Statement statement = connection.createStatement();
         // statement.execute("CREATE TABLE WORDS (word STRING, count INT)");
         statement.execute("create table words (word STRING, count INT) row format delimited fields terminated by '\t' stored as textfile");
