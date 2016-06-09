@@ -39,8 +39,16 @@ public class WSSecurityJMSTest extends AbstractBusClientServerTestBase {
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
     
+    static final String PORT = allocatePort(BrokerServer.class);
+    
     @BeforeClass
     public static void startServers() throws Exception {
+        assertTrue(
+                   "Server failed to launch",
+                   // run the server in the same process
+                   // set this to false to fork
+                   launchServer(BrokerServer.class, true)
+        );
         assertTrue(
                    "Server failed to launch",
                    // run the server in the same process
