@@ -28,7 +28,7 @@
 
         <property name="driverClass" value="org.apache.hive.jdbc.HiveDriver" />
         <property name="url" value="jdbc:hive2://localhost:10000/default" />
-        <property name="username" value="colm" />
+        <property name="username" value="alice" />
     </bean>
 
     <camelContext xmlns="http://camel.apache.org/schema/spring">
