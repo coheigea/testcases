@@ -39,8 +39,8 @@ import org.junit.Assert;
  * A custom RangerAdminClient is plugged into Ranger in turn, which loads security policies from a local file. These policies were 
  * generated in the Ranger Admin UI for a service called "HIVETest":
  * 
- * a) "bob" can do a select on the table "words"
- * b) "bob" and a group called "IT" can do a select only on the "count" column in "words"
+ * a) A user "bob" can do a select/update on the table "words"
+ * b) A group called "IT" can do a select only on the "count" column in "words"
  * c) "bob" can create any database
  * 
  * Policies available from admin via:
@@ -257,6 +257,50 @@ public class HIVERangerAuthorizerTest {
         });
     }
     
+    // this should be allowed (by the policy - user)
+    @org.junit.Test
+    public void testHiveUpdateAllAsBob() throws Exception {
+        
+        String url = "jdbc:hive2://localhost:" + port + "/rangerauthz";
+        Connection connection = DriverManager.getConnection(url, "bob", "bob");
+        Statement statement = connection.createStatement();
+
+        statement.execute("insert into words (word, count) values ('newword', 5)");
+        
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM words where word == 'newword'");
+        resultSet.next();
+        Assert.assertEquals("newword", resultSet.getString(1));
+        Assert.assertEquals(5, resultSet.getInt(2));
+
+        statement.close();
+        connection.close();
+    }
+    
+    // this should not be allowed as "alice" can't insert into the table
+    @org.junit.Test
+    public void testHiveUpdateAllAsAlice() throws Exception {
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                String url = "jdbc:hive2://localhost:" + port + "/rangerauthz";
+                Connection connection = DriverManager.getConnection(url, "alice", "alice");
+                Statement statement = connection.createStatement();
+        
+                try {
+                    statement.execute("insert into words (word, count) values ('newword2', 5)");
+                    Assert.fail("Failure expected on an unauthorized call");
+                } catch (SQLException ex) {
+                    // expected
+                }
+                
+        
+                statement.close();
+                connection.close();
+                return null;
+            }
+        });
+    }
+    
     @org.junit.Test
     public void testHiveCreateDropDatabase() throws Exception {
         
@@ -354,10 +398,8 @@ public class HIVERangerAuthorizerTest {
     @org.junit.Test
     public void testBobSelectOnDifferentTables() throws Exception {
         
-        String url = "jdbc:hive2://localhost:" + port;
-        
         // Create a "words2" table in "rangerauthz"
-        url = "jdbc:hive2://localhost:" + port + "/rangerauthz";
+        String url = "jdbc:hive2://localhost:" + port + "/rangerauthz";
         Connection connection = DriverManager.getConnection(url, "admin", "admin");
         Statement statement = connection.createStatement();
         statement.execute("CREATE TABLE WORDS2 (word STRING, count INT)");
@@ -388,5 +430,76 @@ public class HIVERangerAuthorizerTest {
         statement.close();
         connection.close();
     }
+    
+    @org.junit.Test
+    public void testBobAlter() throws Exception {
+        
+        String url = "jdbc:hive2://localhost:" + port + "/rangerauthz";
+        
+        // Create a new table as admin
+        Connection connection = DriverManager.getConnection(url, "admin", "admin");
+        Statement statement = connection.createStatement();
+        statement.execute("CREATE TABLE WORDS2 (word STRING, count INT)");
+        
+        statement.close();
+        connection.close();
+        
+        // Try to add a new column in words as "bob" - this should fail
+        url = "jdbc:hive2://localhost:" + port + "/rangerauthz";
+        connection = DriverManager.getConnection(url, "bob", "bob");
+        statement = connection.createStatement();
+        
+        try {
+            statement.execute("ALTER TABLE WORDS2 ADD COLUMNS (newcol STRING)");
+            Assert.fail("Failure expected on an unauthorized call");
+        } catch (SQLException ex) {
+            // expected
+        }
+        
+        statement.close();
+        connection.close();
+        
+        // Now add it as "admin"
+        connection = DriverManager.getConnection(url, "admin", "admin");
+        statement = connection.createStatement();
+        
+        statement.execute("ALTER TABLE WORDS2 ADD COLUMNS (newcol STRING)");
+        
+        statement.close();
+        connection.close();
+        
+        // Try to drop it as "bob" - this should fail
+        connection = DriverManager.getConnection(url, "bob", "bob");
+        statement = connection.createStatement();
+        
+        try {
+            statement.execute("ALTER TABLE WORDS2 REPLACE COLUMNS (word STRING, count INT)");
+            Assert.fail("Failure expected on an unauthorized call");
+        } catch (SQLException ex) {
+            // expected
+        }
+        
+        statement.close();
+        connection.close();
+        
+        // Now drop it as "admin"
+        connection = DriverManager.getConnection(url, "admin", "admin");
+        statement = connection.createStatement();
+        
+        statement.execute("ALTER TABLE WORDS2 REPLACE COLUMNS (word STRING, count INT)");
+        
+        statement.close();
+        connection.close();
+        
+        // Drop the table as "admin"
+        connection = DriverManager.getConnection(url, "admin", "admin");
+        statement = connection.createStatement();
+
+        statement.execute("drop TABLE words2");
+
+        statement.close();
+        connection.close();
+    }
+    
     
 }
