@@ -103,6 +103,12 @@
            <scope>test</scope>
        </dependency>
        <dependency>
+           <groupId>org.apache.cxf.services.sts</groupId>
+           <artifactId>cxf-services-sts-core</artifactId>
+           <version>${cxf.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
            <groupId>org.springframework</groupId>
            <artifactId>spring-core</artifactId>
            <version>${spring.version}</version>
