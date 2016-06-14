@@ -468,7 +468,7 @@ public class HIVERangerAuthorizerTest {
         statement.close();
         connection.close();
         
-        // Try to drop it as "bob" - this should fail
+        // Try to alter it as "bob" - this should fail
         connection = DriverManager.getConnection(url, "bob", "bob");
         statement = connection.createStatement();
         
@@ -482,7 +482,7 @@ public class HIVERangerAuthorizerTest {
         statement.close();
         connection.close();
         
-        // Now drop it as "admin"
+        // Now alter it as "admin"
         connection = DriverManager.getConnection(url, "admin", "admin");
         statement = connection.createStatement();
         
@@ -491,7 +491,7 @@ public class HIVERangerAuthorizerTest {
         statement.close();
         connection.close();
         
-        // Drop the table as "admin"
+        // alter the table as "admin"
         connection = DriverManager.getConnection(url, "admin", "admin");
         statement = connection.createStatement();
 
