@@ -358,6 +358,8 @@ public class AuthenticationTest extends org.junit.Assert {
             e.printStackTrace();
             Assert.fail();
         }
+        
+        cCacheFile.delete();
     }
     
     /*
