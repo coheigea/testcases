@@ -22,8 +22,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.security.KeyStore;
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -36,13 +40,29 @@ import org.apache.coheigea.cxf.kerberos.common.KerbyServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
+import org.apache.cxf.rs.security.jose.common.JoseConstants;
+import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
+import org.apache.cxf.rs.security.jose.jws.JwsHeaders;
+import org.apache.cxf.rs.security.jose.jws.JwsJwtCompactProducer;
+import org.apache.cxf.rs.security.jose.jws.JwsSignatureProvider;
+import org.apache.cxf.rs.security.jose.jws.JwsUtils;
+import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
+import org.apache.kerby.kerberos.kerb.KrbRuntime;
+import org.apache.kerby.kerberos.kerb.ccache.Credential;
+import org.apache.kerby.kerberos.kerb.ccache.CredentialCache;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
+import org.apache.kerby.kerberos.kerb.client.KrbTokenClient;
+import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
+import org.apache.kerby.kerberos.kerb.type.base.KrbToken;
+import org.apache.kerby.kerberos.kerb.type.base.TokenFormat;
 import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
 import org.apache.kerby.kerberos.kerb.type.ticket.TgtTicket;
+import org.apache.kerby.kerberos.provider.token.JwtTokenProvider;
+import org.apache.wss4j.common.util.Loader;
 import org.apache.wss4j.dom.engine.WSSConfig;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.ietf.jgss.GSSContext;
@@ -96,6 +116,7 @@ public class AuthenticationTest extends org.junit.Assert {
                           AbstractBusClientServerTestBase.launchServer(Server.class, true)
             );
 
+        KrbRuntime.setTokenProvider(new JwtTokenProvider());
         kerbyServer = new KerbyServer();
 
         kerbyServer.setKdcHost("localhost");
@@ -106,6 +127,8 @@ public class AuthenticationTest extends org.junit.Assert {
         
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
+        kerbyServer.getKdcConfig().setString(KdcConfigKey.TOKEN_ISSUERS, "b***REMOVED***");
+        kerbyServer.getKdcConfig().setString(KdcConfigKey.TOKEN_VERIFY_KEYS, "myclient.cer");
         kerbyServer.init();
 
         // Create principals
@@ -143,13 +166,6 @@ public class AuthenticationTest extends org.junit.Assert {
         System.setProperty("java.security.krb5.conf", f2.getPath());
     }
 
-    @org.junit.Test
-    @org.junit.Ignore
-    public void launchKDCTest() throws Exception {
-        System.out.println("Sleeping...");
-        Thread.sleep(3 * 60 * 1000);
-    }
-    
     @org.junit.Test
     public void unitTest() throws Exception {
         KrbClient client = new KrbClient();
@@ -259,6 +275,124 @@ public class AuthenticationTest extends org.junit.Assert {
 
         doubleIt(transportPort, 25);
     }
+    
+    @org.junit.Test
+    @org.junit.Ignore
+    public void jwtUnitTest() throws Exception {
+        
+        // Create a JWT token using CXF
+        JwtClaims claims = new JwtClaims();
+        claims.setSubject("alice");
+        claims.setIssuer("DoubleItSTSIssuer");
+        claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setExpiryTime(new Date().getTime() + (60L + 1000L));
+        String address = "bob/service.ws.apache.org@service.ws.apache.org";
+        claims.setAudiences(Collections.singletonList(address));
+        
+        KeyStore keystore = KeyStore.getInstance("JKS");
+        keystore.load(Loader.getResourceAsStream("clientstore.jks"), "cspass".toCharArray());
+        
+        Properties signingProperties = new Properties();
+        signingProperties.put(JoseConstants.RSSEC_SIGNATURE_ALGORITHM, SignatureAlgorithm.RS256.name());
+        signingProperties.put(JoseConstants.RSSEC_KEY_STORE, keystore);
+        signingProperties.put(JoseConstants.RSSEC_KEY_STORE_ALIAS, "myclientkey");
+        signingProperties.put(JoseConstants.RSSEC_KEY_PSWD, "ckpass");
+
+        JwsHeaders jwsHeaders = new JwsHeaders(signingProperties);
+        JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
+
+        JwsSignatureProvider sigProvider =
+            JwsUtils.loadSignatureProvider(signingProperties, jwsHeaders);
+
+        String signedToken = jws.signWith(sigProvider);
+        
+        // KrbRuntime.setTokenProvider(new org.apache.kerby.kerberos.provider.token.JwtTokenProvider());
+        // TokenDecoder tokenDecoder = KrbRuntime.getTokenProvider().createTokenDecoder();
+        // AuthToken decodedToken = tokenDecoder.decodeFromString(signedToken);
+        
+        // Wrap it in a KrbToken
+        KrbToken krbToken = new KrbToken();
+        //krbToken.setInnerToken(decodedToken);
+        //krbToken.setTokenType();
+        krbToken.setTokenFormat(TokenFormat.JWT);
+        krbToken.setTokenValue(signedToken.getBytes());
+        
+        // Get a TGT
+        KrbClient client = new KrbClient();
+
+        client.setKdcHost("localhost");
+        client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
+        client.setAllowUdp(false);
+
+        client.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
+        client.init();
+        
+        TgtTicket tgt = client.requestTgt("alice@service.ws.apache.org", "alice");
+        assertNotNull(tgt);
+        
+        // Write to cache
+        Credential credential = new Credential(tgt);
+        CredentialCache cCache = new CredentialCache();
+        cCache.addCredential(credential);
+        cCache.setPrimaryPrincipal(tgt.getClientPrincipal());
+
+        File cCacheFile = File.createTempFile("krb5_alice@service.ws.apache.org", "cc");
+        cCache.store(cCacheFile);
+        
+        KrbTokenClient tokenClient = new KrbTokenClient(client);
+
+        tokenClient.setKdcHost("localhost");
+        tokenClient.setKdcTcpPort(Integer.parseInt(KDC_PORT));
+        tokenClient.setAllowUdp(false);
+
+        tokenClient.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
+        client.init();
+        
+
+        SgtTicket tkt;
+
+        try {
+            tkt = tokenClient.requestSgt(krbToken, "bob/service.ws.apache.org@service.ws.apache.org", cCacheFile.getPath());
+            assertTrue(tkt != null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+    
+    /*
+    private AuthToken getAuthToken(String audience, String issuer, PrivateKey signingKey) {
+        AuthToken authToken = KrbRuntime.getTokenProvider().createTokenFactory().createToken();
+        authToken.setIssuer(issuer);
+        authToken.setSubject(SUBJECT);
+
+        List<String> aud = new ArrayList<String>();
+        aud.add(audience);
+        authToken.setAudiences(aud);
+
+        // Set expiration in 60 minutes
+        final Date now = new Date();
+        Date exp = new Date(now.getTime() + 1000 * 60 * 60);
+        authToken.setExpirationTime(exp);
+
+        Date nbf = now;
+        authToken.setNotBeforeTime(nbf);
+
+        Date iat = now;
+        authToken.setIssueTime(iat);
+
+        TokenEncoder tokenEncoder = KrbRuntime.getTokenProvider().createTokenEncoder();
+        tokenEncoder.setSignKey(signingKey);
+
+        KrbToken krbToken = new KrbToken();
+        krbToken.setInnerToken(authToken);
+        krbToken.setTokenType();
+        krbToken.setTokenFormat(TokenFormat.JWT);
+        krbToken.setTokenValue(tokenEncoder.encodeAsBytes(authToken));
+
+        return krbToken;
+    }
+    */
 
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);

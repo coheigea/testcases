@@ -32,7 +32,7 @@
    </parent>
 
    <properties>
-       <kerby.version>1.0.0-RC2</kerby.version>
+       <kerby.version>1.0.0-RC3-SNAPSHOT</kerby.version>
    </properties>
 
    <dependencies>
@@ -150,6 +150,12 @@
        <dependency>
             <groupId>org.apache.kerby</groupId>
             <artifactId>kerb-client</artifactId>
+            <version>${kerby.version}</version>
+            <scope>test</scope>
+       </dependency>
+       <dependency>
+            <groupId>org.apache.kerby</groupId>
+            <artifactId>token-provider</artifactId>
             <version>${kerby.version}</version>
             <scope>test</scope>
        </dependency>
