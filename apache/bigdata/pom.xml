@@ -29,6 +29,7 @@
         <module>parent</module>
         <module>hdfs</module>
         <module>hive</module>
+        <module>hbase</module>
     </modules>
 
     <build>
