@@ -22,12 +22,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
-import java.security.KeyStore;
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -40,12 +38,6 @@ import org.apache.coheigea.cxf.kerberos.common.KerbyServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
-import org.apache.cxf.rs.security.jose.common.JoseConstants;
-import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
-import org.apache.cxf.rs.security.jose.jws.JwsHeaders;
-import org.apache.cxf.rs.security.jose.jws.JwsJwtCompactProducer;
-import org.apache.cxf.rs.security.jose.jws.JwsSignatureProvider;
-import org.apache.cxf.rs.security.jose.jws.JwsUtils;
 import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
@@ -57,12 +49,9 @@ import org.apache.kerby.kerberos.kerb.ccache.CredentialCache;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.client.KrbTokenClient;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
-import org.apache.kerby.kerberos.kerb.type.base.KrbToken;
-import org.apache.kerby.kerberos.kerb.type.base.TokenFormat;
 import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
 import org.apache.kerby.kerberos.kerb.type.ticket.TgtTicket;
 import org.apache.kerby.kerberos.provider.token.JwtTokenProvider;
-import org.apache.wss4j.common.util.Loader;
 import org.apache.wss4j.dom.engine.WSSConfig;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.ietf.jgss.GSSContext;
@@ -127,7 +116,7 @@ public class AuthenticationTest extends org.junit.Assert {
         
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
-        kerbyServer.getKdcConfig().setString(KdcConfigKey.TOKEN_ISSUERS, "b***REMOVED***");
+        kerbyServer.getKdcConfig().setString(KdcConfigKey.TOKEN_ISSUERS, "DoubleItSTSIssuer");
         kerbyServer.getKdcConfig().setString(KdcConfigKey.TOKEN_VERIFY_KEYS, "myclient.cer");
         kerbyServer.init();
 
@@ -277,45 +266,7 @@ public class AuthenticationTest extends org.junit.Assert {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void jwtUnitTest() throws Exception {
-        
-        // Create a JWT token using CXF
-        JwtClaims claims = new JwtClaims();
-        claims.setSubject("alice");
-        claims.setIssuer("DoubleItSTSIssuer");
-        claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setExpiryTime(new Date().getTime() + (60L + 1000L));
-        String address = "bob/service.ws.apache.org@service.ws.apache.org";
-        claims.setAudiences(Collections.singletonList(address));
-        
-        KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(Loader.getResourceAsStream("clientstore.jks"), "cspass".toCharArray());
-        
-        Properties signingProperties = new Properties();
-        signingProperties.put(JoseConstants.RSSEC_SIGNATURE_ALGORITHM, SignatureAlgorithm.RS256.name());
-        signingProperties.put(JoseConstants.RSSEC_KEY_STORE, keystore);
-        signingProperties.put(JoseConstants.RSSEC_KEY_STORE_ALIAS, "myclientkey");
-        signingProperties.put(JoseConstants.RSSEC_KEY_PSWD, "ckpass");
-
-        JwsHeaders jwsHeaders = new JwsHeaders(signingProperties);
-        JwsJwtCompactProducer jws = new JwsJwtCompactProducer(jwsHeaders, claims);
-
-        JwsSignatureProvider sigProvider =
-            JwsUtils.loadSignatureProvider(signingProperties, jwsHeaders);
-
-        String signedToken = jws.signWith(sigProvider);
-        
-        // KrbRuntime.setTokenProvider(new org.apache.kerby.kerberos.provider.token.JwtTokenProvider());
-        // TokenDecoder tokenDecoder = KrbRuntime.getTokenProvider().createTokenDecoder();
-        // AuthToken decodedToken = tokenDecoder.decodeFromString(signedToken);
-        
-        // Wrap it in a KrbToken
-        KrbToken krbToken = new KrbToken();
-        //krbToken.setInnerToken(decodedToken);
-        //krbToken.setTokenType();
-        krbToken.setTokenFormat(TokenFormat.JWT);
-        krbToken.setTokenValue(signedToken.getBytes());
         
         // Get a TGT
         KrbClient client = new KrbClient();
@@ -347,6 +298,19 @@ public class AuthenticationTest extends org.junit.Assert {
 
         tokenClient.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
         client.init();
+        
+        // Create a JWT token using CXF
+        JwtClaims claims = new JwtClaims();
+        claims.setSubject("alice");
+        claims.setIssuer("DoubleItSTSIssuer");
+        claims.setIssuedAt(new Date().getTime() / 1000L);
+        claims.setExpiryTime(new Date().getTime() + (60L + 1000L));
+        String address = "bob/service.ws.apache.org@service.ws.apache.org";
+        claims.setAudiences(Collections.singletonList(address));
+        
+        // Wrap it in a KrbToken + sign it
+        CXFKrbToken krbToken = new CXFKrbToken(claims, false);
+        krbToken.sign();
         
 
         SgtTicket tkt;
