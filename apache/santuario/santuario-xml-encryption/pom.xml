@@ -27,8 +27,8 @@
    <properties>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <junit.version>4.12</junit.version>
-        <slf4j.version>1.7.13</slf4j.version>
-        <xmlsec.version>2.0.6</xmlsec.version>
+        <slf4j.version>1.7.19</slf4j.version>
+        <xmlsec.version>2.0.7</xmlsec.version>
    </properties>
 
    <dependencies>
