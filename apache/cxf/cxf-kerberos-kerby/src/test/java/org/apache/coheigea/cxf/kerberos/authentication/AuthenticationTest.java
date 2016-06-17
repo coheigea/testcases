@@ -326,40 +326,6 @@ public class AuthenticationTest extends org.junit.Assert {
         cCacheFile.delete();
     }
     
-    /*
-    private AuthToken getAuthToken(String audience, String issuer, PrivateKey signingKey) {
-        AuthToken authToken = KrbRuntime.getTokenProvider().createTokenFactory().createToken();
-        authToken.setIssuer(issuer);
-        authToken.setSubject(SUBJECT);
-
-        List<String> aud = new ArrayList<String>();
-        aud.add(audience);
-        authToken.setAudiences(aud);
-
-        // Set expiration in 60 minutes
-        final Date now = new Date();
-        Date exp = new Date(now.getTime() + 1000 * 60 * 60);
-        authToken.setExpirationTime(exp);
-
-        Date nbf = now;
-        authToken.setNotBeforeTime(nbf);
-
-        Date iat = now;
-        authToken.setIssueTime(iat);
-
-        TokenEncoder tokenEncoder = KrbRuntime.getTokenProvider().createTokenEncoder();
-        tokenEncoder.setSignKey(signingKey);
-
-        KrbToken krbToken = new KrbToken();
-        krbToken.setInnerToken(authToken);
-        krbToken.setTokenType();
-        krbToken.setTokenFormat(TokenFormat.JWT);
-        krbToken.setTokenValue(tokenEncoder.encodeAsBytes(authToken));
-
-        return krbToken;
-    }
-    */
-
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
         Assert.assertEquals(numToDouble * 2 , resp);
