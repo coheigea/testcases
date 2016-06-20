@@ -20,6 +20,7 @@ package org.apache.coheigea.bigdata.hbase;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.security.PrivilegedExceptionAction;
+import java.util.Arrays;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -30,13 +31,18 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.junit.Assert;
 
 /**
- *Here we plug a custom CoProcessors into HBase for authorization. It enforces the following rules:
- *   a) The logged in user can do anything
- *   b) "bob" can get any column, cell etc. but not write anything.
+ * Here we plug custom CoProcessors into HBase for authorization. The logged in user can do anything, but no-one else can create, drop,
+ * read, etc.
  */
 public class HBaseAuthorizationTest {
     
@@ -56,8 +62,11 @@ public class HBaseAuthorizationTest {
         utility.getConfiguration().set("zookeeper.znode.parent", "/hbase-unsecure");
         
         // Enable authorization
+        utility.getConfiguration().set("hbase.security.authorization", "true");
         utility.getConfiguration().set("hbase.coprocessor.master.classes", 
                                        "org.apache.coheigea.bigdata.hbase.CustomMasterObserver");
+        utility.getConfiguration().set("hbase.coprocessor.region.classes", 
+                                       "org.apache.coheigea.bigdata.hbase.CustomRegionObserver");
         
         utility.startMiniCluster();
         
@@ -81,6 +90,12 @@ public class HBaseAuthorizationTest {
 
             admin.createTable(tableDescriptor);
         }
+        
+        // Add a new row
+        Put put = new Put(Bytes.toBytes("row1"));
+        put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val1"));
+        Table table = conn.getTable(TableName.valueOf("temp"));
+        table.put(put);
 
         conn.close();
     }
@@ -191,4 +206,173 @@ public class HBaseAuthorizationTest {
         conn.close();
     }
     
+    @org.junit.Test
+    public void testReadRowAsProcessOwner() throws Exception {
+        final Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "localhost");
+        conf.set("hbase.zookeeper.property.clientPort", "" + port);
+        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+        
+        Connection conn = ConnectionFactory.createConnection(conf);
+        Table table = conn.getTable(TableName.valueOf("temp"));
+        
+        // Read a row
+        Get get = new Get(Bytes.toBytes("row1"));
+        Result result = table.get(get);
+        byte[] valResult = result.getValue(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"));
+        Assert.assertTrue(Arrays.equals(valResult, Bytes.toBytes("val1")));
+        
+        conn.close();
+    }
+    
+    @org.junit.Test
+    public void testReadRowAsBob() throws Exception {
+        final Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "localhost");
+        conf.set("hbase.zookeeper.property.clientPort", "" + port);
+        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+        
+        String user = "bob";
+        if ("bob".equals(System.getProperty("user.name"))) {
+            user = "alice";
+        }
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Table table = conn.getTable(TableName.valueOf("temp"));
+                
+                // Read a row
+                try {
+                    Get get = new Get(Bytes.toBytes("row1"));
+                    table.get(get);
+                    Assert.fail("Failure expected on an unauthorized user");
+                } catch (IOException ex) {
+                    // expected
+                }
+                
+                conn.close();
+                return null;
+            }
+        });
+    }
+    
+    @org.junit.Test
+    public void testWriteRowAsProcessOwner() throws Exception {
+        final Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "localhost");
+        conf.set("hbase.zookeeper.property.clientPort", "" + port);
+        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+        
+        Connection conn = ConnectionFactory.createConnection(conf);
+        Table table = conn.getTable(TableName.valueOf("temp"));
+        
+        // Add a new row
+        Put put = new Put(Bytes.toBytes("row2"));
+        put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
+        table.put(put);
+        
+        conn.close();
+    }
+    
+    @org.junit.Test
+    public void testWriteRowAsBob() throws Exception {
+        final Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "localhost");
+        conf.set("hbase.zookeeper.property.clientPort", "" + port);
+        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+        
+        String user = "bob";
+        if ("bob".equals(System.getProperty("user.name"))) {
+            user = "alice";
+        }
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Table table = conn.getTable(TableName.valueOf("temp"));
+                
+                // Add a new row
+                try {
+                    Put put = new Put(Bytes.toBytes("row3"));
+                    put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
+                    table.put(put);
+                    Assert.fail("Failure expected on an unauthorized user");
+                } catch (IOException ex) {
+                    // expected
+                }
+                
+                conn.close();
+                return null;
+            }
+        });
+    }
+    
+    @org.junit.Test
+    public void testDeleteRowAsProcessOwner() throws Exception {
+        final Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "localhost");
+        conf.set("hbase.zookeeper.property.clientPort", "" + port);
+        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+        
+        Connection conn = ConnectionFactory.createConnection(conf);
+        Table table = conn.getTable(TableName.valueOf("temp"));
+        
+        // Add a new row
+        Put put = new Put(Bytes.toBytes("row4"));
+        put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
+        table.put(put);
+        
+        // Delete the new row
+        Delete delete = new Delete(Bytes.toBytes("row4"));
+        table.delete(delete);
+        
+        conn.close();
+    }
+    
+    @org.junit.Test
+    public void testDeleteRowAsBob() throws Exception {
+        final Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "localhost");
+        conf.set("hbase.zookeeper.property.clientPort", "" + port);
+        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+        
+        Connection conn = ConnectionFactory.createConnection(conf);
+        Table table = conn.getTable(TableName.valueOf("temp"));
+        
+        // Add a new row (as process owner)
+        Put put = new Put(Bytes.toBytes("row5"));
+        put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
+        table.put(put);
+        
+        String user = "bob";
+        if ("bob".equals(System.getProperty("user.name"))) {
+            user = "alice";
+        }
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Table table = conn.getTable(TableName.valueOf("temp"));
+                
+                try {
+                    // Delete the new row
+                    Delete delete = new Delete(Bytes.toBytes("row5"));
+                    table.delete(delete);
+                    Assert.fail("Failure expected on an unauthorized user");
+                } catch (IOException ex) {
+                    // expected
+                }
+                
+                conn.close();
+                return null;
+            }
+        });
+        
+        // Delete the new row (as process owner)
+        Delete delete = new Delete(Bytes.toBytes("row5"));
+        table.delete(delete);
+        
+        conn.close();
+    }
 }

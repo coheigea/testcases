@@ -41,7 +41,7 @@ import org.apache.hadoop.hbase.security.AccessDeniedException;
 import org.apache.hadoop.hbase.security.User;
 
 /**
- * A custom HBase MasterObserver which allows the "admin" user access, but no other user
+ * A custom HBase MasterObserver which allows the process owner access, but no other user.
  */
 public class CustomMasterObserver implements MasterObserver {
     
@@ -63,7 +63,7 @@ public class CustomMasterObserver implements MasterObserver {
 
     @Override
     public void stop(CoprocessorEnvironment arg0) throws IOException {
-     // Allow anyone to stop to make the test setup easier
+        // Allow anyone to stop to make the test setup easier
     }
 
     @Override
