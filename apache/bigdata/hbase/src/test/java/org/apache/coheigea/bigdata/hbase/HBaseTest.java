@@ -17,6 +17,7 @@
 
 package org.apache.coheigea.bigdata.hbase;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Arrays;
 
@@ -48,13 +49,14 @@ public class HBaseTest {
     
     @org.junit.BeforeClass
     public static void setup() throws Exception {
-        // Get a random port
-        ServerSocket serverSocket = new ServerSocket(0);
-        port = serverSocket.getLocalPort();
-        serverSocket.close();
+        port = getFreePort();
         
         utility = new HBaseTestingUtility();
         utility.getConfiguration().set("test.hbase.zookeeper.property.clientPort", "" + port);
+        utility.getConfiguration().set("hbase.master.port", "" + getFreePort());
+        utility.getConfiguration().set("hbase.master.info.port", "" + getFreePort());
+        utility.getConfiguration().set("hbase.regionserver.port", "" + getFreePort());
+        utility.getConfiguration().set("hbase.regionserver.info.port", "" + getFreePort());
         utility.getConfiguration().set("zookeeper.znode.parent", "/hbase-unsecure");
         utility.startMiniCluster();
         
@@ -134,4 +136,10 @@ public class HBaseTest {
         conn.close();
     }
     
+    private static int getFreePort() throws IOException {
+        ServerSocket serverSocket = new ServerSocket(0);
+        int port = serverSocket.getLocalPort();
+        serverSocket.close();
+        return port;
+    }
 }

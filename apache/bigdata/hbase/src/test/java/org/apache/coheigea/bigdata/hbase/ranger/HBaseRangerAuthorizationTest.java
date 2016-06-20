@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.hbase;
+package org.apache.coheigea.bigdata.hbase.ranger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -41,10 +41,21 @@ import org.apache.hadoop.security.UserGroupInformation;
 import org.junit.Assert;
 
 /**
- * Here we plug custom CoProcessors into HBase for authorization. The logged in user can do anything, but no-one else can create, drop,
- * read, etc.
+ * A custom RangerAdminClient is plugged into Ranger in turn, which loads security policies from a local file. These policies were 
+ * generated in the Ranger Admin UI for a service called "HBaseTest":
+ * 
+ * a) The "admin" user can do anything
+ * 
+ * a) A user "bob" can do a select/update on the table "words"
+ * b) A group called "IT" can do a select only on the "count" column in "words"
+ * c) "bob" can create any database
+ * 
+ * Policies available from admin via:
+ * 
+ * http://localhost:6080/service/plugins/policies/download/HBASETest
  */
-public class HBaseAuthorizationTest {
+@org.junit.Ignore
+public class HBaseRangerAuthorizationTest {
     
     private static int port;
     private static HBaseTestingUtility utility;
@@ -54,51 +65,57 @@ public class HBaseAuthorizationTest {
     public static void setup() throws Exception {
         port = getFreePort();
         
-        utility = new HBaseTestingUtility();
-        utility.getConfiguration().set("test.hbase.zookeeper.property.clientPort", "" + port);
-        utility.getConfiguration().set("hbase.master.port", "" + getFreePort());
-        utility.getConfiguration().set("hbase.master.info.port", "" + getFreePort());
-        utility.getConfiguration().set("hbase.regionserver.port", "" + getFreePort());
-        utility.getConfiguration().set("hbase.regionserver.info.port", "" + getFreePort());
-        utility.getConfiguration().set("zookeeper.znode.parent", "/hbase-unsecure");
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("colm", new String[]{"root"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                utility = new HBaseTestingUtility();
+                utility.getConfiguration().set("test.hbase.zookeeper.property.clientPort", "" + port);
+                utility.getConfiguration().set("hbase.master.port", "" + getFreePort());
+                utility.getConfiguration().set("hbase.master.info.port", "" + getFreePort());
+                utility.getConfiguration().set("hbase.regionserver.port", "" + getFreePort());
+                utility.getConfiguration().set("hbase.regionserver.info.port", "" + getFreePort());
+                utility.getConfiguration().set("zookeeper.znode.parent", "/hbase-unsecure");
+                
+                // Enable authorization
+                utility.getConfiguration().set("hbase.security.authorization", "true");
+                utility.getConfiguration().set("hbase.coprocessor.master.classes", 
+                                               "org.apache.ranger.authorization.hbase.RangerAuthorizationCoprocessor");
+                utility.getConfiguration().set("hbase.coprocessor.region.classes", 
+                                               "org.apache.ranger.authorization.hbase.RangerAuthorizationCoprocessor");
+                
+                utility.startMiniCluster();
+                
+                // Create a table as "admin"
+                final Configuration conf = HBaseConfiguration.create();
+                conf.set("hbase.zookeeper.quorum", "localhost");
+                conf.set("hbase.zookeeper.property.clientPort", "" + port);
+                conf.set("zookeeper.znode.parent", "/hbase-unsecure");
         
-        // Enable authorization
-        utility.getConfiguration().set("hbase.security.authorization", "true");
-        utility.getConfiguration().set("hbase.coprocessor.master.classes", 
-                                       "org.apache.coheigea.bigdata.hbase.CustomMasterObserver");
-        utility.getConfiguration().set("hbase.coprocessor.region.classes", 
-                                       "org.apache.coheigea.bigdata.hbase.CustomRegionObserver");
+                // Create a table
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Admin admin = conn.getAdmin();
         
-        utility.startMiniCluster();
+                // Create a table
+                if (!admin.tableExists(TableName.valueOf("temp"))) {
+                    HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf("temp"));
         
-        // Create a table as the logged in user
-        final Configuration conf = HBaseConfiguration.create();
-        conf.set("hbase.zookeeper.quorum", "localhost");
-        conf.set("hbase.zookeeper.property.clientPort", "" + port);
-        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+                    // Adding column families to table descriptor
+                    tableDescriptor.addFamily(new HColumnDescriptor("colfam1"));
+                    tableDescriptor.addFamily(new HColumnDescriptor("colfam2"));
         
-        // Create a table
-        Connection conn = ConnectionFactory.createConnection(conf);
-        Admin admin = conn.getAdmin();
-
-        // Create a table
-        if (!admin.tableExists(TableName.valueOf("temp"))) {
-            HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf("temp"));
-
-            // Adding column families to table descriptor
-            tableDescriptor.addFamily(new HColumnDescriptor("colfam1"));
-            tableDescriptor.addFamily(new HColumnDescriptor("colfam2"));
-
-            admin.createTable(tableDescriptor);
-        }
+                    admin.createTable(tableDescriptor);
+                }
+                
+                // Add a new row
+                Put put = new Put(Bytes.toBytes("row1"));
+                put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val1"));
+                Table table = conn.getTable(TableName.valueOf("temp"));
+                table.put(put);
         
-        // Add a new row
-        Put put = new Put(Bytes.toBytes("row1"));
-        put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val1"));
-        Table table = conn.getTable(TableName.valueOf("temp"));
-        table.put(put);
-
-        conn.close();
+                conn.close();
+                return null;
+            }
+        });
     }
     
     @org.junit.AfterClass
@@ -108,6 +125,7 @@ public class HBaseAuthorizationTest {
     
     @org.junit.Test
     public void testReadTablesAsProcessOwner() throws Exception {
+        /*
         final Configuration conf = HBaseConfiguration.create();
         conf.set("hbase.zookeeper.quorum", "localhost");
         conf.set("hbase.zookeeper.property.clientPort", "" + port);
@@ -120,8 +138,9 @@ public class HBaseAuthorizationTest {
         Assert.assertEquals(1, tableDescriptors.length);
 
         conn.close();
+        */
     }
-    
+    /*
     @org.junit.Test
     public void testReadTablesAsBob() throws Exception {
         final Configuration conf = HBaseConfiguration.create();
@@ -376,6 +395,7 @@ public class HBaseAuthorizationTest {
         
         conn.close();
     }
+    */
     
     private static int getFreePort() throws IOException {
         ServerSocket serverSocket = new ServerSocket(0);
@@ -383,5 +403,4 @@ public class HBaseAuthorizationTest {
         serverSocket.close();
         return port;
     }
-    
 }
