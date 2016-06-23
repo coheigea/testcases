@@ -54,7 +54,7 @@
             }
           ],
           "users": [
-            "colm"
+            "${user.name}"
           ],
           "groups": [
             "supergroup"

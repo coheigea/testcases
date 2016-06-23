@@ -57,7 +57,7 @@ public class RangerAdminClientImpl implements RangerAdminClient {
             basedir = new File(".").getCanonicalPath();
         }
 
-        java.nio.file.Path cachePath = FileSystems.getDefault().getPath(basedir, "/src/test/resources/" + cacheFilename);
+        java.nio.file.Path cachePath = FileSystems.getDefault().getPath(basedir, "/target/test-classes/" + cacheFilename);
         byte[] cacheBytes = Files.readAllBytes(cachePath);
 
         return gson.fromJson(new String(cacheBytes), ServicePolicies.class);
