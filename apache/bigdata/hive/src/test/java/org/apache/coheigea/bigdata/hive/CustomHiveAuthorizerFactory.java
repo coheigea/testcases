@@ -25,6 +25,7 @@ import org.apache.hadoop.hive.ql.security.HiveAuthenticationProvider;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveAccessControlException;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveAuthorizer;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveAuthorizerFactory;
+import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveAuthzContext;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveAuthzPluginException;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveAuthzSessionContext;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveMetastoreClientFactory;
@@ -34,7 +35,6 @@ import org.apache.hadoop.hive.ql.security.authorization.plugin.HivePrivilege;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HivePrivilegeInfo;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HivePrivilegeObject;
 import org.apache.hadoop.hive.ql.security.authorization.plugin.HiveRoleGrant;
-import org.apache.hadoop.hive.ql.security.authorization.plugin.QueryContext;
 
 public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
 
@@ -68,7 +68,7 @@ public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
         }
 
         @Override
-        public List<HivePrivilegeObject> applyRowFilterAndColumnMasking(QueryContext arg0,
+        public List<HivePrivilegeObject> applyRowFilterAndColumnMasking(HiveAuthzContext arg0,
                                                                         List<HivePrivilegeObject> arg1)
             throws SemanticException {
             return null;
@@ -76,7 +76,7 @@ public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
 
         @Override
         public void checkPrivileges(HiveOperationType hiveOpType, List<HivePrivilegeObject> inputHObjs,
-                                    List<HivePrivilegeObject> outputHObjs, QueryContext context)
+                                    List<HivePrivilegeObject> outputHObjs, HiveAuthzContext context)
             throws HiveAuthzPluginException, HiveAccessControlException {
             // Allow the user running the test to do anything
             if (isLoggedInUser(remoteUser)) {
@@ -115,7 +115,7 @@ public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
 
         @Override
         public List<HivePrivilegeObject> filterListCmdObjects(List<HivePrivilegeObject> arg0,
-                                                              QueryContext arg1)
+                                                              HiveAuthzContext arg1)
             throws HiveAuthzPluginException, HiveAccessControlException {
             return null;
         }
