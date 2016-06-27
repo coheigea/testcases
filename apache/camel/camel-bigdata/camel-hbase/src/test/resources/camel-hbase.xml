@@ -31,7 +31,7 @@
             <from uri="file:src/test/resources/queries?noop=true"/>
             <log message="blargh1: $simple{body}"/>
             <setHeader headerName="CamelHBaseRowId">
-                <simple>row1</simple>
+                <simple>${body}</simple>
             </setHeader>
             <log message="blargh1.1: $simple{header.CamelHBaseRowId}"/>
             <to uri="hbase:temp?operation=CamelHBaseGet&amp;row.family=colfam1&amp;row.qualifier=col1"/>
