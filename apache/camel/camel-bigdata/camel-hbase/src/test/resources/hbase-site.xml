@@ -19,7 +19,7 @@
 <configuration>
   <property>
     <name>hbase.zookeeper.property.clientPort</name>
-    <value>10000</value>
+    <value>${hbase.port}</value>
   </property>
   <property>
     <name>zookeeper.znode.parent</name>
