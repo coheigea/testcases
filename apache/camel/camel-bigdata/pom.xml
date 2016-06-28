@@ -27,6 +27,7 @@
     <modules>
         <module>camel-hdfs</module>
         <module>camel-hive</module>
+        <module>camel-hbase</module>
     </modules>
 
 </project>

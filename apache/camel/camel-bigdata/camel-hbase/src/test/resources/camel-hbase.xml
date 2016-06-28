@@ -23,20 +23,14 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <bean id="hbaseHeaderProcessor" 
-          class="org.apache.coheigea.camel.hbase.HBaseHeaderProcessor"/> 
-          
     <camelContext xmlns="http://camel.apache.org/schema/spring">
         <route>
             <from uri="file:src/test/resources/queries?noop=true"/>
-            <log message="blargh1: $simple{body}"/>
+            <convertBodyTo type="java.lang.String"/>
             <setHeader headerName="CamelHBaseRowId">
-                <simple>${body}</simple>
+                <simple>${body.trim}</simple>
             </setHeader>
-            <log message="blargh1.1: $simple{header.CamelHBaseRowId}"/>
             <to uri="hbase:temp?operation=CamelHBaseGet&amp;row.family=colfam1&amp;row.qualifier=col1"/>
-            <to uri="bean:hbaseHeaderProcessor"/> 
-            <log message="blargh: $simple{in.header.CamelHBaseValue}"/>
             <setBody>
                 <simple>Value is: $simple{in.header.CamelHBaseValue}</simple>
             </setBody>

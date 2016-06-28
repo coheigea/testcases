@@ -35,6 +35,9 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
+/**
+ * This demo shows how to use Apache Camel to invoke on Apache HBase.
+ */
 public class HBaseTest extends org.junit.Assert {
     
     private static HBaseTestingUtility utility;
@@ -43,7 +46,7 @@ public class HBaseTest extends org.junit.Assert {
     public static void setup() throws Exception {
         
         utility = new HBaseTestingUtility();
-        int port = 10000; //getFreePort();
+        int port = Integer.parseInt(System.getProperty("hbase.port"));
         utility.getConfiguration().set("test.hbase.zookeeper.property.clientPort", "" + port);
         utility.getConfiguration().set("hbase.master.port", "" + getFreePort());
         utility.getConfiguration().set("hbase.master.info.port", "" + getFreePort());
@@ -77,11 +80,12 @@ public class HBaseTest extends org.junit.Assert {
         put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val1"));
         Table table = conn.getTable(TableName.valueOf("temp"));
         table.put(put);
+        
+        put = new Put(Bytes.toBytes("row2"));
+        put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
+        table.put(put);
 
         conn.close();
-        
-        // Set the port so that it's available to the Camel context as a system property
-        System.setProperty("port", "" + port);
     }
     
     @org.junit.AfterClass

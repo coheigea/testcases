@@ -108,7 +108,7 @@ public class SyncopeDeployer {
         role.setRealm("/");
         @SuppressWarnings("unchecked")
         ProvisioningResult<GroupTO> result = client.post(role, ProvisioningResult.class);
-        return (GroupTO)result.getAny();
+        return (GroupTO)result.getEntity();
     }
 
     private boolean doesUserAlreadyExist(String username, Collection<? extends UserTO> users) {
