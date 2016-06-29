@@ -30,6 +30,7 @@
         <module>hdfs</module>
         <module>hive</module>
         <module>hbase</module>
+        <module>storm</module>
     </modules>
 
     <build>
