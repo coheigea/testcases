@@ -1,0 +1,109 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements. See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership. The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License. You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:cxf="http://cxf.apache.org/core"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:sec="http://cxf.apache.org/configuration/security"
+  xmlns:http="http://cxf.apache.org/transports/http/configuration"
+  xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
+  xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+  xmlns:util="http://www.springframework.org/schema/util" 
+  xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client"
+  xsi:schemaLocation="
+            http://cxf.apache.org/core
+            http://cxf.apache.org/schemas/core.xsd
+            http://cxf.apache.org/configuration/security
+            http://cxf.apache.org/schemas/configuration/security.xsd
+            http://cxf.apache.org/jaxws
+            http://cxf.apache.org/schemas/jaxws.xsd
+            http://cxf.apache.org/jaxrs
+            http://cxf.apache.org/schemas/jaxrs.xsd
+            http://cxf.apache.org/transports/http/configuration
+            http://cxf.apache.org/schemas/configuration/http-conf.xsd
+            http://cxf.apache.org/transports/http-jetty/configuration
+            http://cxf.apache.org/schemas/configuration/http-jetty.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util-2.0.xsd
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd">
+   
+   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+   
+   <cxf:bus>
+        <cxf:features>
+            <cxf:logging/>
+        </cxf:features>
+   </cxf:bus>
+   
+   <bean id="serviceBean" 
+         class="org.apache.coheigea.cxf.oidc.rp.BalanceService" />
+
+   <bean id="stateManager" class="org.apache.cxf.rs.security.oauth2.client.MemoryClientCodeStateManager"/>
+   
+   <bean id="authFilter"
+         class="org.apache.cxf.rs.security.oidc.rp.OidcClientCodeRequestFilter">
+       <property name="authorizationServiceUri" value="https://localhost:${testutil.ports.OIDCProviderServer}/services/authorize"/>
+           <!--<property name="accessTokenServiceClient" ref="atServiceClient"/>-->
+           <property name="startUri" value="balance/bob"/>
+           <property name="clientCodeStateManager" ref="stateManager"/>
+           <property name="consumer" ref="consumer"/>
+   </bean>
+
+<bean id="consumer" class="org.apache.cxf.rs.security.oauth2.client.Consumer">
+    <property name="key" value="consumer-id"/>
+    <property name="secret" value="this-is-a-secret"/>
+</bean>
+   
+   <jaxrs:server 
+        depends-on="BankServerTLS" 
+        address="https://localhost:${testutil.ports.BankServer}/bankservice">
+        <jaxrs:serviceBeans>
+            <ref bean="serviceBean"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+           <ref bean="authFilter"/>
+        </jaxrs:providers>
+   </jaxrs:server>
+
+   <jaxrs-client:client id="atServiceClient" serviceClass="org.apache.cxf.jaxrs.client.WebClient"
+    address="http://localhost:8080/services/oauth2Token/token">
+    <jaxrs-client:headers>
+       <entry key="Accept" value="application/json"/>
+    </jaxrs-client:headers>
+</jaxrs-client:client>
+   
+   <httpj:engine-factory id="BankServerTLS" bus="cxf">
+   <httpj:engine port="${testutil.ports.BankServer}">
+    <httpj:tlsServerParameters>
+      <sec:keyManagers keyPassword="skpass">
+          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
+      </sec:keyManagers>
+      <sec:trustManagers>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
+      </sec:trustManagers>
+      <sec:clientAuthentication want="true" required="false"/>
+    </httpj:tlsServerParameters>
+    <httpj:sessionSupport>true</httpj:sessionSupport> 
+   </httpj:engine>
+  </httpj:engine-factory>
+  
+</beans>
+
