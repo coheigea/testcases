@@ -17,6 +17,9 @@
 
 package org.apache.coheigea.bigdata.storm;
 
+import java.security.PrivilegedExceptionAction;
+
+import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.topology.TopologyBuilder;
@@ -29,25 +32,28 @@ public class StormTest {
     
     @org.junit.Test
     public void testStorm() throws Exception {
-        TopologyBuilder builder = new TopologyBuilder();        
+        final TopologyBuilder builder = new TopologyBuilder();        
         builder.setSpout("words", new WordSpout());
         builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
-        
-        Config conf = new Config();
-        conf.put("nimbus.authorization.class", CustomIAuthorizer.class.getName());
-        conf.put(Config.NIMBUS_AUTHORIZER, "org.apache.coheigea.bigdata.storm.CustomIAuthorizer");
-        conf.put(Config.NIMBUS_IMPERSONATION_AUTHORIZER, CustomIAuthorizer.class.getName());
+
+        final Config conf = new Config();
         conf.setDebug(true);
-        
-        LocalCluster cluster = new LocalCluster();
-        
-        cluster.submitTopology("word-count", conf, builder.createTopology());
-        
+
+        final LocalCluster cluster = new LocalCluster();
+
+        UserGroupInformation ugi = UserGroupInformation.createRemoteUser("alice");
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                cluster.submitTopology("word-count", conf, builder.createTopology());
+                return null;
+            }
+        });
+
         Utils.sleep(10000);
-        
+
         cluster.killTopology("word-count");
         cluster.shutdown();
-        
+
     }
     
 }
