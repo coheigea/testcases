@@ -43,9 +43,14 @@ public class BalanceService {
     @Context
     private SecurityContext securityContext;
     
+    public BalanceService() {
+        // Create initial account for bob
+        balances.put("bob", 1000);
+    }
+    
     @GET
     @Path("/{user}")
-    @Produces("text/plain")
+    @Produces("text/plain,application/json")
     public int getBalance(@PathParam("user") String user) {
         authenticateUser(user);
         
