@@ -27,13 +27,12 @@ public class CustomIAuthorizer implements IAuthorizer {
 
     @Override
     public boolean permit(ReqContext context, String operation, Map topology_conf) {
-        System.out.println("PRINC: " + context.principal());
-        return false;
+        System.out.println("PRINC: " + context.principal() + " " + operation);
+        return true;
     }
 
     @Override
     public void prepare(Map storm_conf) {
-        System.out.println("HERE!");
     }
 }
 
