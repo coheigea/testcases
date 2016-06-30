@@ -61,16 +61,21 @@
    <bean id="authFilter"
          class="org.apache.cxf.rs.security.oidc.rp.OidcClientCodeRequestFilter">
        <property name="authorizationServiceUri" value="https://localhost:${testutil.ports.OIDCProviderServer}/services/authorize"/>
-           <!--<property name="accessTokenServiceClient" ref="atServiceClient"/>-->
-           <property name="startUri" value="balance/bob"/>
+           <property name="accessTokenServiceClient" ref="atServiceClient"/>
+           <!-- <property name="startUri" value="balance/bob"/>-->
            <property name="clientCodeStateManager" ref="stateManager"/>
            <property name="consumer" ref="consumer"/>
+           <property name="idTokenReader" ref="idTokenReader"/>
    </bean>
 
-<bean id="consumer" class="org.apache.cxf.rs.security.oauth2.client.Consumer">
-    <property name="key" value="consumer-id"/>
-    <property name="secret" value="this-is-a-secret"/>
-</bean>
+   <bean id="consumer" class="org.apache.cxf.rs.security.oauth2.client.Consumer">
+       <property name="key" value="consumer-id"/>
+       <property name="secret" value="this-is-a-secret"/>
+   </bean>
+   
+   <bean id="idTokenReader" class="org.apache.cxf.rs.security.oidc.rp.IdTokenReader">
+         <property name="issuerId" value="OIDC IdP"/>
+   </bean>
    
    <jaxrs:server 
         depends-on="BankServerTLS" 
@@ -81,14 +86,22 @@
         <jaxrs:providers>
            <ref bean="authFilter"/>
         </jaxrs:providers>
+         <jaxrs:properties>
+           <entry key="rs.security.keystore.type" value="jks" />
+           <entry key="rs.security.keystore.alias" value="myservicekey"/>
+           <entry key="rs.security.keystore.password" value="sspass"/>
+           <entry key="rs.security.key.password" value="skpass"/>
+           <entry key="rs.security.keystore.file" value="servicestore.jks" />
+           <entry key="rs.security.signature.algorithm" value="RS256" />
+       </jaxrs:properties>
    </jaxrs:server>
 
    <jaxrs-client:client id="atServiceClient" serviceClass="org.apache.cxf.jaxrs.client.WebClient"
-    address="http://localhost:8080/services/oauth2Token/token">
-    <jaxrs-client:headers>
-       <entry key="Accept" value="application/json"/>
-    </jaxrs-client:headers>
-</jaxrs-client:client>
+        address="https://localhost:${testutil.ports.OIDCProviderServer}/services/token">
+        <jaxrs-client:headers>
+           <entry key="Accept" value="application/json"/>
+        </jaxrs-client:headers>
+    </jaxrs-client:client>
    
    <httpj:engine-factory id="BankServerTLS" bus="cxf">
    <httpj:engine port="${testutil.ports.BankServer}">
@@ -104,6 +117,14 @@
     <httpj:sessionSupport>true</httpj:sessionSupport> 
    </httpj:engine>
   </httpj:engine-factory>
+  
+  <http:conduit name="https://localhost.*">
+      <http:tlsClientParameters disableCNCheck="true">
+        <sec:trustManagers>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
+        </sec:trustManagers>
+      </http:tlsClientParameters>
+   </http:conduit>
   
 </beans>
 

@@ -29,7 +29,6 @@ import javax.ws.rs.core.Response;
 import org.apache.coheigea.cxf.oidc.provider.OIDCProviderServer;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.provider.json.JSONProvider;
-import org.apache.cxf.rs.security.oauth2.common.ClientAccessToken;
 import org.apache.cxf.rs.security.oauth2.common.OAuthAuthorizationData;
 import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
@@ -65,63 +64,47 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
     public void testAccessBalanceService() throws Exception {
         URL busFile = BalanceServiceTest.class.getResource("cxf-client.xml");
         
-        // Create an initial account at the bank
+        // Make an invocation on the bank + get back the redirection to the OIDC IdP
         String address = "https://localhost:" + PORT + "/bankservice/balance";
-        WebClient client = WebClient.create(address, "bob", "security", busFile.toString());
-        client.type("text/plain").accept("text/plain");
+        WebClient client = WebClient.create(address, setupProviders(), busFile.toString());
+        client.type("text/plain").accept("text/plain").accept("application/json");
         
-        WebClient.getConfig(client).getHttpConduit().getClient().setAutoRedirect(true);
-        WebClient.getConfig(client).getRequestContext().put("http.redirect.max.same.uri.count", "2");
         WebClient.getConfig(client).getRequestContext().put(
                 org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         client.path("/bob");
-        client.post(40);
+        Response response = client.get();
         
-        /*
-        // Get Authorization Code (as "bob")
-        String oauthService = "https://localhost:" + OAUTH_PORT + "/services/";
+        String location = response.getHeaderString("Location");
         
-        WebClient oauthClient = WebClient.create(oauthService, setupProviders(), "bob", "security", busFile.toString());
+        // Now make an invocation on the OIDC IdP using another WebClient instance
+        
+        WebClient idpClient = WebClient.create(location, setupProviders(), "bob", "security", busFile.toString());
         // Save the Cookie for the second request...
-        WebClient.getConfig(oauthClient).getRequestContext().put(
+        WebClient.getConfig(idpClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
-        String code = getAuthorizationCode(oauthClient);
+        // Get Authorization Code + State
+        String authzCodeLocation = makeAuthorizationCodeInvocation(idpClient, "openid");
+        String state = getSubstring(authzCodeLocation, "state");
+        assertNotNull(state);
+        String code = getSubstring(authzCodeLocation, "code");
         assertNotNull(code);
         
-        // Now get the access token
-        oauthClient = WebClient.create(oauthService, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
-        // Save the Cookie for the second request...
-        WebClient.getConfig(oauthClient).getRequestContext().put(
-            org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
+        // Now invoke back on the service using the authorization code
+        client.query("code", code);
+        client.query("state", state);
         
-        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code);
-        assertNotNull(accessToken.getTokenKey());
-
-        // Now invoke on the service with the access token
-        String partnerAddress = "https://localhost:" + PORT + "/bankservice/partners/balance";
-        WebClient partnerClient = WebClient.create(partnerAddress, busFile.toString());
-        partnerClient.type("text/plain").accept("text/plain");
-        partnerClient.header("Authorization", "Bearer " + accessToken.getTokenKey());
-        
-        partnerClient.path("/bob");
-        // Now make a service invocation with the access token
-        Response serviceResponse = partnerClient.get();
+        Response serviceResponse = client.get();
         assertEquals(serviceResponse.getStatus(), 200);
-        assertEquals(serviceResponse.readEntity(Integer.class).intValue(), 40);
-        */
+        assertEquals(serviceResponse.readEntity(Integer.class).intValue(), 1000);
     }
     
-    private String getAuthorizationCode(WebClient client) {
-        return getAuthorizationCode(client, null);
+    private String makeAuthorizationCodeInvocation(WebClient client, String scope) {
+        return makeAuthorizationCodeInvocation(client, scope, "consumer-id");
     }
     
-    private String getAuthorizationCode(WebClient client, String scope) {
-        return getAuthorizationCode(client, scope, "consumer-id");
-    }
-    
-    private String getAuthorizationCode(WebClient client, String scope, String consumerId) {
+    private String makeAuthorizationCodeInvocation(WebClient client, String scope, String consumerId) {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
         client.query("client_id", consumerId);
@@ -130,7 +113,6 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         if (scope != null) {
             client.query("scope", scope);
         }
-        client.path("authorize/");
         Response response = client.get();
         
         OAuthAuthorizationData authzData = response.readEntity(OAuthAuthorizationData.class);
@@ -146,11 +128,11 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         if (authzData.getProposedScope() != null) {
             form.param("scope", authzData.getProposedScope());
         }
+        form.param("state", authzData.getState());
         form.param("oauthDecision", "allow");
         
         response = client.post(form);
-        String location = response.getHeaderString("Location"); 
-        return getSubstring(location, "code");
+        return response.getHeaderString("Location");
     }
     
     private String getSubstring(String parentString, String substringName) {
@@ -161,29 +143,6 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
             ampersandIndex = foundString.length();
         }
         return foundString.substring(0, ampersandIndex);
-    }
-    
-    private ClientAccessToken getAccessTokenWithAuthorizationCode(WebClient client, String code) {
-        return getAccessTokenWithAuthorizationCode(client, code, "consumer-id", null);
-    }
-    
-    private ClientAccessToken getAccessTokenWithAuthorizationCode(WebClient client, 
-                                                                  String code,
-                                                                  String consumerId,
-                                                                  String audience) {
-        client.type("application/x-www-form-urlencoded").accept("application/json");
-        client.path("token");
-        
-        Form form = new Form();
-        form.param("grant_type", "authorization_code");
-        form.param("code", code);
-        form.param("client_id", consumerId);
-        if (audience != null) {
-            form.param("audience", audience);
-        }
-        Response response = client.post(form);
-        
-        return response.readEntity(ClientAccessToken.class);
     }
     
     private static List<Object> setupProviders() {
