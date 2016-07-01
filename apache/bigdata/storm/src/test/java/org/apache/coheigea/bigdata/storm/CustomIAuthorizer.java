@@ -28,7 +28,10 @@ public class CustomIAuthorizer implements IAuthorizer {
     @Override
     public boolean permit(ReqContext context, String operation, Map topology_conf) {
         System.out.println("PRINC: " + context.principal() + " " + operation);
-        return true;
+        if ("alice".equals(context.principal().getName())) {
+            return true;
+        }
+        return false;
     }
 
     @Override
