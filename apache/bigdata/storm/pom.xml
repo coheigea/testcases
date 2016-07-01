@@ -32,7 +32,7 @@
     </parent>
     <properties>
         <hadoop.version>2.7.2</hadoop.version>
-        <storm.version>1.0.1</storm.version>
+        <storm.version>1.0.2</storm.version>
         <ranger.version>0.6.0-SNAPSHOT</ranger.version>
     </properties>
     <dependencies>
