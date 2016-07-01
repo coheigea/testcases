@@ -19,7 +19,8 @@ package org.apache.coheigea.bigdata.storm;
 
 import java.security.PrivilegedExceptionAction;
 
-import org.apache.hadoop.security.UserGroupInformation;
+import javax.security.auth.Subject;
+
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.topology.TopologyBuilder;
@@ -41,14 +42,15 @@ public class StormTest {
 
         final LocalCluster cluster = new LocalCluster();
 
-        UserGroupInformation ugi = UserGroupInformation.createRemoteUser("alice");
-        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+        Subject subject = new Subject();
+        subject.getPrincipals().add(new SimplePrincipal("alice"));
+        Subject.doAs(subject, new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 cluster.submitTopology("word-count", conf, builder.createTopology());
                 return null;
             }
         });
-
+        
         Utils.sleep(10000);
 
         cluster.killTopology("word-count");

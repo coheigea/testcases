@@ -31,7 +31,6 @@
         <version>1.0</version>
     </parent>
     <properties>
-        <hadoop.version>2.7.2</hadoop.version>
         <storm.version>1.0.2</storm.version>
         <ranger.version>0.6.0-SNAPSHOT</ranger.version>
     </properties>
@@ -52,12 +51,6 @@
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
             <version>${storm.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-common</artifactId>
-            <version>${hadoop.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

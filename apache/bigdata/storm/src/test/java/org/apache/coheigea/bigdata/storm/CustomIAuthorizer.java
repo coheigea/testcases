@@ -23,11 +23,16 @@ import java.util.Map;
 import org.apache.storm.security.auth.IAuthorizer;
 import org.apache.storm.security.auth.ReqContext;
 
+/**
+ * A trivial custom IAuthorizer that allows access to "alice"
+ */
 public class CustomIAuthorizer implements IAuthorizer {
 
     @Override
     public boolean permit(ReqContext context, String operation, Map topology_conf) {
-        System.out.println("PRINC: " + context.principal() + " " + operation);
+        if (context.principal() == null) {
+            return false;
+        }
         if ("alice".equals(context.principal().getName())) {
             return true;
         }
