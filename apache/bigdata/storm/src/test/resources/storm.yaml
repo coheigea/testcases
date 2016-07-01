@@ -79,6 +79,7 @@ nimbus.credential.renewers.freq.secs: 600
 nimbus.impersonation.authorizer: "org.apache.storm.security.auth.authorizer.ImpersonationAuthorizer"
 # Plug in custom nimbus.authorizer here
 nimbus.authorizer: "org.apache.coheigea.bigdata.storm.CustomIAuthorizer"
+#nimbus.authorizer: "org.apache.ranger.authorization.storm.authorizer.RangerStormAuthorizer"
 nimbus.queue.size: 100000
 scheduler.display.resource: false
 
