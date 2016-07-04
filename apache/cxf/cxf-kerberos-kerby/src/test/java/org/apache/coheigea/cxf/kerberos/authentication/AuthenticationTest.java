@@ -24,8 +24,6 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -38,16 +36,14 @@ import org.apache.coheigea.cxf.kerberos.common.KerbyServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
-import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
 import org.apache.kerby.kerberos.kerb.KrbRuntime;
-import org.apache.kerby.kerberos.kerb.ccache.Credential;
-import org.apache.kerby.kerberos.kerb.ccache.CredentialCache;
+import org.apache.kerby.kerberos.kerb.client.Krb5Conf;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
-import org.apache.kerby.kerberos.kerb.client.KrbTokenClient;
+import org.apache.kerby.kerberos.kerb.client.KrbConfig;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
 import org.apache.kerby.kerberos.kerb.type.ticket.TgtTicket;
@@ -96,7 +92,7 @@ public class AuthenticationTest extends org.junit.Assert {
         updatePort(basedir);
 
         System.setProperty("sun.security.krb5.debug", "true");
-        System.setProperty("java.security.auth.login.config", basedir + "/src/test/resources/kerberos/kerberos.jaas");
+        System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
 
         Assert.assertTrue(
                           "Server failed to launch",
@@ -165,6 +161,30 @@ public class AuthenticationTest extends org.junit.Assert {
         // client.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
 
         client.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
+        client.init();
+
+        TgtTicket tgt;
+        SgtTicket tkt;
+
+        try {
+            tgt = client.requestTgt("alice@service.ws.apache.org", "alice");
+            assertTrue(tgt != null);
+
+            tkt = client.requestSgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
+            assertTrue(tkt != null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+    
+    @org.junit.Test
+    public void unitTestUsingKrb5Conf() throws Exception {
+        File confFile = new File(System.getProperty(Krb5Conf.KRB5_CONF));
+        KrbConfig krbConfig = new KrbConfig();
+        krbConfig.addKrb5Config(confFile);
+        
+        KrbClient client = new KrbClient(krbConfig);
         client.init();
 
         TgtTicket tgt;
@@ -263,130 +283,6 @@ public class AuthenticationTest extends org.junit.Assert {
         TestUtil.updateAddressPort(transportPort, PORT);
 
         doubleIt(transportPort, 25);
-    }
-    
-    @org.junit.Test
-    public void jwtUnitTestAccess() throws Exception {
-        
-        // Get a TGT
-        KrbClient client = new KrbClient();
-
-        client.setKdcHost("localhost");
-        client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
-        client.setAllowUdp(false);
-
-        client.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
-        client.init();
-        
-        TgtTicket tgt = client.requestTgt("alice@service.ws.apache.org", "alice");
-        assertNotNull(tgt);
-        
-        // Write to cache
-        Credential credential = new Credential(tgt);
-        CredentialCache cCache = new CredentialCache();
-        cCache.addCredential(credential);
-        cCache.setPrimaryPrincipal(tgt.getClientPrincipal());
-
-        File cCacheFile = File.createTempFile("krb5_alice@service.ws.apache.org", "cc");
-        cCache.store(cCacheFile);
-        
-        KrbTokenClient tokenClient = new KrbTokenClient(client);
-
-        tokenClient.setKdcHost("localhost");
-        tokenClient.setKdcTcpPort(Integer.parseInt(KDC_PORT));
-        tokenClient.setAllowUdp(false);
-
-        tokenClient.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
-        client.init();
-        
-        // Create a JWT token using CXF
-        JwtClaims claims = new JwtClaims();
-        claims.setSubject("alice");
-        claims.setIssuer("DoubleItSTSIssuer");
-        claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setExpiryTime(new Date().getTime() + (60L + 1000L));
-        String address = "bob/service.ws.apache.org@service.ws.apache.org";
-        claims.setAudiences(Collections.singletonList(address));
-        
-        // Wrap it in a KrbToken + sign it
-        CXFKrbToken krbToken = new CXFKrbToken(claims, false);
-        krbToken.sign();
-        
-        // Now get a SGT using the JWT
-        SgtTicket tkt;
-        try {
-            tkt = tokenClient.requestSgt(krbToken, "bob/service.ws.apache.org@service.ws.apache.org", cCacheFile.getPath());
-            assertTrue(tkt != null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
-        }
-        
-        cCacheFile.delete();
-    }
-    
-    @org.junit.Test
-    public void jwtUnitTestIdentity() throws Exception {
-        
-        // Get a TGT
-        KrbClient client = new KrbClient();
-
-        client.setKdcHost("localhost");
-        client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
-        client.setAllowUdp(false);
-
-        client.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
-        client.init();
-        
-        TgtTicket tgt = client.requestTgt("alice@service.ws.apache.org", "alice");
-        assertNotNull(tgt);
-        
-        // Write to cache
-        Credential credential = new Credential(tgt);
-        CredentialCache cCache = new CredentialCache();
-        cCache.addCredential(credential);
-        cCache.setPrimaryPrincipal(tgt.getClientPrincipal());
-
-        File cCacheFile = File.createTempFile("krb5_alice@service.ws.apache.org", "cc");
-        cCache.store(cCacheFile);
-        
-        KrbTokenClient tokenClient = new KrbTokenClient(client);
-
-        tokenClient.setKdcHost("localhost");
-        tokenClient.setKdcTcpPort(Integer.parseInt(KDC_PORT));
-        tokenClient.setAllowUdp(false);
-
-        tokenClient.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
-        client.init();
-        
-        // Create a JWT token using CXF
-        JwtClaims claims = new JwtClaims();
-        claims.setSubject("alice");
-        claims.setIssuer("DoubleItSTSIssuer");
-        claims.setIssuedAt(new Date().getTime() / 1000L);
-        claims.setExpiryTime(new Date().getTime() + (60L + 1000L));
-        String address = "krbtgt/service.ws.apache.org@service.ws.apache.org";
-        claims.setAudiences(Collections.singletonList(address));
-        
-        // Wrap it in a KrbToken + sign it
-        CXFKrbToken krbToken = new CXFKrbToken(claims, false);
-        krbToken.isIdToken(true);
-        krbToken.sign();
-        
-        // Now get a TGT using the JWT token
-        tgt = tokenClient.requestTgt(krbToken, cCacheFile.getPath());
-
-        // Now get a SGT using the TGT
-        SgtTicket tkt;
-        try {
-            tkt = tokenClient.requestSgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
-            assertTrue(tkt != null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
-        }
-        
-        cCacheFile.delete();
     }
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {

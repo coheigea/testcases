@@ -71,7 +71,7 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         updatePort(basedir);
 
         // System.setProperty("sun.security.krb5.debug", "true");
-        System.setProperty("java.security.auth.login.config", basedir + "/src/test/resources/kerberos/kerberos.jaas");
+        System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
 
         Assert.assertTrue(
                           "Server failed to launch",
