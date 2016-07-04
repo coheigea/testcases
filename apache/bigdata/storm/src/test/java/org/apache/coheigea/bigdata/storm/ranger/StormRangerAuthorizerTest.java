@@ -75,6 +75,7 @@ public class StormRangerAuthorizerTest {
         });
         
         cluster.shutdown();
+        System.clearProperty("storm.conf.file");
     }
     
     // "bob" can't create topologies other than "word-count" and "temp*"

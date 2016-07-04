@@ -43,6 +43,7 @@ public class StormAuthorizerTest {
     @org.junit.AfterClass
     public static void cleanup() throws Exception {
         cluster.shutdown();
+        System.clearProperty("storm.conf.file");
     }
     
     @org.junit.Test
