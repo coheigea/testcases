@@ -41,6 +41,7 @@ public class StormRangerAuthorizerTest {
     
     @org.junit.BeforeClass
     public static void setup() throws Exception {
+        System.setProperty("storm.conf.file", "storm_rangerauth.yaml");
         cluster = new LocalCluster();
         
         final Config conf = new Config();
