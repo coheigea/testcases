@@ -25,12 +25,13 @@ import javax.security.auth.Subject;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.topology.TopologyBuilder;
+import org.junit.Assert;
 
 /**
  * A simple test that wires a WordSpout + WordCounterBolt into a topology and runs it. We're also plugging in the CustomIAuthorizer,
- * which allows access to "alice" but no-one else. 
+ * which allows access to "alice" but no-one else.
  */
-public class StormAuthorizerTest {
+public class StormAuthorizerNegativeTest {
     
     private static LocalCluster cluster;
     
@@ -45,27 +46,25 @@ public class StormAuthorizerTest {
     }
     
     @org.junit.Test
-    public void testCreateTopologyAlice() throws Exception {
-        final Config conf = new Config();
-        conf.setDebug(true);
-        
+    public void testCreateTopologyBob() throws Exception {
         final TopologyBuilder builder = new TopologyBuilder();        
         builder.setSpout("words", new WordSpout());
         builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
-        
-        // Alice can create a new topology
-        final Subject subject = new Subject();
-        subject.getPrincipals().add(new SimplePrincipal("alice"));
+
+        final Config conf = new Config();
+        conf.setDebug(true);
+
+        // Bob can't create a new topology
+        Subject subject = new Subject();
+        subject.getPrincipals().add(new SimplePrincipal("bob"));
         Subject.doAs(subject, new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
-                cluster.submitTopology("word-count", conf, builder.createTopology());
-                return null;
-            }
-        });
-        
-        Subject.doAs(subject, new PrivilegedExceptionAction<Void>() {
-            public Void run() throws Exception {
-                cluster.killTopology("word-count");
+                try {
+                    cluster.submitTopology("word-count", conf, builder.createTopology());
+                    Assert.fail("Authorization failure expected");
+                } catch (Throwable t) {
+                    // expected
+                }
                 return null;
             }
         });
