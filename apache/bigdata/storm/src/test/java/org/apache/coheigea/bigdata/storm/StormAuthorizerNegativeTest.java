@@ -37,6 +37,7 @@ public class StormAuthorizerNegativeTest {
     
     @org.junit.BeforeClass
     public static void setup() throws Exception {
+        System.setProperty("storm.conf.file", "storm_customauth.yaml");
         cluster = new LocalCluster();
     }
     

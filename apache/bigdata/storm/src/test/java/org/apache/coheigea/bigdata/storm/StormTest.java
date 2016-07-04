@@ -30,6 +30,11 @@ import org.apache.storm.utils.Utils;
  */
 public class StormTest {
     
+    @org.junit.BeforeClass
+    public static void setup() throws Exception {
+        System.setProperty("storm.conf.file", "storm_noauth.yaml");
+    }
+    
     @org.junit.Test
     public void testStorm() throws Exception {
         final TopologyBuilder builder = new TopologyBuilder();        
