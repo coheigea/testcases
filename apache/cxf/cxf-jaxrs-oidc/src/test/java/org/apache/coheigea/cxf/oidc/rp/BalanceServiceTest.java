@@ -34,9 +34,8 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
 /**
- * Test the Balance Service. The BalanceService has two different implementations, a "customer" balance service where a user can create
- * a balance (if authenticated using Basic Authentication), and a "partner" balance service protected by OAuth, where a partner can check
- * the balance of a given user.
+ * Test the Balance Service. The BalanceService has a method to check the balance of a give user using GET. It is secured with OIDC - the client
+ * is redirected to the IdP for authentication, and then back to the service, where the username is checked.
  */
 public class BalanceServiceTest extends AbstractBusClientServerTestBase {
     
@@ -75,7 +74,6 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         Response response = client.get();
         
         String location = response.getHeaderString("Location");
-        
         // Now make an invocation on the OIDC IdP using another WebClient instance
         
         WebClient idpClient = WebClient.create(location, setupProviders(), "bob", "security", busFile.toString());
@@ -84,11 +82,15 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
         
         // Get Authorization Code + State
-        String authzCodeLocation = makeAuthorizationCodeInvocation(idpClient, "openid");
+        String authzCodeLocation = makeAuthorizationCodeInvocation(idpClient);
         String state = getSubstring(authzCodeLocation, "state");
         assertNotNull(state);
         String code = getSubstring(authzCodeLocation, "code");
         assertNotNull(code);
+        
+        // Add Referer
+        String referer = "https://localhost:" + OAUTH_PORT + "/services/authorize";
+        client.header("Referer", referer);
         
         // Now invoke back on the service using the authorization code
         client.query("code", code);
@@ -99,19 +101,9 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         assertEquals(serviceResponse.readEntity(Integer.class).intValue(), 1000);
     }
     
-    private String makeAuthorizationCodeInvocation(WebClient client, String scope) {
-        return makeAuthorizationCodeInvocation(client, scope, "consumer-id");
-    }
-    
-    private String makeAuthorizationCodeInvocation(WebClient client, String scope, String consumerId) {
+    private String makeAuthorizationCodeInvocation(WebClient client) {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
-        client.query("client_id", consumerId);
-        client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
-        client.query("response_type", "code");
-        if (scope != null) {
-            client.query("scope", scope);
-        }
         Response response = client.get();
         
         OAuthAuthorizationData authzData = response.readEntity(OAuthAuthorizationData.class);
