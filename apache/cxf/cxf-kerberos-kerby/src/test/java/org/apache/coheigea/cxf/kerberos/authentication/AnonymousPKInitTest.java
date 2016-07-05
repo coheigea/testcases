@@ -29,7 +29,6 @@ import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbConstant;
 import org.apache.kerby.kerberos.kerb.KrbException;
 import org.apache.kerby.kerberos.kerb.KrbRuntime;
-import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.client.KrbConfigKey;
 import org.apache.kerby.kerberos.kerb.client.KrbPkinitClient;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
@@ -76,7 +75,12 @@ public class AnonymousPKInitTest extends org.junit.Assert {
         
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
-        kerbyServer.getKdcConfig().setString(KdcConfigKey.PKINIT_IDENTITY, "myclient.cer");
+        // kerbyServer.getKdcConfig().setString(KdcConfigKey.PKINIT_IDENTITY, "myclient.cer");
+        
+        String pkinitIdentity = AnonymousPKInitTest.class.getResource("/kdccerttest.pem").getPath() + ","
+            + AnonymousPKInitTest.class.getResource("/kdckey.pem").getPath();
+        kerbyServer.getKdcConfig().setString(KdcConfigKey.PKINIT_IDENTITY, pkinitIdentity);
+
         kerbyServer.init();
 
         // Create principals
@@ -125,17 +129,18 @@ public class AnonymousPKInitTest extends org.junit.Assert {
         // client.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
 
         client.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
-        client.getKrbConfig().setString(KrbConfigKey.PKINIT_ANCHORS, "myclient.cer");
+        // client.getKrbConfig().setString(KrbConfigKey.PKINIT_ANCHORS, "myclient.cer");
+        
+        String pkinitAnchors = AnonymousPKInitTest.class.getResource("/cacerttest.pem").getPath();
+        client.getKrbConfig().setString(KrbConfigKey.PKINIT_ANCHORS, pkinitAnchors);
+        
         client.init();
 
-        TgtTicket tgt;
-        SgtTicket tkt;
-
         try {
-            tgt = client.requestTgt();
+            TgtTicket tgt = client.requestTgt();
             assertTrue(tgt != null);
 
-            //tkt = client.requestSgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
+            //SgtTicket tkt = client.requestSgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
             //assertTrue(tkt != null);
         } catch (Exception e) {
             e.printStackTrace();
