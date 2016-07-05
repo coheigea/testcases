@@ -45,6 +45,11 @@ public class KerbyServer extends KdcServer {
         identity.addKeys(encKeys);
         getIdentityService().addIdentity(identity);
     }
+    
+    public synchronized void createPrincipal(String principal) throws Exception {
+        KrbIdentity identity = new KrbIdentity(principal);
+        getIdentityService().addIdentity(identity);
+    }
 
     private String fixPrincipal(String principal) {
         if (! principal.contains("@")) {
