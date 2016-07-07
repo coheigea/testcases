@@ -104,21 +104,6 @@ public class StormRangerAuthorizerTest {
         });
     }
     
-    // bob can invoke on getClusterInfo()
-    @org.junit.Test
-    public void testClusterInfo() throws Exception {
-        
-        final Subject subject = new Subject();
-        subject.getPrincipals().add(new SimplePrincipal("bob"));
-        Subject.doAs(subject, new PrivilegedExceptionAction<Void>() {
-            public Void run() throws Exception {
-                
-                Assert.assertEquals(1, cluster.getClusterInfo().get_nimbuses_size());
-                return null;
-            }
-        });
-    }
-    
     @org.junit.Test
     public void testTopologyActivation() throws Exception {
         final Subject subject = new Subject();
