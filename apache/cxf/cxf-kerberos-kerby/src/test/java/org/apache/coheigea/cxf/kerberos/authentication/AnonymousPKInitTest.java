@@ -80,6 +80,7 @@ public class AnonymousPKInitTest extends org.junit.Assert {
         String pkinitIdentity = AnonymousPKInitTest.class.getResource("/kdccerttest.pem").getPath() + ","
             + AnonymousPKInitTest.class.getResource("/kdckey.pem").getPath();
         kerbyServer.getKdcConfig().setString(KdcConfigKey.PKINIT_IDENTITY, pkinitIdentity);
+        kerbyServer.getKdcConfig().setBoolean(KdcConfigKey.PREAUTH_REQUIRED, Boolean.TRUE);
 
         kerbyServer.init();
 
