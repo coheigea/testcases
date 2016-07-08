@@ -84,7 +84,7 @@ public class OIDCTest {
         Assert.assertNotNull("Property 'oidc.https.port' null", oidcHttpsPort);
 
         idpServer = startServer(Server.IDP, idpHttpsPort);
-        oidcServer = startServer(Server.OIDC, oidcHttpsPort);
+        // oidcServer = startServer(Server.OIDC, oidcHttpsPort);
         rpServer = startServer(Server.RP, rpHttpsPort);
         
         // loginToClientsPage(rpHttpsPort, idpHttpsPort);
@@ -203,7 +203,7 @@ public class OIDCTest {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testAlice() throws Exception {
         String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/services/25";
         String user = "alice";
