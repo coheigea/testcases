@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.fediz.service;
+package org.apache.coheigea.cxf.fediz.oidc.service;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -27,7 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 
-import org.apache.coheigea.cxf.fediz.service.Number;
+import org.apache.coheigea.cxf.fediz.oidc.service.Number;
 
 @Path("/services")
 public class DoubleItService {

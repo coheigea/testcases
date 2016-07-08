@@ -24,6 +24,7 @@
   xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
   xmlns:jaxws="http://cxf.apache.org/jaxws"
   xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+  xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client"
   xsi:schemaLocation="
             http://cxf.apache.org/core
             http://cxf.apache.org/schemas/core.xsd
@@ -38,7 +39,8 @@
             http://cxf.apache.org/transports/http-jetty/configuration
             http://cxf.apache.org/schemas/configuration/http-jetty.xsd
             http://www.springframework.org/schema/beans
-            http://www.springframework.org/schema/beans/spring-beans.xsd">
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd">
    
 
    <import resource="classpath:META-INF/cxf/cxf.xml" />
@@ -49,26 +51,27 @@
         </cxf:features>
    </cxf:bus>
    
-   <bean id="serviceBean" class="org.apache.coheigea.cxf.fediz.service.DoubleItService"/>
+   <bean id="serviceBean" class="org.apache.coheigea.cxf.fediz.oidc.service.DoubleItService"/>
 
-   <bean id="callbackHandler" class="org.apache.coheigea.cxf.fediz.service.KeystorePasswordCallback"/>
+   <bean id="stateManager" class="org.apache.cxf.rs.security.oauth2.client.MemoryClientCodeStateManager"/>
+   
+   <bean id="authFilter"
+         class="org.apache.cxf.rs.security.oidc.rp.OidcClientCodeRequestFilter">
+       <property name="authorizationServiceUri" value="https://localhost:${oidc.https.port}/services/authorize"/>
+       <property name="accessTokenServiceClient" ref="atServiceClient"/>
+       <property name="clientCodeStateManager" ref="stateManager"/>
+       <property name="consumer" ref="consumer"/>
+       <property name="idTokenReader" ref="idTokenReader"/>
+   </bean>
 
-   <bean id="stateManager" class="org.apache.cxf.rs.security.saml.sso.state.EHCacheSPStateManager">
-        <constructor-arg ref="cxf"/>
-    </bean>
-
-    <bean id="ssoFilter" class="org.apache.cxf.rs.security.saml.sso.SamlRedirectBindingFilter">
-        <property name="idpServiceAddress" value="https://localhost:${idp.https.port}/fediz-idp/saml"/>
-        <property name="assertionConsumerServiceAddress" 
-                  value="/racs/sso"/>
-        <property name="stateProvider" ref="stateManager"/>
-        <property name="addEndpointAddressToContext" value="true"/>
-        <property name="signRequest" value="true"/>
-        <property name="signaturePropertiesFile" value="stsKeystoreA.properties"/>
-        <property name="callbackHandler" ref="callbackHandler"/>
-        <property name="signatureUsername" value="realma" />
-        <property name="issuerId" value="urn:org:apache:cxf:fediz:fedizhelloworld" />
-    </bean>
+   <bean id="consumer" class="org.apache.cxf.rs.security.oauth2.client.Consumer">
+       <property name="key" value="consumer-id"/>
+       <property name="secret" value="this-is-a-secret"/>
+   </bean>
+   
+   <bean id="idTokenReader" class="org.apache.cxf.rs.security.oidc.rp.IdTokenReader">
+         <property name="issuerId" value="OIDC IdP"/>
+   </bean>
 
    <bean id="authorizationInterceptor"
          class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
@@ -80,25 +83,27 @@
             <ref bean="serviceBean"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
-            <ref bean="ssoFilter"/>
+            <ref bean="authFilter"/>
        </jaxrs:providers>
        <jaxrs:inInterceptors>
             <ref bean="authorizationInterceptor"/>
        </jaxrs:inInterceptors>
    </jaxrs:server>
-
-   <bean id="consumerService" class="org.apache.cxf.rs.security.saml.sso.RequestAssertionConsumerService">
-        <property name="stateProvider" ref="stateManager"/>
-        <property name="signaturePropertiesFile" value="stsKeystoreA.properties"/>
-        <property name="enforceKnownIssuer" value="false"/>
-        <property name="callbackHandlerClass" value="org.apache.coheigea.cxf.fediz.service.KeystorePasswordCallback" />
-   </bean>
-
-   <jaxrs:server address="/racs">
-       <jaxrs:serviceBeans>
-          <ref bean="consumerService"/>
-       </jaxrs:serviceBeans>
-   </jaxrs:server>
    
+   <jaxrs-client:client id="atServiceClient" serviceClass="org.apache.cxf.jaxrs.client.WebClient"
+        address="https://localhost:${oidc.https.port}/services/token">
+        <jaxrs-client:headers>
+           <entry key="Accept" value="application/json"/>
+        </jaxrs-client:headers>
+   </jaxrs-client:client>
+    
+   <http:conduit name="https://localhost.*">
+      <http:tlsClientParameters disableCNCheck="true">
+        <sec:trustManagers>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
+        </sec:trustManagers>
+      </http:tlsClientParameters>
+   </http:conduit>
+
 </beans>
 

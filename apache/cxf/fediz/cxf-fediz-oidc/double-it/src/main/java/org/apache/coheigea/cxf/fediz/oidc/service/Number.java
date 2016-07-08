@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.fediz.service;
+package org.apache.coheigea.cxf.fediz.oidc.service;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
