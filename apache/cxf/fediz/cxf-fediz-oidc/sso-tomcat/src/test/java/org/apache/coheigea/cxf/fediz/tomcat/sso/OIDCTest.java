@@ -40,9 +40,15 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.DomNodeList;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.gargoylesoftware.htmlunit.xml.XmlPage;
 
 /**
@@ -64,6 +70,8 @@ public class OIDCTest {
     private static Tomcat oidcServer;
     private static Tomcat rpServer;
     
+    private static String storedClientId;
+    
     @BeforeClass
     public static void init() throws Exception {
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
@@ -76,18 +84,37 @@ public class OIDCTest {
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.cxf", "info");  
         
         idpHttpsPort = System.getProperty("idp.https.port");
-        // idpHttpsPort = "12345";
         Assert.assertNotNull("Property 'idp.https.port' null", idpHttpsPort);
         rpHttpsPort = System.getProperty("rp.https.port");
         Assert.assertNotNull("Property 'rp.https.port' null", rpHttpsPort);
         oidcHttpsPort = System.getProperty("oidc.https.port");
         Assert.assertNotNull("Property 'oidc.https.port' null", oidcHttpsPort);
 
+        // Start IdP + OIDC servers
         idpServer = startServer(Server.IDP, idpHttpsPort);
-        // oidcServer = startServer(Server.OIDC, oidcHttpsPort);
-        rpServer = startServer(Server.RP, rpHttpsPort);
+        oidcServer = startServer(Server.OIDC, oidcHttpsPort);
         
-        // loginToClientsPage(rpHttpsPort, idpHttpsPort);
+        // Log onto OIDC + create a new client
+        loginToClientsPage(rpHttpsPort, oidcHttpsPort, idpHttpsPort);
+        
+        // Substitute in Client ID into RP configuration
+        String currentDir = new File(".").getCanonicalPath();
+        File rpConfig = new File(currentDir + File.separator 
+                                 + "target/tomcat/rp/webapps/cxfWebapp/WEB-INF/cxf-service.xml");
+        FileInputStream inputStream = new FileInputStream(rpConfig);
+        String content = IOUtils.toString(inputStream, "UTF-8");
+        inputStream.close();
+        
+        content = content.replaceAll("consumer-id", storedClientId);
+        
+        rpConfig = new File(currentDir + File.separator 
+                            + "target/tomcat/rp/webapps/cxfWebapp/WEB-INF/cxf-service.xml");
+        try (FileOutputStream outputStream = new FileOutputStream(rpConfig)) {
+            IOUtils.write(content, outputStream, "UTF-8");
+        }
+        
+        // Start RP server
+        rpServer = startServer(Server.RP, rpHttpsPort);
     }
     
     private static Tomcat startServer(Server serverType, String port) 
@@ -102,6 +129,7 @@ public class OIDCTest {
             server.getHost().setAppBase("tomcat/idp/webapps");
         } else if (serverType == Server.OIDC) {
             server.getHost().setAppBase("tomcat/oidc/webapps");
+            System.out.println("Starting OIDC on port: " + port);
         } else {
             server.getHost().setAppBase("tomcat/rp/webapps");
         }
@@ -203,7 +231,7 @@ public class OIDCTest {
     }
     
     @org.junit.Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testAlice() throws Exception {
         String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/services/25";
         String user = "alice";
@@ -237,7 +265,96 @@ public class OIDCTest {
 
         final XmlPage rpPage = button.click();
 
-        return rpPage.asXml();
+        String rpPageXml = rpPage.asXml();
+        
+        webClient.close();
+        
+        return rpPageXml;
     }
     
+    // Runs as BeforeClass: Login to the OIDC Clients page + create two new clients
+    private static void loginToClientsPage(String rpPort, String oidcPort, String idpPort) throws Exception {
+        String url = "https://localhost:" + oidcPort + "/fediz-oidc/console/clients";
+        String user = "alice";
+        String password = "ecila";
+        
+        // Login to the client page successfully
+        WebClient webClient = setupWebClient(user, password, idpPort);
+        HtmlPage loginPage = login(url, webClient);
+        final String bodyTextContent = loginPage.getBody().getTextContent();
+        Assert.assertTrue(bodyTextContent.contains("Registered Clients"));
+        
+        String clientUrl = "https://localhost:" + rpPort + "/fedizdoubleit/app1/services/25";
+        
+        // Now try to register a new client
+        HtmlPage registeredClientPage = 
+            registerNewClient(webClient, url, "consumer-id", clientUrl, clientUrl);
+        String registeredClientPageBody = registeredClientPage.getBody().getTextContent();
+        Assert.assertTrue(registeredClientPageBody.contains("Registered Clients"));
+        Assert.assertTrue(registeredClientPageBody.contains("consumer-id"));
+        
+        HtmlTable table = registeredClientPage.getHtmlElementById("registered_clients");
+        storedClientId = table.getCellAt(1, 1).asText().trim();
+        Assert.assertNotNull(storedClientId);
+        
+        webClient.close();
+    }
+    
+    private static HtmlPage registerNewClient(WebClient webClient, String url,
+                                              String clientName, String redirectURI,
+                                              String clientAudience) throws Exception {
+        HtmlPage registerPage = webClient.getPage(url + "/register");
+
+        final HtmlForm form = registerPage.getForms().get(0);
+
+        // Set new client values
+        final HtmlTextInput clientNameInput = form.getInputByName("client_name");
+        clientNameInput.setValueAttribute(clientName);
+        final HtmlSelect clientTypeSelect = form.getSelectByName("client_type");
+        clientTypeSelect.setSelectedAttribute("confidential", true);
+        final HtmlTextInput redirectURIInput = form.getInputByName("client_redirectURI");
+        redirectURIInput.setValueAttribute(redirectURI);
+        final HtmlTextInput clientAudienceURIInput = form.getInputByName("client_audience");
+        clientAudienceURIInput.setValueAttribute(clientAudience);
+
+        final HtmlButton button = form.getButtonByName("submit_button");
+        return button.click();
+    }
+    
+    private static WebClient setupWebClient(String user, String password, String idpPort) {
+        final WebClient webClient = new WebClient();
+        webClient.getOptions().setUseInsecureSSL(true);
+        webClient.getCredentialsProvider().setCredentials(
+            new AuthScope("localhost", Integer.parseInt(idpPort)),
+            new UsernamePasswordCredentials(user, password));
+
+        webClient.getOptions().setJavaScriptEnabled(false);
+        
+        return webClient;
+    }
+    
+    private static HtmlPage login(String url, WebClient webClient) throws IOException {
+        webClient.getOptions().setJavaScriptEnabled(false);
+        final HtmlPage idpPage = webClient.getPage(url);
+        webClient.getOptions().setJavaScriptEnabled(true);
+        Assert.assertEquals("IDP SignIn Response Form", idpPage.getTitleText());
+
+        // Test the SAML Version here
+        DomNodeList<DomElement> results = idpPage.getElementsByTagName("input");
+
+        String wresult = null;
+        for (DomElement result : results) {
+            if ("wresult".equals(result.getAttributeNS(null, "name"))) {
+                wresult = result.getAttributeNS(null, "value");
+                break;
+            }
+        }
+        Assert.assertTrue(wresult != null 
+            && wresult.contains("urn:oasis:names:tc:SAML:2.0:cm:bearer"));
+
+        final HtmlForm form = idpPage.getFormByName("signinresponseform");
+        final HtmlSubmitInput button = form.getInputByName("_eventId_submit");
+
+        return button.click();
+    }
 }

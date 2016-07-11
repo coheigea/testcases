@@ -29,7 +29,7 @@
 		</audienceUris>
 		<certificateStores>
 			<trustManager>
-				<keyStore file="test-classes/clienttrust.jks" password="storepass" type="JKS" />
+				<keyStore file="test-classes/ststrust.jks" password="storepass" type="JKS" />
 			</trustManager>
 		</certificateStores>
 		<trustedIssuers>

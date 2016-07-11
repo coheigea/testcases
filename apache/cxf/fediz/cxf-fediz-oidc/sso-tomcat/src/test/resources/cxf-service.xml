@@ -57,7 +57,7 @@
    
    <bean id="authFilter"
          class="org.apache.cxf.rs.security.oidc.rp.OidcClientCodeRequestFilter">
-       <property name="authorizationServiceUri" value="https://localhost:${oidc.https.port}/services/authorize"/>
+       <property name="authorizationServiceUri" value="https://localhost:${oidc.https.port}/fediz-oidc/idp/authorize"/>
        <property name="accessTokenServiceClient" ref="atServiceClient"/>
        <property name="clientCodeStateManager" ref="stateManager"/>
        <property name="consumer" ref="consumer"/>
