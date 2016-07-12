@@ -272,7 +272,7 @@ public class OIDCTest {
         return rpPageXml;
     }
     
-    // Runs as BeforeClass: Login to the OIDC Clients page + create two new clients
+    // Runs as BeforeClass: Login to the OIDC Clients page + create a new client
     private static void loginToClientsPage(String rpPort, String oidcPort, String idpPort) throws Exception {
         String url = "https://localhost:" + oidcPort + "/fediz-oidc/console/clients";
         String user = "alice";
