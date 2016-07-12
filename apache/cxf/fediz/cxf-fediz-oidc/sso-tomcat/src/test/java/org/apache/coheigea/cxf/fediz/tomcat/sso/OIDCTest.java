@@ -195,6 +195,7 @@ public class OIDCTest {
     @AfterClass
     public static void cleanup() throws Exception {
         shutdownServer(idpServer);
+        shutdownServer(oidcServer);
         shutdownServer(rpServer);
     }
     
