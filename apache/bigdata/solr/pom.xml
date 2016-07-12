@@ -32,7 +32,7 @@
     </parent>
     <properties>
         <solr.version>5.5.1</solr.version>
-        <ranger.version>0.6.0-SNAPSHOT</ranger.version>
+        <ranger.version>0.7.0-SNAPSHOT</ranger.version>
     </properties>
     <dependencies>
         <dependency>
@@ -51,6 +51,12 @@
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-test-framework</artifactId>
             <version>${solr.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
