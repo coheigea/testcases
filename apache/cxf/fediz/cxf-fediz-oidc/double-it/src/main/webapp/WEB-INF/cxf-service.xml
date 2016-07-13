@@ -70,7 +70,7 @@
    </bean>
    
    <bean id="idTokenReader" class="org.apache.cxf.rs.security.oidc.rp.IdTokenReader">
-         <property name="issuerId" value="OIDC IdP"/>
+         <property name="issuerId" value="accounts.fediz.com"/>
    </bean>
 
    <bean id="authorizationInterceptor"
@@ -88,10 +88,17 @@
        <jaxrs:inInterceptors>
             <ref bean="authorizationInterceptor"/>
        </jaxrs:inInterceptors>
+       <jaxrs:properties>
+           <entry key="rs.security.keystore.type" value="jks" />
+           <entry key="rs.security.keystore.alias" value="alice"/>
+           <entry key="rs.security.keystore.password" value="password"/>
+           <entry key="rs.security.keystore.file" value="oidc.jks" />
+           <entry key="rs.security.signature.algorithm" value="RS256" />
+       </jaxrs:properties>
    </jaxrs:server>
    
    <jaxrs-client:client id="atServiceClient" serviceClass="org.apache.cxf.jaxrs.client.WebClient"
-        address="https://localhost:${oidc.https.port}/fediz-oidc/idp/token">
+        address="https://localhost:${oidc.https.port}/fediz-oidc/oauth2/token">
         <jaxrs-client:headers>
            <entry key="Accept" value="application/json"/>
         </jaxrs-client:headers>

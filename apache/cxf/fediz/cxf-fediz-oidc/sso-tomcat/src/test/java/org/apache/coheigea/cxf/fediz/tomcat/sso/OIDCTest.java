@@ -71,6 +71,7 @@ public class OIDCTest {
     private static Tomcat rpServer;
     
     private static String storedClientId;
+    private static String storedClientSecret;
     
     @BeforeClass
     public static void init() throws Exception {
@@ -97,7 +98,7 @@ public class OIDCTest {
         // Log onto OIDC + create a new client
         loginToClientsPage(rpHttpsPort, oidcHttpsPort, idpHttpsPort);
         
-        // Substitute in Client ID into RP configuration
+        // Substitute in Client ID + Secret into RP configuration
         String currentDir = new File(".").getCanonicalPath();
         File rpConfig = new File(currentDir + File.separator 
                                  + "target/tomcat/rp/webapps/cxfWebapp/WEB-INF/cxf-service.xml");
@@ -106,6 +107,7 @@ public class OIDCTest {
         inputStream.close();
         
         content = content.replaceAll("consumer-id", storedClientId);
+        content = content.replaceAll("this-is-a-secret", storedClientSecret);
         
         rpConfig = new File(currentDir + File.separator 
                             + "target/tomcat/rp/webapps/cxfWebapp/WEB-INF/cxf-service.xml");
@@ -297,6 +299,12 @@ public class OIDCTest {
         HtmlTable table = registeredClientPage.getHtmlElementById("registered_clients");
         storedClientId = table.getCellAt(1, 1).asText().trim();
         Assert.assertNotNull(storedClientId);
+        
+        // Now get the Client Secret
+        final HtmlPage clientPage = webClient.getPage(url + "/" + storedClientId);
+        HtmlTable clientPageTable = clientPage.getHtmlElementById("client");
+        storedClientSecret = clientPageTable.getCellAt(1, 2).asText().trim();
+        Assert.assertNotNull(storedClientSecret);
         
         webClient.close();
     }
