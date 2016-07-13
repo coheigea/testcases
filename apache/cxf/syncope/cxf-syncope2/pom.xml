@@ -153,10 +153,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.syncope.fit</groupId>
-            <artifactId>syncope-fit-core-reference</artifactId>
+            <groupId>org.apache.coheigea.cxf.syncope</groupId>
+            <artifactId>cxf-syncope2-webapp</artifactId>
             <type>war</type>
-            <version>${syncope.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -263,9 +263,9 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.apache.syncope.fit</groupId>
-                                    <artifactId>syncope-fit-core-reference</artifactId>
-                                    <version>${syncope.version}</version>
+                                    <groupId>org.apache.coheigea.cxf.syncope</groupId>
+                                    <artifactId>cxf-syncope2-webapp</artifactId>
+                                    <version>${project.version}</version>
                                     <type>war</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${cargo.core.dir}</outputDirectory>
@@ -295,7 +295,6 @@
                                 <resource>
                                     <directory>${basedir}/target/test-classes/core</directory>
                                     <includes>
-                                        <include>connid.properties</include>
                                         <include>persistence.properties</include>
                                         <include>coreContext.xml</include>
                                         <include>workflow.properties</include>
@@ -303,25 +302,6 @@
                                         <include>log4j2.xml</include>
                                     </includes>
                                     <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-core-resources2</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${cargo.core.dir}/WEB-INF/classes/domains</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/target/test-classes/core</directory>
-                                    <includes>
-                                        <include>MasterContent.xml</include>
-                                    </includes>
-                                    <filtering>false</filtering>
                                 </resource>
                             </resources>
                         </configuration>
