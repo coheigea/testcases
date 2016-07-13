@@ -85,7 +85,7 @@
         <jaxrs:providers>
            <ref bean="authFilter"/>
         </jaxrs:providers>
-         <jaxrs:properties>
+        <jaxrs:properties>
            <entry key="rs.security.keystore.type" value="jks" />
            <entry key="rs.security.keystore.alias" value="myservicekey"/>
            <entry key="rs.security.keystore.password" value="sspass"/>
