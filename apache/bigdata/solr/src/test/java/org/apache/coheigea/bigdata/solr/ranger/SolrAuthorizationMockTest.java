@@ -18,12 +18,14 @@
 package org.apache.coheigea.bigdata.solr.ranger;
 
 import java.security.Principal;
+import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.ranger.authorization.solr.authorizer.RangerSolrAuthorizer;
 import org.apache.solr.common.params.MapSolrParams;
@@ -35,26 +37,87 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Some mock tests for the RangerSolrAuthorizer.
+ * Some mock tests for the RangerSolrAuthorizer using the RangerSolrAuthorizer. The policies are as follows:
+ * 
+ * a) "bob" has all privileges on the "docs" collection
+ * b) "alice" and the "IT" group can only query the "docs" collection
+ * c) The "Legal" group can only query the "docs" collection from the IP 127.0.0.1
  */
 public class SolrAuthorizationMockTest extends org.junit.Assert {
     
-    @Test
-    public void testRangerAuthorization() throws Exception {
-        
-        Map<String, Object> requestParameters = new HashMap<>();
-        requestParameters.put("userPrincipal", "alice");
-        requestParameters.put("collectionRequests", "docs");
-        requestParameters.put("requestType", RequestType.READ);
-        
-        AuthorizationContext context = new MockAuthorizationContext(requestParameters);
-        RangerSolrAuthorizer plugin = new RangerSolrAuthorizer();
+    private final static RangerSolrAuthorizer plugin = new RangerSolrAuthorizer();
+    
+    public SolrAuthorizationMockTest() {
         plugin.init(null);
-        
-        AuthorizationResponse authResp = plugin.authorize(context);
-        Assert.assertEquals(200, authResp.statusCode);
-        
+    }
+    
+    @org.junit.AfterClass
+    public static void cleanup() throws Exception {
         plugin.close();
+    }
+    
+    @Test
+    public void testReadPrivilege() throws Exception {
+        performTest(200, "alice", RequestType.READ);
+        performTest(200, "bob", RequestType.READ);
+        performTest(403, "eve", RequestType.READ);
+        performTest(200, "frank", "IT", RequestType.READ);
+        performTest(403, "helen", "finance", RequestType.READ);
+        
+        // performTest(200, "irene", "Legal", RequestType.READ);
+        // requestParameters.put("ipAddress", "127.0.0.1");
+    }
+    
+    @Test
+    public void testWritePrivilege() throws Exception {
+        performTest(403, "alice", RequestType.WRITE);
+        performTest(200, "bob", RequestType.WRITE);
+        performTest(403, "eve", RequestType.WRITE);
+        performTest(403, "frank", "IT", RequestType.WRITE);
+    }
+    
+    @Test
+    public void testOtherPrivilege() throws Exception {
+        performTest(403, "alice", RequestType.UNKNOWN);
+        performTest(200, "bob", RequestType.UNKNOWN);
+        performTest(403, "eve", RequestType.UNKNOWN);
+        performTest(403, "frank", "IT", RequestType.UNKNOWN);
+    }
+    
+    @Test
+    public void testAdminPrivilege() throws Exception {
+        performTest(403, "alice", RequestType.ADMIN);
+        performTest(200, "bob", RequestType.ADMIN);
+        performTest(403, "eve", RequestType.ADMIN);
+        performTest(403, "frank", "IT", RequestType.ADMIN);
+    }
+  
+    
+    private void performTest(int expectedStatus, String user, RequestType requestType) throws Exception {
+        performTest(expectedStatus, user, null, requestType);
+    }
+    
+    private void performTest(final int expectedStatus, String user, String group, RequestType requestType) throws Exception {
+        Map<String, Object> requestParameters = new HashMap<>();
+        requestParameters.put("userPrincipal", user);
+        requestParameters.put("collectionRequests", "docs");
+        requestParameters.put("requestType", requestType);
+        
+        final AuthorizationContext context = new MockAuthorizationContext(requestParameters);
+        
+        if (group != null) {
+            UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {group});
+            ugi.doAs(new PrivilegedExceptionAction<Void>() {
+                public Void run() throws Exception {
+                    AuthorizationResponse authResp = plugin.authorize(context);
+                    Assert.assertEquals(expectedStatus, authResp.statusCode);
+                    return null;
+                }
+            });
+        } else {
+            AuthorizationResponse authResp = plugin.authorize(context);
+            Assert.assertEquals(expectedStatus, authResp.statusCode);
+        }
     }
 
     private static class MockAuthorizationContext extends AuthorizationContext {
@@ -78,6 +141,9 @@ public class SolrAuthorizationMockTest extends org.junit.Assert {
 
         @Override
         public String getHttpHeader(String header) {
+            if ("REMOTE_ADDR".equals(header)) {
+                return (String) values.get("ipAddress");
+            }
             return null;
         }
 
