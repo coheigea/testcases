@@ -19,37 +19,21 @@
 package org.apache.coheigea.cxf.fediz.oidc.service;
 
 import javax.annotation.security.RolesAllowed;
-
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
-import org.apache.coheigea.cxf.fediz.oidc.service.Number;
-
-@Path("/services")
+@Path("/doubleit")
 public class DoubleItService {
 
     @GET
     @Produces("application/xml")
-    @Path("/{numberToDouble}/")
     @RolesAllowed({ "User", "Admin", "Manager" })
-    public Number doubleIt(@PathParam("numberToDouble") int numberToDouble) {
+    public Number doubleIt(@QueryParam("numberToDouble") int numberToDouble) {
         Number newNumber = new Number();
         newNumber.setDescription("This is the double number response");
         newNumber.setNumber(numberToDouble * 2);
         return newNumber;
     }
-
-    @POST
-    @Produces("application/xml")
-    @Consumes("application/x-www-form-urlencoded")
-    @Path("/{numberToDouble}/")
-    @RolesAllowed({ "User", "Admin", "Manager" })
-    public Number doubleItPost(@PathParam("numberToDouble") int numberToDouble) {
-        return doubleIt(numberToDouble);
-    }
-    
 }

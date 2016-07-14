@@ -226,7 +226,7 @@ public class OIDCTest {
     @org.junit.Test
     // @org.junit.Ignore
     public void testInBrowser() throws Exception {
-        String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/services/25";
+        String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/doubleit?numberToDouble=25";
         // Use "alice/ecila"
         
         System.out.println("URL: " + url);
@@ -236,7 +236,7 @@ public class OIDCTest {
     @org.junit.Test
     @org.junit.Ignore
     public void testAlice() throws Exception {
-        String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/services/25";
+        String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/doubleit?numberToDouble=25";
         String user = "alice";
         String password = "ecila";
         
@@ -287,7 +287,7 @@ public class OIDCTest {
         final String bodyTextContent = loginPage.getBody().getTextContent();
         Assert.assertTrue(bodyTextContent.contains("Registered Clients"));
         
-        String clientUrl = "https://localhost:" + rpPort + "/fedizdoubleit/app1/services/25";
+        String clientUrl = "https://localhost:" + rpPort + "/fedizdoubleit/app1/doubleit";
         
         // Now try to register a new client
         HtmlPage registeredClientPage = 
