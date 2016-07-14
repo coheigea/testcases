@@ -125,6 +125,13 @@
         <property name="claim" ref="claim_role" />
         <property name="optional" value="false" />
     </bean>
+    
+    <bean class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationClaimEntity">
+        <property name="application" ref="srv-oidc" />
+        <property name="claim" ref="claim_role" />
+        <property name="optional" value="false" />
+    </bean>
+    
     <bean class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationClaimEntity">
         <property name="application" ref="srv-fedizhelloworld" />
         <property name="claim" ref="claim_givenname" />
