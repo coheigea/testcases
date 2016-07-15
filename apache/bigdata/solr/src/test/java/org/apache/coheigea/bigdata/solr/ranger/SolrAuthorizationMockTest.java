@@ -41,7 +41,7 @@ import org.junit.Test;
  * 
  * a) "bob" has all privileges on the "docs" collection
  * b) "alice" and the "IT" group can only query the "docs" collection
- * c) The "Legal" group can only query the "docs" collection from the IP 127.0.0.1
+ * c) The "Legal" group can only query the "docs" collection from the IP 127.0.0.*
  */
 public class SolrAuthorizationMockTest extends org.junit.Assert {
     
@@ -64,8 +64,8 @@ public class SolrAuthorizationMockTest extends org.junit.Assert {
         performTest(200, "frank", "IT", RequestType.READ);
         performTest(403, "helen", "finance", RequestType.READ);
         
-        // performTest(200, "irene", "Legal", RequestType.READ);
-        // requestParameters.put("ipAddress", "127.0.0.1");
+        performTest(200, "irene", "Legal", RequestType.READ, "127.0.0.5");
+        performTest(403, "jack", "Legal", RequestType.READ, "127.0.1.5");
     }
     
     @Test
@@ -91,17 +91,23 @@ public class SolrAuthorizationMockTest extends org.junit.Assert {
         performTest(403, "eve", RequestType.ADMIN);
         performTest(403, "frank", "IT", RequestType.ADMIN);
     }
-  
     
     private void performTest(int expectedStatus, String user, RequestType requestType) throws Exception {
-        performTest(expectedStatus, user, null, requestType);
+        performTest(expectedStatus, user, null, requestType, null);
     }
     
     private void performTest(final int expectedStatus, String user, String group, RequestType requestType) throws Exception {
+        performTest(expectedStatus, user, group, requestType, null);
+    }
+    
+    private void performTest(final int expectedStatus, String user, String group, RequestType requestType, String ipAddress) throws Exception {
         Map<String, Object> requestParameters = new HashMap<>();
         requestParameters.put("userPrincipal", user);
         requestParameters.put("collectionRequests", "docs");
         requestParameters.put("requestType", requestType);
+        if (ipAddress != null) {
+            requestParameters.put("ipAddress", ipAddress);
+        }
         
         final AuthorizationContext context = new MockAuthorizationContext(requestParameters);
         
