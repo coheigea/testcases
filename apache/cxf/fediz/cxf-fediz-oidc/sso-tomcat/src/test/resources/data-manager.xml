@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements. See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership. The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License. You may obtain a copy of the License at
+ 
+  http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util.xsd
+        ">
+    
+    <bean id="applicationContextProvider" class="org.apache.cxf.fediz.service.oidc.handler.hrd.ApplicationContextProvider"/>
+
+    <!-- List of accepted scopes -->
+    <util:map id="supportedScopes">
+        <entry key="openid" value="Access the authentication claims" />
+        <entry key="refreshToken" value="Refresh access tokens" />
+    </util:map>
+    
+    <!-- 
+        List of required scopes that must be available in request URIs when
+        client redirects users to OIDC
+    -->
+    <util:list id="coreScopes">
+        <value>openid</value>
+    </util:list>
+    
+    <!-- 
+        Typically the scopes authorized by the user will be reported back to the client,
+        reporting an approved refreshToken scope is currently disabled  
+    -->
+    <util:list id="invisibleToClientScopes">
+        <value>refreshToken</value>
+    </util:list>
+    
+    <!-- 
+        To support the alternative data persistence strategies: either register a custom
+        AbstractCodeDataProvider extension or implement AuthorizationCodeDataProvider directly
+    -->     
+    <bean id="oauthProvider" 
+          class="org.apache.cxf.rs.security.oauth2.grants.code.DefaultEHCacheCodeDataProvider"
+          init-method="init" destroy-method="close">
+        <!-- List of accepted scopes -->  
+        <property name="supportedScopes" ref="supportedScopes"/>
+        <!-- List of required scopes -->
+        <property name="requiredScopes" ref="coreScopes"/>
+        <!-- 
+             List of scopes that the consent/authorization form should make 
+             selected by default. For example, asking a user to do an extra click
+             to approve an "oidc" scope is a redundant operation because this scope
+             is required anyway.
+        -->
+        <property name="defaultScopes" ref="coreScopes"/>
+        
+        <property name="invisibleToClientScopes" ref="invisibleToClientScopes"/>
+        <!--
+        <property name="accessTokenLifetime" value="3600"/>
+        -->
+        <!--
+        <property name="supportPreauthorizedTokens" value="true"/>
+        -->
+        
+    </bean>
+
+    <util:map id="supportedClaims">
+        <entry key="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role" value="role"/>
+    </util:map>
+
+    <!-- Custom SubjectCreator where IdToken is created -->    
+    <bean id="subjectCreator" class="org.apache.cxf.fediz.service.oidc.FedizSubjectCreator">
+        <property name="idTokenIssuer" value="accounts.fediz.com"/>
+        <property name="supportedClaims" ref="supportedClaims"/>
+    </bean>
+         
+</beans>
+

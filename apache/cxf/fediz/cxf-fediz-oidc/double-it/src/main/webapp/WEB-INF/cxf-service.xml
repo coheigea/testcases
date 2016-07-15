@@ -62,6 +62,7 @@
        <property name="clientCodeStateManager" ref="stateManager"/>
        <property name="consumer" ref="consumer"/>
        <property name="idTokenReader" ref="idTokenReader"/>
+       <property name="claims" value="role"/>
    </bean>
 
    <bean id="consumer" class="org.apache.cxf.rs.security.oauth2.client.Consumer">
