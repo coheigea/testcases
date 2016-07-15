@@ -35,8 +35,8 @@
 
 	<property>
         <name>ranger.plugin.solr.policy.source.impl</name>
-        <!-- <value>org.apache.coheigea.bigdata.solr.ranger.RangerAdminClientImpl</value>-->
-        <value>org.apache.ranger.admin.client.RangerAdminRESTClient</value>
+        <value>org.apache.coheigea.bigdata.solr.ranger.RangerAdminClientImpl</value>
+        <!-- <value>org.apache.ranger.admin.client.RangerAdminRESTClient</value>-->
         <description>
             Policy source.
         </description>
