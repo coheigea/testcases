@@ -58,6 +58,16 @@ public class SolrCloudTest extends org.junit.Assert {
         tempDir = Files.createTempDirectory("solrcloud");
         server = new MiniSolrCloudCluster(2, tempDir, solrConfig, jettyConfig.build());
         
+        /*
+        try (ZkStateReader zkStateReader = new ZkStateReader( server.getZkServer().getZkAddress(),
+                                                              10000, 10000)) {
+            zkStateReader.getZkClient().delete(ZkStateReader.SOLR_SECURITY_CONF_PATH, 0, true);
+            zkStateReader.getZkClient().create(ZkStateReader.SOLR_SECURITY_CONF_PATH,
+                                               "{\"authorization\":{\"class\":\"org.apache.ranger.authorization.solr.authorizer.RangerSolrAuthorizer\"}}".getBytes(Charsets.UTF_8),
+                                               CreateMode.PERSISTENT, true);
+        }
+         */
+        
         JettySolrRunner startedServer = server.startJettySolrRunner();
         assertTrue(startedServer.isRunning());
         
