@@ -279,6 +279,25 @@
                       </resources>              
                     </configuration>            
                   </execution>
+                  <execution>
+                    <id>copy-resources-to-fediz-oidc</id>
+                    <phase>pre-integration-test</phase>
+                    <goals>
+                      <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                      <outputDirectory>${basedir}/target/tomcat/oidc/webapps/fediz-oidc/WEB-INF/</outputDirectory>
+                      <resources>          
+                        <resource>
+                          <directory>${basedir}/target/test-classes</directory>
+                          <includes>
+                            <include>data-manager.xml</include>
+                          </includes>
+                          <filtering>false</filtering>
+                        </resource>
+                      </resources>              
+                    </configuration>            
+                  </execution>
                 </executions>
             </plugin>
             <plugin>
