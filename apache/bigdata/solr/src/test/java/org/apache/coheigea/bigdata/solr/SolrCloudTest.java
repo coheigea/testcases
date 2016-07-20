@@ -18,6 +18,7 @@
 package org.apache.coheigea.bigdata.solr;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,9 +53,7 @@ public class SolrCloudTest extends org.junit.Assert {
         JettyConfig.Builder jettyConfig = JettyConfig.builder();
         jettyConfig.waitForLoadingCoresToFinish(null);
 
-        //String solrConfig = new String(Files.readAllBytes(Paths.get("src/test/resources/solrcloud.xml")), Charset.defaultCharset());
-        String solrConfig = MiniSolrCloudCluster.DEFAULT_CLOUD_SOLR_XML;
-        System.out.println("CONFIG: " + solrConfig);
+        String solrConfig = new String(Files.readAllBytes(Paths.get("src/test/resources/solrcloud/solr.xml")), Charset.defaultCharset());
         tempDir = Files.createTempDirectory("solrcloud");
         server = new MiniSolrCloudCluster(2, tempDir, solrConfig, jettyConfig.build());
         
@@ -84,7 +83,9 @@ public class SolrCloudTest extends org.junit.Assert {
     
     @AfterClass
     public static void cleanUp() throws Exception {
-        server.shutdown();
+        if (server != null) {
+            server.shutdown();
+        }
         tempDir.toFile().deleteOnExit();
     }
 
