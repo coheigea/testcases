@@ -32,7 +32,6 @@
     </parent>
     <properties>
         <storm.version>1.0.2</storm.version>
-        <ranger.version>0.6.0-SNAPSHOT</ranger.version>
     </properties>
     <dependencies>
         <dependency>

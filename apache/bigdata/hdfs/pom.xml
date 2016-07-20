@@ -30,10 +30,6 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
     </parent>
-    <properties>
-        <hadoop.version>2.7.2</hadoop.version>
-        <ranger.version>0.6.0-SNAPSHOT</ranger.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
