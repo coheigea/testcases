@@ -57,9 +57,6 @@ public class SolrCloudTest extends org.junit.Assert {
         tempDir = Files.createTempDirectory("solrcloud");
         server = new MiniSolrCloudCluster(2, tempDir, solrConfig, jettyConfig.build());
         
-        JettySolrRunner startedServer = server.startJettySolrRunner();
-        assertTrue(startedServer.isRunning());
-        
         String configName = "core1Config";
         File configDir = Paths.get("src/test/resources/solrcloud").toFile();
         server.uploadConfigDir(configDir, configName);
@@ -69,6 +66,9 @@ public class SolrCloudTest extends org.junit.Assert {
         collectionProperties.put("schema", "schema.xml");
         
         server.createCollection("docs", 1, 1, configName, collectionProperties);
+        
+        JettySolrRunner startedServer = server.startJettySolrRunner();
+        assertTrue(startedServer.isRunning());
     }
     
     @AfterClass
