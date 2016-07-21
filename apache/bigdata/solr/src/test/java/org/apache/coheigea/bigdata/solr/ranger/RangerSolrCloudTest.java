@@ -27,16 +27,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.hadoop.security.UserGroupInformation;
-import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.embedded.JettyConfig;
 import org.apache.solr.client.solrj.embedded.JettySolrRunner;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.request.QueryRequest;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.cloud.MiniSolrCloudCluster;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.cloud.ZkStateReader;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.zookeeper.CreateMode;
@@ -53,7 +48,6 @@ import org.junit.Test;
  * c) The "Legal" group can only query the "docs" collection from the IP 127.0.0.*
  * 
  */
-@org.junit.Ignore
 public class RangerSolrCloudTest extends org.junit.Assert {
     
     private static MiniSolrCloudCluster server;
@@ -73,15 +67,8 @@ public class RangerSolrCloudTest extends org.junit.Assert {
         try (ZkStateReader zkStateReader = new ZkStateReader( server.getZkServer().getZkAddress(),
                                                               10000, 10000)) {
             zkStateReader.getZkClient().delete(ZkStateReader.SOLR_SECURITY_CONF_PATH, 0, true);
-            String rangerAuthorizer = "org.apache.ranger.authorization.solr.authorizer.RangerSolrAuthorizer";
-            String basicAuthAuthenticator = "solr.BasicAuthPlugin";
-            zkStateReader.getZkClient().create(ZkStateReader.SOLR_SECURITY_CONF_PATH,
-                                               ("{"
-                                               + "\"authentication\":{\"blockUnknown\":false,\"class\":\"" + basicAuthAuthenticator + "\","
-                                               + "\"credentials\":{\"bob\":\"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c=\"}},"
-                                               + "\"authorization\":{\"class\":\"" + rangerAuthorizer + "\"}"
-                                               + "}"
-                                               ).getBytes(Charset.defaultCharset()),
+            String securityJson = new String(Files.readAllBytes(Paths.get("src/test/resources/security.json")), Charset.defaultCharset());
+            zkStateReader.getZkClient().create(ZkStateReader.SOLR_SECURITY_CONF_PATH, securityJson.getBytes(Charset.defaultCharset()),
                                                CreateMode.PERSISTENT, true);
         }
         
@@ -109,39 +96,44 @@ public class RangerSolrCloudTest extends org.junit.Assert {
     }
 
     @Test
-    public void testAddAndQuery() throws Exception {
-        
-        final CloudSolrClient cloudSolrClient = server.getSolrClient();
-        
-        cloudSolrClient.setDefaultCollection("docs");
-        
-        // Add document
-        SolrInputDocument doc = new SolrInputDocument();
-        doc.addField("title", "Title of Doc");
-        doc.addField("content", "Test Content");
-        
-        cloudSolrClient.add(doc);
-        cloudSolrClient.commit();
-        
-        ModifiableSolrParams params = new ModifiableSolrParams();
-        // Test it's uploaded
-        params.set("q", "*");
-
-        SolrRequest solrRequest = new QueryRequest(params);
-        solrRequest.setBasicAuthCredentials("bob", "SolrRocks"); 
-
-        // TODO parse response
-        cloudSolrClient.request(solrRequest);
-        /*
-                QueryResponse qResp = cloudSolrClient.query(params);
-
-                SolrDocumentList foundDocs = qResp.getResults();
-                Assert.assertEquals(1, foundDocs.getNumFound());
-
-                SolrDocument foundDoc = foundDocs.get(0);
-                Assert.assertEquals("Title of Doc", foundDoc.getFieldValue("title"));
-         */
+    public void testReadPrivilege() throws Exception {
+        performQuery("alice", null, false);
+        performQuery("bob", null, false);
+        performQuery("eve", null, true);
+        performQuery("frank", "IT", false);
+        performQuery("helen", "finance", true);
     }
     
+    private void performQuery(String user, String group, boolean exceptionExpected) throws Exception {
+        final CloudSolrClient cloudSolrClient = server.getSolrClient();
+        cloudSolrClient.setDefaultCollection("docs");
+        
+        ModifiableSolrParams params = new ModifiableSolrParams();
+        params.set("q", "*");
+
+        final QueryRequest queryRequest = new QueryRequest(params);
+        queryRequest.setBasicAuthCredentials(user, "SolrRocks"); 
+
+        try {
+            if (group != null) {
+                UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {group});
+                ugi.doAs(new PrivilegedExceptionAction<Void>() {
+                    public Void run() throws Exception {
+                        cloudSolrClient.request(queryRequest);
+                        return null;
+                    }
+                });
+            } else {
+                cloudSolrClient.request(queryRequest);
+            }
+        } catch (Exception ex) {
+            if (!exceptionExpected) {
+                throw ex;
+            }
+            return;
+        }
+        
+        Assert.assertFalse(exceptionExpected);
+    }
 
 }
