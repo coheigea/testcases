@@ -17,6 +17,9 @@
 
 package org.apache.coheigea.bigdata.solr;
 
+import java.nio.file.Paths;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -24,6 +27,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.core.CoreContainer;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,10 +42,16 @@ public class SolrTest extends org.junit.Assert {
     
     @Before
     public void setUp() throws Exception {
-        CoreContainer container = new CoreContainer("src/test/resources/solr");
+        CoreContainer container = new CoreContainer("target/test-classes/solr");
         container.load();
 
         server = new EmbeddedSolrServer(container, "core1" );
+    }
+    
+    @After
+    public void shutdown() throws Exception {
+        server.close();
+        FileUtils.deleteDirectory(Paths.get("target/data").toFile());
     }
 
     @Test

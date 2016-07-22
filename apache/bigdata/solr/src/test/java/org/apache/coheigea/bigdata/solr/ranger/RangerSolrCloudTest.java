@@ -59,7 +59,7 @@ public class RangerSolrCloudTest extends org.junit.Assert {
         JettyConfig.Builder jettyConfig = JettyConfig.builder();
         jettyConfig.waitForLoadingCoresToFinish(null);
 
-        String solrConfig = new String(Files.readAllBytes(Paths.get("src/test/resources/solrcloud/solr.xml")), Charset.defaultCharset());
+        String solrConfig = new String(Files.readAllBytes(Paths.get("target/test-classes/solrcloud/solr.xml")), Charset.defaultCharset());
         tempDir = Files.createTempDirectory("solrcloud");
         server = new MiniSolrCloudCluster(2, tempDir, solrConfig, jettyConfig.build());
         
@@ -73,7 +73,7 @@ public class RangerSolrCloudTest extends org.junit.Assert {
         }
         
         String configName = "core1Config";
-        File configDir = Paths.get("src/test/resources/solrcloud").toFile();
+        File configDir = Paths.get("target/test-classes/solrcloud").toFile();
         server.uploadConfigDir(configDir, configName);
         
         Map<String, String> collectionProperties = new HashMap<>();
