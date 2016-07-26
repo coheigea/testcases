@@ -53,6 +53,37 @@
    
    <bean id="serviceBean" class="org.apache.coheigea.cxf.fediz.oidc.service.DoubleItService"/>
 
+   <bean id="contextManager" class="org.apache.cxf.rs.security.oauth2.client.MemoryClientTokenContextManager"/>
+
+   <bean id="authorizationInterceptor"
+         class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+       <property name="securedObject" ref="serviceBean" />
+   </bean>
+
+   <bean id="authServiceFilter"
+         class="org.apache.cxf.rs.security.oidc.rp.OidcRpAuthenticationFilter">
+       <property name="clientTokenContextManager" ref="contextManager" />
+       <property name="redirectUri" value="https://localhost:${rp.https.port}/fedizdoubleit/auth/rp" />
+       <property name="roleClaim" value="role"/>
+   </bean>
+   
+   <jaxrs:server address="/app1">
+       <jaxrs:serviceBeans>
+            <ref bean="serviceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+            <ref bean="authServiceFilter"/>
+       </jaxrs:providers>
+       <jaxrs:inInterceptors>
+            <ref bean="authorizationInterceptor"/>
+       </jaxrs:inInterceptors>
+   </jaxrs:server>
+
+   <bean id="authService" class="org.apache.cxf.rs.security.oidc.rp.OidcRpAuthenticationService">
+       <property name="defaultLocation" value="https://localhost:${rp.https.port}/fedizdoubleit/app1/doubleit"/>
+       <property name="clientTokenContextManager" ref="contextManager" />
+   </bean>
+
    <bean id="stateManager" class="org.apache.cxf.rs.security.oauth2.client.MemoryClientCodeStateManager"/>
    
    <bean id="authFilter"
@@ -63,7 +94,8 @@
        <property name="consumer" ref="consumer"/>
        <property name="idTokenReader" ref="idTokenReader"/>
        <property name="claims" value="role"/>
-       <property name="roleClaim" value="role"/>
+       <property name="startUri" value="/rp"/>
+       <property name="completeUri" value="/rp/complete"/>
    </bean>
 
    <bean id="consumer" class="org.apache.cxf.rs.security.oauth2.client.Consumer">
@@ -75,21 +107,16 @@
          <property name="issuerId" value="accounts.fediz.com"/>
    </bean>
 
-   <bean id="authorizationInterceptor"
-         class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
-       <property name="securedObject" ref="serviceBean" />
-   </bean>
-   
-   <jaxrs:server address="/app1">
+   <bean id="clientTokenContextProvider" class="org.apache.cxf.rs.security.oauth2.client.ClientTokenContextProvider"/>
+
+   <jaxrs:server address="/auth">
        <jaxrs:serviceBeans>
-            <ref bean="serviceBean"/>
+            <ref bean="authService"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
             <ref bean="authFilter"/>
+            <ref bean="clientTokenContextProvider"/>
        </jaxrs:providers>
-       <jaxrs:inInterceptors>
-            <ref bean="authorizationInterceptor"/>
-       </jaxrs:inInterceptors>
        <jaxrs:properties>
            <entry key="rs.security.keystore.type" value="jks" />
            <entry key="rs.security.keystore.alias" value="alice"/>
