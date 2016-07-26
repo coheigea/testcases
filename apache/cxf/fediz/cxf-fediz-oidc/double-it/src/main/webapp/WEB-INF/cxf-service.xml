@@ -65,6 +65,7 @@
        <property name="clientTokenContextManager" ref="contextManager" />
        <property name="redirectUri" value="https://localhost:${rp.https.port}/fedizdoubleit/auth/rp" />
        <property name="roleClaim" value="role"/>
+       <property name="addRequestUriAsRedirectQuery" value="true"/>
    </bean>
    
    <jaxrs:server address="/app1">
