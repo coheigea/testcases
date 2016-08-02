@@ -49,10 +49,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-import com.gargoylesoftware.htmlunit.xml.XmlPage;
 
 /**
- * A test for SAML SSO using the CXF SAML SSO interceptors (deployed in Tomcat).
+ * A test that shows how to use interceptors of Apache CXF to authenticate and authorize clients of a JAX-RS service using OpenId Connect.
  */
 public class OIDCTest {
     
@@ -224,7 +223,7 @@ public class OIDCTest {
     }
     
     @org.junit.Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testInBrowser() throws Exception {
         String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/doubleit/25";
         // Use "alice/ecila"
@@ -233,46 +232,8 @@ public class OIDCTest {
         Thread.sleep(60 * 1000);
     }
     
-    @org.junit.Test
-    @org.junit.Ignore
-    public void testAlice() throws Exception {
-        String url = "https://localhost:" + getRpHttpsPort() + "/fedizdoubleit/app1/doubleit?numberToDouble=25";
-        String user = "alice";
-        String password = "ecila";
-        
-        final String bodyTextContent = 
-            login(url, user, password, getIdpHttpsPort());
-        
-        Assert.assertTrue(bodyTextContent.contains("This is the double number response"));
-        Assert.assertTrue(bodyTextContent.contains("50"));
-    }
-
     public String getServletContextName() {
         return "fedizdoubleit";
-    }
-    
-    private static String login(String url, String user, String password, String idpPort) throws IOException {
-        final WebClient webClient = new WebClient();
-        webClient.getOptions().setUseInsecureSSL(true);
-        webClient.getCredentialsProvider().setCredentials(
-            new AuthScope("localhost", Integer.parseInt(idpPort)),
-            new UsernamePasswordCredentials(user, password));
-
-        webClient.getOptions().setJavaScriptEnabled(false);
-        final HtmlPage idpPage = webClient.getPage(url);
-        webClient.getOptions().setJavaScriptEnabled(true);
-        Assert.assertEquals("IDP SignIn Response Form", idpPage.getTitleText());
-
-        final HtmlForm form = idpPage.getFormByName("samlsigninresponseform");
-        final HtmlSubmitInput button = form.getInputByName("_eventId_submit");
-
-        final XmlPage rpPage = button.click();
-
-        String rpPageXml = rpPage.asXml();
-        
-        webClient.close();
-        
-        return rpPageXml;
     }
     
     // Runs as BeforeClass: Login to the OIDC Clients page + create a new client
