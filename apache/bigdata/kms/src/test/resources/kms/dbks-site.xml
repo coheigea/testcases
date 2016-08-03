@@ -113,46 +113,4 @@
     </description>    
   </property>  
   
-  <!-- Ranger KMS Kerberos Config -->
-  <property>
-  	<name>ranger.ks.kerberos.principal</name>
-  	<value>rangerkms/_HOST@REALM</value>
-  </property>
-
-  <property>
-  	<name>ranger.ks.kerberos.keytab</name>
-  	<value></value>
-  </property>
-    
-  <!-- HSM Config -->
-  <property>
-  	<name>ranger.ks.hsm.type</name>
-  	<value>LunaProvider</value>
-  	<description></description>
-  </property>
-  
-  <property>
-  	<name>ranger.ks.hsm.enabled</name>
-  	<value>false</value>
-  	<description></description>
-  </property>
-  
-  <property>
-  	<name>ranger.ks.hsm.partition.name</name>
-  	<value></value>
-  	<description></description>
-  </property>
-  
-  <property>
-  	<name>ranger.ks.hsm.partition.password</name>
-  	<value></value>
-  	<description></description>
-  </property>
-  
-  <property>
-  	<name>ranger.ks.hsm.partition.password.alias</name>
-  	<value>ranger.kms.hsm.partition.password</value>
-  	<description></description>
-  </property>  
-  
 </configuration>
