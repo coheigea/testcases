@@ -54,14 +54,12 @@
             <version>${ranger.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>org.apache.ranger</groupId>
             <artifactId>ranger-kms-plugin</artifactId>
             <version>${ranger.version}</version>
             <scope>test</scope>
         </dependency>
-        -->
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>

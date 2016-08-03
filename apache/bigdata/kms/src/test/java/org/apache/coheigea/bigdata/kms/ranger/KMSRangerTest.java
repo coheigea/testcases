@@ -19,25 +19,31 @@ package org.apache.coheigea.bigdata.kms.ranger;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.PrivilegedExceptionAction;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.crypto.key.RangerKeyStoreProvider;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+
+import org.apache.hadoop.crypto.key.kms.server.KMS.KMSOp;
+import org.apache.hadoop.crypto.key.kms.server.KMSACLsType.Type;
 import org.apache.hadoop.crypto.key.kms.server.KMSConfiguration;
+import org.apache.hadoop.crypto.key.kms.server.KMSWebApp;
+import org.apache.hadoop.security.UserGroupInformation;
+import org.apache.hadoop.security.authorize.AuthorizationException;
+import org.easymock.EasyMock;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 
 /**
  * Policies available from admin via:
  * 
  * http://localhost:6080/service/plugins/policies/download/KMSTest
  */
-@Ignore
 public class KMSRangerTest {
     
     private static Connection conn;
@@ -92,28 +98,29 @@ public class KMSRangerTest {
         Path configDir = Paths.get("src/test/resources/kms");
         System.setProperty(KMSConfiguration.KMS_CONFIG_DIR, configDir.toFile().getAbsolutePath());
         
-        Configuration conf = new Configuration();
-        RangerKeyStoreProvider keyProvider = new RangerKeyStoreProvider(conf);
-        
-        /*
+        // Start KMSWebApp
         ServletContextEvent servletContextEvent = EasyMock.createMock(ServletContextEvent.class);
         ServletContext servletContext = EasyMock.createMock(ServletContext.class);
         EasyMock.expect(servletContextEvent.getServletContext()).andReturn(servletContext).anyTimes();
         EasyMock.replay(servletContextEvent);
         
-        
         KMSWebApp kmsWebapp = new KMSWebApp();
         kmsWebapp.contextInitialized(servletContextEvent);
-        */
-        /*
-        KMS rangerKMS = new KMS();
-        Map<String, String> jsonKeys = new HashMap<>();
-        jsonKeys.put(KMSRESTConstants.NAME_FIELD, "newkey");
-        HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
         
-        rangerKMS.createKey(jsonKeys, request);
-        */
         
+        final UserGroupInformation ugi = UserGroupInformation.createUserForTesting("bob", new String[]{"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                try {
+                    KMSWebApp.getACLs().assertAccess(Type.CREATE, ugi, KMSOp.CREATE_KEY, "newkey1", "127.0.0.1");
+                } catch (AuthorizationException ex) {
+                    System.out.println("EX: " + ex.getMessage());
+                }
+                return null;
+            }
+        });
+
         // tempDir.toFile().deleteOnExit();
     }
     /*
