@@ -32,6 +32,7 @@
         <module>hbase</module>
         <module>storm</module>
         <module>solr</module>
+        <module>kms</module>
     </modules>
 
     <build>
