@@ -103,6 +103,15 @@ public class RangerMasterKeyTest {
         } catch (Throwable t) {
             // expected
         }
+        
+        Assert.assertNotNull(rangerMasterKey.getMasterSecretKey("NewPassword"));
+        
+        try {
+            rangerMasterKey.getMasterSecretKey("badpass");
+            Assert.fail("Failure expected on retrieving a key with the wrong password");
+        } catch (Throwable t) {
+            // expected
+        }
     }
     
 }
