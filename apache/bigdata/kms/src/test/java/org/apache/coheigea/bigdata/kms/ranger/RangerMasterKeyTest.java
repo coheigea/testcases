@@ -19,11 +19,6 @@ package org.apache.coheigea.bigdata.kms.ranger;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
 
 import org.apache.hadoop.crypto.key.RangerKMSDB;
 import org.apache.hadoop.crypto.key.RangerKeyStoreProvider;
@@ -39,49 +34,14 @@ import org.junit.BeforeClass;
  */
 public class RangerMasterKeyTest {
     
-    private static Connection conn;
-    
     @BeforeClass
     public static void startServers() throws Exception {
-        // Start Apache Derby
-        Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-        
-        Properties props = new Properties();
-        Connection conn = DriverManager.getConnection("jdbc:derby:memory:derbyDB;create=true", props);
-        
-        Statement statement = conn.createStatement();
-        statement.execute("CREATE SCHEMA KMSADMIN");
-        
-        statement.execute("SET SCHEMA KMSADMIN");
-        
-        // Create masterkey table
-        statement.execute("CREATE SEQUENCE RANGER_MASTERKEY_SEQ START WITH 1 INCREMENT BY 1");
-        String tableCreationString = "CREATE TABLE ranger_masterkey (id VARCHAR(20) NOT NULL PRIMARY KEY, create_time DATE,"
-            + "update_time DATE, added_by_id VARCHAR(20), upd_by_id VARCHAR(20),"
-            + "cipher VARCHAR(255), bitlength VARCHAR(11), masterkey VARCHAR(2048))";
-        statement.execute(tableCreationString);
-        
-        // Create keys table
-        statement.execute("CREATE SEQUENCE RANGER_KEYSTORE_SEQ START WITH 1 INCREMENT BY 1");
-        statement.execute("CREATE TABLE ranger_keystore(id VARCHAR(20) NOT NULL PRIMARY KEY, create_time DATE,"
-            + "update_time DATE, added_by_id VARCHAR(20), upd_by_id VARCHAR(20),"
-            + "kms_alias VARCHAR(255) NOT NULL, kms_createdDate VARCHAR(20), kms_cipher VARCHAR(255),"
-            + "kms_bitLength VARCHAR(20), kms_description VARCHAR(512), kms_version VARCHAR(20),"
-            + "kms_attributes VARCHAR(1024), kms_encoded VARCHAR(2048))");
-
+        DerbyTestUtils.startDerby();
     }
     
     @AfterClass
     public static void stopServers() throws Exception {
-        // Shut Derby down
-        if (conn != null) {
-            conn.close();
-        }
-        try {
-            DriverManager.getConnection("jdbc:derby:memory:derbyDB;drop=true");
-        } catch (SQLException ex) {
-            // expected
-        }
+        DerbyTestUtils.stopDerby();
     }
     
     @org.junit.Test
@@ -93,9 +53,13 @@ public class RangerMasterKeyTest {
         RangerKMSDB rangerkmsDb = new RangerKMSDB(RangerKeyStoreProvider.getDBKSConf());     
         DaoManager daoManager = rangerkmsDb.getDaoManager();
         
+        String masterKeyPassword = "password0password0password0password0password0password0password0password0"
+            + "password0password0password0password0password0password0password0password0password0password0"
+            + "password0password0password0password0password0password0password0password0password0password0";
+        
         RangerMasterKey rangerMasterKey = new RangerMasterKey(daoManager);
-        Assert.assertTrue(rangerMasterKey.generateMasterKey("NewPassword"));
-        Assert.assertNotNull(rangerMasterKey.getMasterKey("NewPassword"));
+        Assert.assertTrue(rangerMasterKey.generateMasterKey(masterKeyPassword));
+        Assert.assertNotNull(rangerMasterKey.getMasterKey(masterKeyPassword));
         
         try {
             rangerMasterKey.getMasterKey("badpass");
@@ -104,7 +68,7 @@ public class RangerMasterKeyTest {
             // expected
         }
         
-        Assert.assertNotNull(rangerMasterKey.getMasterSecretKey("NewPassword"));
+        Assert.assertNotNull(rangerMasterKey.getMasterSecretKey(masterKeyPassword));
         
         try {
             rangerMasterKey.getMasterSecretKey("badpass");
@@ -112,6 +76,13 @@ public class RangerMasterKeyTest {
         } catch (Throwable t) {
             // expected
         }
+        
+        // Test BASE-64 encoding/decoding
+        
+        String mkey = rangerMasterKey.getMasterKey(masterKeyPassword);
+        byte[] key1 = com.sun.org.apache.xml.internal.security.utils.Base64.decode(mkey);
+        byte[] key2 = org.apache.commons.codec.binary.Base64.decodeBase64(mkey);
+        Assert.assertArrayEquals(key1, key2);
+
     }
-    
 }
