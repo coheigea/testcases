@@ -76,13 +76,5 @@ public class RangerMasterKeyTest {
         } catch (Throwable t) {
             // expected
         }
-        
-        // Test BASE-64 encoding/decoding
-        
-        String mkey = rangerMasterKey.getMasterKey(masterKeyPassword);
-        byte[] key1 = com.sun.org.apache.xml.internal.security.utils.Base64.decode(mkey);
-        byte[] key2 = org.apache.commons.codec.binary.Base64.decodeBase64(mkey);
-        Assert.assertArrayEquals(key1, key2);
-
     }
 }
