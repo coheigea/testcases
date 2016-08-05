@@ -72,13 +72,6 @@
             <version>10.11.1.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.sun.xml.security</groupId>
-            <artifactId>xml-security-impl</artifactId>
-            <version>1.0</version>
-            <scope>test</scope>
-        </dependency>
-
 
     </dependencies>
     <build>
