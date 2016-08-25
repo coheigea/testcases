@@ -122,6 +122,7 @@
    
    <bean id="oauthProvider" class="org.apache.coheigea.cxf.oidc.provider.EHCacheRefreshTokenProvider">
       <property name="clients" ref="clients"/>
+      <!-- <property name="useJwtFormatForAccessTokens" value="true"/> -->
    </bean>
    
    <bean id="authorizationService" class="org.apache.cxf.rs.security.oidc.idp.OidcAuthorizationCodeService">
