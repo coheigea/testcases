@@ -1,0 +1,499 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Apache Kafka Demo 1.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ bigdata-kafka-demo ---
+[INFO] Deleting /home/colm/src/testcases/apache/bigdata/kafka/target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ bigdata-kafka-demo ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /home/colm/src/testcases/apache/bigdata/kafka/src/main/java
+[INFO] skip non existing resourceDirectory /home/colm/src/testcases/apache/bigdata/kafka/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.3:compile (default-compile) @ bigdata-kafka-demo ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ bigdata-kafka-demo ---
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 0 resource
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.3:testCompile (default-testCompile) @ bigdata-kafka-demo ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /home/colm/src/testcases/apache/bigdata/kafka/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.19.1:test (default-test) @ bigdata-kafka-demo ---
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running org.apache.coheigea.bigdata.kafka.KafkaTest
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.server.quorum.QuorumPeerConfig parseProperties
+INFO: clientPortAddress is 0.0.0.0/0.0.0.0:42901
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.server.quorum.QuorumPeerConfig parseProperties
+INFO: secureClientPort is not set
+Aug 29, 2016 4:27:04 PM org.apache.curator.test.TestingZooKeeperMain internalRunFromConfig
+INFO: Starting server
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:zookeeper.version=3.5.1-alpha-1693007, built on 07/28/2015 07:19 GMT
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:host.name=localhost
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.version=1.8.0_91
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.vendor=Oracle Corporation
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.home=/opt/jdk1.8.0_91/jre
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.class.path=/home/colm/src/testcases/apache/bigdata/kafka/target/test-classes:/home/colm/src/testcases/apache/bigdata/kafka/target/classes:/home/colm/.m2/repository/junit/junit/4.12/junit-4.12.jar:/home/colm/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/home/colm/.m2/repository/org/slf4j/slf4j-jdk14/1.7.21/slf4j-jdk14-1.7.21.jar:/home/colm/.m2/repository/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar:/home/colm/.m2/repository/org/apache/kafka/kafka_2.10/0.8.2.2/kafka_2.10-0.8.2.2-test.jar:/home/colm/.m2/repository/org/apache/kafka/kafka-clients/0.8.2.2/kafka-clients-0.8.2.2.jar:/home/colm/.m2/repository/org/xerial/snappy/snappy-java/1.1.1.7/snappy-java-1.1.1.7.jar:/home/colm/.m2/repository/net/jpountz/lz4/lz4/1.2.0/lz4-1.2.0.jar:/home/colm/.m2/repository/com/yammer/metrics/metrics-core/2.2.0/metrics-core-2.2.0.jar:/home/colm/.m2/repository/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4.jar:/home/colm/.m2/repository/net/sf/jopt-simple/jopt-simple/3.2/jopt-simple-3.2.jar:/home/colm/.m2/repository/com/101tec/zkclient/0.3/zkclient-0.3.jar:/home/colm/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar:/home/colm/.m2/repository/org/apache/kafka/kafka_2.10/0.8.2.2/kafka_2.10-0.8.2.2.jar:/home/colm/.m2/repository/org/apache/curator/curator-test/3.2.0/curator-test-3.2.0.jar:/home/colm/.m2/repository/org/apache/zookeeper/zookeeper/3.5.1-alpha/zookeeper-3.5.1-alpha.jar:/home/colm/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar:/home/colm/.m2/repository/io/netty/netty/3.7.0.Final/netty-3.7.0.Final.jar:/home/colm/.m2/repository/net/java/dev/javacc/javacc/5.0/javacc-5.0.jar:/home/colm/.m2/repository/org/apache/commons/commons-math/2.2/commons-math-2.2.jar:/home/colm/.m2/repository/com/google/guava/guava/16.0.1/guava-16.0.1.jar:
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.library.path=/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.io.tmpdir=/tmp
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.compiler=<NA>
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.name=Linux
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.arch=amd64
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.version=4.4.0-34-generic
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:user.name=colm
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:user.home=/home/colm
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:user.dir=/home/colm/src/testcases/apache/bigdata/kafka
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.memory.free=226MB
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.memory.max=3547MB
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.memory.total=240MB
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.server.ZooKeeperServer setMinSessionTimeout
+INFO: minSessionTimeout set to 6000
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.server.ZooKeeperServer setMaxSessionTimeout
+INFO: maxSessionTimeout set to 60000
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.server.ZooKeeperServer <init>
+INFO: Created server with tickTime 3000 minSessionTimeout 6000 maxSessionTimeout 60000 datadir /tmp/1472484424846-0/version-2 snapdir /tmp/1472484424846-0/version-2
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.server.NIOServerCnxnFactory configure
+INFO: Configuring NIO connection handler with 10s sessionless connection timeout, 2 selector thread(s), 16 worker threads, and 64 kB direct buffers.
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.server.NIOServerCnxnFactory configure
+INFO: binding to port 0.0.0.0/0.0.0.0:42901
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.server.persistence.FileTxnSnapLog save
+INFO: Snapshotting: 0x0 to /tmp/1472484424846-0/version-2/snapshot.0
+Aug 29, 2016 4:27:04 PM org.apache.zookeeper.server.ContainerManager <init>
+INFO: Using checkIntervalMs=60000 maxPerMinute=10000
+CONNECT: 127.0.0.1:42901
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:zookeeper.version=3.5.1-alpha-1693007, built on 07/28/2015 07:19 GMT
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:host.name=localhost
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:java.version=1.8.0_91
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:java.vendor=Oracle Corporation
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:java.home=/opt/jdk1.8.0_91/jre
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:java.class.path=/home/colm/src/testcases/apache/bigdata/kafka/target/test-classes:/home/colm/src/testcases/apache/bigdata/kafka/target/classes:/home/colm/.m2/repository/junit/junit/4.12/junit-4.12.jar:/home/colm/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/home/colm/.m2/repository/org/slf4j/slf4j-jdk14/1.7.21/slf4j-jdk14-1.7.21.jar:/home/colm/.m2/repository/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar:/home/colm/.m2/repository/org/apache/kafka/kafka_2.10/0.8.2.2/kafka_2.10-0.8.2.2-test.jar:/home/colm/.m2/repository/org/apache/kafka/kafka-clients/0.8.2.2/kafka-clients-0.8.2.2.jar:/home/colm/.m2/repository/org/xerial/snappy/snappy-java/1.1.1.7/snappy-java-1.1.1.7.jar:/home/colm/.m2/repository/net/jpountz/lz4/lz4/1.2.0/lz4-1.2.0.jar:/home/colm/.m2/repository/com/yammer/metrics/metrics-core/2.2.0/metrics-core-2.2.0.jar:/home/colm/.m2/repository/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4.jar:/home/colm/.m2/repository/net/sf/jopt-simple/jopt-simple/3.2/jopt-simple-3.2.jar:/home/colm/.m2/repository/com/101tec/zkclient/0.3/zkclient-0.3.jar:/home/colm/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar:/home/colm/.m2/repository/org/apache/kafka/kafka_2.10/0.8.2.2/kafka_2.10-0.8.2.2.jar:/home/colm/.m2/repository/org/apache/curator/curator-test/3.2.0/curator-test-3.2.0.jar:/home/colm/.m2/repository/org/apache/zookeeper/zookeeper/3.5.1-alpha/zookeeper-3.5.1-alpha.jar:/home/colm/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar:/home/colm/.m2/repository/io/netty/netty/3.7.0.Final/netty-3.7.0.Final.jar:/home/colm/.m2/repository/net/java/dev/javacc/javacc/5.0/javacc-5.0.jar:/home/colm/.m2/repository/org/apache/commons/commons-math/2.2/commons-math-2.2.jar:/home/colm/.m2/repository/com/google/guava/guava/16.0.1/guava-16.0.1.jar:
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:java.library.path=/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:java.io.tmpdir=/tmp
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:java.compiler=<NA>
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:os.name=Linux
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:os.arch=amd64
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:os.version=4.4.0-34-generic
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:user.name=colm
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:user.home=/home/colm
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:user.dir=/home/colm/src/testcases/apache/bigdata/kafka
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:os.memory.free=197MB
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:os.memory.max=3547MB
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.Environment logEnv
+INFO: Client environment:os.memory.total=240MB
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.ZooKeeper <init>
+INFO: Initiating client connection, connectString=127.0.0.1:42901 sessionTimeout=6000 watcher=org.I0Itec.zkclient.ZkClient@4a22f9e2
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.ClientCnxn$SendThread logStartConnect
+INFO: Opening socket connection to server 127.0.0.1/127.0.0.1:42901. Will not attempt to authenticate using SASL (unknown error)
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.ClientCnxn$SendThread primeConnection
+INFO: Socket connection established, initiating session, client: /127.0.0.1:40588, server: 127.0.0.1/127.0.0.1:42901
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40588
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.ZooKeeperServer processConnectRequest
+INFO: Client attempting to establish new session at /127.0.0.1:40588
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.persistence.FileTxnLog append
+INFO: Creating new log file: log.1
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.ZooKeeperServer finishSessionInit
+INFO: Established session 0x10001746d2e0000 with negotiated timeout 6000 for client /127.0.0.1:40588
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.ClientCnxn$SendThread onConnected
+INFO: Session establishment complete on server 127.0.0.1/127.0.0.1:42901, sessionid = 0x10001746d2e0000, negotiated timeout = 6000
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.PrepRequestProcessor pRequest
+INFO: Got user-level KeeperException when processing sessionid:0x10001746d2e0000 type:create cxid:0x4 zxid:0x3 txntype:-1 reqpath:n/a Error Path:/brokers Error:KeeperErrorCode = NoNode for /brokers
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.PrepRequestProcessor pRequest
+INFO: Got user-level KeeperException when processing sessionid:0x10001746d2e0000 type:create cxid:0xa zxid:0x7 txntype:-1 reqpath:n/a Error Path:/config Error:KeeperErrorCode = NoNode for /config
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.PrepRequestProcessor pRequest
+INFO: Got user-level KeeperException when processing sessionid:0x10001746d2e0000 type:create cxid:0x10 zxid:0xb txntype:-1 reqpath:n/a Error Path:/admin Error:KeeperErrorCode = NoNode for /admin
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.PrepRequestProcessor pRequest
+INFO: Got user-level KeeperException when processing sessionid:0x10001746d2e0000 type:setData cxid:0x1a zxid:0xf txntype:-1 reqpath:n/a Error Path:/controller_epoch Error:KeeperErrorCode = NoNode for /controller_epoch
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.PrepRequestProcessor pRequest
+INFO: Got user-level KeeperException when processing sessionid:0x10001746d2e0000 type:delete cxid:0x27 zxid:0x11 txntype:-1 reqpath:n/a Error Path:/admin/preferred_replica_election Error:KeeperErrorCode = NoNode for /admin/preferred_replica_election
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.ZooKeeper <init>
+INFO: Initiating client connection, connectString=127.0.0.1:42901 sessionTimeout=30000 watcher=org.I0Itec.zkclient.ZkClient@429bffaa
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.ClientCnxn$SendThread logStartConnect
+INFO: Opening socket connection to server 127.0.0.1/127.0.0.1:42901. Will not attempt to authenticate using SASL (unknown error)
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40590
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.ClientCnxn$SendThread primeConnection
+INFO: Socket connection established, initiating session, client: /127.0.0.1:40590, server: 127.0.0.1/127.0.0.1:42901
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.ZooKeeperServer processConnectRequest
+INFO: Client attempting to establish new session at /127.0.0.1:40590
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.ZooKeeperServer finishSessionInit
+INFO: Established session 0x10001746d2e0001 with negotiated timeout 30000 for client /127.0.0.1:40590
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.ClientCnxn$SendThread onConnected
+INFO: Session establishment complete on server 127.0.0.1/127.0.0.1:42901, sessionid = 0x10001746d2e0001, negotiated timeout = 30000
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.PrepRequestProcessor pRequest
+INFO: Got user-level KeeperException when processing sessionid:0x10001746d2e0001 type:setData cxid:0x3 zxid:0x14 txntype:-1 reqpath:n/a Error Path:/config/topics/test Error:KeeperErrorCode = NoNode for /config/topics/test
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.PrepRequestProcessor pRequest
+INFO: Got user-level KeeperException when processing sessionid:0x10001746d2e0001 type:create cxid:0x4 zxid:0x15 txntype:-1 reqpath:n/a Error Path:/config/topics Error:KeeperErrorCode = NodeExists for /config/topics
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40594
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn doIO
+WARNING: Exception causing close of session 0x0: null
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn closeSock
+INFO: Closed socket connection for client /127.0.0.1:40594 (no session established for client)
+[2016-08-29 16:27:05,497] ERROR fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed (kafka.utils.Utils$:106)
+kafka.common.KafkaException: fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:72)
+	at kafka.producer.BrokerPartitionInfo.updateInfo(BrokerPartitionInfo.scala:82)
+	at kafka.producer.async.DefaultEventHandler$$anonfun$handle$1.apply$mcV$sp(DefaultEventHandler.scala:67)
+	at kafka.utils.Utils$.swallow(Utils.scala:172)
+	at kafka.utils.Logging$class.swallowError(Logging.scala:106)
+	at kafka.utils.Utils$.swallowError(Utils.scala:45)
+	at kafka.producer.async.DefaultEventHandler.handle(DefaultEventHandler.scala:67)
+	at kafka.producer.Producer.send(Producer.scala:77)
+	at kafka.javaapi.producer.Producer.send(Producer.scala:33)
+	at org.apache.coheigea.bigdata.kafka.KafkaTest.testKafka(KafkaTest.java:64)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:290)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:242)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:121)
+Caused by: java.io.EOFException: Received -1 when reading from channel, socket has likely been closed.
+	at kafka.utils.Utils$.read(Utils.scala:381)
+	at kafka.network.BoundedByteBufferReceive.readFrom(BoundedByteBufferReceive.scala:54)
+	at kafka.network.Receive$class.readCompletely(Transmission.scala:56)
+	at kafka.network.BoundedByteBufferReceive.readCompletely(BoundedByteBufferReceive.scala:29)
+	at kafka.network.BlockingChannel.receive(BlockingChannel.scala:111)
+	at kafka.producer.SyncProducer.liftedTree1$1(SyncProducer.scala:75)
+	at kafka.producer.SyncProducer.kafka$producer$SyncProducer$$doSend(SyncProducer.scala:72)
+	at kafka.producer.SyncProducer.send(SyncProducer.scala:113)
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:58)
+	... 34 more
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40596
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn doIO
+WARNING: Exception causing close of session 0x0: null
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn closeSock
+INFO: Closed socket connection for client /127.0.0.1:40596 (no session established for client)
+[2016-08-29 16:27:05,501] ERROR Failed to collate messages by topic, partition due to: fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed (kafka.producer.async.DefaultEventHandler:97)
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40598
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn doIO
+WARNING: Exception causing close of session 0x0: null
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn closeSock
+INFO: Closed socket connection for client /127.0.0.1:40598 (no session established for client)
+[2016-08-29 16:27:05,604] ERROR fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed (kafka.utils.Utils$:106)
+kafka.common.KafkaException: fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:72)
+	at kafka.producer.BrokerPartitionInfo.updateInfo(BrokerPartitionInfo.scala:82)
+	at kafka.producer.async.DefaultEventHandler$$anonfun$handle$2.apply$mcV$sp(DefaultEventHandler.scala:78)
+	at kafka.utils.Utils$.swallow(Utils.scala:172)
+	at kafka.utils.Logging$class.swallowError(Logging.scala:106)
+	at kafka.utils.Utils$.swallowError(Utils.scala:45)
+	at kafka.producer.async.DefaultEventHandler.handle(DefaultEventHandler.scala:78)
+	at kafka.producer.Producer.send(Producer.scala:77)
+	at kafka.javaapi.producer.Producer.send(Producer.scala:33)
+	at org.apache.coheigea.bigdata.kafka.KafkaTest.testKafka(KafkaTest.java:64)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:290)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:242)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:121)
+Caused by: java.io.EOFException: Received -1 when reading from channel, socket has likely been closed.
+	at kafka.utils.Utils$.read(Utils.scala:381)
+	at kafka.network.BoundedByteBufferReceive.readFrom(BoundedByteBufferReceive.scala:54)
+	at kafka.network.Receive$class.readCompletely(Transmission.scala:56)
+	at kafka.network.BoundedByteBufferReceive.readCompletely(BoundedByteBufferReceive.scala:29)
+	at kafka.network.BlockingChannel.receive(BlockingChannel.scala:111)
+	at kafka.producer.SyncProducer.liftedTree1$1(SyncProducer.scala:75)
+	at kafka.producer.SyncProducer.kafka$producer$SyncProducer$$doSend(SyncProducer.scala:72)
+	at kafka.producer.SyncProducer.send(SyncProducer.scala:113)
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:58)
+	... 34 more
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40600
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn doIO
+WARNING: Exception causing close of session 0x0: null
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn closeSock
+INFO: Closed socket connection for client /127.0.0.1:40600 (no session established for client)
+[2016-08-29 16:27:05,607] ERROR Failed to collate messages by topic, partition due to: fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed (kafka.producer.async.DefaultEventHandler:97)
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40602
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn doIO
+WARNING: Exception causing close of session 0x0: null
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn closeSock
+INFO: Closed socket connection for client /127.0.0.1:40602 (no session established for client)
+[2016-08-29 16:27:05,710] ERROR fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed (kafka.utils.Utils$:106)
+kafka.common.KafkaException: fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:72)
+	at kafka.producer.BrokerPartitionInfo.updateInfo(BrokerPartitionInfo.scala:82)
+	at kafka.producer.async.DefaultEventHandler$$anonfun$handle$2.apply$mcV$sp(DefaultEventHandler.scala:78)
+	at kafka.utils.Utils$.swallow(Utils.scala:172)
+	at kafka.utils.Logging$class.swallowError(Logging.scala:106)
+	at kafka.utils.Utils$.swallowError(Utils.scala:45)
+	at kafka.producer.async.DefaultEventHandler.handle(DefaultEventHandler.scala:78)
+	at kafka.producer.Producer.send(Producer.scala:77)
+	at kafka.javaapi.producer.Producer.send(Producer.scala:33)
+	at org.apache.coheigea.bigdata.kafka.KafkaTest.testKafka(KafkaTest.java:64)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:290)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:242)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:121)
+Caused by: java.io.EOFException: Received -1 when reading from channel, socket has likely been closed.
+	at kafka.utils.Utils$.read(Utils.scala:381)
+	at kafka.network.BoundedByteBufferReceive.readFrom(BoundedByteBufferReceive.scala:54)
+	at kafka.network.Receive$class.readCompletely(Transmission.scala:56)
+	at kafka.network.BoundedByteBufferReceive.readCompletely(BoundedByteBufferReceive.scala:29)
+	at kafka.network.BlockingChannel.receive(BlockingChannel.scala:111)
+	at kafka.producer.SyncProducer.liftedTree1$1(SyncProducer.scala:75)
+	at kafka.producer.SyncProducer.kafka$producer$SyncProducer$$doSend(SyncProducer.scala:72)
+	at kafka.producer.SyncProducer.send(SyncProducer.scala:113)
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:58)
+	... 34 more
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40604
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn doIO
+WARNING: Exception causing close of session 0x0: null
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn closeSock
+INFO: Closed socket connection for client /127.0.0.1:40604 (no session established for client)
+[2016-08-29 16:27:05,712] ERROR Failed to collate messages by topic, partition due to: fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed (kafka.producer.async.DefaultEventHandler:97)
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40606
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn doIO
+WARNING: Exception causing close of session 0x0: null
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn closeSock
+INFO: Closed socket connection for client /127.0.0.1:40606 (no session established for client)
+[2016-08-29 16:27:05,814] ERROR fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed (kafka.utils.Utils$:106)
+kafka.common.KafkaException: fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:72)
+	at kafka.producer.BrokerPartitionInfo.updateInfo(BrokerPartitionInfo.scala:82)
+	at kafka.producer.async.DefaultEventHandler$$anonfun$handle$2.apply$mcV$sp(DefaultEventHandler.scala:78)
+	at kafka.utils.Utils$.swallow(Utils.scala:172)
+	at kafka.utils.Logging$class.swallowError(Logging.scala:106)
+	at kafka.utils.Utils$.swallowError(Utils.scala:45)
+	at kafka.producer.async.DefaultEventHandler.handle(DefaultEventHandler.scala:78)
+	at kafka.producer.Producer.send(Producer.scala:77)
+	at kafka.javaapi.producer.Producer.send(Producer.scala:33)
+	at org.apache.coheigea.bigdata.kafka.KafkaTest.testKafka(KafkaTest.java:64)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:290)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:242)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:121)
+Caused by: java.io.EOFException: Received -1 when reading from channel, socket has likely been closed.
+	at kafka.utils.Utils$.read(Utils.scala:381)
+	at kafka.network.BoundedByteBufferReceive.readFrom(BoundedByteBufferReceive.scala:54)
+	at kafka.network.Receive$class.readCompletely(Transmission.scala:56)
+	at kafka.network.BoundedByteBufferReceive.readCompletely(BoundedByteBufferReceive.scala:29)
+	at kafka.network.BlockingChannel.receive(BlockingChannel.scala:111)
+	at kafka.producer.SyncProducer.liftedTree1$1(SyncProducer.scala:75)
+	at kafka.producer.SyncProducer.kafka$producer$SyncProducer$$doSend(SyncProducer.scala:72)
+	at kafka.producer.SyncProducer.send(SyncProducer.scala:113)
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:58)
+	... 34 more
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40608
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn doIO
+WARNING: Exception causing close of session 0x0: null
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn closeSock
+INFO: Closed socket connection for client /127.0.0.1:40608 (no session established for client)
+[2016-08-29 16:27:05,816] ERROR Failed to collate messages by topic, partition due to: fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed (kafka.producer.async.DefaultEventHandler:97)
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread doAccept
+INFO: Accepted socket connection from /127.0.0.1:40610
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn doIO
+WARNING: Exception causing close of session 0x0: null
+Aug 29, 2016 4:27:05 PM org.apache.zookeeper.server.NIOServerCnxn closeSock
+INFO: Closed socket connection for client /127.0.0.1:40610 (no session established for client)
+[2016-08-29 16:27:05,918] ERROR fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed (kafka.utils.Utils$:106)
+kafka.common.KafkaException: fetching topic metadata for topics [Set(test)] from broker [ArrayBuffer(id:0,host:127.0.0.1,port:42901)] failed
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:72)
+	at kafka.producer.BrokerPartitionInfo.updateInfo(BrokerPartitionInfo.scala:82)
+	at kafka.producer.async.DefaultEventHandler$$anonfun$handle$2.apply$mcV$sp(DefaultEventHandler.scala:78)
+	at kafka.utils.Utils$.swallow(Utils.scala:172)
+	at kafka.utils.Logging$class.swallowError(Logging.scala:106)
+	at kafka.utils.Utils$.swallowError(Utils.scala:45)
+	at kafka.producer.async.DefaultEventHandler.handle(DefaultEventHandler.scala:78)
+	at kafka.producer.Producer.send(Producer.scala:77)
+	at kafka.javaapi.producer.Producer.send(Producer.scala:33)
+	at org.apache.coheigea.bigdata.kafka.KafkaTest.testKafka(KafkaTest.java:64)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:367)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:274)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:238)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:161)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:290)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:242)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:121)
+Caused by: java.io.EOFException: Received -1 when reading from channel, socket has likely been closed.
+	at kafka.utils.Utils$.read(Utils.scala:381)
+	at kafka.network.BoundedByteBufferReceive.readFrom(BoundedByteBufferReceive.scala:54)
+	at kafka.network.Receive$class.readCompletely(Transmission.scala:56)
+	at kafka.network.BoundedByteBufferReceive.readCompletely(BoundedByteBufferReceive.scala:29)
+	at kafka.network.BlockingChannel.receive(BlockingChannel.scala:111)
+	at kafka.producer.SyncProducer.liftedTree1$1(SyncProducer.scala:75)
+	at kafka.producer.SyncProducer.kafka$producer$SyncProducer$$doSend(SyncProducer.scala:72)
+	at kafka.producer.SyncProducer.send(SyncProducer.scala:113)
+	at kafka.client.ClientUtils$.fetchTopicMetadata(ClientUtils.scala:58)
+	... 34 more
+[2016-08-29 16:27:05,920] ERROR Failed to send requests for topics test with correlation ids in [0,8] (kafka.producer.async.DefaultEventHandler:97)
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.115 sec <<< FAILURE! - in org.apache.coheigea.bigdata.kafka.KafkaTest
+testKafka(org.apache.coheigea.bigdata.kafka.KafkaTest)  Time elapsed: 0.502 sec  <<< ERROR!
+kafka.common.FailedToSendMessageException: Failed to send messages after 3 tries.
+	at org.apache.coheigea.bigdata.kafka.KafkaTest.testKafka(KafkaTest.java:64)
+
+
+Results :
+
+Tests in error: 
+  KafkaTest.testKafka:64 » FailedToSendMessage Failed to send messages after 3 t...
+
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2.961 s
+[INFO] Finished at: 2016-08-29T16:27:06+01:00
+[INFO] Final Memory: 22M/308M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.19.1:test (default-test) on project bigdata-kafka-demo: There are test failures.
+[ERROR] 
+[ERROR] Please refer to /home/colm/src/testcases/apache/bigdata/kafka/target/surefire-reports for the individual test results.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
