@@ -23,11 +23,16 @@ import java.util.Collection;
 
 import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.syncope.client.lib.SyncopeClient;
+import org.apache.syncope.client.lib.SyncopeClientFactoryBean;
 import org.apache.syncope.common.lib.to.GroupTO;
 import org.apache.syncope.common.lib.to.MembershipTO;
 import org.apache.syncope.common.lib.to.PagedResult;
 import org.apache.syncope.common.lib.to.ProvisioningResult;
 import org.apache.syncope.common.lib.to.UserTO;
+import org.apache.syncope.common.rest.api.beans.AnyQuery;
+import org.apache.syncope.common.rest.api.service.UserService;
+import org.junit.Assert;
 
 /**
  * Deploy some Syncope users + roles to Syncope to get the tests to work!
@@ -89,6 +94,17 @@ public class SyncopeDeployer {
             user.getMemberships().add(membership);
             client.post(user, ProvisioningResult.class);
         }
+        
+        client.close();
+        
+        // Check via the client API that the users were created correctly
+        SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(address);
+        SyncopeClient syncopeClient = clientFactory.create("admin", "password");
+        
+        UserService userService = syncopeClient.getService(UserService.class);
+        
+        int count = userService.search(new AnyQuery.Builder().build()).getTotalCount(); 
+        Assert.assertEquals(2, count);
     }
 
     private GroupTO findOrCreateGroup(
