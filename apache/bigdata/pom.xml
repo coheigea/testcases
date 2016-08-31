@@ -33,6 +33,7 @@
         <module>storm</module>
         <module>solr</module>
         <module>kms</module>
+        <module>kafka</module>
     </modules>
 
     <build>
