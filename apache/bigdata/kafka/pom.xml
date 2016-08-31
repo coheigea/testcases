@@ -31,8 +31,8 @@
         <version>1.0</version>
     </parent>
     <properties>
-        <!--<kafka.version>0.10.0.0</kafka.version>-->
-        <kafka.version>0.8.2.2</kafka.version>
+        <kafka.version>0.10.0.1</kafka.version>
+        <!-- <kafka.version>0.8.2.2</kafka.version> -->
     </properties>
     <dependencies>
         <dependency>
