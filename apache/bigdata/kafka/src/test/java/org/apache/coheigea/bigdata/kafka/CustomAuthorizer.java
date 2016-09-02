@@ -17,8 +17,10 @@
 
 package org.apache.coheigea.bigdata.kafka;
 
+import java.io.IOException;
 import java.util.Map;
 
+import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.kafka.common.security.auth.KafkaPrincipal;
 
 import kafka.network.RequestChannel.Session;
@@ -29,6 +31,7 @@ import kafka.security.auth.Resource;
 import scala.collection.immutable.Set;
 
 /**
+ * A trivial Kafka Authorizer. The "admin" user is authorized to do anything. "alice" can only read, "bob" can both read + write.
  */
 public class CustomAuthorizer implements Authorizer {
 
@@ -46,9 +49,25 @@ public class CustomAuthorizer implements Authorizer {
 
     @Override
     public boolean authorize(Session arg0, Operation arg1, Resource arg2) {
-        // TODO Auto-generated method stub
-        System.out.println("HERE! " + arg1.name() + " " + arg2.name());
-        return true;
+        try {
+            String currentUser = UserGroupInformation.getCurrentUser().getUserName();
+            System.out.println("CURRENT: " + currentUser);
+            if ("admin".equals(currentUser)) {
+                return true;
+            }
+            
+            if ("alice".equals(currentUser) && "Read".equals(arg1.name())) {
+                return true;
+            }
+            
+            if ("bob".equals(currentUser) && "Write".equals(arg1.name())) {
+                return true;
+            }
+            
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     @Override
