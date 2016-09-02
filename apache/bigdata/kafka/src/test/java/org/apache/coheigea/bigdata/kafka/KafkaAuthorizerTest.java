@@ -17,12 +17,14 @@
 
 package org.apache.coheigea.bigdata.kafka;
 
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.Properties;
 
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
 import org.apache.curator.test.TestingServer;
+import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -39,7 +41,8 @@ import kafka.utils.ZKStringSerializer$;
 import kafka.utils.ZkUtils;
 
 /**
- * A simple test that starts a Kafka broker, creates a "test" topic, sends a message to it and consumes it.
+ * A simple test that starts a Kafka broker, creates a "test" topic, sends a message to it and consumes it. We also plug in a 
+ * CustomAuthorizer that enforces some authorization rules.
  */
 public class KafkaAuthorizerTest {
     
@@ -50,7 +53,7 @@ public class KafkaAuthorizerTest {
     public static void setup() throws Exception {
         zkServer = new TestingServer();
         
-        Properties props = new Properties();
+        final Properties props = new Properties();
         props.put("broker.id", 1);
         props.put("host.name", "localhost");
         props.put("port", "12345");
@@ -64,6 +67,12 @@ public class KafkaAuthorizerTest {
         KafkaConfig config = new KafkaConfig(props);
         kafkaServer = new KafkaServerStartable(config);
         kafkaServer.startup();
+
+        // Create a "test" topic
+        ZkClient zkClient = new ZkClient(zkServer.getConnectString(), 30000, 30000, ZKStringSerializer$.MODULE$);
+
+        final ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkServer.getConnectString()), false);
+        AdminUtils.createTopic(zkUtils, "test", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
     }
     
     @org.junit.AfterClass
@@ -77,13 +86,8 @@ public class KafkaAuthorizerTest {
     }
     
     @org.junit.Test
-    public void testKafka() throws Exception {
-        
-        // Create a "test" topic
-        ZkClient zkClient = new ZkClient(zkServer.getConnectString(), 30000, 30000, ZKStringSerializer$.MODULE$);
-        
-        final ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkServer.getConnectString()), false);
-        AdminUtils.createTopic(zkUtils, "test", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
+    @org.junit.Ignore
+    public void testReadWriteTopic() throws Exception {
         
         // Create the Producer
         Properties producerProps = new Properties();
@@ -96,7 +100,7 @@ public class KafkaAuthorizerTest {
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         
-        Producer<String, String> producer = new KafkaProducer<>(producerProps);
+        final Producer<String, String> producer = new KafkaProducer<>(producerProps);
 
         // Create the Consumer
         Properties consumerProps = new Properties();
@@ -107,28 +111,59 @@ public class KafkaAuthorizerTest {
         consumerProps.put("session.timeout.ms", "30000");
         consumerProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps);
+        final KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps);
         consumer.subscribe(Arrays.asList("test"));
         
         // Send a message
-        producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
-        producer.flush();
+        UserGroupInformation producerUgi = UserGroupInformation.createRemoteUser("bob");
+        producerUgi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
+                producer.flush();
+                return null;
+            }
+        });
         
         // Poll until we consume it
-        ConsumerRecord<String, String> record = null;
-        for (int i = 0; i < 1000; i++) {
-            ConsumerRecords<String, String> records = consumer.poll(100);
-            if (records.count() > 0) {
-                record = records.iterator().next();
-                break;
-            }
-        }
         
-        Assert.assertNotNull(record);
-        Assert.assertEquals("somevalue", record.value());
+        UserGroupInformation consumerUgi = UserGroupInformation.createRemoteUser("alice");
+        consumerUgi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                ConsumerRecord<String, String> record = null;
+                for (int i = 0; i < 1000; i++) {
+                    ConsumerRecords<String, String> records = consumer.poll(100);
+                    if (records.count() > 0) {
+                        record = records.iterator().next();
+                        break;
+                    }
+                }
+                
+                Assert.assertNotNull(record);
+                Assert.assertEquals("somevalue", record.value());
+                return null;
+            }
+        });
         
         producer.close();
         consumer.close();
     }
     
+    @org.junit.Test
+    public void testCreateTopic() throws Exception {
+        System.out.println("HERE!");
+        UserGroupInformation ugi = UserGroupInformation.createRemoteUser("creator");
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+
+            public Void run() throws Exception {
+                // Create a "temp" topic
+                ZkClient zkClient = new ZkClient(zkServer.getConnectString(), 30000, 30000, ZKStringSerializer$.MODULE$);
+                
+                final ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkServer.getConnectString()), false);
+                AdminUtils.createTopic(zkUtils, "temp-topic", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
+                return null;
+            }
+        });
+    }
 }
