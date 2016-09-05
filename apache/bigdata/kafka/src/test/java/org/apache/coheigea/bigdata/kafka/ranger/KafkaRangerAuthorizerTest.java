@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.kafka;
+package org.apache.coheigea.bigdata.kafka.ranger;
 
-import java.net.InetAddress;
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.Properties;
 
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
 import org.apache.curator.test.TestingServer;
-import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.config.SslConfigs;
 import org.junit.Assert;
 
 import kafka.admin.AdminUtils;
@@ -42,10 +41,15 @@ import kafka.utils.ZKStringSerializer$;
 import kafka.utils.ZkUtils;
 
 /**
- * A simple test that starts a Kafka broker, creates a "test" topic, sends a message to it and consumes it, all over SSL.
- * We also plug in a CustomAuthorizer that enforces some authorization rules (on the SSL client principal).
+ * A simple test that starts a Kafka broker, creates a "test" topic, sends a message to it and consumes it. We also plug in a 
+ * CustomAuthorizer that enforces some authorization rules.
+ * 
+ * Policies available from admin via:
+ * 
+ * http://localhost:6080/service/plugins/policies/download/KafkaTest
  */
-public class KafkaAuthorizerTest {
+@org.junit.Ignore
+public class KafkaRangerAuthorizerTest {
     
     private static KafkaServerStartable kafkaServer;
     private static TestingServer zkServer;
@@ -62,18 +66,8 @@ public class KafkaAuthorizerTest {
         props.put("zookeeper.connect", zkServer.getConnectString());
         props.put("replica.socket.timeout.ms", "1500");
         props.put("controlled.shutdown.enable", Boolean.TRUE.toString());
-        // Enable SSL
-        props.put("listeners", "SSL://" + InetAddress.getLocalHost().getHostAddress() + ":" + "12345");
-        props.put("ssl.keystore.location", KafkaAuthorizerTest.class.getResource("/servicestore.jks").getPath());
-        props.put("ssl.keystore.password", "sspass");
-        props.put("ssl.key.password", "skpass");
-        props.put("ssl.truststore.location", KafkaAuthorizerTest.class.getResource("/truststore.jks").getPath());
-        props.put("ssl.truststore.password", "security");
-        props.put("security.inter.broker.protocol", "SSL");
-        props.put("ssl.client.auth", "required");
-        
         // Plug in custom authorizer
-        props.put("authorizer.class.name", "org.apache.coheigea.bigdata.kafka.CustomAuthorizer");
+        props.put("authorizer.class.name", "org.apache.ranger.authorization.kafka.authorizer.RangerKafkaAuthorizer");
 
         KafkaConfig config = new KafkaConfig(props);
         kafkaServer = new KafkaServerStartable(config);
@@ -98,6 +92,7 @@ public class KafkaAuthorizerTest {
     
     @org.junit.Test
     public void testReadWriteTopic() throws Exception {
+        /*
         // Create the Producer
         Properties producerProps = new Properties();
         producerProps.put("bootstrap.servers", "localhost:12345");
@@ -108,13 +103,6 @@ public class KafkaAuthorizerTest {
         producerProps.put("buffer.memory", 33554432);
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
-        producerProps.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
-        producerProps.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, this.getClass().getResource("/servicestore.jks").getPath());
-        producerProps.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "sspass");
-        producerProps.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "skpass");
-        producerProps.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, this.getClass().getResource("/truststore.jks").getPath());
-        producerProps.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "security");
         
         final Producer<String, String> producer = new KafkaProducer<>(producerProps);
 
@@ -127,14 +115,6 @@ public class KafkaAuthorizerTest {
         consumerProps.put("session.timeout.ms", "30000");
         consumerProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        consumerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
-        consumerProps.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
-        consumerProps.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, this.getClass().getResource("/clientstore.jks").getPath());
-        consumerProps.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "cspass");
-        consumerProps.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "ckpass");
-        consumerProps.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, this.getClass().getResource("/truststore.jks").getPath());
-        consumerProps.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "security");
-        
         final KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps);
         consumer.subscribe(Arrays.asList("test"));
         
@@ -158,6 +138,7 @@ public class KafkaAuthorizerTest {
 
         producer.close();
         consumer.close();
+        */
     }
     
 }
