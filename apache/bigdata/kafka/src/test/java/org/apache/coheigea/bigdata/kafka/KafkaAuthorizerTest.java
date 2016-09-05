@@ -114,37 +114,23 @@ public class KafkaAuthorizerTest {
         consumer.subscribe(Arrays.asList("test"));
         
         // Send a message
-        UserGroupInformation producerUgi = UserGroupInformation.createRemoteUser("bob");
-        producerUgi.doAs(new PrivilegedExceptionAction<Void>() {
-
-            public Void run() throws Exception {
-                producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
-                producer.flush();
-                return null;
-            }
-        });
+        producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
+        producer.flush();
         
         // Poll until we consume it
         
-        UserGroupInformation consumerUgi = UserGroupInformation.createRemoteUser("alice");
-        consumerUgi.doAs(new PrivilegedExceptionAction<Void>() {
-
-            public Void run() throws Exception {
-                ConsumerRecord<String, String> record = null;
-                for (int i = 0; i < 1000; i++) {
-                    ConsumerRecords<String, String> records = consumer.poll(100);
-                    if (records.count() > 0) {
-                        record = records.iterator().next();
-                        break;
-                    }
-                }
-                
-                Assert.assertNotNull(record);
-                Assert.assertEquals("somevalue", record.value());
-                return null;
+        ConsumerRecord<String, String> record = null;
+        for (int i = 0; i < 1000; i++) {
+            ConsumerRecords<String, String> records = consumer.poll(100);
+            if (records.count() > 0) {
+                record = records.iterator().next();
+                break;
             }
-        });
-        
+        }
+
+        Assert.assertNotNull(record);
+        Assert.assertEquals("somevalue", record.value());
+
         producer.close();
         consumer.close();
     }
