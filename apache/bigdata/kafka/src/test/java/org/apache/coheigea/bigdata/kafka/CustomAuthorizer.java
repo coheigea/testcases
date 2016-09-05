@@ -31,7 +31,9 @@ import kafka.security.auth.Resource;
 import scala.collection.immutable.Set;
 
 /**
- * A trivial Kafka Authorizer. The "admin" user is authorized to do anything. "alice" can only read, "bob" can both read + write.
+ * A trivial Kafka Authorizer. The "logged in" user can do the CLUSTER_ACTION, READ, WRITE, DESCRIBE and CREATE operations, but no others.
+ * Basically, just the permissions that are required to set up a broker, create a topic + write + read some data to/from it. As we're not 
+ * using Kerberos we don't have the luxury of logging different users in etc.   
  */
 public class CustomAuthorizer implements Authorizer {
 
@@ -51,16 +53,9 @@ public class CustomAuthorizer implements Authorizer {
     public boolean authorize(Session arg0, Operation arg1, Resource arg2) {
         try {
             String currentUser = UserGroupInformation.getCurrentUser().getUserName();
-            System.out.println("CURRENT: " + currentUser);
-            if ("admin".equals(currentUser)) {
-                return true;
-            }
-            
-            if ("alice".equals(currentUser) && "Read".equals(arg1.name())) {
-                return true;
-            }
-            
-            if ("bob".equals(currentUser) && "Write".equals(arg1.name())) {
+            if (isLoggedInUser(currentUser) 
+                && ("ClusterAction".equals(arg1.name()) || "Read".equals(arg1.name()) || "Write".equals(arg1.name())
+                    || "Describe".equals(arg1.name()) || "Create".equals(arg1.name()))) {
                 return true;
             }
             
@@ -106,4 +101,7 @@ public class CustomAuthorizer implements Authorizer {
         return false;
     }
     
+    private boolean isLoggedInUser(String remoteUser) {
+        return remoteUser != null && remoteUser.equals(System.getProperty("user.name"));
+    }
 }
