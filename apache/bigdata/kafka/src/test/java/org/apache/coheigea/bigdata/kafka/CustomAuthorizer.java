@@ -17,10 +17,8 @@
 
 package org.apache.coheigea.bigdata.kafka;
 
-import java.io.IOException;
 import java.util.Map;
 
-import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.kafka.common.security.auth.KafkaPrincipal;
 
 import kafka.network.RequestChannel.Session;
@@ -31,9 +29,7 @@ import kafka.security.auth.Resource;
 import scala.collection.immutable.Set;
 
 /**
- * A trivial Kafka Authorizer. The "logged in" user can do the CLUSTER_ACTION, READ, WRITE, DESCRIBE and CREATE operations, but no others.
- * Basically, just the permissions that are required to set up a broker, create a topic + write + read some data to/from it. As we're not 
- * using Kerberos we don't have the luxury of logging different users in etc.   
+ * A trivial Kafka Authorizer. The principal that contains "CN=Service" can do anything, the principal with "CN=Client" can only read/describe.
  */
 public class CustomAuthorizer implements Authorizer {
 
@@ -51,18 +47,14 @@ public class CustomAuthorizer implements Authorizer {
 
     @Override
     public boolean authorize(Session arg0, Operation arg1, Resource arg2) {
-        try {
-            String currentUser = UserGroupInformation.getCurrentUser().getUserName();
-            if (isLoggedInUser(currentUser) 
-                && ("ClusterAction".equals(arg1.name()) || "Read".equals(arg1.name()) || "Write".equals(arg1.name())
-                    || "Describe".equals(arg1.name()) || "Create".equals(arg1.name()))) {
-                return true;
-            }
-            
-            return false;
-        } catch (IOException e) {
-            return false;
+        if (arg0.principal() != null && arg0.principal().getName().contains("CN=Client")
+            && ("Read".equals(arg1.name()) || "Describe".equals(arg1.name()))) {
+            return true;
+        } else if (arg0.principal() != null && arg0.principal().getName().contains("CN=Service")) {
+            return true;
         }
+        
+        return false;
     }
 
     @Override
@@ -101,7 +93,4 @@ public class CustomAuthorizer implements Authorizer {
         return false;
     }
     
-    private boolean isLoggedInUser(String remoteUser) {
-        return remoteUser != null && remoteUser.equals(System.getProperty("user.name"));
-    }
 }

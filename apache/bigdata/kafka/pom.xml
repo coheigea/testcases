@@ -32,6 +32,7 @@
     </parent>
     <properties>
         <kafka.version>0.10.0.1</kafka.version>
+        <ranger.version>0.7.0-SNAPSHOT</ranger.version>
     </properties>
     <dependencies>
         <dependency>
@@ -111,9 +112,16 @@
             <testResource>
                 <directory>src/test/resources</directory>
                 <includes>
-                    <include>**/*</include>
+                    <include>**/*.xml</include>
                 </includes>
                 <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*.jks</include>
+                </includes>
+                <filtering>false</filtering>
             </testResource>
         </testResources>
         <plugins>
