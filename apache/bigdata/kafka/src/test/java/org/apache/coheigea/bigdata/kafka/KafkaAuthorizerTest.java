@@ -67,7 +67,7 @@ public class KafkaAuthorizerTest {
         KafkaConfig config = new KafkaConfig(props);
         kafkaServer = new KafkaServerStartable(config);
         kafkaServer.startup();
-
+        
         // Create a "test" topic
         ZkClient zkClient = new ZkClient(zkServer.getConnectString(), 30000, 30000, ZKStringSerializer$.MODULE$);
 
@@ -86,7 +86,6 @@ public class KafkaAuthorizerTest {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testReadWriteTopic() throws Exception {
         
         // Create the Producer
@@ -150,20 +149,4 @@ public class KafkaAuthorizerTest {
         consumer.close();
     }
     
-    @org.junit.Test
-    public void testCreateTopic() throws Exception {
-        System.out.println("HERE!");
-        UserGroupInformation ugi = UserGroupInformation.createRemoteUser("creator");
-        ugi.doAs(new PrivilegedExceptionAction<Void>() {
-
-            public Void run() throws Exception {
-                // Create a "temp" topic
-                ZkClient zkClient = new ZkClient(zkServer.getConnectString(), 30000, 30000, ZKStringSerializer$.MODULE$);
-                
-                final ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkServer.getConnectString()), false);
-                AdminUtils.createTopic(zkUtils, "temp-topic", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
-                return null;
-            }
-        });
-    }
 }
