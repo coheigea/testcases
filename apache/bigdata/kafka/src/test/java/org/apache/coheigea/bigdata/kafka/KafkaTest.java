@@ -17,6 +17,7 @@
 
 package org.apache.coheigea.bigdata.kafka;
 
+import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -45,15 +46,21 @@ public class KafkaTest {
     
     private static KafkaServerStartable kafkaServer;
     private static TestingServer zkServer;
+    private static int port;
     
     @org.junit.BeforeClass
     public static void setup() throws Exception {
         zkServer = new TestingServer();
         
+        // Get a random port
+        ServerSocket serverSocket = new ServerSocket(0);
+        port = serverSocket.getLocalPort();
+        serverSocket.close();
+        
         Properties props = new Properties();
         props.put("broker.id", 1);
         props.put("host.name", "localhost");
-        props.put("port", "12345");
+        props.put("port", port);
         props.put("log.dir", "/tmp/kafka");
         props.put("zookeeper.connect", zkServer.getConnectString());
         props.put("replica.socket.timeout.ms", "1500");
@@ -85,7 +92,7 @@ public class KafkaTest {
         
         // Create the Producer
         Properties producerProps = new Properties();
-        producerProps.put("bootstrap.servers", "localhost:12345");
+        producerProps.put("bootstrap.servers", "localhost:" + port);
         producerProps.put("acks", "all");
         producerProps.put("retries", 0);
         producerProps.put("batch.size", 16384);
@@ -98,7 +105,7 @@ public class KafkaTest {
 
         // Create the Consumer
         Properties consumerProps = new Properties();
-        consumerProps.put("bootstrap.servers", "localhost:12345");
+        consumerProps.put("bootstrap.servers", "localhost:" + port);
         consumerProps.put("group.id", "test");
         consumerProps.put("enable.auto.commit", "true");
         consumerProps.put("auto.commit.interval.ms", "1000");
