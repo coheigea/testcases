@@ -17,7 +17,6 @@
 
 package org.apache.coheigea.bigdata.kafka;
 
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.Properties;
@@ -88,11 +87,12 @@ public class KafkaAuthorizerTest {
         kafkaServer = new KafkaServerStartable(config);
         kafkaServer.startup();
         
-        // Create a "test" topic
+        // Create some topics
         ZkClient zkClient = new ZkClient(zkServer.getConnectString(), 30000, 30000, ZKStringSerializer$.MODULE$);
 
         final ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkServer.getConnectString()), false);
         AdminUtils.createTopic(zkUtils, "test", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
+        AdminUtils.createTopic(zkUtils, "dev", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
     }
     
     @org.junit.AfterClass
@@ -170,7 +170,39 @@ public class KafkaAuthorizerTest {
         consumer.close();
     }
     
-    // clientstore is not authorized to write to "test"
+    // servicestore can "write" to any topic
+    @org.junit.Test
+    public void testAuthorizedWrite() throws Exception {
+        // Create the Producer
+        Properties producerProps = new Properties();
+        producerProps.put("bootstrap.servers", "localhost:" + port);
+        producerProps.put("acks", "all");
+        producerProps.put("retries", 0);
+        producerProps.put("batch.size", 16384);
+        producerProps.put("linger.ms", 1);
+        producerProps.put("buffer.memory", 33554432);
+        producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
+        producerProps.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
+        producerProps.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, this.getClass().getResource("/servicestore.jks").getPath());
+        producerProps.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "sspass");
+        producerProps.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "skpass");
+        producerProps.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, this.getClass().getResource("/truststore.jks").getPath());
+        producerProps.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "security");
+        
+        final Producer<String, String> producer = new KafkaProducer<>(producerProps);
+        
+        // Send a message
+        Future<RecordMetadata> record = 
+            producer.send(new ProducerRecord<String, String>("dev", "somekey", "somevalue"));
+        producer.flush();
+        record.get();
+        
+        producer.close();
+    }
+    
+    // clientstore is not authorized to write to "test" or "dev"
     @org.junit.Test
     public void testUnauthorizedWrite() throws Exception {
         // Create the Producer
@@ -204,7 +236,16 @@ public class KafkaAuthorizerTest {
             Assert.assertTrue(ex.getMessage().contains("Not authorized to access topics"));
         }
         
+        try {
+            Future<RecordMetadata> record = 
+                producer.send(new ProducerRecord<String, String>("dev", "somekey", "somevalue"));
+            producer.flush();
+            record.get();
+            Assert.fail("Authorization failure expected");
+        } catch (Exception ex) {
+            Assert.assertTrue(ex.getMessage().contains("Not authorized to access topics"));
+        }
+        
         producer.close();
     }
-    
 }

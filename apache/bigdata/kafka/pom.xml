@@ -32,7 +32,6 @@
     </parent>
     <properties>
         <kafka.version>0.10.0.1</kafka.version>
-        <ranger.version>0.7.0-SNAPSHOT</ranger.version>
     </properties>
     <dependencies>
         <dependency>
