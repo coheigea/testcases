@@ -31,7 +31,7 @@ import scala.collection.immutable.Set;
 /**
  * A trivial Kafka Authorizer for use with SSL client authentication.
  * 
- * The principal that starts with "CN=Service" can do anything, the principal with "CN=Client" can only read/describe.
+ * The principal that starts with "CN=Service" can do anything, the principal with "CN=Client" can only read/describe on the "test*" topics
  */
 public class CustomAuthorizer implements Authorizer {
 
@@ -50,7 +50,8 @@ public class CustomAuthorizer implements Authorizer {
     @Override
     public boolean authorize(Session arg0, Operation arg1, Resource arg2) {
         if (arg0.principal() != null && arg0.principal().getName().startsWith("CN=Client")
-            && ("Read".equals(arg1.name()) || "Describe".equals(arg1.name()))) {
+            && ("Read".equals(arg1.name()) || "Describe".equals(arg1.name()))
+            && arg2.name().startsWith("test")) {
             return true;
         } else if (arg0.principal() != null && arg0.principal().getName().startsWith("CN=Service")) {
             return true;

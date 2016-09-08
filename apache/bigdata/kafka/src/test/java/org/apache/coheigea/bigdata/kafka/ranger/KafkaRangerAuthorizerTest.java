@@ -46,7 +46,7 @@ import kafka.utils.ZKStringSerializer$;
 import kafka.utils.ZkUtils;
 
 /**
- * A simple test that starts a Kafka broker, creates a "test" topic, sends a message to it and consumes it. We also plug in a 
+ * A simple test that starts a Kafka broker, creates "test" and "dev" topics, sends a message to them and consumes it. We also plug in a 
  * CustomAuthorizer that enforces some authorization rules:
  * 
  *  - The "IT" group can do anything
@@ -100,11 +100,12 @@ public class KafkaRangerAuthorizerTest {
         kafkaServer = new KafkaServerStartable(config);
         kafkaServer.startup();
 
-        // Create a "test" topic
+        // Create some topics
         ZkClient zkClient = new ZkClient(zkServer.getConnectString(), 30000, 30000, ZKStringSerializer$.MODULE$);
 
         final ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkServer.getConnectString()), false);
         AdminUtils.createTopic(zkUtils, "test", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
+        AdminUtils.createTopic(zkUtils, "dev", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
     }
     
     @org.junit.AfterClass
@@ -182,7 +183,39 @@ public class KafkaRangerAuthorizerTest {
         consumer.close();
     }
     
-    // The "public" group can't write to "test"
+    // The "IT" group can write to any topic
+    @org.junit.Test
+    public void testAuthorizedWrite() throws Exception {
+        // Create the Producer
+        Properties producerProps = new Properties();
+        producerProps.put("bootstrap.servers", "localhost:" + port);
+        producerProps.put("acks", "all");
+        producerProps.put("retries", 0);
+        producerProps.put("batch.size", 16384);
+        producerProps.put("linger.ms", 1);
+        producerProps.put("buffer.memory", 33554432);
+        producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
+        producerProps.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
+        producerProps.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, this.getClass().getResource("/servicestore.jks").getPath());
+        producerProps.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "sspass");
+        producerProps.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "skpass");
+        producerProps.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, this.getClass().getResource("/truststore.jks").getPath());
+        producerProps.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "security");
+        
+        final Producer<String, String> producer = new KafkaProducer<>(producerProps);
+        
+        // Send a message
+        Future<RecordMetadata> record = 
+            producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
+        producer.flush();
+        record.get();
+
+        producer.close();
+    }
+    
+    // The "public" group can't write to "test" or "dev"
     @org.junit.Test
     public void testUnauthorizedWrite() throws Exception {
         // Create the Producer
@@ -209,6 +242,16 @@ public class KafkaRangerAuthorizerTest {
         try {
             Future<RecordMetadata> record = 
                 producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
+            producer.flush();
+            record.get();
+            Assert.fail("Authorization failure expected");
+        } catch (Exception ex) {
+            Assert.assertTrue(ex.getMessage().contains("Not authorized to access topics"));
+        }
+        
+        try {
+            Future<RecordMetadata> record = 
+                producer.send(new ProducerRecord<String, String>("dev", "somekey", "somevalue"));
             producer.flush();
             record.get();
             Assert.fail("Authorization failure expected");
