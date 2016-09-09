@@ -1,0 +1,183 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for org.apache.coheigea.camel:camel-kafka:jar:1.0
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-surefire-plugin is missing. @ line 178, column 21
+[WARNING] 'build.plugins.plugin.version' for org.codehaus.mojo:build-helper-maven-plugin is missing. @ line 160, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Apache Camel Kafka Demo 1.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ camel-kafka ---
+[INFO] Deleting /home/colm/src/testcases/apache/camel/camel-bigdata/camel-kafka/target
+[INFO] 
+[INFO] --- build-helper-maven-plugin:1.10:reserve-network-port (reserve-network-port) @ camel-kafka ---
+[INFO] Reserved port 46796 for kafka.port
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ camel-kafka ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /home/colm/src/testcases/apache/camel/camel-bigdata/camel-kafka/src/main/java
+[INFO] skip non existing resourceDirectory /home/colm/src/testcases/apache/camel/camel-bigdata/camel-kafka/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.3:compile (default-compile) @ camel-kafka ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ camel-kafka ---
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 0 resource
+[INFO] Copying 2 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.3:testCompile (default-testCompile) @ camel-kafka ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to /home/colm/src/testcases/apache/camel/camel-bigdata/camel-kafka/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ camel-kafka ---
+[INFO] Surefire report directory: /home/colm/src/testcases/apache/camel/camel-bigdata/camel-kafka/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running org.apache.coheigea.camel.kafka.KafkaTest
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/home/colm/.m2/repository/org/slf4j/slf4j-jdk14/1.7.19/slf4j-jdk14-1.7.19.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/home/colm/.m2/repository/org/slf4j/slf4j-log4j12/1.7.21/slf4j-log4j12-1.7.21.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.JDK14LoggerFactory]
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.quorum.QuorumPeerConfig parseProperties
+INFO: clientPortAddress is 0.0.0.0/0.0.0.0:38797
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.quorum.QuorumPeerConfig parseProperties
+INFO: secureClientPort is not set
+Sep 09, 2016 11:58:51 AM org.apache.curator.test.TestingZooKeeperMain internalRunFromConfig
+INFO: Starting server
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:zookeeper.version=3.5.1-alpha-1693007, built on 07/28/2015 07:19 GMT
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:host.name=localhost
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.version=1.8.0_101
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.vendor=Oracle Corporation
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.home=/opt/jdk1.8.0_101/jre
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.class.path=/home/colm/src/testcases/apache/camel/camel-bigdata/camel-kafka/target/test-classes:/home/colm/src/testcases/apache/camel/camel-bigdata/camel-kafka/target/classes:/home/colm/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/colm/.m2/repository/junit/junit/4.12/junit-4.12.jar:/home/colm/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/home/colm/.m2/repository/org/apache/camel/camel-kafka/2.18.0-SNAPSHOT/camel-kafka-2.18.0-SNAPSHOT.jar:/home/colm/.m2/repository/org/apache/camel/camel-core/2.18.0-SNAPSHOT/camel-core-2.18.0-SNAPSHOT.jar:/home/colm/.m2/repository/org/apache/kafka/kafka-clients/0.10.0.1/kafka-clients-0.10.0.1.jar:/home/colm/.m2/repository/net/jpountz/lz4/lz4/1.3.0/lz4-1.3.0.jar:/home/colm/.m2/repository/org/xerial/snappy/snappy-java/1.1.2.6/snappy-java-1.1.2.6.jar:/home/colm/.m2/repository/com/sun/xml/bind/jaxb-core/2.2.11/jaxb-core-2.2.11.jar:/home/colm/.m2/repository/com/sun/xml/bind/jaxb-impl/2.2.11/jaxb-impl-2.2.11.jar:/home/colm/.m2/repository/org/apache/camel/camel-spring/2.18.0-SNAPSHOT/camel-spring-2.18.0-SNAPSHOT.jar:/home/colm/.m2/repository/org/springframework/spring-aop/4.3.2.RELEASE/spring-aop-4.3.2.RELEASE.jar:/home/colm/.m2/repository/org/springframework/spring-expression/4.3.2.RELEASE/spring-expression-4.3.2.RELEASE.jar:/home/colm/.m2/repository/org/springframework/spring-tx/4.3.2.RELEASE/spring-tx-4.3.2.RELEASE.jar:/home/colm/.m2/repository/org/slf4j/slf4j-jdk14/1.7.19/slf4j-jdk14-1.7.19.jar:/home/colm/.m2/repository/org/slf4j/slf4j-api/1.7.19/slf4j-api-1.7.19.jar:/home/colm/.m2/repository/org/springframework/spring-core/4.1.9.RELEASE/spring-core-4.1.9.RELEASE.jar:/home/colm/.m2/repository/org/springframework/spring-beans/4.1.9.RELEASE/spring-beans-4.1.9.RELEASE.jar:/home/colm/.m2/repository/org/springframework/spring-context/4.1.9.RELEASE/spring-context-4.1.9.RELEASE.jar:/home/colm/.m2/repository/org/apache/kafka/kafka_2.11/0.10.0.1/kafka_2.11-0.10.0.1-test.jar:/home/colm/.m2/repository/com/101tec/zkclient/0.8/zkclient-0.8.jar:/home/colm/.m2/repository/log4j/log4j/1.2.15/log4j-1.2.15.jar:/home/colm/.m2/repository/javax/mail/mail/1.4/mail-1.4.jar:/home/colm/.m2/repository/javax/activation/activation/1.1/activation-1.1.jar:/home/colm/.m2/repository/org/slf4j/slf4j-log4j12/1.7.21/slf4j-log4j12-1.7.21.jar:/home/colm/.m2/repository/com/yammer/metrics/metrics-core/2.2.0/metrics-core-2.2.0.jar:/home/colm/.m2/repository/org/scala-lang/scala-library/2.11.8/scala-library-2.11.8.jar:/home/colm/.m2/repository/org/scala-lang/modules/scala-parser-combinators_2.11/1.0.4/scala-parser-combinators_2.11-1.0.4.jar:/home/colm/.m2/repository/net/sf/jopt-simple/jopt-simple/4.9/jopt-simple-4.9.jar:/home/colm/.m2/repository/org/apache/kafka/kafka_2.11/0.10.0.1/kafka_2.11-0.10.0.1.jar:/home/colm/.m2/repository/org/apache/curator/curator-test/3.2.0/curator-test-3.2.0.jar:/home/colm/.m2/repository/org/apache/zookeeper/zookeeper/3.5.1-alpha/zookeeper-3.5.1-alpha.jar:/home/colm/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar:/home/colm/.m2/repository/io/netty/netty/3.7.0.Final/netty-3.7.0.Final.jar:/home/colm/.m2/repository/net/java/dev/javacc/javacc/5.0/javacc-5.0.jar:/home/colm/.m2/repository/org/apache/commons/commons-math/2.2/commons-math-2.2.jar:/home/colm/.m2/repository/com/google/guava/guava/16.0.1/guava-16.0.1.jar:
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.library.path=/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.io.tmpdir=/tmp
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:java.compiler=<NA>
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.name=Linux
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.arch=amd64
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.version=4.4.0-36-generic
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:user.name=colm
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:user.home=/home/colm
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:user.dir=/home/colm/src/testcases/apache/camel/camel-bigdata/camel-kafka
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.memory.free=224MB
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.memory.max=3547MB
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.Environment logEnv
+INFO: Server environment:os.memory.total=240MB
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.ZooKeeperServer setMinSessionTimeout
+INFO: minSessionTimeout set to 6000
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.ZooKeeperServer setMaxSessionTimeout
+INFO: maxSessionTimeout set to 60000
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.ZooKeeperServer <init>
+INFO: Created server with tickTime 3000 minSessionTimeout 6000 maxSessionTimeout 60000 datadir /tmp/1473418731197-0/version-2 snapdir /tmp/1473418731197-0/version-2
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.NIOServerCnxnFactory configure
+INFO: Configuring NIO connection handler with 10s sessionless connection timeout, 2 selector thread(s), 16 worker threads, and 64 kB direct buffers.
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.NIOServerCnxnFactory configure
+INFO: binding to port 0.0.0.0/0.0.0.0:38797
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.persistence.FileTxnSnapLog save
+INFO: Snapshotting: 0x0 to /tmp/1473418731197-0/version-2/snapshot.0
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.ContainerManager <init>
+INFO: Using checkIntervalMs=60000 maxPerMinute=10000
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.NIOServerCnxnFactory$ConnectionExpirerThread run
+INFO: ConnnectionExpirerThread interrupted
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.NIOServerCnxnFactory$SelectorThread run
+INFO: selector thread exitted run method
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.NIOServerCnxnFactory$AcceptThread run
+INFO: accept thread exitted run method
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.NIOServerCnxnFactory$SelectorThread run
+INFO: selector thread exitted run method
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.ZooKeeperServer shutdown
+INFO: shutting down
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.SessionTrackerImpl shutdown
+INFO: Shutting down
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.PrepRequestProcessor shutdown
+INFO: Shutting down
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.SyncRequestProcessor shutdown
+INFO: Shutting down
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.PrepRequestProcessor run
+INFO: PrepRequestProcessor exited loop!
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.SyncRequestProcessor run
+INFO: SyncRequestProcessor exited!
+Sep 09, 2016 11:58:51 AM org.apache.zookeeper.server.FinalRequestProcessor shutdown
+INFO: shutdown of request processor complete
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.21 sec <<< FAILURE!
+org.apache.coheigea.camel.kafka.KafkaTest  Time elapsed: 0.21 sec  <<< ERROR!
+java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at org.apache.coheigea.camel.kafka.KafkaTest.setup(KafkaTest.java:47)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+
+
+Results :
+
+Tests in error: 
+  org.apache.coheigea.camel.kafka.KafkaTest
+
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2.014 s
+[INFO] Finished at: 2016-09-09T11:58:51+01:00
+[INFO] Final Memory: 26M/308M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project camel-kafka: There are test failures.
+[ERROR] 
+[ERROR] Please refer to /home/colm/src/testcases/apache/camel/camel-bigdata/camel-kafka/target/surefire-reports for the individual test results.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
