@@ -30,9 +30,6 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
     </parent>
-    <properties>
-        <kafka.version>0.10.0.1</kafka.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

@@ -30,9 +30,6 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
     </parent>
-    <properties>
-        <hbase.version>1.2.1</hbase.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

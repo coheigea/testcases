@@ -30,9 +30,6 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
     </parent>
-    <properties>
-        <solr.version>5.5.3</solr.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
