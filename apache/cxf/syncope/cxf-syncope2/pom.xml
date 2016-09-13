@@ -32,7 +32,7 @@
     </parent>
     <properties>
         <karaf.version>4.0.1</karaf.version>
-        <syncope.version>2.0.0-SNAPSHOT</syncope.version>
+        <syncope.version>2.0.0</syncope.version>
         <cargo.core.dir>${project.build.directory}/syncope-core</cargo.core.dir>
         <log.directory>${project.build.directory}/log</log.directory>
         <cargo.log>${log.directory}/cargo.log</cargo.log>
