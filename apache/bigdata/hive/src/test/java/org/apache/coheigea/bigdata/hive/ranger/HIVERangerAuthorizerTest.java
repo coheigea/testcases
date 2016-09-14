@@ -42,6 +42,7 @@ import org.junit.Assert;
  * a) A user "bob" can do a select/update on the table "words"
  * b) A group called "IT" can do a select only on the "count" column in "words"
  * c) "bob" can create any database
+ * d) "dave" can do a select on the table "words" but only if the "count" column is >= 80
  * 
  * Policies available from admin via:
  * 
@@ -501,5 +502,35 @@ public class HIVERangerAuthorizerTest {
         connection.close();
     }
     
+    @org.junit.Test
+    public void testHiveRowFilter() throws Exception {
+        
+        // dave can do a select where the count is >= 80
+        String url = "jdbc:hive2://localhost:" + port + "/rangerauthz";
+        Connection connection = DriverManager.getConnection(url, "dave", "dave");
+        Statement statement = connection.createStatement();
+
+        // "dave" can select where count >= 80
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM words where count == '100'");
+        resultSet.next();
+        Assert.assertEquals("Mr.", resultSet.getString(1));
+        Assert.assertEquals(100, resultSet.getInt(2));
+        
+        resultSet = statement.executeQuery("SELECT * FROM words where count == '79'");
+        Assert.assertFalse(resultSet.next());
+        
+        statement.close();
+        connection.close();
+        
+        // "bob" should be able to read a count of "79" as the filter doesn't apply to him
+        connection = DriverManager.getConnection(url, "bob", "bob");
+        statement = connection.createStatement();
+        
+        resultSet = statement.executeQuery("SELECT * FROM words where count == '79'");
+        Assert.assertTrue(resultSet.next());
+        
+        statement.close();
+        connection.close();
+    }
     
 }
