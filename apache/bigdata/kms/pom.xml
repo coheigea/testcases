@@ -31,10 +31,6 @@
         <version>1.0</version>
     </parent>
 
-    <properties>
-        <ranger.version>0.7.0-SNAPSHOT</ranger.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
