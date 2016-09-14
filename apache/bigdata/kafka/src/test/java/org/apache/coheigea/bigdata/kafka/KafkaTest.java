@@ -127,6 +127,7 @@ public class KafkaTest {
                 record = records.iterator().next();
                 break;
             }
+            Thread.sleep(1000);
         }
         
         Assert.assertNotNull(record);
