@@ -18,17 +18,6 @@
 
 <configuration>
 
-  <!-- Blacklist for authorization -->
-
-  <property>
-    <name>hadoop.kms.blacklist.DECRYPT_EEK</name>
-    <value>hdfs</value>
-    <description>
-          Blacklist for decrypt EncryptedKey
-          CryptoExtension operations
-    </description>
-  </property>
-
   <!-- Encryption key Password -->
   
   <property>
@@ -66,51 +55,11 @@
   </property>
 
   <property>
-    <name>ranger.ks.jpa.jdbc.credential.provider.path</name>
-    <value>/tmp/kms.jceks</value>
-    <description>
-      Credential provider path
-    </description>
-  </property>
-
-  <property>
-    <name>ranger.ks.jpa.jdbc.credential.alias</name>
-    <value>ranger.ks.jdbc.password</value>
-    <description>
-      Credential alias used for password
-    </description>
-  </property>
-
-  <property>
-    <name>ranger.ks.masterkey.credential.alias</name>
-    <value>ranger.ks.masterkey.password</value>
-    <description>
-      Credential alias used for masterkey
-    </description>
-  </property>
-
-  <property>
-    <name>ranger.ks.jpa.jdbc.dialect</name>
-    <value>org.eclipse.persistence.platform.database.MySQLPlatform</value>
-    <description>
-      Dialect used for database
-    </description>    
-  </property>
-  
-  <property>
     <name>ranger.ks.jpa.jdbc.driver</name>
     <value>org.apache.derby.jdbc.EmbeddedDriver</value>
     <description>
       Driver used for database
     </description>    
   </property>
-  
-  <property>
-    <name>ranger.ks.jdbc.sqlconnectorjar</name>
-    <value>/usr/share/java/mysql-connector-java.jar</value>
-    <description>
-      Driver used for database
-    </description>    
-  </property>  
   
 </configuration>
