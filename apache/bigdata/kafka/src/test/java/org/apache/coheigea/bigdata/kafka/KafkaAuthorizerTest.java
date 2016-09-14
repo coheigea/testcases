@@ -161,6 +161,7 @@ public class KafkaAuthorizerTest {
                 record = records.iterator().next();
                 break;
             }
+            Thread.sleep(1000);
         }
 
         Assert.assertNotNull(record);
