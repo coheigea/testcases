@@ -43,6 +43,7 @@ import org.junit.Assert;
  * b) A group called "IT" can do a select only on the "count" column in "words"
  * c) "bob" can create any database
  * d) "dave" can do a select on the table "words" but only if the "count" column is >= 80
+ * e) "jane" can do a select on the table "words", but only get a "hash" of the word, and not the word itself.
  * 
  * Policies available from admin via:
  * 
@@ -528,6 +529,23 @@ public class HIVERangerAuthorizerTest {
         
         resultSet = statement.executeQuery("SELECT * FROM words where count == '79'");
         Assert.assertTrue(resultSet.next());
+        
+        statement.close();
+        connection.close();
+    }
+    
+    @org.junit.Test
+    public void testHiveDataMasking() throws Exception {
+        
+        String url = "jdbc:hive2://localhost:" + port + "/rangerauthz";
+        Connection connection = DriverManager.getConnection(url, "jane", "jane");
+        Statement statement = connection.createStatement();
+
+        // "jane" can only set a hash of the word, and not the word itself
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM words where count == '100'");
+        resultSet.next();
+        Assert.assertEquals("127469a6b4253ebb77adccc0dd48461e", resultSet.getString(1));
+        Assert.assertEquals(100, resultSet.getInt(2));
         
         statement.close();
         connection.close();
