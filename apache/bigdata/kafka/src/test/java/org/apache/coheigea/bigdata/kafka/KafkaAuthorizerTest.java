@@ -72,9 +72,9 @@ public class KafkaAuthorizerTest {
         props.put("controlled.shutdown.enable", Boolean.TRUE.toString());
         // Enable SSL
         props.put("listeners", "SSL://localhost:" + port);
-        props.put("ssl.keystore.location", KafkaAuthorizerTest.class.getResource("/servicestore.jks").getPath());
-        props.put("ssl.keystore.password", "sspass");
-        props.put("ssl.key.password", "skpass");
+        props.put("ssl.keystore.location", KafkaAuthorizerTest.class.getResource("/brokerstore.jks").getPath());
+        props.put("ssl.keystore.password", "bspass");
+        props.put("ssl.key.password", "bkpass");
         props.put("ssl.truststore.location", KafkaAuthorizerTest.class.getResource("/truststore.jks").getPath());
         props.put("ssl.truststore.password", "security");
         props.put("security.inter.broker.protocol", "SSL");
