@@ -112,10 +112,6 @@ public class KafkaAuthorizerTest {
         Properties producerProps = new Properties();
         producerProps.put("bootstrap.servers", "localhost:" + port);
         producerProps.put("acks", "all");
-        producerProps.put("retries", 0);
-        producerProps.put("batch.size", 16384);
-        producerProps.put("linger.ms", 1);
-        producerProps.put("buffer.memory", 33554432);
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
@@ -135,6 +131,7 @@ public class KafkaAuthorizerTest {
         consumerProps.put("enable.auto.commit", "true");
         consumerProps.put("auto.commit.interval.ms", "1000");
         consumerProps.put("session.timeout.ms", "30000");
+        consumerProps.put("auto.offset.reset", "earliest");
         consumerProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
@@ -156,12 +153,11 @@ public class KafkaAuthorizerTest {
         
         ConsumerRecord<String, String> record = null;
         for (int i = 0; i < 1000; i++) {
-            ConsumerRecords<String, String> records = consumer.poll(100);
+            ConsumerRecords<String, String> records = consumer.poll(1000);
             if (records.count() > 0) {
                 record = records.iterator().next();
                 break;
             }
-            Thread.sleep(1000);
         }
 
         Assert.assertNotNull(record);
@@ -178,10 +174,6 @@ public class KafkaAuthorizerTest {
         Properties producerProps = new Properties();
         producerProps.put("bootstrap.servers", "localhost:" + port);
         producerProps.put("acks", "all");
-        producerProps.put("retries", 0);
-        producerProps.put("batch.size", 16384);
-        producerProps.put("linger.ms", 1);
-        producerProps.put("buffer.memory", 33554432);
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
@@ -210,10 +202,6 @@ public class KafkaAuthorizerTest {
         Properties producerProps = new Properties();
         producerProps.put("bootstrap.servers", "localhost:" + port);
         producerProps.put("acks", "all");
-        producerProps.put("retries", 0);
-        producerProps.put("batch.size", 16384);
-        producerProps.put("linger.ms", 1);
-        producerProps.put("buffer.memory", 33554432);
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");

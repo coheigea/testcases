@@ -94,10 +94,6 @@ public class KafkaTest {
         Properties producerProps = new Properties();
         producerProps.put("bootstrap.servers", "localhost:" + port);
         producerProps.put("acks", "all");
-        producerProps.put("retries", 0);
-        producerProps.put("batch.size", 16384);
-        producerProps.put("linger.ms", 1);
-        producerProps.put("buffer.memory", 33554432);
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         
@@ -107,6 +103,7 @@ public class KafkaTest {
         Properties consumerProps = new Properties();
         consumerProps.put("bootstrap.servers", "localhost:" + port);
         consumerProps.put("group.id", "test");
+        consumerProps.put("auto.offset.reset", "earliest");
         consumerProps.put("enable.auto.commit", "true");
         consumerProps.put("auto.commit.interval.ms", "1000");
         consumerProps.put("session.timeout.ms", "30000");
