@@ -38,6 +38,7 @@
         <hive.version>2.1.0</hive.version>
         <kafka.version>0.10.0.1</kafka.version>
         <ranger.version>0.6.1</ranger.version>
+        <sentry.version>1.7.0</sentry.version>
         <slf4j.version>1.7.21</slf4j.version>
         <solr.version>5.5.3</solr.version>
         <storm.version>1.0.2</storm.version>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+    <property>
+        <name>sentry.service.security.mode</name>
+        <value>none</value>
+    </property>
+    <property>
+        <name>sentry.kafka.provider</name>
+        <value>org.apache.sentry.provider.file.LocalGroupResourceAuthorizationProvider</value>
+    </property>
+    <property>
+        <name>sentry.kafka.provider.backend</name>
+        <value>org.apache.sentry.provider.file.SimpleFileProviderBackend</value>
+    </property>
+    <property>
+        <name>sentry.kafka.provider.resource</name>
+        <value>src/test/resources/sentry.ini</value>
+    </property>
+
+</configuration>
