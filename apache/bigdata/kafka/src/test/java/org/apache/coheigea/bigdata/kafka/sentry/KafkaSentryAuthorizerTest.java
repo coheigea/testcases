@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.kafka.ranger;
+package org.apache.coheigea.bigdata.kafka.sentry;
 
 import java.net.ServerSocket;
 import java.util.Arrays;
@@ -26,7 +26,6 @@ import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
 import org.apache.coheigea.bigdata.kafka.KafkaAuthorizerTest;
 import org.apache.curator.test.TestingServer;
-import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -56,7 +55,7 @@ import kafka.utils.ZkUtils;
  * 
  * http://localhost:6080/service/plugins/policies/download/KafkaTest
  */
-public class KafkaRangerAuthorizerTest {
+public class KafkaSentryAuthorizerTest {
     
     private static KafkaServerStartable kafkaServer;
     private static TestingServer zkServer;
@@ -89,12 +88,9 @@ public class KafkaRangerAuthorizerTest {
         props.put("security.inter.broker.protocol", "SSL");
         props.put("ssl.client.auth", "required");
         
-        // Plug in Apache Ranger authorizer
-        props.put("authorizer.class.name", "org.apache.ranger.authorization.kafka.authorizer.RangerKafkaAuthorizer");
-        
-        // Create users for testing
-        UserGroupInformation.createUserForTesting("CN=Client,O=Apache,L=Dublin,ST=Leinster,C=IE", new String[] {"public"});
-        UserGroupInformation.createUserForTesting("CN=Service,O=Apache,L=Dublin,ST=Leinster,C=IE", new String[] {"IT"});
+        // Plug in Apache Sentry authorizer
+        props.put("authorizer.class.name", "org.apache.sentry.kafka.authorizer.SentryKafkaAuthorizer");
+        props.put("sentry.kafka.site.url", "file:" + KafkaAuthorizerTest.class.getResource("/sentry-site.xml").getPath());
         
         KafkaConfig config = new KafkaConfig(props);
         kafkaServer = new KafkaServerStartable(config);
@@ -121,6 +117,7 @@ public class KafkaRangerAuthorizerTest {
     // The "public" group can read from "test"
     @org.junit.Test
     public void testAuthorizedRead() throws Exception {
+        
         // Create the Producer
         Properties producerProps = new Properties();
         producerProps.put("bootstrap.servers", "localhost:" + port);
@@ -140,7 +137,7 @@ public class KafkaRangerAuthorizerTest {
         // Create the Consumer
         Properties consumerProps = new Properties();
         consumerProps.put("bootstrap.servers", "localhost:" + port);
-        consumerProps.put("group.id", "test");
+        consumerProps.put("group.id", "test-sentry-consumer-group");
         consumerProps.put("enable.auto.commit", "true");
         consumerProps.put("auto.offset.reset", "earliest");
         consumerProps.put("auto.commit.interval.ms", "1000");
@@ -179,6 +176,7 @@ public class KafkaRangerAuthorizerTest {
 
         producer.close();
         consumer.close();
+        
     }
     
     // The "IT" group can write to any topic
@@ -231,7 +229,7 @@ public class KafkaRangerAuthorizerTest {
         // Send a message
         try {
             Future<RecordMetadata> record = 
-                producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
+                producer.send(new ProducerRecord<String, String>("test", "somekey2", "somevalue2"));
             producer.flush();
             record.get();
             Assert.fail("Authorization failure expected");
@@ -241,7 +239,7 @@ public class KafkaRangerAuthorizerTest {
         
         try {
             Future<RecordMetadata> record = 
-                producer.send(new ProducerRecord<String, String>("dev", "somekey", "somevalue"));
+                producer.send(new ProducerRecord<String, String>("dev", "somekey3", "somevalue3"));
             producer.flush();
             record.get();
             Assert.fail("Authorization failure expected");
@@ -251,4 +249,5 @@ public class KafkaRangerAuthorizerTest {
         
         producer.close();
     }
+    
 }
