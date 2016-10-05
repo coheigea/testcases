@@ -89,7 +89,6 @@ public class EncryptionAlgorithmBenchmark {
         RequestData data = new RequestData();
         data.setWssConfig(WSSConfig.getNewInstance());
         data.setDecCrypto(verifyingCrypto);
-        data.setEnableTimestampReplayCache(false);
         data.setCallbackHandler(new CommonCallbackHandler());
         if (WSConstants.KEYTRANSPORT_RSA15.equals(keyTransportAlgorithm)) {
             data.setAllowRSA15KeyTransportAlgorithm(true);
