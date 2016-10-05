@@ -109,7 +109,6 @@ public class SignatureReferenceBenchmark {
         RequestData data = new RequestData();
         data.setWssConfig(WSSConfig.getNewInstance());
         data.setSigVerCrypto(verifyingCrypto);
-        data.setEnableTimestampReplayCache(false);
         data.setSubjectCertConstraints(Collections.singletonList(certConstraint));
         Element securityHeader = WSSecurityUtil.getSecurityHeader(signedDoc, "");
         Assert.assertNotNull(securityHeader);
