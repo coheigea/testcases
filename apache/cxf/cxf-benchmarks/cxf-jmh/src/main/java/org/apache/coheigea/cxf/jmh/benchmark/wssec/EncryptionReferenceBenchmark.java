@@ -104,7 +104,6 @@ public class EncryptionReferenceBenchmark {
         RequestData data = new RequestData();
         data.setWssConfig(WSSConfig.getNewInstance());
         data.setDecCrypto(verifyingCrypto);
-        data.setEnableTimestampReplayCache(false);
         data.setCallbackHandler(new CommonCallbackHandler());
         Element securityHeader = WSSecurityUtil.getSecurityHeader(encryptedDoc, "");
         Assert.assertNotNull(securityHeader);
