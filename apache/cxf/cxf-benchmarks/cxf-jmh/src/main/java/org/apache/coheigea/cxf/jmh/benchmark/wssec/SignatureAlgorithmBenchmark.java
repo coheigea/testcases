@@ -130,7 +130,6 @@ public class SignatureAlgorithmBenchmark {
         RequestData data = new RequestData();
         data.setWssConfig(WSSConfig.getNewInstance());
         data.setSigVerCrypto(verifyingCrypto);
-        data.setEnableTimestampReplayCache(false);
         data.setSubjectCertConstraints(Collections.singletonList(certConstraint));
         
         List<BSPRule> ignoredRules = new ArrayList<BSPRule>();

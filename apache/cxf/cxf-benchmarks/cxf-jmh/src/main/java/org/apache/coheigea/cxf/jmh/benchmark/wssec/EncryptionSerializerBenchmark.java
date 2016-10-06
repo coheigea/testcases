@@ -117,9 +117,6 @@ public class EncryptionSerializerBenchmark {
         RequestData data = new RequestData();
         data.setWssConfig(WSSConfig.getNewInstance());
         data.setDecCrypto(serviceCrypto);
-        data.setEnableNonceReplayCache(false);
-        data.setEnableSamlOneTimeUseReplayCache(false);
-        data.setEnableTimestampReplayCache(false);
         data.setCallbackHandler(new CommonCallbackHandler());
         data.setEncryptionSerializer(serializer);
 
