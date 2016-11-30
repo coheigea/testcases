@@ -235,7 +235,9 @@ public class AuthenticationTest extends AbstractLdapTestUnit {
         }
     }
     
+    // TODO - Re-enable once Karaf 4.0.8 gets picked up
     @org.junit.Test
+    @org.junit.Ignore
     public void testAuthenticatedRequestViaKaraf() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
@@ -258,7 +260,9 @@ public class AuthenticationTest extends AbstractLdapTestUnit {
         doubleIt(transportPort, 25);
     }
     
+    // TODO - Re-enable once Karaf 4.0.8 gets picked up
     @org.junit.Test
+    @org.junit.Ignore
     public void testUnauthenticatedRequestViaKaraf() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
