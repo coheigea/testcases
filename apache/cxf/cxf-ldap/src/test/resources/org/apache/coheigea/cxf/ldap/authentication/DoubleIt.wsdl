@@ -54,6 +54,10 @@
             <soap:address
                 location="https://localhost:8081/doubleit/services/doubleittransportjetty" />
         </wsdl:port>
+        <wsdl:port name="DoubleItTransportKarafPort" binding="tns:DoubleItTransportBinding">
+            <soap:address
+                location="https://localhost:8081/doubleit/services/doubleittransportkaraf" />
+        </wsdl:port>
 	</wsdl:service>
 	
 	<wsp:Policy wsu:Id="DoubleItBindingTransportPolicy">

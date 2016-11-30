@@ -14,7 +14,8 @@ UsernameToken to a CXF Endpoint. The CXF Endpoint has been configured
 JAASUsernameTokenValidator, which dispatches the username/passwords to the
 directory server for authentication via LDAP. 
 
-Tests are added for authentication using both Sun and Jetty's LdapLoginModules.
+Tests are added for authentication using Sun, Jetty and Karaf's
+LdapLoginModules.
 
 2) AuthorizationTest
 
@@ -29,3 +30,4 @@ reads the current Subject's roles from the SecurityContext, and requires that
 a user must have role "boss" to access the "doubleIt" operation ("alice" has
 this role, "bob" does not). 
 
+Tests have been added for both the Jetty and Karaf LdapLoginModules.

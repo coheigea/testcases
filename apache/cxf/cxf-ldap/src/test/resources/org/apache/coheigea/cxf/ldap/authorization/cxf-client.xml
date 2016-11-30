@@ -35,7 +35,14 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
         </cxf:features>
     </cxf:bus>
    
-   <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportPort" createdFromAPI="true">
+   <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportJettyPort" createdFromAPI="true">
+       <jaxws:properties>
+           <entry key="security.callback-handler" 
+                  value="org.apache.coheigea.cxf.ldap.authorization.CommonCallbackHandler"/>
+       </jaxws:properties>
+   </jaxws:client>
+   
+   <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportKarafPort" createdFromAPI="true">
        <jaxws:properties>
            <entry key="security.callback-handler" 
                   value="org.apache.coheigea.cxf.ldap.authorization.CommonCallbackHandler"/>
