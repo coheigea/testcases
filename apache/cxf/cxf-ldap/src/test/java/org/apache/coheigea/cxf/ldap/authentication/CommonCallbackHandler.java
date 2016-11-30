@@ -43,7 +43,7 @@ public class CommonCallbackHandler implements CallbackHandler {
                 } else if ("bob".equals(pc.getIdentifier())) {
                     pc.setPassword("bad-password");
                     break;
-                } 
+                }
             }
         }
     }

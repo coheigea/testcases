@@ -136,9 +136,9 @@ public class AuthorizationTest extends AbstractLdapTestUnit {
             portUpdated = true;
         }
     }
-    
+        
     @org.junit.Test
-    public void testAuthorizedRequest() throws Exception {
+    public void testAuthorizedRequestViaJetty() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
         URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
@@ -149,7 +149,7 @@ public class AuthorizationTest extends AbstractLdapTestUnit {
         
         URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportJettyPort");
         DoubleItPortType transportPort = 
             service.getPort(portQName, DoubleItPortType.class);
         TestUtil.updateAddressPort(transportPort, PORT);
@@ -161,7 +161,7 @@ public class AuthorizationTest extends AbstractLdapTestUnit {
     }
     
     @org.junit.Test
-    public void testUnauthorizedRequest() throws Exception {
+    public void testUnauthorizedRequestViaJetty() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
         URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
@@ -172,7 +172,58 @@ public class AuthorizationTest extends AbstractLdapTestUnit {
         
         URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportPort");
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportJettyPort");
+        DoubleItPortType transportPort = 
+            service.getPort(portQName, DoubleItPortType.class);
+        TestUtil.updateAddressPort(transportPort, PORT);
+        
+        Client client = ClientProxy.getClient(transportPort);
+        client.getRequestContext().put("ws-security.username", "bob");
+        
+        try {
+            doubleIt(transportPort, 25);
+            Assert.fail("Failure expected on bob");
+        } catch (Exception ex) {
+            // expected
+        }
+    }
+    
+    @org.junit.Test
+    public void testAuthorizedRequestViaKaraf() throws Exception {
+
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
+
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
+        
+        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportKarafPort");
+        DoubleItPortType transportPort = 
+            service.getPort(portQName, DoubleItPortType.class);
+        TestUtil.updateAddressPort(transportPort, PORT);
+        
+        Client client = ClientProxy.getClient(transportPort);
+        client.getRequestContext().put("ws-security.username", "alice");
+        
+        doubleIt(transportPort, 25);
+    }
+    
+    @org.junit.Test
+    public void testUnauthorizedRequestViaKaraf() throws Exception {
+
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
+
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
+        
+        URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportKarafPort");
         DoubleItPortType transportPort = 
             service.getPort(portQName, DoubleItPortType.class);
         TestUtil.updateAddressPort(transportPort, PORT);

@@ -83,6 +83,25 @@
       
    </jaxws:endpoint>
    
+   <bean id="karafUtValidator" class="org.apache.wss4j.dom.validate.JAASUsernameTokenValidator">
+       <property name="contextName" value="karaf"/>
+   </bean>
+   
+   <jaxws:endpoint id="doubleittransportkaraf"
+      implementor="org.apache.coheigea.cxf.ldap.common.DoubleItPortTypeImpl"
+      endpointName="s:DoubleItTransportKarafPort"
+      serviceName="s:DoubleItService"
+      depends-on="ClientAuthHttpsSettings"
+      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportkaraf"
+      wsdlLocation="org/apache/coheigea/cxf/ldap/authentication/DoubleIt.wsdl"
+      xmlns:s="http://www.example.org/contract/DoubleIt">
+        
+      <jaxws:properties>
+         <entry key="ws-security.ut.validator" value-ref="karafUtValidator"/>
+      </jaxws:properties> 
+      
+   </jaxws:endpoint>
+   
    <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
    <httpj:engine port="${testutil.ports.Server}">
     <httpj:tlsServerParameters>

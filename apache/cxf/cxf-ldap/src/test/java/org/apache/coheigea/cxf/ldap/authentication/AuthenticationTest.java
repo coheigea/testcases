@@ -235,6 +235,57 @@ public class AuthenticationTest extends AbstractLdapTestUnit {
         }
     }
     
+    @org.junit.Test
+    public void testAuthenticatedRequestViaKaraf() throws Exception {
+
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
+        
+        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportKarafPort");
+        DoubleItPortType transportPort = 
+            service.getPort(portQName, DoubleItPortType.class);
+        TestUtil.updateAddressPort(transportPort, PORT);
+        
+        Client client = ClientProxy.getClient(transportPort);
+        client.getRequestContext().put("ws-security.username", "alice");
+        
+        doubleIt(transportPort, 25);
+    }
+    
+    @org.junit.Test
+    public void testUnauthenticatedRequestViaKaraf() throws Exception {
+
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = AuthenticationTest.class.getResource("cxf-client.xml");
+
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
+        
+        URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportKarafPort");
+        DoubleItPortType transportPort = 
+            service.getPort(portQName, DoubleItPortType.class);
+        TestUtil.updateAddressPort(transportPort, PORT);
+        
+        Client client = ClientProxy.getClient(transportPort);
+        client.getRequestContext().put("ws-security.username", "bob");
+        
+        try {
+            doubleIt(transportPort, 25);
+            Assert.fail("Failure expected on bob");
+        } catch (Exception ex) {
+            // expected
+        }
+    }
+    
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
         Assert.assertEquals(numToDouble * 2 , resp);

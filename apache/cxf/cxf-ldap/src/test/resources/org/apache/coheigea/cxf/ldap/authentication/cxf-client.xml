@@ -49,6 +49,13 @@ http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/confi
        </jaxws:properties>
    </jaxws:client>
    
+   <jaxws:client name="{http://www.example.org/contract/DoubleIt}DoubleItTransportKarafPort" createdFromAPI="true">
+       <jaxws:properties>
+           <entry key="security.callback-handler" 
+                  value="org.apache.coheigea.cxf.ldap.authentication.CommonCallbackHandler"/>
+       </jaxws:properties>
+   </jaxws:client>
+   
    <http:conduit name="https://localhost.*">
       <http:tlsClientParameters disableCNCheck="true">
         <sec:trustManagers>

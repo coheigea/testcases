@@ -58,17 +58,38 @@
        <property name="contextName" value="jetty"/>
    </bean>
    
-   <jaxws:endpoint id="doubleittransport"
+   <jaxws:endpoint id="doubleittransportjetty"
       implementor="org.apache.coheigea.cxf.ldap.common.DoubleItPortTypeImpl"
-      endpointName="s:DoubleItTransportPort"
+      endpointName="s:DoubleItTransportJettyPort"
       serviceName="s:DoubleItService"
       depends-on="ClientAuthHttpsSettings"
-      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransport"
+      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportjetty"
       wsdlLocation="org/apache/coheigea/cxf/ldap/authorization/DoubleIt.wsdl"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
       <jaxws:properties>
          <entry key="ws-security.ut.validator" value-ref="jettyUtValidator"/>
+      </jaxws:properties> 
+      <jaxws:inInterceptors>
+         <ref bean="authorizationInterceptor"/>
+      </jaxws:inInterceptors>
+   </jaxws:endpoint>
+   
+   <bean id="karafUtValidator" class="org.apache.wss4j.dom.validate.JAASUsernameTokenValidator">
+       <property name="contextName" value="karaf"/>
+   </bean>
+   
+   <jaxws:endpoint id="doubleittransportkaraf"
+      implementor="org.apache.coheigea.cxf.ldap.common.DoubleItPortTypeImpl"
+      endpointName="s:DoubleItTransportKarafPort"
+      serviceName="s:DoubleItService"
+      depends-on="ClientAuthHttpsSettings"
+      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportkaraf"
+      wsdlLocation="org/apache/coheigea/cxf/ldap/authorization/DoubleIt.wsdl"
+      xmlns:s="http://www.example.org/contract/DoubleIt">
+        
+      <jaxws:properties>
+         <entry key="ws-security.ut.validator" value-ref="karafUtValidator"/>
       </jaxws:properties> 
       <jaxws:inInterceptors>
          <ref bean="authorizationInterceptor"/>

@@ -20,3 +20,20 @@ jetty {
     roleObjectClass="groupOfNames"
     authenticated="true";
 };
+
+karaf {
+    org.apache.karaf.jaas.modules.ldap.LDAPLoginModule required
+    debug="true"
+    initialContextFactory="com.sun.jndi.ldap.LdapCtxFactory"
+    connection.username="uid=admin,dc=example,dc=com"
+    connection.password="ldap_su"
+    connection.url="ldap://localhost:portno"
+    authentication="simple"
+    user.base.dn="ou=users,dc=example,dc=com"
+    user.filter="(cn=%u)"
+    user.search.subtree="true"
+    role.base.dn="ou=groups,dc=example,dc=com"
+    role.name.attribute="cn"
+    role.search.subtree="true"
+    role.filter="(member=%dn,ou=users,dc=example,dc=com)";
+};

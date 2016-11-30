@@ -31,7 +31,6 @@
         <version>1.0</version>
     </parent>
     <properties>
-        <karaf.version>4.0.1</karaf.version>
         <syncope.version>2.0.1</syncope.version>
         <cargo.core.dir>${project.build.directory}/syncope-core</cargo.core.dir>
         <log.directory>${project.build.directory}/log</log.directory>
