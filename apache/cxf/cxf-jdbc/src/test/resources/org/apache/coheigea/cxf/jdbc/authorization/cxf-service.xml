@@ -58,12 +58,12 @@
        <property name="contextName" value="jetty"/>
    </bean>
    
-   <jaxws:endpoint id="doubleittransportut"
+   <jaxws:endpoint id="doubleittransportutjetty"
       implementor="org.apache.coheigea.cxf.jdbc.common.DoubleItPortTypeImpl"
-      endpointName="s:DoubleItTransportUTPort"
+      endpointName="s:DoubleItTransportUTJettyPort"
       serviceName="s:DoubleItService"
       depends-on="ClientAuthHttpsSettings"
-      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportut"
+      address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittransportutjetty"
       wsdlLocation="org/apache/coheigea/cxf/jdbc/authentication/DoubleIt.wsdl"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         

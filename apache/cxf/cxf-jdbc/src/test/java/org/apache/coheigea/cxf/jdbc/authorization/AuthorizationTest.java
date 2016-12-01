@@ -112,7 +112,7 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     }
 
     @org.junit.Test
-    public void testAuthorizedRequest() throws Exception {
+    public void testAuthorizedRequestViaJetty() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
         URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
@@ -123,7 +123,7 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
 
         URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportUTJettyPort");
         DoubleItPortType transportPort = 
             service.getPort(portQName, DoubleItPortType.class);
         TestUtil.updateAddressPort(transportPort, PORT);
@@ -135,7 +135,7 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
     }
 
     @org.junit.Test
-    public void testUnauthorizedRequest() throws Exception {
+    public void testUnauthorizedRequestViaJetty() throws Exception {
 
         SpringBusFactory bf = new SpringBusFactory();
         URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
@@ -146,7 +146,7 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
 
         URL wsdl = AuthorizationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
-        QName portQName = new QName(NAMESPACE, "DoubleItTransportUTPort");
+        QName portQName = new QName(NAMESPACE, "DoubleItTransportUTJettyPort");
         DoubleItPortType transportPort = 
             service.getPort(portQName, DoubleItPortType.class);
         TestUtil.updateAddressPort(transportPort, PORT);
