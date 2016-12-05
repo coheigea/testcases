@@ -27,13 +27,12 @@
    <parent>
         <groupId>org.apache.coheigea.camel</groupId>
         <artifactId>camel-parent</artifactId>
-        <relativePath>../parent/pom.xml</relativePath>
+        <relativePath>../../parent/pom.xml</relativePath>
         <version>1.0</version>
    </parent>
 
    <properties>
        <kafka.version>0.10.0.1</kafka.version>
-       <camel.version>2.18.0-SNAPSHOT</camel.version>
    </properties>
    
    <dependencies>
