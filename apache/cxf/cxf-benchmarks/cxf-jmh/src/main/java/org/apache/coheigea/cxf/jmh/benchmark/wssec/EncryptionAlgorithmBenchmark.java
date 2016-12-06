@@ -75,14 +75,15 @@ public class EncryptionAlgorithmBenchmark {
     }
     
     private void doEncryption(String keyTransportAlgorithm, Crypto verifyingCrypto) throws Exception {
-        WSSecEncrypt builder = new WSSecEncrypt();
-        builder.setUserInfo("myservicekey", "skpass");
-        builder.setKeyIdentifierType(WSConstants.ISSUER_SERIAL);
-        builder.setKeyEncAlgo(keyTransportAlgorithm);
         Document doc = SOAPUtil.toSOAPPart(SOAPUtil.SAMPLE_SOAP_MSG);
         WSSecHeader secHeader = new WSSecHeader(doc);
         secHeader.insertSecurityHeader();
-        Document encryptedDoc = builder.build(doc, serviceCrypto, secHeader);
+
+        WSSecEncrypt builder = new WSSecEncrypt(secHeader);
+        builder.setUserInfo("myservicekey", "skpass");
+        builder.setKeyIdentifierType(WSConstants.ISSUER_SERIAL);
+        builder.setKeyEncAlgo(keyTransportAlgorithm);
+        Document encryptedDoc = builder.build(serviceCrypto);
 
         WSSecurityEngine engine = new WSSecurityEngine();
         

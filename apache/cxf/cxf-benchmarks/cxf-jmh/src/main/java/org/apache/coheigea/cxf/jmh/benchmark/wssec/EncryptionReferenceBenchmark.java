@@ -91,13 +91,14 @@ public class EncryptionReferenceBenchmark {
     
     private void doEncryption(int identifier, REFERENCE_TYPE referenceType,
                              Crypto verifyingCrypto) throws Exception {
-        WSSecEncrypt builder = new WSSecEncrypt();
-        builder.setUserInfo("myservicekey", "skpass");
-        builder.setKeyIdentifierType(identifier);
         Document doc = SOAPUtil.toSOAPPart(SOAPUtil.SAMPLE_SOAP_MSG);
         WSSecHeader secHeader = new WSSecHeader(doc);
         secHeader.insertSecurityHeader();
-        Document encryptedDoc = builder.build(doc, serviceCrypto, secHeader);
+
+        WSSecEncrypt builder = new WSSecEncrypt(secHeader);
+        builder.setUserInfo("myservicekey", "skpass");
+        builder.setKeyIdentifierType(identifier);
+        Document encryptedDoc = builder.build(serviceCrypto);
 
         WSSecurityEngine engine = new WSSecurityEngine();
         
