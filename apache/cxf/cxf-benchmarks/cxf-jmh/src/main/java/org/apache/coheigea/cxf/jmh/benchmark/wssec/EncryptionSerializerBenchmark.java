@@ -101,14 +101,15 @@ public class EncryptionSerializerBenchmark {
     }
     
     private Document doEncryption(Serializer serializer) throws Exception {
-        WSSecEncrypt builder = new WSSecEncrypt();
-        builder.setUserInfo("myservicekey", "skpass");
-        builder.setKeyIdentifierType(WSConstants.ISSUER_SERIAL);
-        builder.setEncryptionSerializer(serializer);
         Document doc = StaxUtils.read(new StringReader(SOAPUtil.SAMPLE_SOAP_MSG));
         WSSecHeader secHeader = new WSSecHeader(doc);
         secHeader.insertSecurityHeader();
-        return builder.build(doc, serviceCrypto, secHeader);
+
+        WSSecEncrypt builder = new WSSecEncrypt(secHeader);
+        builder.setUserInfo("myservicekey", "skpass");
+        builder.setKeyIdentifierType(WSConstants.ISSUER_SERIAL);
+        builder.setEncryptionSerializer(serializer);
+        return builder.build(serviceCrypto);
     }
     
     private void doDecryption(Document encryptedDoc, Serializer serializer) throws Exception {

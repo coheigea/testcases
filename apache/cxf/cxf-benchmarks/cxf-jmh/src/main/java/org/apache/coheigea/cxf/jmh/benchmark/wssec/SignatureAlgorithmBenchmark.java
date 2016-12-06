@@ -112,7 +112,11 @@ public class SignatureAlgorithmBenchmark {
                              String digestAlgo, 
                              String sigAlgo, 
                              Crypto verifyingCrypto) throws Exception {
-        WSSecSignature builder = new WSSecSignature();
+        Document doc = SOAPUtil.toSOAPPart(SOAPUtil.SAMPLE_SOAP_MSG);
+        WSSecHeader secHeader = new WSSecHeader(doc);
+        secHeader.insertSecurityHeader();
+
+        WSSecSignature builder = new WSSecSignature(secHeader);
         builder.setUserInfo("myclientkey", "ckpass");
         builder.setKeyIdentifierType(WSConstants.ISSUER_SERIAL);
         builder.setSigCanonicalization(c14nAlgo);
@@ -120,10 +124,7 @@ public class SignatureAlgorithmBenchmark {
         builder.setSignatureAlgorithm(sigAlgo);
         builder.setAddInclusivePrefixes(addInclusivePrefixes);
         
-        Document doc = SOAPUtil.toSOAPPart(SOAPUtil.SAMPLE_SOAP_MSG);
-        WSSecHeader secHeader = new WSSecHeader(doc);
-        secHeader.insertSecurityHeader();
-        Document signedDoc = builder.build(doc, clientCrypto, secHeader);
+        Document signedDoc = builder.build(clientCrypto);
 
         WSSecurityEngine engine = new WSSecurityEngine();
         

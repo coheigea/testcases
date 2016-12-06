@@ -96,13 +96,14 @@ public class SignatureReferenceBenchmark {
     
     private void doSignature(int identifier, REFERENCE_TYPE referenceType,
                              Crypto verifyingCrypto) throws Exception {
-        WSSecSignature builder = new WSSecSignature();
-        builder.setUserInfo("myclientkey", "ckpass");
-        builder.setKeyIdentifierType(identifier);
         Document doc = SOAPUtil.toSOAPPart(SOAPUtil.SAMPLE_SOAP_MSG);
         WSSecHeader secHeader = new WSSecHeader(doc);
         secHeader.insertSecurityHeader();
-        Document signedDoc = builder.build(doc, clientCrypto, secHeader);
+
+        WSSecSignature builder = new WSSecSignature(secHeader);
+        builder.setUserInfo("myclientkey", "ckpass");
+        builder.setKeyIdentifierType(identifier);
+        Document signedDoc = builder.build(clientCrypto);
 
         WSSecurityEngine engine = new WSSecurityEngine();
         
