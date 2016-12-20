@@ -130,6 +130,7 @@ public class KafkaAuthorizerSASLSSLGSSTest {
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         producerProps.put("sasl.mechanism", "GSSAPI");
+        producerProps.put("sasl.kerberos.service.name", "kafka");
         
         producerProps.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
         producerProps.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, this.getClass().getResource("/servicestore.jks").getPath());
@@ -152,6 +153,7 @@ public class KafkaAuthorizerSASLSSLGSSTest {
         consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
         consumerProps.put("sasl.mechanism", "GSSAPI");
+        consumerProps.put("sasl.kerberos.service.name", "kafka");
         
         consumerProps.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
         consumerProps.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, this.getClass().getResource("/clientstore.jks").getPath());
