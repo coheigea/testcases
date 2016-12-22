@@ -1,0 +1,64 @@
+dn: dc=example,dc=com
+dc: example
+objectClass: top
+objectClass: domain
+
+dn: ou=users,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+# Web server identity/service principal.
+dn: uid=kafka,ou=users,dc=example,dc=com
+objectclass: top
+objectclass: person
+objectclass: inetOrgPerson
+objectclass: krb5Principal
+objectclass: krb5KDCEntry
+cn: kafka
+sn: kafka
+uid: kafka
+userpassword: kafka
+krb5PrincipalName: kafka/localhost@service.ws.apache.org
+krb5KeyVersionNumber: 0
+
+dn: uid=zookeeper,ou=users,dc=example,dc=com
+objectclass: top
+objectclass: person
+objectclass: inetOrgPerson
+objectclass: krb5Principal
+objectclass: krb5KDCEntry
+cn: zookeeper
+sn: zookeeper
+uid: zookeeper
+userpassword: zookeeper
+krb5PrincipalName: zookeeper/localhost@service.ws.apache.org
+krb5KeyVersionNumber: 0
+
+# User / client principal.
+dn: uid=alice,ou=users,dc=example,dc=com
+objectclass: top
+objectclass: person
+objectclass: inetOrgPerson
+objectclass: krb5Principal
+objectclass: krb5KDCEntry
+cn: alice
+sn: alice
+uid: alice
+userpassword: alice
+krb5PrincipalName: alice@service.ws.apache.org
+krb5KeyVersionNumber: 0
+
+# Ticket Granting Service.
+dn: uid=krbtgt,ou=users,dc=example,dc=com
+objectclass: top
+objectclass: person
+objectclass: inetOrgPerson
+objectclass: krb5Principal
+objectclass: krb5KDCEntry
+cn: KDC Service
+sn: KDC Service
+uid: krbtgt
+userpassword: randomKey
+krb5PrincipalName: krbtgt/service.ws.apache.org@service.ws.apache.org
+krb5KeyVersionNumber: 0
