@@ -31,8 +31,8 @@
         <version>1.0</version>
     </parent>
     <properties>
-        <syncope.version>2.0.1</syncope.version>
-        <log4j.version>2.6.1</log4j.version>
+        <syncope.version>2.0.2</syncope.version>
+        <log4j.version>2.8</log4j.version>
     </properties>
     <dependencies>
         <dependency>
