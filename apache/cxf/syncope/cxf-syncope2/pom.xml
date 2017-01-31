@@ -31,7 +31,7 @@
         <version>1.0</version>
     </parent>
     <properties>
-        <syncope.version>2.0.1</syncope.version>
+        <syncope.version>2.0.2</syncope.version>
         <cargo.core.dir>${project.build.directory}/syncope-core</cargo.core.dir>
         <log.directory>${project.build.directory}/log</log.directory>
         <cargo.log>${log.directory}/cargo.log</cargo.log>
