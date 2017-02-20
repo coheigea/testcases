@@ -63,6 +63,10 @@ public class RangerAdminClientImpl implements RangerAdminClient {
         return gson.fromJson(new String(cacheBytes), ServicePolicies.class);
     }
 
+    public ServicePolicies getServicePoliciesIfUpdated(long lastKnownVersion, long lastActivationTimeInMillis) throws Exception {
+        return getServicePoliciesIfUpdated(lastKnownVersion);
+    }
+
     public void grantAccess(GrantRevokeRequest request) throws Exception {
         
     }
@@ -74,6 +78,10 @@ public class RangerAdminClientImpl implements RangerAdminClient {
     public ServiceTags getServiceTagsIfUpdated(long lastKnownVersion) throws Exception {
         return null;
         
+    }
+
+    public ServiceTags getServiceTagsIfUpdated(long lastKnownVersion, long lastActivationTimeInMillis) throws Exception {
+        return getServiceTagsIfUpdated(lastKnownVersion);
     }
 
     public List<String> getTagTypes(String tagTypePattern) throws Exception {
