@@ -82,6 +82,10 @@
         {
           "accesses": [
             {
+              "type": "read",
+              "isAllowed": true
+            },
+            {
               "type": "execute",
               "isAllowed": true
             }
@@ -95,6 +99,10 @@
         },
         {
           "accesses": [
+            {
+              "type": "read",
+              "isAllowed": true
+            },
             {
               "type": "execute",
               "isAllowed": true
