@@ -27,7 +27,7 @@
 
 	<property>
 		<name>ranger.plugin.hdfs.service.name</name>
-		<value>HDFSTest</value>
+		<value>cl1_hadoop</value>
 		<description>
 			Name of the Ranger service containing policies for this SampleApp instance
 		</description>
@@ -36,7 +36,7 @@
 	<property>
         <name>ranger.plugin.hdfs.policy.source.impl</name>
         <value>org.apache.coheigea.bigdata.hdfs.ranger.RangerAdminClientImpl</value>
-        <!-- <value>org.apache.ranger.admin.client.RangerAdminRESTClient</value> -->
+        <!-- <value>org.apache.ranger.admin.client.RangerAdminRESTClient</value>-->
         <description>
             Policy source.
         </description>
