@@ -37,7 +37,7 @@ import org.junit.Assert;
 
 /**
  * A custom RangerAdminClient is plugged into Ranger in turn, which loads security policies from a local file. These policies were 
- * generated in the Ranger Admin UI for a service called "HIVETest":
+ * generated in the Ranger Admin UI for a service called "cl1_hive":
  * 
  * a) A user "bob" can do a select/update on the table "words"
  * b) A group called "IT" can do a select only on the "count" column in "words"
@@ -45,9 +45,15 @@ import org.junit.Assert;
  * d) "dave" can do a select on the table "words" but only if the "count" column is >= 80
  * e) "jane" can do a select on the table "words", but only get a "hash" of the word, and not the word itself.
  * 
+ * In addition we have some TAG based policies created in Atlas and synced into Ranger:
+ * 
+ *  a) The tag "HiveTableTag" is associated with "select" permission to the "public" group to the "words" table in the "hivetable" database.
+ *  b) The tag "HiveDatabaseTag" is associated with "create" permission to the "public" group to the "hivetable" database.
+ *  c) The tag "HiveColumnTag" is associated with "select" permission to the "frank" user to the "word" column of the "words" table.
+ * 
  * Policies available from admin via:
  * 
- * http://localhost:6080/service/plugins/policies/download/HIVETest
+ * http://localhost:6080/service/plugins/policies/download/cl1_hive
  */
 public class HIVERangerAuthorizerTest {
     
@@ -79,12 +85,6 @@ public class HIVERangerAuthorizerTest {
         
         conf.set(HiveConf.ConfVars.METASTORE_AUTO_CREATE_ALL.varname, "true");
         conf.set(HiveConf.ConfVars.HIVE_SERVER2_THRIFT_PORT.varname, "" + port);
-        
-        // Enable authorization
-        conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_ENABLED.varname, "true");
-        conf.set(HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS.varname, "true");
-        conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_MANAGER.varname, 
-                 "org.apache.ranger.authorization.hive.authorizer.RangerHiveAuthorizerFactory");
         
         hiveServer = new HiveServer2();
         hiveServer.init(conf);
@@ -123,6 +123,12 @@ public class HIVERangerAuthorizerTest {
         
         statement.close();
         connection.close();
+        
+        // Enable authorization
+        conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_ENABLED.varname, "true");
+        conf.set(HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS.varname, "true");
+        conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_MANAGER.varname, 
+                 "org.apache.ranger.authorization.hive.authorizer.RangerHiveAuthorizerFactory");
     }
     
     @org.junit.AfterClass
@@ -547,6 +553,172 @@ public class HIVERangerAuthorizerTest {
         Assert.assertEquals("127469a6b4253ebb77adccc0dd48461e", resultSet.getString(1));
         Assert.assertEquals(100, resultSet.getInt(2));
         
+        statement.close();
+        connection.close();
+    }
+    
+    @org.junit.Test
+    public void testTagBasedPolicyForTable() throws Exception {
+        
+        String url = "jdbc:hive2://localhost:" + port;
+        
+        // Create a database as "admin"
+        Connection connection = DriverManager.getConnection(url, "admin", "admin");
+        Statement statement = connection.createStatement();
+
+        statement.execute("CREATE DATABASE hivetable");
+
+        statement.close();
+        connection.close();
+        
+        // Create a "words" table in "hivetable"
+        final String tableUrl = "jdbc:hive2://localhost:" + port + "/hivetable";
+        connection = DriverManager.getConnection(tableUrl, "admin", "admin");
+        statement = connection.createStatement();
+        statement.execute("CREATE TABLE WORDS (word STRING, count INT)");
+        statement.execute("CREATE TABLE WORDS2 (word STRING, count INT)");
+        
+        statement.close();
+        connection.close();
+        
+        // Now try to read it as the "public" group
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"public"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection connection = DriverManager.getConnection(tableUrl, "alice", "alice");
+                Statement statement = connection.createStatement();
+        
+                // "words" should work
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM words");
+                Assert.assertNotNull(resultSet);
+        
+                statement.close();
+               
+                statement = connection.createStatement();
+                try {
+                    // "words2" should not
+                    statement.executeQuery("SELECT * FROM words2");
+                    Assert.fail("Failure expected on an unauthorized call");
+                } catch (SQLException ex) {
+                    // expected
+                }
+                
+                statement.close();
+                connection.close();
+                return null;
+            }
+        });
+        
+        // Drop the table and database as "admin"
+        connection = DriverManager.getConnection(tableUrl, "admin", "admin");
+        statement = connection.createStatement();
+
+        statement.execute("drop TABLE words");
+        statement.execute("drop TABLE words2");
+        statement.execute("drop DATABASE hivetable");
+
+        statement.close();
+        connection.close();
+    }
+    
+    @org.junit.Test
+    public void testTagBasedPolicyForDatabase() throws Exception {
+        
+        final String url = "jdbc:hive2://localhost:" + port;
+        
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"public"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                // Create a database
+                Connection connection = DriverManager.getConnection(url, "alice", "alice");
+                Statement statement = connection.createStatement();
+
+                statement.execute("CREATE DATABASE hivetable");
+                statement.close();
+                
+                statement = connection.createStatement();
+                try {
+                    // "hivetable2" should not be allowed to be created by the "public" group
+                    statement.execute("CREATE DATABASE hivetable2");
+                    Assert.fail("Failure expected on an unauthorized call");
+                } catch (SQLException ex) {
+                    // expected
+                }
+                
+                statement.close();
+                connection.close();
+                return null;
+            }
+        });
+        
+        // Drop the database as "admin"
+        Connection connection = DriverManager.getConnection(url, "admin", "admin");
+        Statement statement = connection.createStatement();
+
+        statement.execute("drop DATABASE hivetable");
+
+        statement.close();
+        connection.close();
+    }
+    
+    @org.junit.Test
+    public void testTagBasedPolicyForColumn() throws Exception {
+        
+        String url = "jdbc:hive2://localhost:" + port;
+        
+        // Create a database as "admin"
+        Connection connection = DriverManager.getConnection(url, "admin", "admin");
+        Statement statement = connection.createStatement();
+
+        statement.execute("CREATE DATABASE hivetable");
+
+        statement.close();
+        connection.close();
+        
+        // Create a "words" table in "hivetable"
+        final String tableUrl = "jdbc:hive2://localhost:" + port + "/hivetable";
+        connection = DriverManager.getConnection(tableUrl, "admin", "admin");
+        statement = connection.createStatement();
+        statement.execute("CREATE TABLE WORDS (word STRING, count INT)");
+        statement.execute("CREATE TABLE WORDS2 (word STRING, count INT)");
+        
+        statement.close();
+        connection.close();
+        
+        // Now try to read it as the user "frank"
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("frank", new String[] {"unknown"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection connection = DriverManager.getConnection(tableUrl, "frank", "frank");
+               
+                // we can select "word" from "words"
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT word FROM words");
+                Assert.assertNotNull(resultSet);
+                statement.close();
+                
+                try {
+                    // we can't select "word" from "words2" as "frank"
+                    statement.executeQuery("SELECT word FROM words2");
+                    Assert.fail("Failure expected on an unauthorized call");
+                } catch (SQLException ex) {
+                    // expected
+                }
+                
+                statement.close();
+                connection.close();
+                return null;
+            }
+        });
+        
+        // Drop the table and database as "admin"
+        connection = DriverManager.getConnection(tableUrl, "admin", "admin");
+        statement = connection.createStatement();
+
+        statement.execute("drop TABLE words");
+        statement.execute("drop TABLE words2");
+        statement.execute("drop DATABASE hivetable");
+
         statement.close();
         connection.close();
     }
