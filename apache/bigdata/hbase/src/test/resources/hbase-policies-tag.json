@@ -1,0 +1,37 @@
+{
+  "op": "add_or_update",
+  "serviceName": "cl1_hbase",
+  "tagVersion": 5,
+  "tagDefinitions": {},
+  "tags": {
+    "9": {
+      "type": "HbaseTableTag",
+      "owner": 0,
+      "attributes": {},
+      "id": 9,
+      "isEnabled": true,
+      "version": 1
+    }
+  },
+  "serviceResources": [
+    {
+      "resourceElements": {
+        "table": {
+          "values": [
+            "temp3"
+          ],
+          "isExcludes": false,
+          "isRecursive": false
+        }
+      },
+      "id": 9,
+      "isEnabled": true,
+      "version": 6
+    }
+  ],
+  "resourceToTagIds": {
+    "9": [
+      9
+    ]
+  }
+}
