@@ -47,9 +47,16 @@ import org.junit.Assert;
  * a) The "logged in" user can do anything
  * b) The IT group can read and write to the "temp" table, but only the "colfam1" column family.
  * 
+ * In addition we have some TAG based policies created in Atlas and synced into Ranger:
+ * 
+ *  a) The tag "HbaseTableTag" is associated with "create" permission to the "public" group to the "temp3" table
+ *  b) The tag "HbaseColFamTag" is associated with "read" permission to the "public" group to the "colfam1" column family of the "temp3" table.
+ *  c) The tag "HbaseColTag" is associated with "write" permission to the "public" group to the "col1" column of the "colfam1" column family of 
+ *  the "temp3" table.
+ * 
  * Policies available from admin via:
  * 
- * http://localhost:6080/service/plugins/policies/download/HBASETest
+ * http://localhost:6080/service/plugins/policies/download/cl1_hbase
  */
 public class HBaseRangerAuthorizationTest {
     
@@ -588,6 +595,64 @@ public class HBaseRangerAuthorizationTest {
         table.delete(delete);
         
         conn.close();
+    }
+    
+    // TODO not working
+    @org.junit.Test
+    @org.junit.Ignore
+    public void testTagBasedTablePolicy() throws Exception {
+        final Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "localhost");
+        conf.set("hbase.zookeeper.property.clientPort", "" + port);
+        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+        
+        // Create a new table as process owner
+        final HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf("temp3"));
+
+        // Adding column families to table descriptor
+        tableDescriptor.addFamily(new HColumnDescriptor("colfam1"));
+        tableDescriptor.addFamily(new HColumnDescriptor("colfam2"));
+
+        // Try to create a "temp3" table as the "IT" group - this should fail
+        String user = "bob";
+        if ("bob".equals(System.getProperty("user.name"))) {
+            user = "alice";
+        }
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Admin admin = conn.getAdmin();
+                
+                try {
+                    admin.createTable(tableDescriptor);
+                    Assert.fail("Failure expected on an unauthorized user");
+                } catch (IOException ex) {
+                    System.out.println("BLAH");
+                    ex.printStackTrace();
+                    // expected
+                }
+                
+                conn.close();
+                return null;
+            }
+        });
+/*
+        // Try to delete the "temp3" table as the "public" group - this should work
+        ugi = UserGroupInformation.createUserForTesting(user, new String[] {"public"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Admin admin = conn.getAdmin();
+                
+                admin.disableTable(TableName.valueOf("temp3"));
+                admin.deleteTable(TableName.valueOf("temp3"));
+                
+                conn.close();
+                return null;
+            }
+        });
+        */
     }
     
     private static int getFreePort() throws IOException {
