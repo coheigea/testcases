@@ -1,8 +1,8 @@
 {
   "serviceName": "cl1_hbase",
   "serviceId": 9,
-  "policyVersion": 8,
-  "policyUpdateTime": "20170228-12:35:53.000-+0000",
+  "policyVersion": 10,
+  "policyUpdateTime": "20170301-09:49:38.000-+0000",
   "policies": [
     {
       "service": "cl1_hbase",
@@ -369,8 +369,8 @@
   "tagPolicies": {
     "serviceName": "KafkaTagService",
     "serviceId": 5,
-    "policyVersion": 19,
-    "policyUpdateTime": "20170228-12:35:53.000-+0000",
+    "policyVersion": 21,
+    "policyUpdateTime": "20170301-09:49:38.000-+0000",
     "policies": [
       {
         "service": "KafkaTagService",
@@ -674,6 +674,86 @@
         "id": 34,
         "isEnabled": true,
         "version": 4
+      },
+      {
+        "service": "KafkaTagService",
+        "name": "HBaseColumnFamilyPolicy",
+        "policyType": 0,
+        "description": "",
+        "isAuditEnabled": true,
+        "resources": {
+          "tag": {
+            "values": [
+              "HbaseColFamTag"
+            ],
+            "isExcludes": false,
+            "isRecursive": false
+          }
+        },
+        "policyItems": [
+          {
+            "accesses": [
+              {
+                "type": "hbase:read",
+                "isAllowed": true
+              }
+            ],
+            "users": [],
+            "groups": [
+              "public"
+            ],
+            "conditions": [],
+            "delegateAdmin": false
+          }
+        ],
+        "denyPolicyItems": [],
+        "allowExceptions": [],
+        "denyExceptions": [],
+        "dataMaskPolicyItems": [],
+        "rowFilterPolicyItems": [],
+        "id": 35,
+        "isEnabled": true,
+        "version": 1
+      },
+      {
+        "service": "KafkaTagService",
+        "name": "HBaseColumnPolicy",
+        "policyType": 0,
+        "description": "",
+        "isAuditEnabled": true,
+        "resources": {
+          "tag": {
+            "values": [
+              "HbaseColTag"
+            ],
+            "isExcludes": false,
+            "isRecursive": false
+          }
+        },
+        "policyItems": [
+          {
+            "accesses": [
+              {
+                "type": "hbase:write",
+                "isAllowed": true
+              }
+            ],
+            "users": [],
+            "groups": [
+              "public"
+            ],
+            "conditions": [],
+            "delegateAdmin": false
+          }
+        ],
+        "denyPolicyItems": [],
+        "allowExceptions": [],
+        "denyExceptions": [],
+        "dataMaskPolicyItems": [],
+        "rowFilterPolicyItems": [],
+        "id": 36,
+        "isEnabled": true,
+        "version": 1
       }
     ],
     "serviceDef": {

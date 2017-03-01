@@ -597,16 +597,13 @@ public class HBaseRangerAuthorizationTest {
         conn.close();
     }
     
-    // TODO not working
     @org.junit.Test
-    @org.junit.Ignore
     public void testTagBasedTablePolicy() throws Exception {
         final Configuration conf = HBaseConfiguration.create();
         conf.set("hbase.zookeeper.quorum", "localhost");
         conf.set("hbase.zookeeper.property.clientPort", "" + port);
         conf.set("zookeeper.znode.parent", "/hbase-unsecure");
         
-        // Create a new table as process owner
         final HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf("temp3"));
 
         // Adding column families to table descriptor
@@ -618,6 +615,10 @@ public class HBaseRangerAuthorizationTest {
         if ("bob".equals(System.getProperty("user.name"))) {
             user = "alice";
         }
+        
+        /*
+         * TODO This should fail
+        // Try to create the table as the "IT" group - this should fail
         UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
@@ -628,8 +629,6 @@ public class HBaseRangerAuthorizationTest {
                     admin.createTable(tableDescriptor);
                     Assert.fail("Failure expected on an unauthorized user");
                 } catch (IOException ex) {
-                    System.out.println("BLAH");
-                    ex.printStackTrace();
                     // expected
                 }
                 
@@ -637,22 +636,215 @@ public class HBaseRangerAuthorizationTest {
                 return null;
             }
         });
-/*
-        // Try to delete the "temp3" table as the "public" group - this should work
-        ugi = UserGroupInformation.createUserForTesting(user, new String[] {"public"});
+        */
+
+        // Now try to create the table as the "public" group - this should work
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"public"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 Connection conn = ConnectionFactory.createConnection(conf);
                 Admin admin = conn.getAdmin();
                 
-                admin.disableTable(TableName.valueOf("temp3"));
-                admin.deleteTable(TableName.valueOf("temp3"));
+                admin.createTable(tableDescriptor);
+                
+                conn.close();
+                return null;
+            }
+        });
+        
+        // Drop the table
+        Connection conn = ConnectionFactory.createConnection(conf);
+        Admin admin = conn.getAdmin();
+        
+        admin.disableTable(TableName.valueOf("temp3"));
+        admin.deleteTable(TableName.valueOf("temp3"));
+        
+        conn.close();
+    }
+    
+    @org.junit.Test
+    public void testTagBasedColumnFamilyPolicy() throws Exception {
+        final Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "localhost");
+        conf.set("hbase.zookeeper.property.clientPort", "" + port);
+        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+        
+        // Create a new table as process owner
+        final HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf("temp3"));
+
+        // Adding column families to table descriptor
+        tableDescriptor.addFamily(new HColumnDescriptor("colfam1"));
+        tableDescriptor.addFamily(new HColumnDescriptor("colfam2"));
+        
+        Connection conn = ConnectionFactory.createConnection(conf);
+        Admin admin = conn.getAdmin();
+        
+        admin.createTable(tableDescriptor);
+        
+        // Add a new row
+        Put put = new Put(Bytes.toBytes("row1"));
+        put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val1"));
+        Table table = conn.getTable(TableName.valueOf("temp3"));
+        table.put(put);
+        
+        put = new Put(Bytes.toBytes("row1"));
+        put.addColumn(Bytes.toBytes("colfam2"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
+        table.put(put);
+        
+        conn.close();
+
+        String user = "bob";
+        if ("bob".equals(System.getProperty("user.name"))) {
+            user = "alice";
+        }
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"public"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Table table = conn.getTable(TableName.valueOf("temp3"));
+                
+                // Try to read the "colfam1" of the "temp3" table as the "public" group - this should work
+                Get get = new Get(Bytes.toBytes("row1"));
+                Result result = table.get(get);
+                byte[] valResult = result.getValue(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"));
+                Assert.assertTrue(Arrays.equals(valResult, Bytes.toBytes("val1")));
+                
+                // Now try to read the "colfam2" column family of the temp3 table - this should fail
+                get = new Get(Bytes.toBytes("row1"));
+                result = table.get(get);
+                valResult = result.getValue(Bytes.toBytes("colfam2"), Bytes.toBytes("col1"));
+                Assert.assertNull(valResult);
+                
+                conn.close();
+                return null;
+            }
+        });
+        
+        /*
+         * TODO This should fail
+        // Now try to read colfam1 as the "IT" group - this should fail
+        ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Table table = conn.getTable(TableName.valueOf("temp3"));
+                
+                Get get = new Get(Bytes.toBytes("row1"));
+                Result result = table.get(get);
+                byte[] valResult = result.getValue(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"));
+                Assert.assertNull(valResult);
+                
+                return null;
+            }
+        });
+        */
+        
+        // Drop the table
+        conn = ConnectionFactory.createConnection(conf);
+        admin = conn.getAdmin();
+        
+        admin.disableTable(TableName.valueOf("temp3"));
+        admin.deleteTable(TableName.valueOf("temp3"));
+        
+        conn.close();
+    }
+    
+    @org.junit.Test
+    public void testTagBasedColumnPolicy() throws Exception {
+        final Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "localhost");
+        conf.set("hbase.zookeeper.property.clientPort", "" + port);
+        conf.set("zookeeper.znode.parent", "/hbase-unsecure");
+        
+        // Create a new table as process owner
+        final HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf("temp3"));
+
+        // Adding column families to table descriptor
+        tableDescriptor.addFamily(new HColumnDescriptor("colfam1"));
+        tableDescriptor.addFamily(new HColumnDescriptor("colfam2"));
+        
+        Connection conn = ConnectionFactory.createConnection(conf);
+        Admin admin = conn.getAdmin();
+        
+        admin.createTable(tableDescriptor);
+        
+        // Add a new row
+        Put put = new Put(Bytes.toBytes("row1"));
+        put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val1"));
+        Table table = conn.getTable(TableName.valueOf("temp3"));
+        table.put(put);
+        
+        put = new Put(Bytes.toBytes("row1"));
+        put.addColumn(Bytes.toBytes("colfam2"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
+        table.put(put);
+        
+        conn.close();
+
+        String user = "bob";
+        if ("bob".equals(System.getProperty("user.name"))) {
+            user = "alice";
+        }
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"public"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Table table = conn.getTable(TableName.valueOf("temp3"));
+                
+                // Try to write something to the "col1" column of the "colfam1" of the "temp3" table as the "public" group 
+                // - this should work
+                Put put = new Put(Bytes.toBytes("row3"));
+                put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
+                table.put(put);
+                
+                // Try to write something to the "col2" column of the "colfam1" of the "temp3" table as the "public" group 
+                // - this should fail
+                put = new Put(Bytes.toBytes("row3"));
+                put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col2"), Bytes.toBytes("val2"));
+                try {
+                    table.put(put);
+                    Assert.fail("Failure expected on an unauthorized user");
+                } catch (IOException ex) {
+                    // expected
+                }
+                
+                conn.close();
+                return null;
+            }
+        });
+        
+        /*
+         * TODO Failure expected
+        ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
+        ugi.doAs(new PrivilegedExceptionAction<Void>() {
+            public Void run() throws Exception {
+                Connection conn = ConnectionFactory.createConnection(conf);
+                Table table = conn.getTable(TableName.valueOf("temp3"));
+                
+                // Try to write something to the "col1" column of the "colfam1" of the "temp3" table as the "IT" group 
+                // - this should fail
+                Put put = new Put(Bytes.toBytes("row3"));
+                put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
+                try {
+                    table.put(put);
+                    Assert.fail("Failure expected on an unauthorized user");
+                } catch (IOException ex) {
+                    // expected
+                }
                 
                 conn.close();
                 return null;
             }
         });
         */
+        
+        // Drop the table
+        conn = ConnectionFactory.createConnection(conf);
+        admin = conn.getAdmin();
+        
+        admin.disableTable(TableName.valueOf("temp3"));
+        admin.deleteTable(TableName.valueOf("temp3"));
+        
+        conn.close();
     }
     
     private static int getFreePort() throws IOException {
