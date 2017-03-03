@@ -1114,7 +1114,7 @@
             ],
             "users": [],
             "groups": [
-              "public"
+              "dev"
             ],
             "conditions": [],
             "delegateAdmin": false
@@ -1154,7 +1154,7 @@
             ],
             "users": [],
             "groups": [
-              "public"
+              "dev"
             ],
             "conditions": [],
             "delegateAdmin": false
