@@ -47,8 +47,8 @@ import org.junit.Assert;
  * 
  * In addition we have some TAG based policies created in Atlas and synced into Ranger:
  * 
- *  a) The tag "HiveTableTag" is associated with "select" permission to the "public" group to the "words" table in the "hivetable" database.
- *  b) The tag "HiveDatabaseTag" is associated with "create" permission to the "public" group to the "hivetable" database.
+ *  a) The tag "HiveTableTag" is associated with "select" permission to the "dev" group to the "words" table in the "hivetable" database.
+ *  b) The tag "HiveDatabaseTag" is associated with "create" permission to the "dev" group to the "hivetable" database.
  *  c) The tag "HiveColumnTag" is associated with "select" permission to the "frank" user to the "word" column of the "words" table.
  * 
  * Policies available from admin via:
@@ -582,7 +582,7 @@ public class HIVERangerAuthorizerTest {
         connection.close();
         
         // Now try to read it as the "public" group
-        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"public"});
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"dev"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 Connection connection = DriverManager.getConnection(tableUrl, "alice", "alice");
@@ -626,7 +626,7 @@ public class HIVERangerAuthorizerTest {
         
         final String url = "jdbc:hive2://localhost:" + port;
         
-        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"public"});
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting("alice", new String[] {"dev"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 // Create a database
@@ -638,7 +638,7 @@ public class HIVERangerAuthorizerTest {
                 
                 statement = connection.createStatement();
                 try {
-                    // "hivetable2" should not be allowed to be created by the "public" group
+                    // "hivetable2" should not be allowed to be created by the "dev" group
                     statement.execute("CREATE DATABASE hivetable2");
                     Assert.fail("Failure expected on an unauthorized call");
                 } catch (SQLException ex) {

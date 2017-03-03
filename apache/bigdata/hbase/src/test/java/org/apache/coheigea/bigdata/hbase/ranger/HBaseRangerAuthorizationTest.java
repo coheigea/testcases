@@ -49,9 +49,9 @@ import org.junit.Assert;
  * 
  * In addition we have some TAG based policies created in Atlas and synced into Ranger:
  * 
- *  a) The tag "HbaseTableTag" is associated with "create" permission to the "public" group to the "temp3" table
- *  b) The tag "HbaseColFamTag" is associated with "read" permission to the "public" group to the "colfam1" column family of the "temp3" table.
- *  c) The tag "HbaseColTag" is associated with "write" permission to the "public" group to the "col1" column of the "colfam1" column family of 
+ *  a) The tag "HbaseTableTag" is associated with "create" permission to the "dev" group to the "temp3" table
+ *  b) The tag "HbaseColFamTag" is associated with "read" permission to the "dev" group to the "colfam1" column family of the "temp3" table.
+ *  c) The tag "HbaseColTag" is associated with "write" permission to the "dev" group to the "col1" column of the "colfam1" column family of 
  *  the "temp3" table.
  * 
  * Policies available from admin via:
@@ -616,8 +616,6 @@ public class HBaseRangerAuthorizationTest {
             user = "alice";
         }
         
-        /*
-         * TODO This should fail
         // Try to create the table as the "IT" group - this should fail
         UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
@@ -636,10 +634,9 @@ public class HBaseRangerAuthorizationTest {
                 return null;
             }
         });
-        */
 
-        // Now try to create the table as the "public" group - this should work
-        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"public"});
+        // Now try to create the table as the "dev" group - this should work
+        ugi = UserGroupInformation.createUserForTesting(user, new String[] {"dev"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 Connection conn = ConnectionFactory.createConnection(conf);
@@ -697,13 +694,13 @@ public class HBaseRangerAuthorizationTest {
         if ("bob".equals(System.getProperty("user.name"))) {
             user = "alice";
         }
-        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"public"});
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"dev"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 Connection conn = ConnectionFactory.createConnection(conf);
                 Table table = conn.getTable(TableName.valueOf("temp3"));
                 
-                // Try to read the "colfam1" of the "temp3" table as the "public" group - this should work
+                // Try to read the "colfam1" of the "temp3" table as the "dev" group - this should work
                 Get get = new Get(Bytes.toBytes("row1"));
                 Result result = table.get(get);
                 byte[] valResult = result.getValue(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"));
@@ -720,8 +717,6 @@ public class HBaseRangerAuthorizationTest {
             }
         });
         
-        /*
-         * TODO This should fail
         // Now try to read colfam1 as the "IT" group - this should fail
         ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
@@ -730,14 +725,16 @@ public class HBaseRangerAuthorizationTest {
                 Table table = conn.getTable(TableName.valueOf("temp3"));
                 
                 Get get = new Get(Bytes.toBytes("row1"));
-                Result result = table.get(get);
-                byte[] valResult = result.getValue(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"));
-                Assert.assertNull(valResult);
+                try {
+                    table.get(get);
+                    Assert.fail("Failure expected on an unauthorized user");
+                } catch (IOException ex) {
+                    // expected
+                }
                 
                 return null;
             }
         });
-        */
         
         // Drop the table
         conn = ConnectionFactory.createConnection(conf);
@@ -784,19 +781,19 @@ public class HBaseRangerAuthorizationTest {
         if ("bob".equals(System.getProperty("user.name"))) {
             user = "alice";
         }
-        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"public"});
+        UserGroupInformation ugi = UserGroupInformation.createUserForTesting(user, new String[] {"dev"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 Connection conn = ConnectionFactory.createConnection(conf);
                 Table table = conn.getTable(TableName.valueOf("temp3"));
                 
-                // Try to write something to the "col1" column of the "colfam1" of the "temp3" table as the "public" group 
+                // Try to write something to the "col1" column of the "colfam1" of the "temp3" table as the "dev" group 
                 // - this should work
                 Put put = new Put(Bytes.toBytes("row3"));
                 put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col1"), Bytes.toBytes("val2"));
                 table.put(put);
                 
-                // Try to write something to the "col2" column of the "colfam1" of the "temp3" table as the "public" group 
+                // Try to write something to the "col2" column of the "colfam1" of the "temp3" table as the "dev" group 
                 // - this should fail
                 put = new Put(Bytes.toBytes("row3"));
                 put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("col2"), Bytes.toBytes("val2"));
@@ -812,8 +809,6 @@ public class HBaseRangerAuthorizationTest {
             }
         });
         
-        /*
-         * TODO Failure expected
         ugi = UserGroupInformation.createUserForTesting(user, new String[] {"IT"});
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
@@ -835,7 +830,6 @@ public class HBaseRangerAuthorizationTest {
                 return null;
             }
         });
-        */
         
         // Drop the table
         conn = ConnectionFactory.createConnection(conf);
