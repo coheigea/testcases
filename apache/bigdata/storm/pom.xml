@@ -30,6 +30,9 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
     </parent>
+    <properties>
+        <ranger.version>1.0.0-SNAPSHOT</ranger.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -95,6 +98,9 @@
                 <version>2.19.1</version>
                 <configuration>
                     <reuseForks>false</reuseForks>
+                    <systemPropertyVariables>
+                        <storm.log.dir>target/logs</storm.log.dir>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
