@@ -1,0 +1,30 @@
+E	050228105117Z		01	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=werner
+E	050228120029Z		02	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=wernerd
+E	050307093155Z		03	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=wernerdDSA
+V	060309222536Z		04	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=wernerdDSA
+V	060309223016Z		05	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=wernerd
+V	080309161024Z		06	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=werner
+V	080309161037Z		07	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=wernerDSA
+V	080309170156Z		08	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=werner
+V	080309170207Z		09	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=wernerDSA
+V	080309170455Z		0A	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=werner
+V	080309170501Z		0B	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=wernerDSA
+V	080309170722Z		0C	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=Werner
+V	080309170729Z		0D	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=WernerDSA
+V	100404192001Z		0E	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=Werner
+V	100404192017Z		0F	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=WernerDSA
+V	100404193218Z		10	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=Werner
+V	100404193228Z		11	unknown	/C=DE/ST=Bayern/L=Munich/O=Apache/OU=WSS4J/CN=WernerDSA
+V	190408094109Z		12	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
+V	190422103438Z		13	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
+V	190422103743Z		14	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
+V	190422104250Z		15	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
+V	190422112921Z		16	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
+V	190422134119Z		17	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
+V	210114124914Z		18	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Server
+R	210527114754Z	110530115357Z	19	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
+V	140509085017Z		1A	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
+V	250906140843Z		1B	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
+V	250906141808Z		1C	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Server
+V	250906145016Z		1D	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm DSA
+R	250906151732Z	150909151849Z	1E	unknown	/C=IE/ST=Leinster/L=Dublin/O=Apache/OU=WSS4J/CN=Colm
