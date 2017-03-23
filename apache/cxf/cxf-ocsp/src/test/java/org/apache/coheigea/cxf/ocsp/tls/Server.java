@@ -16,21 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.ocsp.common;
+package org.apache.coheigea.cxf.ocsp.tls;
 
-import javax.jws.WebService;
+import java.net.URL;
 
-import org.apache.cxf.feature.Features;
-import org.example.contract.doubleit.DoubleItPortType;
+import org.apache.cxf.Bus;
+import org.apache.cxf.BusFactory;
+import org.apache.cxf.bus.spring.SpringBusFactory;
+import org.apache.cxf.testutil.common.AbstractBusTestServerBase;
 
-@WebService(targetNamespace = "http://www.example.org/contract/DoubleIt",
-            serviceName = "DoubleItService",
-            endpointInterface = "org.example.contract.doubleit.DoubleItPortType")
-@Features(features = "org.apache.cxf.feature.LoggingFeature")
-public class DoubleItPortTypeImpl implements DoubleItPortType {
-    
-    public int doubleIt(int numberToDouble) {
-        return numberToDouble * 2;
+public class Server extends AbstractBusTestServerBase {
+
+    public Server() {
+        // complete
     }
-    
+
+    protected void run()  {
+        URL busFile = Server.class.getResource("cxf-service.xml");
+        Bus busLocal = new SpringBusFactory().createBus(busFile);
+        BusFactory.setDefaultBus(busLocal);
+        setBus(busLocal);
+
+        try {
+            new Server();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
