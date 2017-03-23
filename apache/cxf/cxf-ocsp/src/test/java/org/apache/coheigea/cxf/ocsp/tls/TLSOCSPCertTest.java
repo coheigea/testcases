@@ -41,23 +41,23 @@ import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
 /**
- * A test-case a SOAP client request over TLS, where the client uses OCSP to validate
- * that the server's certificate is valid. This test differs from TLDOCSPTest in that
+ * A test-case for a SOAP client request over TLS, where the client uses OCSP to validate
+ * that the server's certificate is valid. This test differs from TLSOCSPTest in that
  * the OCSP uses a certificate to sign the OCSP response that is different from the service's CA.
  * Ordinarily this will fail trust validation (see test below) but we will configure the client
  * to accept the cert via a Java Security property.
- * 
+ *
  * Prerequisite: Launch OpenSSL via (pass phrase: security):
- * 
+ *
  * openssl ocsp -index ca.db.index -port 12345 -text -rkey wss40key.pem -CA wss40CA.pem -rsigner wss40.pem
  */
 public class TLSOCSPCertTest extends AbstractBusClientServerTestBase {
-    
+
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
-    
+
     private static final String PORT = allocatePort(Server.class);
-    
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -67,34 +67,34 @@ public class TLSOCSPCertTest extends AbstractBusClientServerTestBase {
                    launchServer(Server.class, true)
         );
     }
-   
+
     @org.junit.Test
     public void testTLSOCSPFail() throws Exception {
         try {
             Security.setProperty("ocsp.responderURL", "http://localhost:12345");
             Security.setProperty("ocsp.enable", "true");
-            
+
             SpringBusFactory bf = new SpringBusFactory();
             URL busFile = TLSOCSPCertTest.class.getResource("cxf-client.xml");
-    
+
             Bus bus = bf.createBus(busFile.toString());
             SpringBusFactory.setDefaultBus(bus);
             SpringBusFactory.setThreadDefaultBus(bus);
-            
+
             URL wsdl = TLSOCSPCertTest.class.getResource("DoubleIt.wsdl");
             Service service = Service.create(wsdl, SERVICE_QNAME);
             QName portQName = new QName(NAMESPACE, "DoubleItTLSOCSPPort");
             DoubleItPortType transportPort =
                 service.getPort(portQName, DoubleItPortType.class);
             updateAddressPort(transportPort, PORT);
-            
+
             // Configure TLS
             TrustManagerFactory tmf  =
                 TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            
+
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(ClassLoaderUtils.getResourceAsStream("clientstoreocsp.jks", this.getClass()), "cspass".toCharArray());
-            
+
             PKIXBuilderParameters param = new PKIXBuilderParameters(keyStore, new X509CertSelector());
             param.setRevocationEnabled(true);
 
@@ -107,7 +107,7 @@ public class TLSOCSPCertTest extends AbstractBusClientServerTestBase {
             Client client = ClientProxy.getClient(transportPort);
             HTTPConduit http = (HTTPConduit) client.getConduit();
             http.setTlsClientParameters(tlsParams);
-            
+
             doubleIt(transportPort, 25);
             fail("Failure expected due to unknown OCSP response certificate");
         } catch (Exception ex) {
@@ -117,7 +117,7 @@ public class TLSOCSPCertTest extends AbstractBusClientServerTestBase {
             Security.setProperty("ocsp.enable", "false");
         }
     }
-    
+
     @org.junit.Test
     public void testTLSOCSPPass() throws Exception {
         try {
@@ -125,28 +125,28 @@ public class TLSOCSPCertTest extends AbstractBusClientServerTestBase {
             Security.setProperty("ocsp.enable", "true");
             Security.setProperty("ocsp.responderCertIssuerName", "CN=Werner, OU=Apache WSS4J, O=Home, L=Munich, ST=Bayern, C=DE");
             Security.setProperty("ocsp.responderCertSerialNumber", "1b");
-            
+
             SpringBusFactory bf = new SpringBusFactory();
             URL busFile = TLSOCSPCertTest.class.getResource("cxf-client.xml");
-    
+
             Bus bus = bf.createBus(busFile.toString());
             SpringBusFactory.setDefaultBus(bus);
             SpringBusFactory.setThreadDefaultBus(bus);
-            
+
             URL wsdl = TLSOCSPCertTest.class.getResource("DoubleIt.wsdl");
             Service service = Service.create(wsdl, SERVICE_QNAME);
             QName portQName = new QName(NAMESPACE, "DoubleItTLSOCSPPort");
             DoubleItPortType transportPort =
                 service.getPort(portQName, DoubleItPortType.class);
             updateAddressPort(transportPort, PORT);
-            
+
             // Configure TLS
             TrustManagerFactory tmf  =
                 TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            
+
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(ClassLoaderUtils.getResourceAsStream("clientstoreocsp.jks", this.getClass()), "cspass".toCharArray());
-            
+
             PKIXBuilderParameters param = new PKIXBuilderParameters(keyStore, new X509CertSelector());
             param.setRevocationEnabled(true);
 
@@ -159,7 +159,7 @@ public class TLSOCSPCertTest extends AbstractBusClientServerTestBase {
             Client client = ClientProxy.getClient(transportPort);
             HTTPConduit http = (HTTPConduit) client.getConduit();
             http.setTlsClientParameters(tlsParams);
-            
+
             doubleIt(transportPort, 25);
         } finally {
             Security.setProperty("ocsp.responderURL", "");
@@ -168,10 +168,10 @@ public class TLSOCSPCertTest extends AbstractBusClientServerTestBase {
             Security.setProperty("ocsp.responderCertSerialNumber", "");
         }
     }
-    
+
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
         assertEquals(numToDouble * 2 , resp);
     }
-    
+
 }
