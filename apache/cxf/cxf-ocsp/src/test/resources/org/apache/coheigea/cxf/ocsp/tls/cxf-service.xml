@@ -48,7 +48,7 @@
         </cxf:features>
    </cxf:bus>
    
-   <httpj:engine-factory id="ClientAuthHttpsSettings" bus="cxf">
+   <httpj:engine-factory id="HttpsSettings" bus="cxf">
    <httpj:engine port="${testutil.ports.Server}">
     <httpj:tlsServerParameters>
       <sec:keyManagers keyPassword="skpass">
@@ -68,10 +68,10 @@
       serviceName="s:DoubleItService"
       address="https://localhost:${testutil.ports.Server}/doubleit/services/doubleittlsocsp"
       wsdlLocation="org/apache/coheigea/cxf/ocsp/tls/DoubleIt.wsdl"
-      depends-on="ClientAuthHttpsSettings"
+      depends-on="HttpsSettings"
       xmlns:s="http://www.example.org/contract/DoubleIt">
         
    </jaxws:endpoint>
-   
+
 </beans>
 
