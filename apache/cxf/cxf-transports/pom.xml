@@ -33,7 +33,6 @@
 
    <properties>
        <activemq.version>5.12.1</activemq.version>
-       <cxf.version>3.2.0-SNAPSHOT</cxf.version>
    </properties>
 
    <dependencies>
