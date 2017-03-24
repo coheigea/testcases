@@ -47,6 +47,10 @@
 			<soap:address
 				location="https://localhost:8081/doubleit/services/doubleittlsocsp" />
 		</wsdl:port>
+		<wsdl:port name="DoubleItTLSOCSPClientAuthPort" binding="tns:DoubleItNoPolicyBinding">
+            <soap:address
+                location="https://localhost:8081/doubleit/services/doubleittlsocspclientauth" />
+        </wsdl:port>
 	</wsdl:service>
 	
 </wsdl:definitions>
