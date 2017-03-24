@@ -52,4 +52,13 @@ Prerequisite: Launch OpenSSL via (pass phrase: security):
  
 openssl ocsp -index ca.db.index -port 12345 -text -rkey wss40key.pem -CA wss40CA.pem -rsigner wss40.pem
 
+5) TLSOCSPClientAuthTest
+
+Some test-cases where a SOAP client request over TLS with client
+authentication enabled, where the service uses OCSP to validate that the
+client's certificate is valid.
+   
+Prerequisite: Launch OpenSSL via (pass phrase: security):
+     
+openssl ocsp -index ca.db.index -port 12345 -text -rkey wss40CAKey.pem -CA wss40CA.pem -rsigner wss40CA.pem
 
