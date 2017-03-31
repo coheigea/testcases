@@ -29,6 +29,7 @@
         <module>parent</module>
         <module>cxf-common</module>
         <module>cxf-asymmetric</module>
+        <module>cxf-failover</module>
         <module>cxf-jaxrs-sts</module>
         <module>cxf-jaxrs-jaas-sts</module>
         <module>cxf-jaxrs-xmlsecurity</module>
