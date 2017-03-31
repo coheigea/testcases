@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.cxf.clustering.FailoverFeature;
 import org.apache.cxf.clustering.LoadDistributorFeature;
 import org.apache.cxf.clustering.SequentialStrategy;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -56,7 +55,7 @@ public class LoadBalancerTest extends AbstractBusClientServerTestBase {
 
         URL busFile = LoadBalancerTest.class.getResource("cxf-client.xml");
 
-        FailoverFeature lbFeature = new FailoverFeature();
+        LoadDistributorFeature lbFeature = new LoadDistributorFeature();
         SequentialStrategy strategy = new SequentialStrategy();
         List<String> addresses = new ArrayList<>();
         addresses.add("http://localhost:" + PORT1 + "/doubleit/services");
