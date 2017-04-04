@@ -34,6 +34,8 @@ import org.junit.BeforeClass;
 import org.apache.coheigea.cxf.failover.common.Number;
 
 /**
+ * A test for CXF using the LoadDistributorFeature. The client distributes the service calls
+ * to both PORT1 and PORT2 sequentially.
  */
 public class LoadBalancerTest extends AbstractBusClientServerTestBase {
 
@@ -55,17 +57,17 @@ public class LoadBalancerTest extends AbstractBusClientServerTestBase {
 
         URL busFile = LoadBalancerTest.class.getResource("cxf-client.xml");
 
-        LoadDistributorFeature lbFeature = new LoadDistributorFeature();
+        LoadDistributorFeature feature = new LoadDistributorFeature();
         SequentialStrategy strategy = new SequentialStrategy();
         List<String> addresses = new ArrayList<>();
         addresses.add("http://localhost:" + PORT1 + "/doubleit/services");
         addresses.add("http://localhost:" + PORT2 + "/doubleit/services");
         strategy.setAlternateAddresses(addresses);
-        lbFeature.setStrategy(strategy);
+        feature.setStrategy(strategy);
 
         String address = "http://localhost:" + PORT1 + "/doubleit/services";
         WebClient client = WebClient.create(address, null,
-                                            Collections.singletonList(lbFeature), busFile.toString());
+                                            Collections.singletonList(feature), busFile.toString());
 
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
@@ -76,6 +78,7 @@ public class LoadBalancerTest extends AbstractBusClientServerTestBase {
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
 
+        // Second call is successful to PORT2
         response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
