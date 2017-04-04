@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.cxf.clustering.FailoverFeature;
 import org.apache.cxf.clustering.SequentialStrategy;
+import org.apache.cxf.clustering.circuitbreaker.CircuitBreakerFailoverFeature;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
@@ -60,6 +61,39 @@ public class FailoverTest extends AbstractBusClientServerTestBase {
 
         FailoverFeature feature = new FailoverFeature();
         SequentialStrategy strategy = new SequentialStrategy();
+        List<String> addresses = new ArrayList<>();
+        addresses.add("http://localhost:" + PORT2 + "/doubleit/services");
+        strategy.setAlternateAddresses(addresses);
+        feature.setStrategy(strategy);
+
+        String address = "http://localhost:" + PORT1 + "/doubleit/services";
+        WebClient client = WebClient.create(address, null,
+                                            Collections.singletonList(feature), busFile.toString());
+
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        // First call is successful to PORT1
+        Response response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+
+        // Second call fails over to PORT2
+        response = client.post(numberToDouble);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
+
+    @org.junit.Test
+    public void testCircuitBreaker() throws Exception {
+
+        URL busFile = FailoverTest.class.getResource("cxf-client.xml");
+
+        CircuitBreakerFailoverFeature feature = new CircuitBreakerFailoverFeature();
+        feature.setThreshold(2);
+        SequentialStrategy strategy = new SequentialStrategy();
+        strategy.setDelayBetweenRetries(3000L);
         List<String> addresses = new ArrayList<>();
         addresses.add("http://localhost:" + PORT2 + "/doubleit/services");
         strategy.setAlternateAddresses(addresses);

@@ -33,6 +33,7 @@
 
    <properties>
        <cxf.version>3.2.0-SNAPSHOT</cxf.version>
+       <zest.version>2.1</zest.version>
    </properties>
 
    <dependencies>
@@ -109,6 +110,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>${slf4j.version}</version>
+            <scope>test</scope>
+       </dependency>
+       <dependency>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>org.qi4j.library.circuitbreaker</artifactId>
+            <version>${zest.version}</version>
             <scope>test</scope>
        </dependency>
 
