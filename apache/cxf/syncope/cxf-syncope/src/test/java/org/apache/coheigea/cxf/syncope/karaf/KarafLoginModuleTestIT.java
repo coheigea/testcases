@@ -50,22 +50,23 @@ public class KarafLoginModuleTestIT extends AbstractBusClientServerTestBase {
     
     @BeforeClass
     public static void startServers() throws Exception {
+        SyncopeDeployer deployer = new SyncopeDeployer();
+        String syncopePort = System.getProperty("syncope.port");
+        assertNotNull(syncopePort);
+        deployer.setAddress("http://localhost:" + syncopePort + "/syncope/rest/");
+        deployer.deployUserData();
+
         assertTrue(
                    "Server failed to launch",
                    // run the server in the same process
                    // set this to false to fork
                    launchServer(Server.class, true)
         );
+        
         System.setProperty(
             "java.security.auth.login.config",
             "src/test/resources/org/apache/coheigea/cxf/syncope/karaf/syncope.jaas"
         );
-        
-        SyncopeDeployer deployer = new SyncopeDeployer();
-        String syncopePort = System.getProperty("syncope.port");
-        assertNotNull(syncopePort);
-        deployer.setAddress("http://localhost:" + syncopePort + "/syncope/rest/");
-        deployer.deployUserData();
     }
     
     @org.junit.Test
