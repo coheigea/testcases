@@ -17,6 +17,7 @@
 
 package org.apache.coheigea.bigdata.storm.ranger;
 
+import java.net.URI;
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
 
@@ -34,27 +35,28 @@ import org.junit.Assert;
  * A simple test that wires a WordSpout + WordCounterBolt into a topology and runs it. The "RangerStormAuthorizer" takes care of authorization.
  * The policies state that "bob" can do anything with the "word-count" topology. In addition, "bob" can create/kill the "temp*" topologies, but do
  * nothing else.
- * 
+ *
  * In addition we have some TAG based policies created in Atlas and synced into Ranger:
- * 
+ *
  * a) The tag "StormTopologyTag" is associated with "create/kill" permissions to the "bob" user for the "stormdev" topology.
  */
 public class StormRangerAuthorizerTest {
-    
+
     private static LocalCluster cluster;
-    
+
     @org.junit.BeforeClass
     public static void setup() throws Exception {
         System.setProperty("storm.conf.file", "storm_rangerauth.yaml");
         cluster = new LocalCluster();
-        
+
         final Config conf = new Config();
         conf.setDebug(true);
-        
-        final TopologyBuilder builder = new TopologyBuilder();        
-        builder.setSpout("words", new WordSpout());
+
+        final TopologyBuilder builder = new TopologyBuilder();
+        URI fileName = StormRangerAuthorizerTest.class.getResource("../../../../../../words.txt").toURI();
+        builder.setSpout("words", new WordSpout(fileName));
         builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
-        
+
         // bob can create a new topology
         final Subject subject = new Subject();
         subject.getPrincipals().add(new SimplePrincipal("bob"));
@@ -64,9 +66,9 @@ public class StormRangerAuthorizerTest {
                 return null;
             }
         });
-        
+
     }
-    
+
     @org.junit.AfterClass
     public static void cleanup() throws Exception {
         final Subject subject = new Subject();
@@ -77,21 +79,22 @@ public class StormRangerAuthorizerTest {
                 return null;
             }
         });
-        
+
         cluster.shutdown();
         System.clearProperty("storm.conf.file");
     }
-    
+
     // "bob" can't create topologies other than "word-count" and "temp*"
     @org.junit.Test
     public void testCreateTopologyBob() throws Exception {
         final Config conf = new Config();
         conf.setDebug(true);
-        
-        final TopologyBuilder builder = new TopologyBuilder();        
-        builder.setSpout("words", new WordSpout());
+
+        final TopologyBuilder builder = new TopologyBuilder();
+        URI fileName = StormRangerAuthorizerTest.class.getResource("../../../../../../words.txt").toURI();
+        builder.setSpout("words", new WordSpout(fileName));
         builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
-        
+
         final Subject subject = new Subject();
         subject.getPrincipals().add(new SimplePrincipal("bob"));
         Subject.doAs(subject, new PrivilegedExceptionAction<Void>() {
@@ -102,31 +105,32 @@ public class StormRangerAuthorizerTest {
                 } catch (Throwable ex) {
                     // expected
                 }
-                
+
                 return null;
             }
         });
     }
-    
+
     @org.junit.Test
     public void testTopologyActivation() throws Exception {
         final Subject subject = new Subject();
         subject.getPrincipals().add(new SimplePrincipal("bob"));
         Subject.doAs(subject, new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
-                
+
                 // Deactivate "word-count"
                 cluster.deactivate("word-count");
-                
+
                 // Create a new topology called "temp1"
                 final Config conf = new Config();
                 conf.setDebug(true);
-                
-                final TopologyBuilder builder = new TopologyBuilder();        
-                builder.setSpout("words", new WordSpout());
+
+                final TopologyBuilder builder = new TopologyBuilder();
+                URI fileName = StormRangerAuthorizerTest.class.getResource("../../../../../../words.txt").toURI();
+                builder.setSpout("words", new WordSpout(fileName));
                 builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
                 cluster.submitTopology("temp1", conf, builder.createTopology());
-                
+
                 // Try to deactivate "temp1"
                 try {
                     cluster.deactivate("temp1");
@@ -134,18 +138,18 @@ public class StormRangerAuthorizerTest {
                 } catch (Throwable ex) {
                     // expected
                 }
-                
+
                 // Re-activate "word-count"
                 cluster.activate("word-count");
-                
+
                 // Kill temp1
                 cluster.killTopology("temp1");
-                
+
                 return null;
             }
         });
     }
-    
+
     @org.junit.Test
     public void testTopologyRebalancing() throws Exception {
         final Subject subject = new Subject();
@@ -153,16 +157,17 @@ public class StormRangerAuthorizerTest {
         Subject.doAs(subject, new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 RebalanceOptions options = new RebalanceOptions();
-                
+
                 // Create a new topology called "temp2"
                 final Config conf = new Config();
                 conf.setDebug(true);
-                
-                final TopologyBuilder builder = new TopologyBuilder();        
-                builder.setSpout("words", new WordSpout());
+
+                final TopologyBuilder builder = new TopologyBuilder();
+                URI fileName = StormRangerAuthorizerTest.class.getResource("../../../../../../words.txt").toURI();
+                builder.setSpout("words", new WordSpout(fileName));
                 builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
                 cluster.submitTopology("temp2", conf, builder.createTopology());
-                
+
                 // Try to rebalance "temp2"
                 try {
                     cluster.rebalance("temp2", options);
@@ -170,10 +175,10 @@ public class StormRangerAuthorizerTest {
                 } catch (Throwable ex) {
                     // expected
                 }
-                
+
                 // Kill temp2
                 cluster.killTopology("temp2");
-                
+
                 return null;
             }
         });
@@ -183,21 +188,22 @@ public class StormRangerAuthorizerTest {
     public void testTAGBasedPolicy() throws Exception {
         final Config conf = new Config();
         conf.setDebug(true);
-        
-        final TopologyBuilder builder = new TopologyBuilder();        
-        builder.setSpout("words", new WordSpout());
+
+        final TopologyBuilder builder = new TopologyBuilder();
+        URI fileName = StormRangerAuthorizerTest.class.getResource("../../../../../../words.txt").toURI();
+        builder.setSpout("words", new WordSpout(fileName));
         builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
-        
+
         final Subject subject = new Subject();
-        
+
         subject.getPrincipals().add(new SimplePrincipal("bob"));
         Subject.doAs(subject, new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 // bob can create the "stormdev" topology
                 cluster.submitTopology("stormdev", conf, builder.createTopology());
-                
+
                 cluster.killTopology("stormdev");
-                
+
                 // but not the "stormdev2" topology
                 try {
                     cluster.submitTopology("stormdev2", conf, builder.createTopology());
@@ -205,17 +211,17 @@ public class StormRangerAuthorizerTest {
                 } catch (Throwable ex) {
                     // expected
                 }
-                        
+
                 return null;
             }
         });
-        
+
     }
-    
+
     private static class SimplePrincipal implements Principal {
-        
+
         private final String name;
-        
+
         public SimplePrincipal(String name) {
             this.name = name;
         }
@@ -224,6 +230,6 @@ public class StormRangerAuthorizerTest {
         public String getName() {
             return name;
         }
-        
+
     }
 }

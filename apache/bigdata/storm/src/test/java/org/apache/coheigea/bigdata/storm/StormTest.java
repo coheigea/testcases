@@ -17,6 +17,7 @@
 
 package org.apache.coheigea.bigdata.storm;
 
+import java.net.URI;
 import java.security.PrivilegedExceptionAction;
 
 import org.apache.hadoop.security.UserGroupInformation;
@@ -29,16 +30,17 @@ import org.apache.storm.utils.Utils;
  * A simple test that wires a WordSpout + WordCounterBolt into a topology and runs it.
  */
 public class StormTest {
-    
+
     @org.junit.BeforeClass
     public static void setup() throws Exception {
         System.setProperty("storm.conf.file", "storm_noauth.yaml");
     }
-    
+
     @org.junit.Test
     public void testStorm() throws Exception {
-        final TopologyBuilder builder = new TopologyBuilder();        
-        builder.setSpout("words", new WordSpout());
+        final TopologyBuilder builder = new TopologyBuilder();
+        URI fileName = StormTest.class.getResource("../../../../../words.txt").toURI();
+        builder.setSpout("words", new WordSpout(fileName));
         builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
 
         final Config conf = new Config();
@@ -53,18 +55,18 @@ public class StormTest {
                 return null;
             }
         });
-        
+
         Utils.sleep(10000);
-        
+
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 cluster.killTopology("word-count");
                 return null;
             }
         });
-        
+
         cluster.shutdown();
 
     }
-    
+
 }

@@ -17,6 +17,7 @@
 
 package org.apache.coheigea.bigdata.storm;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -35,9 +36,14 @@ public class WordSpout extends BaseRichSpout {
     private final List<String> words;
     private SpoutOutputCollector collector;
     private int line = 0;
-    
-    public WordSpout() throws Exception {
-        java.io.File inputFile = new java.io.File(WordSpout.class.getResource("../../../../../words.txt").toURI());
+
+    public WordSpout(String filePath) throws Exception {
+        java.io.File inputFile = new java.io.File(filePath);
+        words = IOUtils.readLines(new java.io.FileInputStream(inputFile));
+    }
+
+    public WordSpout(URI filePath) throws Exception {
+        java.io.File inputFile = new java.io.File(filePath);
         words = IOUtils.readLines(new java.io.FileInputStream(inputFile));
     }
 
@@ -57,6 +63,6 @@ public class WordSpout extends BaseRichSpout {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         declarer.declare(new Fields("word"));
     }
-    
-    
+
+
 }
