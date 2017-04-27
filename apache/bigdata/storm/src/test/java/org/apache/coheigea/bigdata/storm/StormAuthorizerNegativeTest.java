@@ -17,6 +17,7 @@
 
 package org.apache.coheigea.bigdata.storm;
 
+import java.net.URI;
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
 
@@ -32,25 +33,26 @@ import org.junit.Assert;
  * which allows access to "alice" but no-one else.
  */
 public class StormAuthorizerNegativeTest {
-    
+
     private static LocalCluster cluster;
-    
+
     @org.junit.BeforeClass
     public static void setup() throws Exception {
         System.setProperty("storm.conf.file", "storm_customauth.yaml");
         cluster = new LocalCluster();
     }
-    
+
     @org.junit.AfterClass
     public static void cleanup() throws Exception {
         cluster.shutdown();
         System.clearProperty("storm.conf.file");
     }
-    
+
     @org.junit.Test
     public void testCreateTopologyBob() throws Exception {
-        final TopologyBuilder builder = new TopologyBuilder();        
-        builder.setSpout("words", new WordSpout());
+        final TopologyBuilder builder = new TopologyBuilder();
+        URI fileName = StormAuthorizerNegativeTest.class.getResource("../../../../../words.txt").toURI();
+        builder.setSpout("words", new WordSpout(fileName));
         builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
 
         final Config conf = new Config();
@@ -70,13 +72,13 @@ public class StormAuthorizerNegativeTest {
                 return null;
             }
         });
-        
+
     }
-    
+
     private static class SimplePrincipal implements Principal {
-        
+
         private final String name;
-        
+
         public SimplePrincipal(String name) {
             this.name = name;
         }
@@ -85,6 +87,6 @@ public class StormAuthorizerNegativeTest {
         public String getName() {
             return name;
         }
-        
+
     }
 }

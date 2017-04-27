@@ -17,6 +17,7 @@
 
 package org.apache.coheigea.bigdata.storm;
 
+import java.net.URI;
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
 
@@ -28,33 +29,34 @@ import org.apache.storm.topology.TopologyBuilder;
 
 /**
  * A simple test that wires a WordSpout + WordCounterBolt into a topology and runs it. We're also plugging in the CustomIAuthorizer,
- * which allows access to "alice" but no-one else. 
+ * which allows access to "alice" but no-one else.
  */
 public class StormAuthorizerTest {
-    
+
     private static LocalCluster cluster;
-    
+
     @org.junit.BeforeClass
     public static void setup() throws Exception {
         System.setProperty("storm.conf.file", "storm_customauth.yaml");
         cluster = new LocalCluster();
     }
-    
+
     @org.junit.AfterClass
     public static void cleanup() throws Exception {
         cluster.shutdown();
         System.clearProperty("storm.conf.file");
     }
-    
+
     @org.junit.Test
     public void testCreateTopologyAlice() throws Exception {
         final Config conf = new Config();
         conf.setDebug(true);
-        
-        final TopologyBuilder builder = new TopologyBuilder();        
-        builder.setSpout("words", new WordSpout());
+
+        final TopologyBuilder builder = new TopologyBuilder();
+        URI fileName = StormAuthorizerTest.class.getResource("../../../../../words.txt").toURI();
+        builder.setSpout("words", new WordSpout(fileName));
         builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
-        
+
         // Alice can create a new topology
         final Subject subject = new Subject();
         subject.getPrincipals().add(new SimplePrincipal("alice"));
@@ -64,20 +66,20 @@ public class StormAuthorizerTest {
                 return null;
             }
         });
-        
+
         Subject.doAs(subject, new PrivilegedExceptionAction<Void>() {
             public Void run() throws Exception {
                 cluster.killTopology("word-count");
                 return null;
             }
         });
-        
+
     }
-    
+
     private static class SimplePrincipal implements Principal {
-        
+
         private final String name;
-        
+
         public SimplePrincipal(String name) {
             this.name = name;
         }
@@ -86,6 +88,6 @@ public class StormAuthorizerTest {
         public String getName() {
             return name;
         }
-        
+
     }
 }
