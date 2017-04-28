@@ -28,7 +28,7 @@ import org.apache.storm.topology.TopologyBuilder;
  * Deploy it via:
  *
  * mvn assembly:assembly
- * bin/storm jar org.apache.coheigea.bigdata.storm.StormMain target/bigdata-storm-demo-1.0-jar-with-dependencies.jar <path to words.txt>
+ * bin/storm jar target/bigdata-storm-demo-1.0-jar-with-dependencies.jar org.apache.coheigea.bigdata.storm.StormMain <path to words.txt>
  */
 public class StormMain {
 
