@@ -24,12 +24,17 @@ import org.apache.storm.topology.TopologyBuilder;
 /**
  * A simple test that wires a WordSpout + WordCounterBolt into a topology and runs it.
  * This class is used to deploy the topology to a Storm cluster.
+ *
+ * Deploy it via:
+ *
+ * mvn assembly:assembly
+ * bin/storm jar org.apache.coheigea.bigdata.storm.StormMain target/bigdata-storm-demo-1.0-jar-with-dependencies.jar <path to words.txt>
  */
 public class StormMain {
 
     public static void main(String[] args) throws Exception {
         final TopologyBuilder builder = new TopologyBuilder();
-        builder.setSpout("words", new WordSpout("path"));
+        builder.setSpout("words", new WordSpout(args[0]));
         builder.setBolt("counter", new WordCounterBolt()).shuffleGrouping("words");
 
         final Config conf = new Config();
