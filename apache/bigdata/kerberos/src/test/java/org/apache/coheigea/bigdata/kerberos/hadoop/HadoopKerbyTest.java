@@ -88,7 +88,7 @@ public class HadoopKerbyTest extends org.junit.Assert {
         kerbyServer.start();
 
         // Read in krb5.conf and substitute in the correct port
-        Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/org/apache/coheigea/bigdata/kerberos/kerby/krb5.conf");
+        Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/org/apache/coheigea/bigdata/kerberos/hadoop/krb5.conf");
         String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
         content = content.replaceAll("port", "" + kerbyServer.getKdcSetting().getKdcUdpPort());
 
