@@ -51,13 +51,13 @@
             <artifactId>kerb-server</artifactId>
             <version>${kerby.version}</version>
             <scope>test</scope>
-       </dependency>
-       <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.apache.kerby</groupId>
             <artifactId>kerby-kdc</artifactId>
             <version>${kerby.version}</version>
             <scope>test</scope>
-       </dependency>
+        </dependency>
 
     </dependencies>
     <build>
