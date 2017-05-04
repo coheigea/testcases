@@ -19,10 +19,7 @@
 package org.apache.coheigea.cxf.kerberos.authentication;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbConstant;
 import org.apache.kerby.kerberos.kerb.KrbException;
@@ -63,6 +60,7 @@ public class AnonymousPKInitTest extends org.junit.Assert {
 
         kerbyServer.setKdcRealm("service.ws.apache.org");
         kerbyServer.setAllowUdp(true);
+        kerbyServer.setWorkDir(new File(basedir + "/target"));
 
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
@@ -83,7 +81,7 @@ public class AnonymousPKInitTest extends org.junit.Assert {
         kerbyServer.createPrincipal(KrbConstant.ANONYMOUS_PRINCIPAL + "@service.ws.apache.org");
         kerbyServer.start();
 
-        updatePort(basedir);
+        System.setProperty("java.security.krb5.conf", basedir + "/target/krb5.conf");
     }
 
     @AfterClass
@@ -91,25 +89,6 @@ public class AnonymousPKInitTest extends org.junit.Assert {
         if (kerbyServer != null) {
             kerbyServer.stop();
         }
-    }
-
-    private static void updatePort(String basedir) throws Exception {
-
-        // Read in krb5.conf and substitute in the correct port
-        File f = new File(basedir + "/src/test/resources/kerberos/krb5.conf");
-
-        FileInputStream inputStream = new FileInputStream(f);
-        String content = IOUtils.toString(inputStream, "UTF-8");
-        inputStream.close();
-        // content = content.replaceAll("port", KDC_PORT);
-        content = content.replaceAll("port", "" + kerbyServer.getKdcPort());
-
-        File f2 = new File(basedir + "/target/test-classes/kerberos/krb5.conf");
-        FileOutputStream outputStream = new FileOutputStream(f2);
-        IOUtils.write(content, outputStream, "UTF-8");
-        outputStream.close();
-
-        System.setProperty("java.security.krb5.conf", f2.getPath());
     }
 
     // TODO Certificate is expired

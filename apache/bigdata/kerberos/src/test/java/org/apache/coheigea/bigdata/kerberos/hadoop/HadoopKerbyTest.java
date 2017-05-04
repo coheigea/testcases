@@ -20,10 +20,6 @@
 package org.apache.coheigea.bigdata.kerberos.hadoop;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
@@ -65,6 +61,7 @@ public class HadoopKerbyTest extends org.junit.Assert {
 
         kerbyServer.setKdcRealm("hadoop.apache.org");
         kerbyServer.setAllowUdp(true);
+        kerbyServer.setWorkDir(new File(basedir + "/target"));
 
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
@@ -91,15 +88,6 @@ public class HadoopKerbyTest extends org.junit.Assert {
         kerbyServer.exportPrincipal(http, keytabFile);
 
         kerbyServer.start();
-
-        // Read in krb5.conf and substitute in the correct port
-        Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/org/apache/coheigea/bigdata/kerberos/hadoop/krb5.conf");
-        String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-        content = content.replaceAll("port", "" + kerbyServer.getKdcPort());
-
-        Path path2 = FileSystems.getDefault().getPath(basedir,
-                                                      "/target/test-classes/hadoop.krb5.conf");
-        Files.write(path2, content.getBytes());
     }
 
     @AfterClass
