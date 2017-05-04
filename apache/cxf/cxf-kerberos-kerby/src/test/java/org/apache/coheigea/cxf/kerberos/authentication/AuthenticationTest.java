@@ -32,7 +32,6 @@ import javax.security.auth.login.LoginContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
-import org.apache.coheigea.cxf.kerberos.common.KerbyServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
@@ -45,6 +44,7 @@ import org.apache.kerby.kerberos.kerb.client.Krb5Conf;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.client.KrbConfig;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
+import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
 import org.apache.kerby.kerberos.kerb.type.ticket.TgtTicket;
 import org.apache.kerby.kerberos.provider.token.JwtTokenProvider;
@@ -61,11 +61,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 
 /**
- * There are two test-cases covered in this class, one that uses a WS-SecurityPolicy 
+ * There are two test-cases covered in this class, one that uses a WS-SecurityPolicy
  * KerberosToken policy, and the other that uses a SpnegoContextToken policy.
  *
- * Both testcases start up a KDC locally using Apache Kerby. In each case, the service endpoint 
- * has a TransportBinding policy, with a corresponding EndorsingSupportingToken which is either 
+ * Both testcases start up a KDC locally using Apache Kerby. In each case, the service endpoint
+ * has a TransportBinding policy, with a corresponding EndorsingSupportingToken which is either
  * a KerberosToken or SpnegoContextToken. The client will obtain a service ticket from the KDC
  * and include it in the security header of the service request.
  */
@@ -75,9 +75,7 @@ public class AuthenticationTest extends org.junit.Assert {
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
 
     private static final String PORT = TestUtil.getPortNumber(Server.class);
-    private static final String KDC_PORT = TestUtil.getPortNumber(Server.class, 2);
-    private static final String KDC_UDP_PORT = TestUtil.getPortNumber(Server.class, 3);
-    private static KerbyServer kerbyServer;
+    private static SimpleKdcServer kerbyServer;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -89,27 +87,12 @@ public class AuthenticationTest extends org.junit.Assert {
             basedir = new File(".").getCanonicalPath();
         }
 
-        updatePort(basedir);
-
-        System.setProperty("sun.security.krb5.debug", "true");
-        System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
-
-        Assert.assertTrue(
-                          "Server failed to launch",
-                          // run the server in the same process
-                          // set this to false to fork
-                          AbstractBusClientServerTestBase.launchServer(Server.class, true)
-            );
-
         KrbRuntime.setTokenProvider(new JwtTokenProvider());
-        kerbyServer = new KerbyServer();
+        kerbyServer = new SimpleKdcServer();
 
-        kerbyServer.setKdcHost("localhost");
         kerbyServer.setKdcRealm("service.ws.apache.org");
-        kerbyServer.setKdcTcpPort(Integer.parseInt(KDC_PORT));
         kerbyServer.setAllowUdp(true);
-        kerbyServer.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
-        
+
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
         kerbyServer.getKdcConfig().setString(KdcConfigKey.TOKEN_ISSUERS, "DoubleItSTSIssuer");
@@ -121,8 +104,19 @@ public class AuthenticationTest extends org.junit.Assert {
         String bob = "bob/service.ws.apache.org@service.ws.apache.org";
         kerbyServer.createPrincipal(alice, "alice");
         kerbyServer.createPrincipal(bob, "bob");
-        kerbyServer.createPrincipal("krbtgt/service.ws.apache.org@service.ws.apache.org", "krbtgt");
         kerbyServer.start();
+
+        updatePort(basedir);
+
+        System.setProperty("sun.security.krb5.debug", "true");
+        System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
+
+        Assert.assertTrue(
+                          "Server failed to launch",
+                          // run the server in the same process
+                          // set this to false to fork
+                          AbstractBusClientServerTestBase.launchServer(Server.class, true)
+        );
     }
 
     @AfterClass
@@ -141,7 +135,7 @@ public class AuthenticationTest extends org.junit.Assert {
         String content = IOUtils.toString(inputStream, "UTF-8");
         inputStream.close();
         // content = content.replaceAll("port", KDC_PORT);
-        content = content.replaceAll("port", KDC_UDP_PORT);
+        content = content.replaceAll("port", "" + kerbyServer.getKdcPort());
 
         File f2 = new File(basedir + "/target/test-classes/kerberos/krb5.conf");
         FileOutputStream outputStream = new FileOutputStream(f2);
@@ -156,7 +150,7 @@ public class AuthenticationTest extends org.junit.Assert {
         KrbClient client = new KrbClient();
 
         client.setKdcHost("localhost");
-        client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
+        client.setKdcTcpPort(kerbyServer.getKdcPort());
         client.setAllowUdp(false);
         // client.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
 
@@ -177,13 +171,13 @@ public class AuthenticationTest extends org.junit.Assert {
             Assert.fail();
         }
     }
-    
+
     @org.junit.Test
     public void unitTestUsingKrb5Conf() throws Exception {
         File confFile = new File(System.getProperty(Krb5Conf.KRB5_CONF));
         KrbConfig krbConfig = new KrbConfig();
         krbConfig.addKrb5Config(confFile);
-        
+
         KrbClient client = new KrbClient(krbConfig);
         client.init();
 
@@ -212,7 +206,7 @@ public class AuthenticationTest extends org.junit.Assert {
         assertFalse(clientPrincipals.isEmpty());
 
         // Get the TGT
-        Set<KerberosTicket> privateCredentials = 
+        Set<KerberosTicket> privateCredentials =
             clientSubject.getPrivateCredentials(KerberosTicket.class);
         assertFalse(privateCredentials.isEmpty());
         KerberosTicket tgt = privateCredentials.iterator().next();
@@ -239,7 +233,7 @@ public class AuthenticationTest extends org.junit.Assert {
         assertFalse(servicePrincipals.isEmpty());
 
         // Handle the service ticket
-        KerberosServiceExceptionAction serviceAction = 
+        KerberosServiceExceptionAction serviceAction =
             new KerberosServiceExceptionAction(ticket, "bob@service.ws.apache.org");
 
         Subject.doAs(serviceSubject, serviceAction);
@@ -258,7 +252,7 @@ public class AuthenticationTest extends org.junit.Assert {
         URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItKerberosTransportPort");
-        DoubleItPortType transportPort = 
+        DoubleItPortType transportPort =
             service.getPort(portQName, DoubleItPortType.class);
         TestUtil.updateAddressPort(transportPort, PORT);
 
@@ -278,13 +272,13 @@ public class AuthenticationTest extends org.junit.Assert {
         URL wsdl = AuthenticationTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItSpnegoTransportPort");
-        DoubleItPortType transportPort = 
+        DoubleItPortType transportPort =
             service.getPort(portQName, DoubleItPortType.class);
         TestUtil.updateAddressPort(transportPort, PORT);
 
         doubleIt(transportPort, 25);
     }
-    
+
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
         Assert.assertEquals(numToDouble * 2 , resp);
@@ -301,7 +295,7 @@ public class AuthenticationTest extends org.junit.Assert {
         private Principal clientPrincipal;
         private String serviceName;
 
-        public KerberosClientExceptionAction(Principal clientPrincipal, String serviceName) { 
+        public KerberosClientExceptionAction(Principal clientPrincipal, String serviceName) {
             this.clientPrincipal = clientPrincipal;
             this.serviceName = serviceName;
         }
@@ -312,7 +306,7 @@ public class AuthenticationTest extends org.junit.Assert {
             GSSName gssService = gssManager.createName(serviceName, GSSName.NT_HOSTBASED_SERVICE);
             Oid oid = new Oid(JGSS_KERBEROS_TICKET_OID);
             GSSName gssClient = gssManager.createName(clientPrincipal.getName(), GSSName.NT_USER_NAME);
-            GSSCredential credentials = 
+            GSSCredential credentials =
                 gssManager.createCredential(
                                             gssClient, GSSCredential.DEFAULT_LIFETIME, oid, GSSCredential.INITIATE_ONLY
                     );
@@ -354,7 +348,7 @@ public class AuthenticationTest extends org.junit.Assert {
             GSSName gssService = gssManager.createName(serviceName, GSSName.NT_HOSTBASED_SERVICE);
 
             Oid oid = new Oid(JGSS_KERBEROS_TICKET_OID);
-            GSSCredential credentials = 
+            GSSCredential credentials =
                 gssManager.createCredential(
                                             gssService, GSSCredential.DEFAULT_LIFETIME, oid, GSSCredential.ACCEPT_ONLY
                     );
@@ -364,9 +358,9 @@ public class AuthenticationTest extends org.junit.Assert {
                 return secContext.acceptSecContext(ticket, 0, ticket.length);
             } finally {
                 if (null != secContext) {
-                    secContext.dispose();    
+                    secContext.dispose();
                 }
-            }               
+            }
         }
 
     }

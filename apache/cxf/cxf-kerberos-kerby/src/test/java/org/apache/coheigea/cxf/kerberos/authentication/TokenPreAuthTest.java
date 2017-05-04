@@ -34,7 +34,6 @@ import javax.security.auth.kerberos.KerberosPrincipal;
 import javax.security.auth.kerberos.KerberosTicket;
 import javax.security.auth.login.LoginContext;
 
-import org.apache.coheigea.cxf.kerberos.common.KerbyServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.rs.security.jose.common.JoseConstants;
 import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
@@ -53,6 +52,7 @@ import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.client.KrbTokenClient;
 import org.apache.kerby.kerberos.kerb.integration.test.jaas.TokenCache;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
+import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
 import org.apache.kerby.kerberos.kerb.type.ticket.TgtTicket;
 import org.apache.kerby.kerberos.provider.token.JwtTokenProvider;
@@ -73,9 +73,7 @@ import org.junit.BeforeClass;
  */
 public class TokenPreAuthTest extends org.junit.Assert {
 
-    private static final String KDC_PORT = TestUtil.getPortNumber(Server.class, 2);
-    private static final String KDC_UDP_PORT = TestUtil.getPortNumber(Server.class, 3);
-    private static KerbyServer kerbyServer;
+    private static SimpleKdcServer kerbyServer;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -87,20 +85,15 @@ public class TokenPreAuthTest extends org.junit.Assert {
             basedir = new File(".").getCanonicalPath();
         }
 
-        updatePort(basedir);
-
         System.setProperty("sun.security.krb5.debug", "true");
         System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
 
         KrbRuntime.setTokenProvider(new JwtTokenProvider());
-        kerbyServer = new KerbyServer();
+        kerbyServer = new SimpleKdcServer();
 
-        kerbyServer.setKdcHost("localhost");
         kerbyServer.setKdcRealm("service.ws.apache.org");
-        kerbyServer.setKdcTcpPort(Integer.parseInt(KDC_PORT));
         kerbyServer.setAllowUdp(true);
-        kerbyServer.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
-        
+
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
         kerbyServer.getKdcConfig().setString(KdcConfigKey.TOKEN_ISSUERS, "DoubleItSTSIssuer");
@@ -112,8 +105,9 @@ public class TokenPreAuthTest extends org.junit.Assert {
         String bob = "bob/service.ws.apache.org@service.ws.apache.org";
         kerbyServer.createPrincipal(alice, "alice");
         kerbyServer.createPrincipal(bob, "bob");
-        kerbyServer.createPrincipal("krbtgt/service.ws.apache.org@service.ws.apache.org", "krbtgt");
         kerbyServer.start();
+
+        updatePort(basedir);
     }
 
     @AfterClass
@@ -132,7 +126,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
         String content = IOUtils.toString(inputStream, "UTF-8");
         inputStream.close();
         // content = content.replaceAll("port", KDC_PORT);
-        content = content.replaceAll("port", KDC_UDP_PORT);
+        content = content.replaceAll("port", "" + kerbyServer.getKdcPort());
 
         File f2 = new File(basedir + "/target/test-classes/kerberos/krb5.conf");
         FileOutputStream outputStream = new FileOutputStream(f2);
@@ -141,24 +135,24 @@ public class TokenPreAuthTest extends org.junit.Assert {
 
         System.setProperty("java.security.krb5.conf", f2.getPath());
     }
-    
+
     // Use the TokenAuthLoginModule in Kerby to log in to the KDC using a JWT token
     @org.junit.Test
     public void unitTokenAuthGSSTest() throws Exception {
-        
+
         // 1. Get a TGT from the KDC for the client + create an armor cache
         KrbClient client = new KrbClient();
 
         client.setKdcHost("localhost");
-        client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
+        client.setKdcTcpPort(kerbyServer.getKdcPort());
         client.setAllowUdp(false);
 
         client.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
         client.init();
-        
+
         TgtTicket tgt = client.requestTgt("alice@service.ws.apache.org", "alice");
         assertNotNull(tgt);
-        
+
         // Write to cache
         Credential credential = new Credential(tgt);
         CredentialCache cCache = new CredentialCache();
@@ -167,7 +161,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
 
         File cCacheFile = File.createTempFile("krb5_alice@service.ws.apache.org", "cc");
         cCache.store(cCacheFile);
-        
+
         // Now read in JAAS config + substitute in the armor cache file path value
         String basedir = System.getProperty("basedir");
         if (basedir == null) {
@@ -193,10 +187,10 @@ public class TokenPreAuthTest extends org.junit.Assert {
         claims.setExpiryTime(new Date().getTime() + (60L + 1000L));
         String address = "krbtgt/service.ws.apache.org@service.ws.apache.org";
         claims.setAudiences(Collections.singletonList(address));
-        
+
         KeyStore keystore = KeyStore.getInstance("JKS");
         keystore.load(Loader.getResourceAsStream("clientstore.jks"), "cspass".toCharArray());
-        
+
         Properties signingProperties = new Properties();
         signingProperties.put(JoseConstants.RSSEC_SIGNATURE_ALGORITHM, SignatureAlgorithm.RS256.name());
         signingProperties.put(JoseConstants.RSSEC_KEY_STORE, keystore);
@@ -210,9 +204,9 @@ public class TokenPreAuthTest extends org.junit.Assert {
             JwsUtils.loadSignatureProvider(signingProperties, jwsHeaders);
 
         String signedToken = jws.signWith(sigProvider);
-        
+
         TokenCache.writeToken(signedToken);
-        
+
         // 3. Now log in using JAAS
         LoginContext loginContext = new LoginContext("aliceTokenAuth", new KerberosCallbackHandler());
         loginContext.login();
@@ -220,9 +214,9 @@ public class TokenPreAuthTest extends org.junit.Assert {
         Subject clientSubject = loginContext.getSubject();
         //Set<Principal> clientPrincipals = clientSubject.getPrincipals();
         //assertFalse(clientPrincipals.isEmpty());
-        
+
         // Get the TGT
-        Set<KerberosTicket> privateCredentials = 
+        Set<KerberosTicket> privateCredentials =
             clientSubject.getPrivateCredentials(KerberosTicket.class);
         assertFalse(privateCredentials.isEmpty());
 
@@ -238,23 +232,23 @@ public class TokenPreAuthTest extends org.junit.Assert {
 
         cCacheFile.delete();
     }
-    
+
     @org.junit.Test
     public void jwtUnitTestAccess() throws Exception {
-        
+
         // Get a TGT
         KrbClient client = new KrbClient();
 
         client.setKdcHost("localhost");
-        client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
+        client.setKdcTcpPort(kerbyServer.getKdcPort());
         client.setAllowUdp(false);
 
         client.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
         client.init();
-        
+
         TgtTicket tgt = client.requestTgt("alice@service.ws.apache.org", "alice");
         assertNotNull(tgt);
-        
+
         // Write to cache
         Credential credential = new Credential(tgt);
         CredentialCache cCache = new CredentialCache();
@@ -263,16 +257,16 @@ public class TokenPreAuthTest extends org.junit.Assert {
 
         File cCacheFile = File.createTempFile("krb5_alice@service.ws.apache.org", "cc");
         cCache.store(cCacheFile);
-        
+
         KrbTokenClient tokenClient = new KrbTokenClient(client);
 
         tokenClient.setKdcHost("localhost");
-        tokenClient.setKdcTcpPort(Integer.parseInt(KDC_PORT));
+        tokenClient.setKdcTcpPort(kerbyServer.getKdcPort());
         tokenClient.setAllowUdp(false);
 
         tokenClient.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
         client.init();
-        
+
         // Create a JWT token using CXF
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
@@ -281,11 +275,11 @@ public class TokenPreAuthTest extends org.junit.Assert {
         claims.setExpiryTime(new Date().getTime() + (60L + 1000L));
         String address = "bob/service.ws.apache.org@service.ws.apache.org";
         claims.setAudiences(Collections.singletonList(address));
-        
+
         // Wrap it in a KrbToken + sign it
         CXFKrbToken krbToken = new CXFKrbToken(claims, false);
         krbToken.sign();
-        
+
         // Now get a SGT using the JWT
         SgtTicket tkt;
         try {
@@ -295,26 +289,26 @@ public class TokenPreAuthTest extends org.junit.Assert {
             e.printStackTrace();
             Assert.fail();
         }
-        
+
         cCacheFile.delete();
     }
-    
+
     @org.junit.Test
     public void jwtUnitTestIdentity() throws Exception {
-        
+
         // Get a TGT
         KrbClient client = new KrbClient();
 
         client.setKdcHost("localhost");
-        client.setKdcTcpPort(Integer.parseInt(KDC_PORT));
+        client.setKdcTcpPort(kerbyServer.getKdcPort());
         client.setAllowUdp(false);
 
         client.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
         client.init();
-        
+
         TgtTicket tgt = client.requestTgt("alice@service.ws.apache.org", "alice");
         assertNotNull(tgt);
-        
+
         // Write to cache
         Credential credential = new Credential(tgt);
         CredentialCache cCache = new CredentialCache();
@@ -323,16 +317,16 @@ public class TokenPreAuthTest extends org.junit.Assert {
 
         File cCacheFile = File.createTempFile("krb5_alice@service.ws.apache.org", "cc");
         cCache.store(cCacheFile);
-        
+
         KrbTokenClient tokenClient = new KrbTokenClient(client);
 
         tokenClient.setKdcHost("localhost");
-        tokenClient.setKdcTcpPort(Integer.parseInt(KDC_PORT));
+        tokenClient.setKdcTcpPort(kerbyServer.getKdcPort());
         tokenClient.setAllowUdp(false);
 
         tokenClient.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
         client.init();
-        
+
         // Create a JWT token using CXF
         JwtClaims claims = new JwtClaims();
         claims.setSubject("alice");
@@ -341,12 +335,12 @@ public class TokenPreAuthTest extends org.junit.Assert {
         claims.setExpiryTime(new Date().getTime() + (60L + 1000L));
         String address = "krbtgt/service.ws.apache.org@service.ws.apache.org";
         claims.setAudiences(Collections.singletonList(address));
-        
+
         // Wrap it in a KrbToken + sign it
         CXFKrbToken krbToken = new CXFKrbToken(claims, false);
         krbToken.isIdToken(true);
         krbToken.sign();
-        
+
         // Now get a TGT using the JWT token
         tgt = tokenClient.requestTgt(krbToken, cCacheFile.getPath());
 
@@ -359,7 +353,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
             e.printStackTrace();
             Assert.fail();
         }
-        
+
         cCacheFile.delete();
     }
 
@@ -373,7 +367,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
         assertFalse(servicePrincipals.isEmpty());
 
         // Handle the service ticket
-        KerberosServiceExceptionAction serviceAction = 
+        KerberosServiceExceptionAction serviceAction =
             new KerberosServiceExceptionAction(ticket, "bob@service.ws.apache.org");
 
         Subject.doAs(serviceSubject, serviceAction);
@@ -390,7 +384,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
         private Principal clientPrincipal;
         private String serviceName;
 
-        public KerberosClientExceptionAction(Principal clientPrincipal, String serviceName) { 
+        public KerberosClientExceptionAction(Principal clientPrincipal, String serviceName) {
             this.clientPrincipal = clientPrincipal;
             this.serviceName = serviceName;
         }
@@ -401,7 +395,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
             GSSName gssService = gssManager.createName(serviceName, GSSName.NT_HOSTBASED_SERVICE);
             Oid oid = new Oid(JGSS_KERBEROS_TICKET_OID);
             GSSName gssClient = gssManager.createName(clientPrincipal.getName(), GSSName.NT_USER_NAME);
-            GSSCredential credentials = 
+            GSSCredential credentials =
                 gssManager.createCredential(
                                             gssClient, GSSCredential.DEFAULT_LIFETIME, oid, GSSCredential.INITIATE_ONLY
                     );
@@ -443,7 +437,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
             GSSName gssService = gssManager.createName(serviceName, GSSName.NT_HOSTBASED_SERVICE);
 
             Oid oid = new Oid(JGSS_KERBEROS_TICKET_OID);
-            GSSCredential credentials = 
+            GSSCredential credentials =
                 gssManager.createCredential(
                                             gssService, GSSCredential.DEFAULT_LIFETIME, oid, GSSCredential.ACCEPT_ONLY
                     );
@@ -454,7 +448,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
                 /*
                 if (secContext instanceof com.sun.security.jgss.ExtendedGSSContext) {
                     com.sun.security.jgss.ExtendedGSSContext ex = (com.sun.security.jgss.ExtendedGSSContext)secContext;
-                    
+
                     com.sun.security.jgss.AuthorizationDataEntry[] authzDataEntries =
                         (com.sun.security.jgss.AuthorizationDataEntry[])ex.inquireSecContext(com.sun.security.jgss.InquireType.KRB5_GET_AUTHZ_DATA);
                     System.out.println("AUTHZ DATA LEN: " + authzDataEntries.length);
@@ -466,9 +460,9 @@ public class TokenPreAuthTest extends org.junit.Assert {
                 return outputToken;
             } finally {
                 if (null != secContext) {
-                    secContext.dispose();    
+                    secContext.dispose();
                 }
-            }               
+            }
         }
 
     }

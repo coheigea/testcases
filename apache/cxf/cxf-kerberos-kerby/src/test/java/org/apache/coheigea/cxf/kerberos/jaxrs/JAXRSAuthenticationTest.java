@@ -26,7 +26,6 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.coheigea.cxf.kerberos.common.KerbyServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
@@ -34,6 +33,7 @@ import org.apache.cxf.testutil.common.TestUtil;
 import org.apache.cxf.transport.http.auth.SpnegoAuthSupplier;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
+import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.apache.wss4j.dom.engine.WSSConfig;
 import org.ietf.jgss.GSSName;
 import org.junit.AfterClass;
@@ -47,10 +47,8 @@ import org.junit.BeforeClass;
 public class JAXRSAuthenticationTest extends org.junit.Assert {
 
     private static final String PORT = TestUtil.getPortNumber(Server.class);
-    private static final String KDC_PORT = TestUtil.getPortNumber(Server.class, 2);
-    private static final String KDC_UDP_PORT = TestUtil.getPortNumber(Server.class, 3);
 
-    private static KerbyServer kerbyServer;
+    private static SimpleKdcServer kerbyServer;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -62,6 +60,21 @@ public class JAXRSAuthenticationTest extends org.junit.Assert {
             basedir = new File(".").getCanonicalPath();
         }
 
+        kerbyServer = new SimpleKdcServer();
+
+        kerbyServer.setKdcRealm("service.ws.apache.org");
+        kerbyServer.setAllowUdp(true);
+
+        kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
+        kerbyServer.init();
+
+        // Create principals
+        String alice = "alice@service.ws.apache.org";
+        String bob = "bob/service.ws.apache.org@service.ws.apache.org";
+        kerbyServer.createPrincipal(alice, "alice");
+        kerbyServer.createPrincipal(bob, "bob");
+        kerbyServer.start();
+
         updatePort(basedir);
 
         // System.setProperty("sun.security.krb5.debug", "true");
@@ -72,26 +85,7 @@ public class JAXRSAuthenticationTest extends org.junit.Assert {
                           // run the server in the same process
                           // set this to false to fork
                           AbstractBusClientServerTestBase.launchServer(Server.class, true)
-            );
-
-        kerbyServer = new KerbyServer();
-
-        kerbyServer.setKdcHost("localhost");
-        kerbyServer.setKdcRealm("service.ws.apache.org");
-        kerbyServer.setKdcTcpPort(Integer.parseInt(KDC_PORT));
-        kerbyServer.setAllowUdp(true);
-        kerbyServer.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
-
-        kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
-        kerbyServer.init();
-
-        // Create principals
-        String alice = "alice@service.ws.apache.org";
-        String bob = "bob/service.ws.apache.org@service.ws.apache.org";
-        kerbyServer.createPrincipal(alice, "alice");
-        kerbyServer.createPrincipal(bob, "bob");
-        kerbyServer.createPrincipal("krbtgt/service.ws.apache.org@service.ws.apache.org", "krbtgt");
-        kerbyServer.start();
+        );
     }
 
     @AfterClass
@@ -109,8 +103,7 @@ public class JAXRSAuthenticationTest extends org.junit.Assert {
         FileInputStream inputStream = new FileInputStream(f);
         String content = IOUtils.toString(inputStream, "UTF-8");
         inputStream.close();
-        // content = content.replaceAll("port", KDC_PORT);
-        content = content.replaceAll("port", KDC_UDP_PORT);
+        content = content.replaceAll("port", "" + kerbyServer.getKdcPort());
 
         File f2 = new File(basedir + "/target/test-classes/kerberos/krb5.conf");
         FileOutputStream outputStream = new FileOutputStream(f2);
