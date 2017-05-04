@@ -19,14 +19,11 @@
 package org.apache.coheigea.cxf.kerberos.jwtjaxrs;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -70,6 +67,7 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
 
         kerbyServer.setKdcRealm("service.ws.apache.org");
         kerbyServer.setAllowUdp(true);
+        kerbyServer.setWorkDir(new File(basedir + "/target"));
 
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
         kerbyServer.init();
@@ -83,10 +81,9 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         kerbyServer.createPrincipal(bob, "bob");
         kerbyServer.start();
 
-        updatePort(basedir);
-
         // System.setProperty("sun.security.krb5.debug", "true");
         System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
+        System.setProperty("java.security.krb5.conf", basedir + "/target/krb5.conf");
 
         Assert.assertTrue(
                           "Server failed to launch",
@@ -107,25 +104,6 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         if (kerbyServer != null) {
             kerbyServer.stop();
         }
-    }
-
-    private static void updatePort(String basedir) throws Exception {
-
-        // Read in krb5.conf and substitute in the correct port
-        File f = new File(basedir + "/src/test/resources/kerberos/krb5.conf");
-
-        FileInputStream inputStream = new FileInputStream(f);
-        String content = IOUtils.toString(inputStream, "UTF-8");
-        inputStream.close();
-        // content = content.replaceAll("port", KDC_PORT);
-        content = content.replaceAll("port", "" + kerbyServer.getKdcPort());
-
-        File f2 = new File(basedir + "/target/test-classes/kerberos/krb5.conf");
-        FileOutputStream outputStream = new FileOutputStream(f2);
-        IOUtils.write(content, outputStream, "UTF-8");
-        outputStream.close();
-
-        System.setProperty("java.security.krb5.conf", f2.getPath());
     }
 
     // TODO
