@@ -137,13 +137,13 @@
        </dependency>
        <dependency>
             <groupId>org.apache.kerby</groupId>
-            <artifactId>kerb-server</artifactId>
+            <artifactId>kerby-kdc</artifactId>
             <version>${kerby.version}</version>
             <scope>test</scope>
        </dependency>
        <dependency>
             <groupId>org.apache.kerby</groupId>
-            <artifactId>kerby-kdc</artifactId>
+            <artifactId>kerb-simplekdc</artifactId>
             <version>${kerby.version}</version>
             <scope>test</scope>
        </dependency>

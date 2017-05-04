@@ -27,7 +27,7 @@ import java.nio.file.Path;
 
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
-import org.apache.kerby.util.NetworkUtil;
+import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,7 +48,7 @@ import org.junit.Test;
  */
 public class HadoopKerbyTest extends org.junit.Assert {
 
-    private static KerbyServer kerbyServer;
+    private static SimpleKdcServer kerbyServer;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -61,13 +61,10 @@ public class HadoopKerbyTest extends org.junit.Assert {
         System.setProperty("sun.security.krb5.debug", "true");
         //System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
 
-        kerbyServer = new KerbyServer();
+        kerbyServer = new SimpleKdcServer();
 
-        kerbyServer.setKdcHost("localhost");
         kerbyServer.setKdcRealm("hadoop.apache.org");
-        kerbyServer.setKdcTcpPort(NetworkUtil.getServerPort());
         kerbyServer.setAllowUdp(true);
-        kerbyServer.setKdcUdpPort(NetworkUtil.getServerPort());
 
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
@@ -79,18 +76,26 @@ public class HadoopKerbyTest extends org.junit.Assert {
         String hdfs = "hdfs/localhost@hadoop.apache.org";
         String http = "HTTP/localhost@hadoop.apache.org";
 
-        kerbyServer.createPrincipal(alice, "alice", "alice");
-        kerbyServer.createPrincipal(bob, "bob", "bob");
-        kerbyServer.createPrincipal(hdfs, "hdfs", "hdfs");
-        kerbyServer.createPrincipal(http, "http", "hdfs");
-        kerbyServer.createPrincipal("krbtgt/hadoop.apache.org@hadoop.apache.org", "krbtgt", null);
+        kerbyServer.createPrincipal(alice, "alice");
+        File keytabFile = new File(basedir + "/target/alice.keytab");
+        kerbyServer.exportPrincipal(alice, keytabFile);
+
+        kerbyServer.createPrincipal(bob, "bob");
+        keytabFile = new File(basedir + "/target/bob.keytab");
+        kerbyServer.exportPrincipal(bob, keytabFile);
+
+        kerbyServer.createPrincipal(hdfs, "hdfs");
+        kerbyServer.createPrincipal(http, "http");
+        keytabFile = new File(basedir + "/target/hdfs.keytab");
+        kerbyServer.exportPrincipal(hdfs, keytabFile);
+        kerbyServer.exportPrincipal(http, keytabFile);
 
         kerbyServer.start();
 
         // Read in krb5.conf and substitute in the correct port
         Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/org/apache/coheigea/bigdata/kerberos/hadoop/krb5.conf");
         String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-        content = content.replaceAll("port", "" + kerbyServer.getKdcSetting().getKdcUdpPort());
+        content = content.replaceAll("port", "" + kerbyServer.getKdcPort());
 
         Path path2 = FileSystems.getDefault().getPath(basedir,
                                                       "/target/test-classes/hadoop.krb5.conf");

@@ -26,7 +26,6 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.coheigea.cxf.kerberos.common.KerbyServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
@@ -36,6 +35,7 @@ import org.apache.cxf.testutil.common.TestUtil;
 import org.apache.cxf.transport.http.auth.SpnegoAuthSupplier;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
+import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.apache.wss4j.dom.engine.WSSConfig;
 import org.ietf.jgss.GSSName;
 import org.junit.AfterClass;
@@ -44,7 +44,7 @@ import org.junit.BeforeClass;
 
 /**
  * This is a test-case that shows how to use Kerberos and JWT tokens with a JAX-RS service.
- * 
+ *
  * The JAX-RS client first obtains a JWT token from the CXF STS via the REST API and uses this token to get a Kerberos ticket
  * from the KDC to invoke on the service. The service authenticates the Kerberos ticket and uses the embedded JWT token
  * to ensure that only users with role "boss" can access the "doubleIt" operation ("alice" has this role, "dave" does not)
@@ -52,11 +52,9 @@ import org.junit.BeforeClass;
 public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
 
     private static final String PORT = TestUtil.getPortNumber(Server.class);
-    private static final String KDC_PORT = TestUtil.getPortNumber(Server.class, 2);
-    private static final String KDC_UDP_PORT = TestUtil.getPortNumber(Server.class, 3);
     static final String STS_PORT = TestUtil.getPortNumber(STSRESTServer.class);
 
-    private static KerbyServer kerbyServer;
+    private static SimpleKdcServer kerbyServer;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -68,31 +66,10 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
             basedir = new File(".").getCanonicalPath();
         }
 
-        updatePort(basedir);
+        kerbyServer = new SimpleKdcServer();
 
-        // System.setProperty("sun.security.krb5.debug", "true");
-        System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
-
-        Assert.assertTrue(
-                          "Server failed to launch",
-                          // run the server in the same process
-                          // set this to false to fork
-                          AbstractBusClientServerTestBase.launchServer(Server.class, true)
-            );
-        Assert.assertTrue(
-                          "Server failed to launch",
-                          // run the server in the same process
-                          // set this to false to fork
-                          AbstractBusClientServerTestBase.launchServer(STSRESTServer.class, true)
-            );
-
-        kerbyServer = new KerbyServer();
-
-        kerbyServer.setKdcHost("localhost");
         kerbyServer.setKdcRealm("service.ws.apache.org");
-        kerbyServer.setKdcTcpPort(Integer.parseInt(KDC_PORT));
         kerbyServer.setAllowUdp(true);
-        kerbyServer.setKdcUdpPort(Integer.parseInt(KDC_UDP_PORT));
 
         kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
         kerbyServer.init();
@@ -104,8 +81,25 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         kerbyServer.createPrincipal(alice, "alice");
         kerbyServer.createPrincipal(dave, "dave");
         kerbyServer.createPrincipal(bob, "bob");
-        kerbyServer.createPrincipal("krbtgt/service.ws.apache.org@service.ws.apache.org", "krbtgt");
         kerbyServer.start();
+
+        updatePort(basedir);
+
+        // System.setProperty("sun.security.krb5.debug", "true");
+        System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
+
+        Assert.assertTrue(
+                          "Server failed to launch",
+                          // run the server in the same process
+                          // set this to false to fork
+                          AbstractBusClientServerTestBase.launchServer(Server.class, true)
+        );
+        Assert.assertTrue(
+                          "Server failed to launch",
+                          // run the server in the same process
+                          // set this to false to fork
+                          AbstractBusClientServerTestBase.launchServer(STSRESTServer.class, true)
+        );
     }
 
     @AfterClass
@@ -124,7 +118,7 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         String content = IOUtils.toString(inputStream, "UTF-8");
         inputStream.close();
         // content = content.replaceAll("port", KDC_PORT);
-        content = content.replaceAll("port", KDC_UDP_PORT);
+        content = content.replaceAll("port", "" + kerbyServer.getKdcPort());
 
         File f2 = new File(basedir + "/target/test-classes/kerberos/krb5.conf");
         FileOutputStream outputStream = new FileOutputStream(f2);
@@ -140,7 +134,7 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
     public void testJWTKerberos() throws Exception {
 
         URL busFile = JWTJAXRSAuthenticationTest.class.getResource("cxf-client.xml");
-        
+
         // 1. Get a JWT Token from the STS via the REST interface
         String jwtToken = getJWTTokenFromSTS(busFile);
 
@@ -163,20 +157,20 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         Assert.assertEquals(response.getStatus(), 200);
         Assert.assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
-    
+
     private String getJWTTokenFromSTS(URL busFile) {
         SpringBusFactory bf = new SpringBusFactory();
 
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
-        
+
         String address = "https://localhost:" + STS_PORT + "/SecurityTokenService/token";
         WebClient client = WebClient.create(address, busFile.toString());
 
         client.accept("text/plain");
         client.path("jwt");
-        
+
         Response response = client.get();
         String token = response.readEntity(String.class);
         assertNotNull(token);
