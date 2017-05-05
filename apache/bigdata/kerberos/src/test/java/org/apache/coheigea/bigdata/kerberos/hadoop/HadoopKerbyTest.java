@@ -98,7 +98,7 @@ public class HadoopKerbyTest extends org.junit.Assert {
     }
 
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testKerberos() throws Exception {
         System.out.println("KDC ready on port: " + kerbyServer.getKdcSetting().getKdcUdpPort());
         Thread.sleep(10 * 60 * 1000);
