@@ -15,14 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.hdfs.ranger;
+package org.apache.coheigea.bigdata.hdfs;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
-
-import javax.security.auth.Subject;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -34,32 +31,15 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
-import org.apache.hadoop.ipc.RemoteException;
 import org.apache.hadoop.security.UserGroupInformation;
-import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.apache.kerby.util.NetworkUtil;
-import org.apache.ranger.authorization.hadoop.RangerHdfsAuthorizer;
-import org.apache.ranger.authorization.hadoop.exceptions.RangerAccessControlException;
 import org.junit.Assert;
 
 /**
- * Here we plug the Ranger AccessControlEnforcer into HDFS, authenticating to HDFS using Kerberos.
- *
- * A custom RangerAdminClient is plugged into Ranger in turn, which loads security policies from a local file. These policies were
- * generated in the Ranger Admin UI for a service called "HDFSTest". It contains three policies, each of which grants read, write and
- * execute permissions in turn to "/tmp/tmpdir", "/tmp/tmpdir2" and "/tmp/tmpdir3" to a user called "bob" and to a group called "IT".
- *
- * In addition we have a TAG based policy, which grants "read" access to "bob" and the "IT" group to "/tmp/tmpdir6" (which is associated
- * with the tag called "TmpdirTag". A "hdfs_path" entity was created in Apache Atlas + then associated with the "TmpdirTag". This was
- * then imported into Ranger using the TagSyncService. The policies were then downloaded locally and saved for testing off-line.
- *
- * Policies available from admin via:
- *
- * http://localhost:6080/service/plugins/policies/download/cl1_hadoop
+ * A HDFSTest, where we are setting up HDFS to use kerberos for authentication, and launch a KDC (Apache Kerby) as well.
  */
-@org.junit.Ignore
-public class HDFSRangerKerberosTest {
+public class HDFSKerberosTest {
 
     private static final File baseDir = new File("./target/hdfs/").getAbsoluteFile();
     private static MiniDFSCluster hdfsCluster;
@@ -99,8 +79,6 @@ public class HDFSRangerKerberosTest {
         // SSL Configuration
         conf.set("dfs.https.server.keystore.resource", "ssl-server.xml");
 
-        conf.set("dfs.namenode.inode.attributes.provider.class", RangerHdfsAuthorizer.class.getName());
-
         MiniDFSCluster.Builder builder = new MiniDFSCluster.Builder(conf);
         hdfsCluster = builder.build();
         defaultFs = conf.get("fs.defaultFS");
@@ -114,17 +92,14 @@ public class HDFSRangerKerberosTest {
         kerbyServer = new SimpleKdcServer();
 
         kerbyServer.setKdcRealm("hadoop.apache.org");
-        kerbyServer.setAllowUdp(true);
+        kerbyServer.setAllowUdp(false);
         kerbyServer.setWorkDir(new File(baseDir + "/target"));
-
-        kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
         kerbyServer.init();
 
         // Create principals
         String alice = "alice@hadoop.apache.org";
         String bob = "bob@hadoop.apache.org";
-        String dave = "dave@hadoop.apache.org";
         String hdfs = "hdfs/localhost@hadoop.apache.org";
         String http = "HTTP/localhost@hadoop.apache.org";
 
@@ -135,10 +110,6 @@ public class HDFSRangerKerberosTest {
         kerbyServer.createPrincipal(bob, "bob");
         keytabFile = new File(baseDir + "/target/bob.keytab");
         kerbyServer.exportPrincipal(bob, keytabFile);
-
-        kerbyServer.createPrincipal(dave, "dave");
-        keytabFile = new File(baseDir + "/target/dave.keytab");
-        kerbyServer.exportPrincipal(dave, keytabFile);
 
         kerbyServer.createPrincipal(hdfs, "hdfs");
         kerbyServer.createPrincipal(http, "http");
@@ -156,6 +127,7 @@ public class HDFSRangerKerberosTest {
         if (kerbyServer != null) {
             kerbyServer.stop();
         }
+        System.clearProperty("java.security.krb5.conf");
     }
 
     @org.junit.Test
@@ -185,14 +157,10 @@ public class HDFSRangerKerberosTest {
             basedir = new File(".").getCanonicalPath();
         }
 
-        UserGroupInformation.loginUserFromKeytab("hdfs/localhost", basedir + "/target/hdfs.keytab");
-        UserGroupInformation ugi = UserGroupInformation.getLoginUser();
-        System.out.println("UGI: " + ugi.getUserName());
-
+        UserGroupInformation ugi = UserGroupInformation.getCurrentUser();
         ugi.doAs(new PrivilegedExceptionAction<Void>() {
 
             public Void run() throws Exception {
-                System.out.println("HERE: " + System.getProperty("java.security.krb5.conf"));
                 FileSystem fs = FileSystem.get(conf);
 
                 // Read the file
@@ -206,37 +174,6 @@ public class HDFSRangerKerberosTest {
                 return null;
             }
         });
-        ugi.logoutUserFromKeytab();
-/*
-        // Now try to read the file as known user "dave" - this should not be allowed, as he doesn't have the correct permissions
-        UserGroupInformation ugi = UserGroupInformation.getLoginUser();
-        ugi.logoutUserFromKeytab();
-        UserGroupInformation.loginUserFromKeytab("dave", basedir + "/target/dave.keytab");
-        ugi = UserGroupInformation.getCurrentUser();
-        System.out.println("UGI: " + ugi.getUserName());
-        ugi.doAs(new PrivilegedExceptionAction<Void>() {
-
-            public Void run() throws Exception {
-                Configuration conf = new Configuration();
-                conf.set("fs.defaultFS", defaultFs);
-
-                FileSystem fs = FileSystem.get(conf);
-
-                // Read the file
-                try {
-                    fs.open(file);
-                    Assert.fail("Failure expected on an incorrect permission");
-                } catch (RemoteException ex) {
-                    // expected
-                    Assert.assertTrue(RangerAccessControlException.class.getName().equals(ex.getClassName()));
-                }
-
-                fs.close();
-                return null;
-            }
-        });
-        ugi.logoutUserFromKeytab();
-        */
     }
 
 }
