@@ -20,7 +20,7 @@
 
 <property>
   <name>ssl.server.truststore.location</name>
-  <value>/home/colm/dist/apache/hadoop-2.7.3/etc/hadoop/cxfca.jks</value>
+  <value>src/test/resources/cxfca.jks</value>
   <description>Truststore to be used by NN and DN. Must be specified.
   </description>
 </property>
@@ -49,7 +49,7 @@
 
 <property>
   <name>ssl.server.keystore.location</name>
-  <value>/home/colm/dist/apache/hadoop-2.7.3/etc/hadoop/bob.jks</value>
+  <value>src/test/resources/bob.jks</value>
   <description>Keystore to be used by NN and DN. Must be specified.
   </description>
 </property>
