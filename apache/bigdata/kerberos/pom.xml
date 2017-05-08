@@ -30,9 +30,6 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
     </parent>
-    <properties>
-        <kerby.version>1.0.0-RC3-SNAPSHOT</kerby.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

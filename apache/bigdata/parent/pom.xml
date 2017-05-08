@@ -37,6 +37,7 @@
         <hbase.version>1.2.3</hbase.version>
         <hive.version>2.1.0</hive.version>
         <kafka.version>0.10.0.1</kafka.version>
+        <kerby.version>1.0.0-RC3-SNAPSHOT</kerby.version>
         <ranger.version>0.7.0</ranger.version>
         <sentry.version>1.7.0</sentry.version>
         <slf4j.version>1.7.22</slf4j.version>
