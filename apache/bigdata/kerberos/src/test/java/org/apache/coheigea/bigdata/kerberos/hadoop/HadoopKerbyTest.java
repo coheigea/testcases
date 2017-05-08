@@ -21,7 +21,6 @@ package org.apache.coheigea.bigdata.kerberos.hadoop;
 
 import java.io.File;
 
-import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
 import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.junit.AfterClass;
@@ -60,10 +59,10 @@ public class HadoopKerbyTest extends org.junit.Assert {
         kerbyServer = new SimpleKdcServer();
 
         kerbyServer.setKdcRealm("hadoop.apache.org");
-        kerbyServer.setAllowUdp(true);
+        kerbyServer.setAllowUdp(false);
         kerbyServer.setWorkDir(new File(basedir + "/target"));
 
-        kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
+        //kerbyServer.setInnerKdcImpl(new NettyKdcServerImpl(kerbyServer.getKdcSetting()));
 
         kerbyServer.init();
 
@@ -101,7 +100,7 @@ public class HadoopKerbyTest extends org.junit.Assert {
     @org.junit.Ignore
     public void testKerberos() throws Exception {
         System.out.println("KDC ready on port: " + kerbyServer.getKdcSetting().getKdcUdpPort());
-        Thread.sleep(10 * 60 * 1000);
+        Thread.sleep(2 * 10 * 60 * 1000);
     }
 
 }
