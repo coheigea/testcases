@@ -69,6 +69,7 @@ public class HadoopKerbyTest extends org.junit.Assert {
         // Create principals
         String alice = "alice@hadoop.apache.org";
         String bob = "bob@hadoop.apache.org";
+        String ranger = "ranger/localhost@hadoop.apache.org";
         String hdfs = "hdfs/localhost@hadoop.apache.org";
         String http = "HTTP/localhost@hadoop.apache.org";
 
@@ -84,6 +85,11 @@ public class HadoopKerbyTest extends org.junit.Assert {
         kerbyServer.createPrincipal(http, "http");
         keytabFile = new File(basedir + "/target/hdfs.keytab");
         kerbyServer.exportPrincipal(hdfs, keytabFile);
+        kerbyServer.exportPrincipal(http, keytabFile);
+
+        kerbyServer.createPrincipal(ranger, "ranger");
+        keytabFile = new File(basedir + "/target/ranger.keytab");
+        kerbyServer.exportPrincipal(ranger, keytabFile);
         kerbyServer.exportPrincipal(http, keytabFile);
 
         kerbyServer.start();
