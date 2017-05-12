@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.coheigea.bigdata.kerberos.hadoop;
+package org.apache.coheigea.bigdata.kerberos.kafka;
 
 import java.io.File;
 
@@ -28,20 +28,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Create a KDC for use with securing HDFS. It contains the following principals:
- * a) hdfs/localhost
- * b) HTTP/localhost
- * c) alice
- * d) bob
- *
- * alice and bob are written out to "target/alice.keytab" and "target/bob.keytab". The hdfs/localhost + HTTP/localhost principals
- * are written out to "target/hdfs.keytab".
+ * Create a KDC for use with securing Kafka. It contains the following principals:
+ * a) zookeeper/localhost
+ * b) kafka/localhost
+ * c) client (used for both consumers + producers)
  *
  * The krb.conf file with the (random) port that the KDC is running on is written out to target/krb5.conf
  *
  * Comment out the org.junit.Ignore annotation on the test below to run this KDC.
  */
-public class HadoopKerbyTest extends org.junit.Assert {
+public class KafkaKerbyTest extends org.junit.Assert {
 
     private static SimpleKdcServer kerbyServer;
 
@@ -58,7 +54,7 @@ public class HadoopKerbyTest extends org.junit.Assert {
 
         kerbyServer = new SimpleKdcServer();
 
-        kerbyServer.setKdcRealm("hadoop.apache.org");
+        kerbyServer.setKdcRealm("kafka.apache.org");
         kerbyServer.setAllowUdp(false);
         kerbyServer.setWorkDir(new File(basedir + "/target"));
 
@@ -67,31 +63,22 @@ public class HadoopKerbyTest extends org.junit.Assert {
         kerbyServer.init();
 
         // Create principals
-        String alice = "alice@hadoop.apache.org";
-        String bob = "bob@hadoop.apache.org";
-        String ranger = "ranger/localhost@hadoop.apache.org";
-        String hdfs = "hdfs/localhost@hadoop.apache.org";
-        String http = "HTTP/localhost@hadoop.apache.org";
+        String zookeeper = "zookeeper/localhost@kafka.apache.org";
+        String kafka = "kafka/localhost@kafka.apache.org";
+        String client = "client@kafka.apache.org";
 
-        kerbyServer.createPrincipal(alice, "alice");
-        File keytabFile = new File(basedir + "/target/alice.keytab");
-        kerbyServer.exportPrincipal(alice, keytabFile);
-
-        kerbyServer.createPrincipal(bob, "bob");
-        keytabFile = new File(basedir + "/target/bob.keytab");
-        kerbyServer.exportPrincipal(bob, keytabFile);
-
-        kerbyServer.createPrincipal(hdfs, "hdfs");
-        kerbyServer.createPrincipal(http, "http");
-        keytabFile = new File(basedir + "/target/hdfs.keytab");
-        kerbyServer.exportPrincipal(hdfs, keytabFile);
-        kerbyServer.exportPrincipal(http, keytabFile);
-
-        kerbyServer.createPrincipal(ranger, "ranger");
-        keytabFile = new File(basedir + "/target/ranger.keytab");
-        kerbyServer.exportPrincipal(ranger, keytabFile);
-        kerbyServer.exportPrincipal(http, keytabFile);
-
+        kerbyServer.createPrincipal(zookeeper, "zookeeper");
+        File keytabFile = new File(basedir + "/target/zookeeper.keytab");
+        kerbyServer.exportPrincipal(zookeeper, keytabFile);
+        
+        kerbyServer.createPrincipal(kafka, "kafka");
+        keytabFile = new File(basedir + "/target/kafka.keytab");
+        kerbyServer.exportPrincipal(kafka, keytabFile);
+        
+        kerbyServer.createPrincipal(client, "client");
+        keytabFile = new File(basedir + "/target/client.keytab");
+        kerbyServer.exportPrincipal(client, keytabFile);
+        
         kerbyServer.start();
     }
 
