@@ -244,16 +244,6 @@ public class KafkaRangerAuthorizerTest {
             Assert.assertTrue(ex.getMessage().contains("Not authorized to access topics"));
         }
         
-        try {
-            Future<RecordMetadata> record = 
-                producer.send(new ProducerRecord<String, String>("dev", "somekey", "somevalue"));
-            producer.flush();
-            record.get();
-            Assert.fail("Authorization failure expected");
-        } catch (Exception ex) {
-            Assert.assertTrue(ex.getMessage().contains("Not authorized to access topics"));
-        }
-        
         producer.close();
     }
     
@@ -319,4 +309,5 @@ public class KafkaRangerAuthorizerTest {
         producer.close();
         consumer.close();
     }
+    
 }
