@@ -54,8 +54,10 @@ public class CustomSASLSSLGSSAuthorizer implements Authorizer {
             return false;
         }
         String principal = arg0.principal().getName();
-        System.out.println("PRINC: " + principal);
-        if (principal.equals("alice") && ("Read".equals(arg1.name()) || "Describe".equals(arg1.name())
+        
+        if ("Describe".equals(arg1.name())) {
+            return true;
+        } else if (principal.equals("alice") && ("Read".equals(arg1.name())
             || "Write".equals(arg1.name()) || "Create".equals(arg1.name())) && arg2.name().startsWith("test")) {
             return true;
         } else if (principal.equals("admin")) {

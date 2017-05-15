@@ -55,7 +55,10 @@ public class CustomAuthorizer implements Authorizer {
             return false;
         }
         String principal = arg0.principal().getName();
-        if (principal.startsWith("CN=Client")
+        
+        if ("Describe".equals(arg1.name())) {
+            return true;
+        } else if (principal.startsWith("CN=Client")
             && ("Read".equals(arg1.name()) || "Describe".equals(arg1.name()))
             && arg2.name().startsWith("test")) {
             return true;
