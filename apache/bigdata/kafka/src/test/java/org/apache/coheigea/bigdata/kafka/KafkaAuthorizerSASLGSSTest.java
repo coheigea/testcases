@@ -160,6 +160,9 @@ public class KafkaAuthorizerSASLGSSTest {
         if (zkServer != null) {
             zkServer.stop();
         }
+        if (kerbyServer != null) {
+            kerbyServer.stop();
+        }
     }
     
     @org.junit.Test
