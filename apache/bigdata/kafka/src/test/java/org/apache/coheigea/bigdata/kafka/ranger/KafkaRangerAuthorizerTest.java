@@ -214,7 +214,7 @@ public class KafkaRangerAuthorizerTest {
         producer.close();
     }
     
-    // The "public" group can't write to "test"
+    // The "public" group can't write to "dev"
     @org.junit.Test
     public void testUnauthorizedWrite() throws Exception {
         // Create the Producer
@@ -236,7 +236,7 @@ public class KafkaRangerAuthorizerTest {
         // Send a message
         try {
             Future<RecordMetadata> record = 
-                producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
+                producer.send(new ProducerRecord<String, String>("dev", "somekey", "somevalue"));
             producer.flush();
             record.get();
             Assert.fail("Authorization failure expected");
