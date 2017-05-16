@@ -214,7 +214,7 @@ public class KafkaRangerAuthorizerTest {
         producer.close();
     }
     
-    // The "public" group can't write to "test" or "dev"
+    // The "public" group can't write to "test"
     @org.junit.Test
     public void testUnauthorizedWrite() throws Exception {
         // Create the Producer

@@ -37,6 +37,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.junit.Assert;
 
@@ -118,7 +119,6 @@ public class KafkaRangerGSSAuthorizerTest {
         // Create users for testing
         UserGroupInformation.createUserForTesting("client@kafka.apache.org", new String[] {"public"});
         UserGroupInformation.createUserForTesting("kafka/localhost@kafka.apache.org", new String[] {"IT"});
-        // UserGroupInformation.createUserForTesting("CN=Service,O=Apache,L=Dublin,ST=Leinster,C=IE", new String[] {"IT"});
         
         KafkaConfig config = new KafkaConfig(props);
         kafkaServer = new KafkaServerStartable(config);
@@ -201,9 +201,9 @@ public class KafkaRangerGSSAuthorizerTest {
         consumerProps.put("session.timeout.ms", "30000");
         consumerProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
-        producerProps.put("sasl.mechanism", "GSSAPI");
-        producerProps.put("sasl.kerberos.service.name", "kafka");
+        consumerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        consumerProps.put("sasl.mechanism", "GSSAPI");
+        consumerProps.put("sasl.kerberos.service.name", "kafka");
         
         final KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps);
         consumer.subscribe(Arrays.asList("test"));
@@ -230,32 +230,8 @@ public class KafkaRangerGSSAuthorizerTest {
         producer.close();
         consumer.close();
     }
-    /*
-    // The "IT" group can write to any topic
-    @org.junit.Test
-    public void testAuthorizedWrite() throws Exception {
-        // Create the Producer
-        Properties producerProps = new Properties();
-        producerProps.put("bootstrap.servers", "localhost:" + port);
-        producerProps.put("acks", "all");
-        producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-         producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
-        producerProps.put("sasl.mechanism", "GSSAPI");
-        producerProps.put("sasl.kerberos.service.name", "kafka");
-        
-        final Producer<String, String> producer = new KafkaProducer<>(producerProps);
-        
-        // Send a message
-        Future<RecordMetadata> record = 
-            producer.send(new ProducerRecord<String, String>("dev", "somekey", "somevalue"));
-        producer.flush();
-        record.get();
-
-        producer.close();
-    }
     
-    // The "public" group can't write to "test" or "dev"
+    // The "public" group can't write to "test"
     @org.junit.Test
     public void testUnauthorizedWrite() throws Exception {
         // Create the Producer
@@ -293,7 +269,7 @@ public class KafkaRangerGSSAuthorizerTest {
         producerProps.put("acks", "all");
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-         producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
         producerProps.put("sasl.mechanism", "GSSAPI");
         producerProps.put("sasl.kerberos.service.name", "kafka");
         
@@ -309,9 +285,9 @@ public class KafkaRangerGSSAuthorizerTest {
         consumerProps.put("session.timeout.ms", "30000");
         consumerProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-         producerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
-        producerProps.put("sasl.mechanism", "GSSAPI");
-        producerProps.put("sasl.kerberos.service.name", "kafka");
+        consumerProps.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+        consumerProps.put("sasl.mechanism", "GSSAPI");
+        consumerProps.put("sasl.kerberos.service.name", "kafka");
         
         final KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerProps);
         consumer.subscribe(Arrays.asList("messages"));
@@ -338,5 +314,5 @@ public class KafkaRangerGSSAuthorizerTest {
         producer.close();
         consumer.close();
     }
-    */
+    
 }
