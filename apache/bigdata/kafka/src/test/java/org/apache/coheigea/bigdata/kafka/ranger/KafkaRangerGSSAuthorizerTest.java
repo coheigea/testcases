@@ -174,6 +174,9 @@ public class KafkaRangerGSSAuthorizerTest {
         if (zkServer != null) {
             zkServer.stop();
         }
+        if (kerbyServer != null) {
+            kerbyServer.stop();
+        }
     }
     
     // The "public" group can read from "test"
