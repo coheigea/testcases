@@ -19,6 +19,10 @@ package org.apache.coheigea.bigdata.kafka;
 
 import java.io.File;
 import java.net.ServerSocket;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,11 +73,17 @@ public class KafkaAuthorizerSASLGSSTest {
         }
         
         configureKerby(basedir);
-
-        // JAAS Config file
-        File f = new File(basedir + "/src/test/resources/kafka_kerberos.jaas");
-        System.setProperty("java.security.auth.login.config", f.getPath());
         
+        // JAAS Config file - We need to point to the correct keytab files
+        Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/kafka_kerberos.jaas");
+        String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+        content = content.replaceAll("<basedir>", basedir);
+
+        Path path2 = FileSystems.getDefault().getPath(basedir, "/target/test-classes/kafka_kerberos.jaas");
+        Files.write(path2, content.getBytes());
+
+        System.setProperty("java.security.auth.login.config", path2.toString());
+
         // Set up Zookeeper to require SASL
         Map<String,Object> zookeeperProperties = new HashMap<>();
         zookeeperProperties.put("authProvider.1", "org.apache.zookeeper.server.auth.SASLAuthenticationProvider");
