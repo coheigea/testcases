@@ -34,7 +34,7 @@
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <junit.version>4.12</junit.version>
         <hadoop.version>2.7.3</hadoop.version>
-        <hbase.version>1.2.3</hbase.version>
+        <hbase.version>1.2.5</hbase.version>
         <hive.version>2.1.0</hive.version>
         <kafka.version>0.10.0.1</kafka.version>
         <kerby.version>1.0.0</kerby.version>
