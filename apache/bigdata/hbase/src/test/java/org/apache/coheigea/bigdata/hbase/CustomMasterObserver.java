@@ -51,7 +51,7 @@ public class CustomMasterObserver implements MasterObserver {
             user = User.getCurrent();
         }
         String loggedInUser = System.getProperty("user.name");
-        if (!loggedInUser.equals(user.getShortName())) {
+        if (user.getShortName() == null || !user.getShortName().startsWith(loggedInUser)) {
             throw new AccessDeniedException("Access is denied for: " + user.getShortName());
         }
     }
