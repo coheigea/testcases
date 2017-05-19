@@ -44,7 +44,7 @@ public class CustomRegionObserver extends BaseRegionObserver {
             user = User.getCurrent();
         }
         String loggedInUser = System.getProperty("user.name");
-        if (!user.getShortName().startsWith(loggedInUser)) {
+        if (user.getShortName() == null || !user.getShortName().startsWith(loggedInUser)) {
             throw new AccessDeniedException("Access is denied for: " + user.getShortName());
         }
     }
