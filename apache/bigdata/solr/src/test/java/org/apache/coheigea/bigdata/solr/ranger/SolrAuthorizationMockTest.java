@@ -191,6 +191,11 @@ public class SolrAuthorizationMockTest extends org.junit.Assert {
         public String getResource() {
             return (String) values.get("resource");
         }
+
+        public Object getHandler() {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 
 
