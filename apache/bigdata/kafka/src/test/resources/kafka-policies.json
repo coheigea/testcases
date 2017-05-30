@@ -603,6 +603,10 @@
               {
                 "type": "kafka:describe",
                 "isAllowed": true
+              },
+              {
+                "type": "kafka:publish",
+                "isAllowed": true
               }
             ],
             "users": [],
