@@ -22,6 +22,7 @@ package org.apache.coheigea.bigdata.kerberos.storm;
 import java.io.File;
 
 import org.apache.kerby.kerberos.kerb.KrbException;
+import org.apache.kerby.kerberos.kerb.client.KrbConfigKey;
 import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,6 +35,7 @@ import org.junit.Test;
  * c) storm/localhost
  * d) storm-client
  * e) alice
+ * f) HTTP/localhost
  *
  * The krb.conf file with the (random) port that the KDC is running on is written out to target/krb5.conf
  *
@@ -55,6 +57,7 @@ public class StormKerbyTest extends org.junit.Assert {
         //System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
 
         kerbyServer = new SimpleKdcServer();
+        kerbyServer.getKdcConfig().setBoolean(KrbConfigKey.PREAUTH_REQUIRED, false);
 
         kerbyServer.setKdcRealm("storm.apache.org");
         kerbyServer.setAllowUdp(false);
@@ -70,6 +73,7 @@ public class StormKerbyTest extends org.junit.Assert {
         String storm = "storm/localhost@storm.apache.org";
         String storm_client = "storm-client@storm.apache.org";
         String alice = "alice@storm.apache.org";
+        String http = "HTTP/localhost@storm.apache.org";
 
         kerbyServer.createPrincipal(zookeeper, "zookeeper");
         File keytabFile = new File(basedir + "/target/zookeeper.keytab");
@@ -90,6 +94,10 @@ public class StormKerbyTest extends org.junit.Assert {
         kerbyServer.createPrincipal(alice, "alice");
         keytabFile = new File(basedir + "/target/alice.keytab");
         kerbyServer.exportPrincipal(alice, keytabFile);
+
+        kerbyServer.createPrincipal(http, "http");
+        keytabFile = new File(basedir + "/target/http.keytab");
+        kerbyServer.exportPrincipal(http, keytabFile);
         
         kerbyServer.start();
     }
