@@ -35,6 +35,7 @@
         <module>kms</module>
         <module>kafka</module>
         <module>kerberos</module>
+        <module>knox</module>
     </modules>
 
     <build>
