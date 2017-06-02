@@ -1,12 +1,12 @@
 {
   "serviceName": "cl1_knox",
   "serviceId": 10,
-  "policyVersion": 7,
-  "policyUpdateTime": "20170601-12:16:36.000-+0100",
+  "policyVersion": 13,
+  "policyUpdateTime": "20170602-15:08:50.000-+0100",
   "policies": [
     {
       "service": "cl1_knox",
-      "name": "TestWebHDFS",
+      "name": "HDFSPolicy",
       "policyType": 0,
       "description": "",
       "isAuditEnabled": true,
@@ -37,7 +37,8 @@
           ],
           "users": [
             "admin",
-            "hdfs"
+            "guest",
+            "alice"
           ],
           "groups": [],
           "conditions": [],
@@ -51,7 +52,54 @@
       "rowFilterPolicyItems": [],
       "id": 16,
       "isEnabled": true,
-      "version": 4
+      "version": 8
+    },
+    {
+      "service": "cl1_knox",
+      "name": "StormPolicy",
+      "policyType": 0,
+      "description": "",
+      "isAuditEnabled": true,
+      "resources": {
+        "topology": {
+          "values": [
+            "cluster"
+          ],
+          "isExcludes": false,
+          "isRecursive": false
+        },
+        "service": {
+          "values": [
+            "STORM"
+          ],
+          "isExcludes": false,
+          "isRecursive": false
+        }
+      },
+      "policyItems": [
+        {
+          "accesses": [
+            {
+              "type": "allow",
+              "isAllowed": true
+            }
+          ],
+          "users": [
+            "bob"
+          ],
+          "groups": [],
+          "conditions": [],
+          "delegateAdmin": false
+        }
+      ],
+      "denyPolicyItems": [],
+      "allowExceptions": [],
+      "denyExceptions": [],
+      "dataMaskPolicyItems": [],
+      "rowFilterPolicyItems": [],
+      "id": 17,
+      "isEnabled": true,
+      "version": 2
     }
   ],
   "serviceDef": {
