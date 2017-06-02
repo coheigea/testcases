@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * TODO - Remove once we pick up the two KNOX JIRAs I'm about to file....
+ * TODO - Remove once we pick up KNOX-958
  */
 public class GatewayTestConfig extends Configuration implements GatewayConfig {
 
