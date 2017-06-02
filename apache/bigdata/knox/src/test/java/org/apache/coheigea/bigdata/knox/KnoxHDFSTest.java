@@ -93,6 +93,8 @@ public class KnoxHDFSTest {
         config = new GatewayTestConfig();
         config.setGatewayHomeDir( gatewayDir.getAbsolutePath() );
 
+        // TODO - see KNOX-958 config.setGatewayServicesDir(targetDir.getPath() + File.separator + "services");
+
         File topoDir = new File( config.getGatewayTopologyDir() );
         topoDir.mkdirs();
 
