@@ -35,7 +35,7 @@
 
 	<property>
         <name>ranger.plugin.knox.policy.source.impl</name>
-        <value>org.apache.coheigea.bigdata.knox.RangerAdminClientImpl</value>
+        <value>org.apache.coheigea.bigdata.knox.ranger.RangerAdminClientImpl</value>
         <!-- <value>org.apache.ranger.admin.client.RangerAdminRESTClient</value>--> 
         <description>
             Policy source.

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.knox;
+package org.apache.coheigea.bigdata.knox.ranger;
 
 import java.io.File;
 import java.nio.file.FileSystems;

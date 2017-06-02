@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.coheigea.bigdata.knox;
+package org.apache.coheigea.bigdata.knox.ranger;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -23,11 +23,13 @@ import static org.hamcrest.CoreMatchers.is;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.coheigea.bigdata.knox.GatewayTestConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.directory.server.protocol.shared.transport.TcpTransport;
@@ -35,7 +37,6 @@ import org.apache.hadoop.gateway.GatewayServer;
 import org.apache.hadoop.gateway.security.ldap.SimpleLdapDirectoryServer;
 import org.apache.hadoop.gateway.services.DefaultGatewayServices;
 import org.apache.hadoop.gateway.services.ServiceLifecycleException;
-import org.apache.hadoop.test.TestUtils;
 import org.apache.hadoop.test.mock.MockServer;
 import org.apache.http.HttpStatus;
 import org.junit.AfterClass;
@@ -45,7 +46,12 @@ import org.junit.Test;
 import com.mycila.xmltool.XMLDoc;
 import com.mycila.xmltool.XMLTag;
 
-public class KnoxHDFSTest {
+import io.restassured.response.ValidatableResponse;
+
+/**
+ * Test Apache Knox secured by Apache Ranger.
+ */
+public class KnoxRangerTest {
 
     private static GatewayTestConfig config;
     private static GatewayServer gateway;
@@ -78,9 +84,13 @@ public class KnoxHDFSTest {
 
 
     public static void setupLdap() throws Exception {
-        URL usersUrl = TestUtils.getResourceUrl( KnoxHDFSTest.class, "../users.ldif" );
+        String basedir = System.getProperty("basedir");
+        if (basedir == null) {
+            basedir = new File(".").getCanonicalPath();
+        }
+        Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/users.ldif");
         ldapTransport = new TcpTransport( 0 );
-        ldap = new SimpleLdapDirectoryServer( "dc=hadoop,dc=apache,dc=org", new File( usersUrl.toURI() ), ldapTransport );
+        ldap = new SimpleLdapDirectoryServer( "dc=hadoop,dc=apache,dc=org", path.toFile(), ldapTransport );
         ldap.start();
     }
 
@@ -167,6 +177,9 @@ public class KnoxHDFSTest {
             .addTag("service")
             .addTag("role").addText("WEBHDFS")
             .addTag("url").addText("http://localhost:" + server.getPort()).gotoParent()
+            .addTag("service")
+            .addTag("role").addText("STORM")
+            .addTag("url").addText("http://localhost:" + server.getPort()).gotoParent()
             .gotoRoot();
         System.out.println( "GATEWAY=" + xml.toString() );
         return xml;
@@ -174,56 +187,83 @@ public class KnoxHDFSTest {
     
     @Test
     public void testHDFSAllowed() throws IOException {
-        String root = "/tmp/GatewayBasicFuncTest/testBasicHdfsUseCase";
-
-        server
-        .expect()
-          .method( "GET" )
-          .pathInfo( "/v1" + root )
-          .queryParam( "op", "LISTSTATUS" )
-        .respond()
-          .status( HttpStatus.SC_OK )
-          .content( IOUtils.toByteArray( TestUtils.getResourceUrl( KnoxHDFSTest.class, "../webhdfs-liststatus-test.json" ) ) )
-          .contentType( "application/json" );
-
-        given()
-          .log().all()
-          .auth().preemptive().basic( "hdfs", "hdfs-password" )
-          .header("X-XSRF-Header", "jksdhfkhdsf")
-          .queryParam( "op", "LISTSTATUS" )
-        .when()
-          .get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/webhdfs" + "/v1" + root )
-        .then()
-          .statusCode( HttpStatus.SC_OK )
-          .log().body()
-          .body( "FileStatuses.FileStatus[0].pathSuffix", is( "dir" ) );
+        makeWebHDFSInvocation(HttpStatus.SC_OK, "alice", "password");
     }
     
     @Test
     public void testHDFSNotAllowed() throws IOException {
-        String root = "/tmp/GatewayBasicFuncTest/testBasicHdfsUseCase";
+        makeWebHDFSInvocation(HttpStatus.SC_FORBIDDEN, "bob", "password");
+    }
+    
+    @Test
+    public void testStormUiAllowed() throws Exception {
+        makeStormUIInvocation(HttpStatus.SC_OK, "bob", "password");
+    }
+    
+    @Test
+    public void testStormNotUiAllowed() throws Exception {
+        makeStormUIInvocation(HttpStatus.SC_FORBIDDEN, "alice", "password");
+    }
+    
+    private void makeWebHDFSInvocation(int statusCode, String user, String password) throws IOException {
 
+        String basedir = System.getProperty("basedir");
+        if (basedir == null) {
+            basedir = new File(".").getCanonicalPath();
+        }
+        Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/webhdfs-liststatus-test.json");
+        
         server
         .expect()
           .method( "GET" )
-          .pathInfo( "/v1" + root )
+          .pathInfo( "/v1/hdfstest" )
           .queryParam( "op", "LISTSTATUS" )
         .respond()
           .status( HttpStatus.SC_OK )
-          .content( IOUtils.toByteArray( TestUtils.getResourceUrl( KnoxHDFSTest.class, "../webhdfs-liststatus-test.json" ) ) )
+          .content( IOUtils.toByteArray( path.toUri() ) )
           .contentType( "application/json" );
 
-        given()
+        ValidatableResponse response = given()
           .log().all()
-          .auth().preemptive().basic( "hive", "hive-password" )
+          .auth().preemptive().basic( user, password )
           .header("X-XSRF-Header", "jksdhfkhdsf")
           .queryParam( "op", "LISTSTATUS" )
         .when()
-          .get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/webhdfs" + "/v1" + root )
+          .get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/webhdfs" + "/v1/hdfstest" )
         .then()
-          .statusCode( HttpStatus.SC_FORBIDDEN )
+          .statusCode(statusCode)
           .log().body();
+        
+        if (statusCode == HttpStatus.SC_OK) {
+            response.body( "FileStatuses.FileStatus[0].pathSuffix", is ("dir") );
+        }
     }
+    
+    private void makeStormUIInvocation(int statusCode, String user, String password) throws IOException {
+        String basedir = System.getProperty("basedir");
+        if (basedir == null) {
+            basedir = new File(".").getCanonicalPath();
+        }
+        Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/cluster-configuration.json");
 
+        server
+            .expect()
+            .method("GET")
+            .pathInfo("/api/v1/cluster/configuration")
+            .respond()
+            .status(HttpStatus.SC_OK)
+            .content(IOUtils.toByteArray( path.toUri() ))
+            .contentType("application/json");
+
+        given()
+            .auth().preemptive().basic(user, password)
+            .header("X-XSRF-Header", "jksdhfkhdsf")
+            .header("Accept", "application/json")
+            .when().get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/storm" + "/api/v1/cluster/configuration")
+            .then()
+            .log().all()
+            .statusCode(statusCode);
+
+      }
 
 }
