@@ -62,7 +62,7 @@ public class KnoxAuthorizationTest {
     public static void setupSuite() throws Exception {
         setupLdap();
         server = new MockServer( "WEBHDFS", true );
-        
+
         setupGateway();
     }
 
@@ -189,27 +189,27 @@ public class KnoxAuthorizationTest {
         System.out.println( "GATEWAY=" + xml.toString() );
         return xml;
     }
-    /*
+
     @Test
     public void testHDFSAllowed() throws IOException {
         makeWebHDFSInvocation(HttpStatus.SC_OK, "alice", "password");
     }
-    
+
     @Test
     public void testHDFSNotAllowed() throws IOException {
         makeWebHDFSInvocation(HttpStatus.SC_FORBIDDEN, "bob", "password");
     }
-    */
+
     @Test
     public void testStormUiAllowed() throws Exception {
         makeStormUIInvocation(HttpStatus.SC_OK, "bob", "password");
     }
-    /*
+
     @Test
     public void testStormNotUiAllowed() throws Exception {
         makeStormUIInvocation(HttpStatus.SC_FORBIDDEN, "alice", "password");
     }
-    */
+
     private void makeWebHDFSInvocation(int statusCode, String user, String password) throws IOException {
 
         String basedir = System.getProperty("basedir");
@@ -217,7 +217,7 @@ public class KnoxAuthorizationTest {
             basedir = new File(".").getCanonicalPath();
         }
         Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/webhdfs-liststatus-test.json");
-        
+
         server
         .expect()
           .method( "GET" )
@@ -238,13 +238,13 @@ public class KnoxAuthorizationTest {
         .then()
           .statusCode(statusCode)
           .log().body();
-        
+
         if (statusCode == HttpStatus.SC_OK) {
             response.body( "FileStatuses.FileStatus[0].pathSuffix", is ("dir") );
         }
     }
 
-    
+
     private void makeStormUIInvocation(int statusCode, String user, String password) throws IOException {
         String basedir = System.getProperty("basedir");
         if (basedir == null) {
