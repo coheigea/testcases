@@ -45,6 +45,7 @@ import org.junit.Test;
 import com.mycila.xmltool.XMLDoc;
 import com.mycila.xmltool.XMLTag;
 
+import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 
 /**
@@ -56,12 +57,17 @@ public class KnoxAuthorizationTest {
     private static GatewayServer gateway;
     private static SimpleLdapDirectoryServer ldap;
     private static TcpTransport ldapTransport;
-    private static MockServer server;
+    private static MockServer hdfsServer;
+    private static MockServer stormServer;
+    private static MockServer hbaseServer;
+
 
     @BeforeClass
     public static void setupSuite() throws Exception {
         setupLdap();
-        server = new MockServer( "WEBHDFS", true );
+        hdfsServer = new MockServer( "hdfs", true );
+        stormServer = new MockServer( "storm", true );
+        hbaseServer = new MockServer( "hbase", true );
 
         setupGateway();
     }
@@ -76,7 +82,9 @@ public class KnoxAuthorizationTest {
         FileUtils.deleteQuietly( new File( config.getGatewayDeploymentDir() ) );
         FileUtils.deleteQuietly( new File( config.getGatewayDataDir() ) );
 
-        server.stop();
+        hdfsServer.stop();
+        stormServer.stop();
+        hbaseServer.stop();
 
         ldap.stop( true );
     }
@@ -178,13 +186,19 @@ public class KnoxAuthorizationTest {
             .addTag( "param" )
             .addTag( "name" ).addText( "STORM.acl" )
             .addTag( "value" ).addText( "bob;*;*" ).gotoParent()
+            .addTag( "param" )
+            .addTag( "name" ).addText( "WEBHBASE.acl" )
+            .addTag( "value" ).addText( "alice;*;*" ).gotoParent()
             .gotoRoot()
             .addTag("service")
             .addTag("role").addText("WEBHDFS")
-            .addTag("url").addText("http://localhost:" + server.getPort()).gotoParent()
+            .addTag("url").addText("http://localhost:" + hdfsServer.getPort()).gotoParent()
             .addTag("service")
             .addTag("role").addText("STORM")
-            .addTag("url").addText("http://localhost:" + server.getPort()).gotoParent()
+            .addTag("url").addText("http://localhost:" + stormServer.getPort()).gotoParent()
+            .addTag("service")
+            .addTag("role").addText("WEBHBASE")
+            .addTag("url").addText("http://localhost:" + hbaseServer.getPort()).gotoParent()
             .gotoRoot();
         System.out.println( "GATEWAY=" + xml.toString() );
         return xml;
@@ -210,6 +224,16 @@ public class KnoxAuthorizationTest {
         makeStormUIInvocation(HttpStatus.SC_FORBIDDEN, "alice", "password");
     }
 
+    @Test
+    public void testHBaseAllowed() throws Exception {
+        makeHBaseInvocation(HttpStatus.SC_OK, "alice", "password");
+    }
+
+    @Test
+    public void testHBaseNotAllowed() throws Exception {
+        makeHBaseInvocation(HttpStatus.SC_FORBIDDEN, "bob", "password");
+    }
+
     private void makeWebHDFSInvocation(int statusCode, String user, String password) throws IOException {
 
         String basedir = System.getProperty("basedir");
@@ -218,26 +242,26 @@ public class KnoxAuthorizationTest {
         }
         Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/webhdfs-liststatus-test.json");
 
-        server
+        hdfsServer
         .expect()
-          .method( "GET" )
-          .pathInfo( "/v1/hdfstest" )
-          .queryParam( "op", "LISTSTATUS" )
+        .method( "GET" )
+        .pathInfo( "/v1/hdfstest" )
+        .queryParam( "op", "LISTSTATUS" )
         .respond()
-          .status( HttpStatus.SC_OK )
-          .content( IOUtils.toByteArray( path.toUri() ) )
-          .contentType( "application/json" );
+        .status( HttpStatus.SC_OK )
+        .content( IOUtils.toByteArray( path.toUri() ) )
+        .contentType( "application/json" );
 
         ValidatableResponse response = given()
-          .log().all()
-          .auth().preemptive().basic( user, password )
-          .header("X-XSRF-Header", "jksdhfkhdsf")
-          .queryParam( "op", "LISTSTATUS" )
-        .when()
-          .get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/webhdfs" + "/v1/hdfstest" )
-        .then()
-          .statusCode(statusCode)
-          .log().body();
+            .log().all()
+            .auth().preemptive().basic( user, password )
+            .header("X-XSRF-Header", "jksdhfkhdsf")
+            .queryParam( "op", "LISTSTATUS" )
+            .when()
+            .get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/webhdfs" + "/v1/hdfstest" )
+            .then()
+            .statusCode(statusCode)
+            .log().body();
 
         if (statusCode == HttpStatus.SC_OK) {
             response.body( "FileStatuses.FileStatus[0].pathSuffix", is ("dir") );
@@ -252,24 +276,53 @@ public class KnoxAuthorizationTest {
         }
         Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/cluster-configuration.json");
 
-        server
-            .expect()
-            .method("GET")
-            .pathInfo("/api/v1/cluster/configuration")
-            .respond()
-            .status(HttpStatus.SC_OK)
-            .content(IOUtils.toByteArray( path.toUri() ))
-            .contentType("application/json");
+        stormServer
+        .expect()
+        .method("GET")
+        .pathInfo("/api/v1/cluster/configuration")
+        .respond()
+        .status(HttpStatus.SC_OK)
+        .content(IOUtils.toByteArray( path.toUri() ))
+        .contentType("application/json");
 
         given()
-            .auth().preemptive().basic(user, password)
-            .header("X-XSRF-Header", "jksdhfkhdsf")
-            .header("Accept", "application/json")
-            .when().get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/storm" + "/api/v1/cluster/configuration")
-            .then()
-            .log().all()
-            .statusCode(statusCode);
+        .auth().preemptive().basic(user, password)
+        .header("X-XSRF-Header", "jksdhfkhdsf")
+        .header("Accept", "application/json")
+        .when().get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/storm" + "/api/v1/cluster/configuration")
+        .then()
+        .log().all()
+        .statusCode(statusCode);
 
-      }
+    }
+
+    private void makeHBaseInvocation(int statusCode, String user, String password) throws IOException {
+        String basedir = System.getProperty("basedir");
+        if (basedir == null) {
+            basedir = new File(".").getCanonicalPath();
+        }
+        Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/webhbase-table-list.xml");
+
+
+        hbaseServer
+        .expect()
+        .method( "GET" )
+        .pathInfo( "/" )
+        .header( "Accept", ContentType.XML.toString() )
+        .respond()
+        .status( HttpStatus.SC_OK )
+        .content( IOUtils.toByteArray( path.toUri() ) )
+        .contentType( ContentType.XML.toString() );
+
+        given()
+            .log().all()
+            .auth().preemptive().basic( user, password )
+            .header("X-XSRF-Header", "jksdhfkhdsf")
+            .header( "Accept", ContentType.XML.toString() )
+            .when().get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/hbase" )
+            .then()
+            .statusCode( statusCode )
+            .log().body();
+    }
 
 }
