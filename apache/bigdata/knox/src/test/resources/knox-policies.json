@@ -13,7 +13,6 @@
       "resources": {
         "topology": {
           "values": [
-            "sandbox",
             "cluster"
           ],
           "isExcludes": false,
