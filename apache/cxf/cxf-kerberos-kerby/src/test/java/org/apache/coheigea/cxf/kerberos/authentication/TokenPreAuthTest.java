@@ -186,7 +186,12 @@ public class TokenPreAuthTest extends org.junit.Assert {
 
         String signedToken = jws.signWith(sigProvider);
 
-        TokenCache.writeToken(signedToken);
+        // Store the JWT token in the token cache
+        File tokenCache = new File(basedir + "/target/tokencache.txt");
+        if (!tokenCache.exists()) {
+            tokenCache.createNewFile();
+        }
+        TokenCache.writeToken(signedToken, tokenCache.getPath());
 
         // 3. Now log in using JAAS
         LoginContext loginContext = new LoginContext("aliceTokenAuth", new KerberosCallbackHandler());
@@ -212,6 +217,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
         validateServiceTicket(ticket);
 
         cCacheFile.delete();
+        tokenCache.delete();
     }
 
     @org.junit.Test
@@ -318,8 +324,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
         claims.setAudiences(Collections.singletonList(address));
 
         // Wrap it in a KrbToken + sign it
-        CXFKrbToken krbToken = new CXFKrbToken(claims, false);
-        krbToken.isIdToken(true);
+        CXFKrbToken krbToken = new CXFKrbToken(claims, true);
         krbToken.sign();
 
         // Now get a TGT using the JWT token
