@@ -10,6 +10,6 @@ bob {
 aliceTokenAuth {
     org.apache.kerby.kerberos.kerb.integration.test.jaas.TokenAuthLoginModule required refreshKrb5Config=true useKeyTab=false principal="alice"
     armorCache="armorCacheVal"
-    tokenCache="${user.home}/.tokenauth.token"
+    tokenCache="${project.build.directory}/tokencache.txt"
     credentialCache="${project.build.directory}/cred.cc";
 };
