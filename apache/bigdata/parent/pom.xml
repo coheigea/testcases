@@ -38,7 +38,7 @@
         <hive.version>2.1.0</hive.version>
         <kafka.version>0.10.0.1</kafka.version>
         <kerby.version>1.0.0</kerby.version>
-        <knox.version>0.12.0</knox.version>
+        <knox.version>0.13.0-SNAPSHOT</knox.version>
         <ranger.version>0.7.1</ranger.version>
         <sentry.version>1.7.0</sentry.version>
         <slf4j.version>1.7.22</slf4j.version>

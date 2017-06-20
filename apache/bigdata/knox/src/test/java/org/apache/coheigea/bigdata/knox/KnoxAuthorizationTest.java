@@ -60,6 +60,7 @@ public class KnoxAuthorizationTest {
     private static MockServer hdfsServer;
     private static MockServer stormServer;
     private static MockServer hbaseServer;
+    private static MockServer kafkaServer;
 
 
     @BeforeClass
@@ -68,6 +69,7 @@ public class KnoxAuthorizationTest {
         hdfsServer = new MockServer( "hdfs", true );
         stormServer = new MockServer( "storm", true );
         hbaseServer = new MockServer( "hbase", true );
+        kafkaServer = new MockServer( "kafka", true );
 
         setupGateway();
     }
@@ -85,6 +87,7 @@ public class KnoxAuthorizationTest {
         hdfsServer.stop();
         stormServer.stop();
         hbaseServer.stop();
+        kafkaServer.stop();
 
         ldap.stop( true );
     }
@@ -189,6 +192,9 @@ public class KnoxAuthorizationTest {
             .addTag( "param" )
             .addTag( "name" ).addText( "WEBHBASE.acl" )
             .addTag( "value" ).addText( "alice;*;*" ).gotoParent()
+            .addTag( "param" )
+            .addTag( "name" ).addText( "KAFKA.acl" )
+            .addTag( "value" ).addText( "alice;*;*" ).gotoParent()
             .gotoRoot()
             .addTag("service")
             .addTag("role").addText("WEBHDFS")
@@ -199,6 +205,9 @@ public class KnoxAuthorizationTest {
             .addTag("service")
             .addTag("role").addText("WEBHBASE")
             .addTag("url").addText("http://localhost:" + hbaseServer.getPort()).gotoParent()
+            .addTag("service")
+            .addTag("role").addText("KAFKA")
+            .addTag("url").addText("http://localhost:" + kafkaServer.getPort()).gotoParent()
             .gotoRoot();
         System.out.println( "GATEWAY=" + xml.toString() );
         return xml;
@@ -232,6 +241,16 @@ public class KnoxAuthorizationTest {
     @Test
     public void testHBaseNotAllowed() throws Exception {
         makeHBaseInvocation(HttpStatus.SC_FORBIDDEN, "bob", "password");
+    }
+
+    @Test
+    public void testKafkaAllowed() throws IOException {
+        makeKafkaInvocation(HttpStatus.SC_OK, "alice", "password");
+    }
+
+    @Test
+    public void testKafkaNotAllowed() throws IOException {
+        makeKafkaInvocation(HttpStatus.SC_FORBIDDEN, "bob", "password");
     }
 
     private void makeWebHDFSInvocation(int statusCode, String user, String password) throws IOException {
@@ -325,4 +344,24 @@ public class KnoxAuthorizationTest {
             .log().body();
     }
 
+    private void makeKafkaInvocation(int statusCode, String user, String password) throws IOException {
+
+        kafkaServer
+        .expect()
+        .method( "GET" )
+        .pathInfo( "/topics" )
+        .respond()
+        .status( HttpStatus.SC_OK );
+
+        given()
+            .log().all()
+            .auth().preemptive().basic( user, password )
+            .header("X-XSRF-Header", "jksdhfkhdsf")
+        .when()
+            .get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/kafka" + "/topics" )
+        .then()
+            .statusCode(statusCode)
+            .log().body();
+
+    }
 }
