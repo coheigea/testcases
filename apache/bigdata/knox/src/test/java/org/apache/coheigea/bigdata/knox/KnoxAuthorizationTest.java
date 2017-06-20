@@ -51,6 +51,7 @@ import io.restassured.response.ValidatableResponse;
 
 /**
  * Some mock ACL authorization tests for Apache Knox.
+ * TODO - switch to use the GatewayTestDriver once the knox-resources patch is applied.
  */
 public class KnoxAuthorizationTest {
 
