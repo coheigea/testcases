@@ -1,26 +1,26 @@
 {
   "serviceName": "cl1_knox",
-  "serviceId": 10,
-  "policyVersion": 16,
-  "policyUpdateTime": "20170612-12:35:01.000-+0100",
+  "serviceId": 1,
+  "policyVersion": 5,
+  "policyUpdateTime": "20170620-17:47:01.000-+0100",
   "policies": [
     {
       "service": "cl1_knox",
-      "name": "HDFSPolicy",
+      "name": "all - topology, service",
       "policyType": 0,
-      "description": "",
+      "description": "Policy for all - topology, service",
       "isAuditEnabled": true,
       "resources": {
         "topology": {
           "values": [
-            "cluster"
+            "*"
           ],
           "isExcludes": false,
           "isRecursive": false
         },
         "service": {
           "values": [
-            "WEBHDFS"
+            "*"
           ],
           "isExcludes": false,
           "isRecursive": false
@@ -35,8 +35,55 @@
             }
           ],
           "users": [
-            "admin",
-            "guest",
+            "admin"
+          ],
+          "groups": [],
+          "conditions": [],
+          "delegateAdmin": true
+        }
+      ],
+      "denyPolicyItems": [],
+      "allowExceptions": [],
+      "denyExceptions": [],
+      "dataMaskPolicyItems": [],
+      "rowFilterPolicyItems": [],
+      "id": 1,
+      "isEnabled": true,
+      "version": 1
+    },
+    {
+      "service": "cl1_knox",
+      "name": "ClusterPolicy",
+      "policyType": 0,
+      "description": "",
+      "isAuditEnabled": true,
+      "resources": {
+        "topology": {
+          "values": [
+            "cluster"
+          ],
+          "isExcludes": false,
+          "isRecursive": false
+        },
+        "service": {
+          "values": [
+            "KAFKA",
+            "WEBHDFS",
+            "WEBHBASE"
+          ],
+          "isExcludes": false,
+          "isRecursive": false
+        }
+      },
+      "policyItems": [
+        {
+          "accesses": [
+            {
+              "type": "allow",
+              "isAllowed": true
+            }
+          ],
+          "users": [
             "alice"
           ],
           "groups": [],
@@ -49,9 +96,9 @@
       "denyExceptions": [],
       "dataMaskPolicyItems": [],
       "rowFilterPolicyItems": [],
-      "id": 16,
+      "id": 2,
       "isEnabled": true,
-      "version": 9
+      "version": 2
     },
     {
       "service": "cl1_knox",
@@ -96,54 +143,7 @@
       "denyExceptions": [],
       "dataMaskPolicyItems": [],
       "rowFilterPolicyItems": [],
-      "id": 17,
-      "isEnabled": true,
-      "version": 3
-    },
-    {
-      "service": "cl1_knox",
-      "name": "HBasePolicy",
-      "policyType": 0,
-      "description": "",
-      "isAuditEnabled": true,
-      "resources": {
-        "topology": {
-          "values": [
-            "cluster"
-          ],
-          "isExcludes": false,
-          "isRecursive": false
-        },
-        "service": {
-          "values": [
-            "WEBHBASE"
-          ],
-          "isExcludes": false,
-          "isRecursive": false
-        }
-      },
-      "policyItems": [
-        {
-          "accesses": [
-            {
-              "type": "allow",
-              "isAllowed": true
-            }
-          ],
-          "users": [
-            "alice"
-          ],
-          "groups": [],
-          "conditions": [],
-          "delegateAdmin": false
-        }
-      ],
-      "denyPolicyItems": [],
-      "allowExceptions": [],
-      "denyExceptions": [],
-      "dataMaskPolicyItems": [],
-      "rowFilterPolicyItems": [],
-      "id": 24,
+      "id": 3,
       "isEnabled": true,
       "version": 1
     }
@@ -276,8 +276,8 @@
     "id": 5,
     "guid": "84b481b5-f23b-4f71-b8b6-ab33977149ca",
     "isEnabled": true,
-    "createTime": "20170426-16:38:33.000-+0100",
-    "updateTime": "20170426-16:38:33.000-+0100",
+    "createTime": "20170620-17:41:25.000-+0100",
+    "updateTime": "20170620-17:41:25.000-+0100",
     "version": 1
   },
   "auditMode": "audit-default"
