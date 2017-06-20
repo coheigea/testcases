@@ -33,6 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.directory.server.protocol.shared.transport.TcpTransport;
 import org.apache.hadoop.gateway.GatewayServer;
+import org.apache.hadoop.gateway.GatewayTestConfig;
 import org.apache.hadoop.gateway.security.ldap.SimpleLdapDirectoryServer;
 import org.apache.hadoop.gateway.services.DefaultGatewayServices;
 import org.apache.hadoop.gateway.services.ServiceLifecycleException;
@@ -113,7 +114,7 @@ public class KnoxAuthorizationTest {
         config = new GatewayTestConfig();
         config.setGatewayHomeDir( gatewayDir.getAbsolutePath() );
 
-        // TODO - see KNOX-958 config.setGatewayServicesDir(targetDir.getPath() + File.separator + "services");
+        config.setGatewayServicesDir(targetDir.getPath() + File.separator + "services");
 
         File topoDir = new File( config.getGatewayTopologyDir() );
         topoDir.mkdirs();
