@@ -23,13 +23,12 @@ import java.io.File;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbConstant;
 import org.apache.kerby.kerberos.kerb.KrbException;
-import org.apache.kerby.kerberos.kerb.KrbRuntime;
 import org.apache.kerby.kerberos.kerb.client.KrbConfigKey;
 import org.apache.kerby.kerberos.kerb.client.KrbPkinitClient;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
+import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
 import org.apache.kerby.kerberos.kerb.type.ticket.TgtTicket;
-import org.apache.kerby.kerberos.provider.token.JwtTokenProvider;
 import org.apache.wss4j.dom.engine.WSSConfig;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -55,7 +54,6 @@ public class AnonymousPKInitTest extends org.junit.Assert {
         System.setProperty("sun.security.krb5.debug", "true");
         System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
 
-        KrbRuntime.setTokenProvider(new JwtTokenProvider());
         kerbyServer = new SimpleKdcServer();
 
         kerbyServer.setKdcRealm("service.ws.apache.org");
@@ -66,8 +64,8 @@ public class AnonymousPKInitTest extends org.junit.Assert {
 
         // kerbyServer.getKdcConfig().setString(KdcConfigKey.PKINIT_IDENTITY, "myclient.cer");
 
-        String pkinitIdentity = AnonymousPKInitTest.class.getResource("/kdccerttest.pem").getPath() + ","
-            + AnonymousPKInitTest.class.getResource("/kdckey.pem").getPath();
+        String pkinitIdentity = AnonymousPKInitTest.class.getResource("/kdccerttest.pem").getPath();
+            // TODO private key should be required?+ AnonymousPKInitTest.class.getResource("/kdckey.pem").getPath();
         kerbyServer.getKdcConfig().setString(KdcConfigKey.PKINIT_IDENTITY, pkinitIdentity);
         kerbyServer.getKdcConfig().setBoolean(KdcConfigKey.PREAUTH_REQUIRED, Boolean.TRUE);
 
@@ -91,9 +89,8 @@ public class AnonymousPKInitTest extends org.junit.Assert {
         }
     }
 
-    // TODO Certificate is expired
+
     @org.junit.Test
-    @org.junit.Ignore
     public void unitTest() throws Exception {
         KrbPkinitClient client = new KrbPkinitClient();
 
@@ -114,8 +111,8 @@ public class AnonymousPKInitTest extends org.junit.Assert {
             TgtTicket tgt = client.requestTgt();
             assertTrue(tgt != null);
 
-            //SgtTicket tkt = client.requestSgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
-            //assertTrue(tkt != null);
+            SgtTicket tkt = client.requestSgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
+            assertTrue(tkt != null);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();
