@@ -80,7 +80,7 @@ public class KafkaAuthorizerSASLGSSTest {
         content = content.replaceAll("<basedir>", basedir);
 
         Path path2 = FileSystems.getDefault().getPath(basedir, "/target/test-classes/kafka_kerberos.jaas");
-        Files.write(path2, content.getBytes());
+        Files.write(path2, content.getBytes(StandardCharsets.UTF_8));
 
         System.setProperty("java.security.auth.login.config", path2.toString());
 
