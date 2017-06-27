@@ -63,6 +63,7 @@ public class KnoxAuthorizationTest {
     private static MockServer stormServer;
     private static MockServer hbaseServer;
     private static MockServer kafkaServer;
+    private static MockServer solrServer;
 
 
     @BeforeClass
@@ -72,6 +73,7 @@ public class KnoxAuthorizationTest {
         stormServer = new MockServer( "storm", true );
         hbaseServer = new MockServer( "hbase", true );
         kafkaServer = new MockServer( "kafka", true );
+        solrServer = new MockServer( "solr", true );
 
         setupGateway();
     }
@@ -90,6 +92,7 @@ public class KnoxAuthorizationTest {
         stormServer.stop();
         hbaseServer.stop();
         kafkaServer.stop();
+        solrServer.stop();
 
         ldap.stop( true );
     }
@@ -197,6 +200,9 @@ public class KnoxAuthorizationTest {
             .addTag( "param" )
             .addTag( "name" ).addText( "KAFKA.acl" )
             .addTag( "value" ).addText( "alice;*;*" ).gotoParent()
+            .addTag( "param" )
+            .addTag( "name" ).addText( "SOLR.acl" )
+            .addTag( "value" ).addText( "alice;*;*" ).gotoParent()
             .gotoRoot()
             .addTag("service")
             .addTag("role").addText("WEBHDFS")
@@ -210,6 +216,9 @@ public class KnoxAuthorizationTest {
             .addTag("service")
             .addTag("role").addText("KAFKA")
             .addTag("url").addText("http://localhost:" + kafkaServer.getPort()).gotoParent()
+            .addTag("service")
+            .addTag("role").addText("SOLR")
+            .addTag("url").addText("http://localhost:" + solrServer.getPort() + "/solr").gotoParent()
             .gotoRoot();
         System.out.println( "GATEWAY=" + xml.toString() );
         return xml;
@@ -253,6 +262,16 @@ public class KnoxAuthorizationTest {
     @Test
     public void testKafkaNotAllowed() throws IOException {
         makeKafkaInvocation(HttpStatus.SC_FORBIDDEN, "bob", "password");
+    }
+
+    @Test
+    public void testSolrAllowed() throws Exception {
+        makeSolrInvocation(HttpStatus.SC_OK, "alice", "password");
+    }
+
+    @Test
+    public void testSolrNotAllowed() throws Exception {
+        makeSolrInvocation(HttpStatus.SC_FORBIDDEN, "bob", "password");
     }
 
     private void makeWebHDFSInvocation(int statusCode, String user, String password) throws IOException {
@@ -364,6 +383,35 @@ public class KnoxAuthorizationTest {
         .then()
             .statusCode(statusCode)
             .log().body();
+
+    }
+
+    private void makeSolrInvocation(int statusCode, String user, String password) throws IOException {
+        String basedir = System.getProperty("basedir");
+        if (basedir == null) {
+            basedir = new File(".").getCanonicalPath();
+        }
+        Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/query_response.xml");
+
+        solrServer
+        .expect()
+        .method("GET")
+        .pathInfo("/solr/gettingstarted/select")
+        .queryParam("q", "author_s:William+Shakespeare")
+        .respond()
+        .status(HttpStatus.SC_OK)
+        .content(IOUtils.toByteArray( path.toUri() ))
+        .contentType("application/json");
+
+        given()
+        .auth().preemptive().basic(user, password)
+        .header("X-XSRF-Header", "jksdhfkhdsf")
+        .header("Accept", "application/json")
+        .when().get( "http://localhost:" + gateway.getAddresses()[0].getPort() + "/gateway/cluster/solr"
+            + "/gettingstarted/select?q=author_s:William+Shakespeare")
+        .then()
+        .log().all()
+        .statusCode(statusCode);
 
     }
 }

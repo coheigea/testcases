@@ -69,7 +69,8 @@
           "values": [
             "KAFKA",
             "WEBHDFS",
-            "WEBHBASE"
+            "WEBHBASE",
+            "SOLR"
           ],
           "isExcludes": false,
           "isRecursive": false
