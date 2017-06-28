@@ -49,7 +49,7 @@ import org.apache.kerby.kerberos.kerb.ccache.Credential;
 import org.apache.kerby.kerberos.kerb.ccache.CredentialCache;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.client.KrbTokenClient;
-import org.apache.kerby.kerberos.kerb.integration.test.jaas.TokenCache;
+import org.apache.kerby.kerberos.kerb.client.jaas.TokenCache;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
