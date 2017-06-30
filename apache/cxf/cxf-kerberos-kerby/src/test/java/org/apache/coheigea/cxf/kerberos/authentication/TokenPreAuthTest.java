@@ -50,10 +50,20 @@ import org.apache.kerby.kerberos.kerb.ccache.CredentialCache;
 import org.apache.kerby.kerberos.kerb.client.KrbClient;
 import org.apache.kerby.kerberos.kerb.client.KrbTokenClient;
 import org.apache.kerby.kerberos.kerb.client.jaas.TokenCache;
+import org.apache.kerby.kerberos.kerb.common.EncryptionUtil;
+import org.apache.kerby.kerberos.kerb.crypto.EncryptionHandler;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
+import org.apache.kerby.kerberos.kerb.type.ad.AdToken;
+import org.apache.kerby.kerberos.kerb.type.ad.AuthorizationData;
+import org.apache.kerby.kerberos.kerb.type.ad.AuthorizationDataEntry;
+import org.apache.kerby.kerberos.kerb.type.base.EncryptionKey;
+import org.apache.kerby.kerberos.kerb.type.base.KeyUsage;
+import org.apache.kerby.kerberos.kerb.type.base.KrbToken;
+import org.apache.kerby.kerberos.kerb.type.ticket.EncTicketPart;
 import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
 import org.apache.kerby.kerberos.kerb.type.ticket.TgtTicket;
+import org.apache.kerby.kerberos.kerb.type.ticket.Ticket;
 import org.apache.kerby.kerberos.provider.token.JwtTokenProvider;
 import org.apache.wss4j.common.util.Loader;
 import org.apache.wss4j.dom.engine.WSSConfig;
@@ -272,6 +282,27 @@ public class TokenPreAuthTest extends org.junit.Assert {
         try {
             tkt = tokenClient.requestSgt(krbToken, "bob/service.ws.apache.org@service.ws.apache.org", cCacheFile.getPath());
             assertTrue(tkt != null);
+
+            // Decrypt the ticket
+            Ticket ticket = tkt.getTicket();
+            String bob = "bob/service.ws.apache.org@service.ws.apache.org";
+            EncryptionKey key = EncryptionHandler.string2Key(bob, "bob", ticket.getEncryptedEncPart().getEType());
+
+            //EncTicketPart encPart =
+                EncryptionUtil.unseal(ticket.getEncryptedEncPart(),
+                                                          key, KeyUsage.KDC_REP_TICKET, EncTicketPart.class);
+
+            /* TODO
+            // Examine the authorization data
+            AuthorizationData authzData = encPart.getAuthorizationData();
+            assertEquals(1, authzData.getElements().size());
+            AuthorizationDataEntry dataEntry = authzData.getElements().iterator().next();
+            AdToken token = dataEntry.getAuthzDataAs(AdToken.class);
+            KrbToken decodedKrbToken = token.getToken();
+            System.out.println("SUB: " + decodedKrbToken.getSubject());
+            // System.out.println("Bytes: " + token.getToken().getTokenValue().length);
+             */
+
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();
