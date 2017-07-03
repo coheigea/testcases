@@ -291,7 +291,6 @@ public class TokenPreAuthTest extends org.junit.Assert {
             //EncTicketPart encPart =
                 EncryptionUtil.unseal(ticket.getEncryptedEncPart(),
                                                           key, KeyUsage.KDC_REP_TICKET, EncTicketPart.class);
-
             /* TODO
             // Examine the authorization data
             AuthorizationData authzData = encPart.getAuthorizationData();
@@ -299,9 +298,9 @@ public class TokenPreAuthTest extends org.junit.Assert {
             AuthorizationDataEntry dataEntry = authzData.getElements().iterator().next();
             AdToken token = dataEntry.getAuthzDataAs(AdToken.class);
             KrbToken decodedKrbToken = token.getToken();
-            System.out.println("SUB: " + decodedKrbToken.getSubject());
-            // System.out.println("Bytes: " + token.getToken().getTokenValue().length);
-             */
+            assertEquals("alice", decodedKrbToken.getSubject());
+            assertEquals(address, decodedKrbToken.getAudiences().get(0));
+            */
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -366,6 +365,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
         try {
             tkt = tokenClient.requestSgt(tgt, "bob/service.ws.apache.org@service.ws.apache.org");
             assertTrue(tkt != null);
+
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();
