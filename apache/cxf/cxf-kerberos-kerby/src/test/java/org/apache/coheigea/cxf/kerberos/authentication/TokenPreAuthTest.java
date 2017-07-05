@@ -262,7 +262,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
         tokenClient.setAllowUdp(false);
 
         tokenClient.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
-        client.init();
+        tokenClient.init();
 
         // Create a JWT token using CXF
         JwtClaims claims = new JwtClaims();
@@ -341,7 +341,7 @@ public class TokenPreAuthTest extends org.junit.Assert {
         tokenClient.setAllowUdp(false);
 
         tokenClient.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
-        client.init();
+        tokenClient.init();
 
         // Create a JWT token using CXF
         JwtClaims claims = new JwtClaims();
