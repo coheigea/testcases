@@ -288,10 +288,10 @@ public class TokenPreAuthTest extends org.junit.Assert {
             String bob = "bob/service.ws.apache.org@service.ws.apache.org";
             EncryptionKey key = EncryptionHandler.string2Key(bob, "bob", ticket.getEncryptedEncPart().getEType());
 
-            //EncTicketPart encPart =
+            EncTicketPart encPart =
                 EncryptionUtil.unseal(ticket.getEncryptedEncPart(),
                                                           key, KeyUsage.KDC_REP_TICKET, EncTicketPart.class);
-            /* TODO
+
             // Examine the authorization data
             AuthorizationData authzData = encPart.getAuthorizationData();
             assertEquals(1, authzData.getElements().size());
@@ -300,7 +300,6 @@ public class TokenPreAuthTest extends org.junit.Assert {
             KrbToken decodedKrbToken = token.getToken();
             assertEquals("alice", decodedKrbToken.getSubject());
             assertEquals(address, decodedKrbToken.getAudiences().get(0));
-            */
 
         } catch (Exception e) {
             e.printStackTrace();
