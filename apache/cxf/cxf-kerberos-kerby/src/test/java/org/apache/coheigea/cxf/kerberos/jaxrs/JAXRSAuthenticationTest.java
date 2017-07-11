@@ -40,7 +40,6 @@ import org.junit.BeforeClass;
 /**
  * This is a test-case that shows how to use Kerberos with a JAX-RS service.
  */
-
 public class JAXRSAuthenticationTest extends org.junit.Assert {
 
     private static final String PORT = TestUtil.getPortNumber(Server.class);
