@@ -51,7 +51,7 @@
         <property name="endpoints" ref="transportEndpoints"/>
     </bean>
     <util:list id="transportEndpoints">
-        <value>https://localhost:(\d)*/doubleit/services/doubleittransport.*
+        <value>.*
         </value>
     </util:list>
     <bean id="claimsManager" class="org.apache.cxf.sts.claims.ClaimsManager">
