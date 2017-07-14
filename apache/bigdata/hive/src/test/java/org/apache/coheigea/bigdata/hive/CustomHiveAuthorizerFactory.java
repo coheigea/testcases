@@ -46,28 +46,27 @@ public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
         throws HiveAuthzPluginException {
         return new CustomHiveAuthorizer(hiveAuthenticator);
     }
-    
-    
+
+
     /**
      * A trivial CustomHiveAuthorizer that allows the following:
      * a) The logged in user can do anything
      * b) "bob" can do a select on the tables
      * c) "alice" can do a select only on the "count" column
      */
-    private static class CustomHiveAuthorizer implements HiveAuthorizer {
-        
+    protected static class CustomHiveAuthorizer implements HiveAuthorizer {
+
         private String remoteUser;
-        
+
         CustomHiveAuthorizer(HiveAuthenticationProvider hiveAuthenticator) {
             remoteUser = hiveAuthenticator.getUserName();
         }
 
         @Override
         public void applyAuthorizationConfigPolicy(HiveConf arg0) throws HiveAuthzPluginException {
-            
+
         }
 
-        @Override
         public List<HivePrivilegeObject> applyRowFilterAndColumnMasking(HiveAuthzContext arg0,
                                                                         List<HivePrivilegeObject> arg1)
             throws SemanticException {
@@ -82,7 +81,7 @@ public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
             if (isLoggedInUser(remoteUser)) {
                 return;
             }
-            
+
             if ("bob".equals(remoteUser) && "QUERY".equals(hiveOpType.name())) {
                 return;
             }
@@ -98,7 +97,7 @@ public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
                     return;
                 }
             }
-            
+
             throw new RuntimeException("Authorization failed for user: " + remoteUser);
         }
 
@@ -165,7 +164,6 @@ public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
             throw new RuntimeException("Not implemented");
         }
 
-        @Override
         public boolean needTransform() {
             return false;
         }
@@ -174,7 +172,7 @@ public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
         public void revokePrivileges(List<HivePrincipal> arg0, List<HivePrivilege> arg1,
                                      HivePrivilegeObject arg2, HivePrincipal arg3, boolean arg4)
             throws HiveAuthzPluginException, HiveAccessControlException {
-            throw new RuntimeException("Not implemented");   
+            throw new RuntimeException("Not implemented");
         }
 
         @Override
@@ -193,11 +191,11 @@ public class CustomHiveAuthorizerFactory implements HiveAuthorizerFactory {
             throws HiveAuthzPluginException, HiveAccessControlException {
             return null;
         }
-        
+
         private boolean isLoggedInUser(String remoteUser) {
             return remoteUser != null && remoteUser.equals(System.getProperty("user.name"));
         }
-        
+
     }
-    
+
 }
