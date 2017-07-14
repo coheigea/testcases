@@ -23,16 +23,24 @@
         <value>none</value>
     </property>
     <property>
-        <name>sentry.kafka.provider</name>
+        <name>sentry.provider</name>
         <value>org.apache.sentry.provider.file.LocalGroupResourceAuthorizationProvider</value>
     </property>
     <property>
-        <name>sentry.kafka.provider.backend</name>
+        <name>sentry.hive.provider.backend</name>
         <value>org.apache.sentry.provider.file.SimpleFileProviderBackend</value>
     </property>
     <property>
-        <name>sentry.kafka.provider.resource</name>
-        <value>src/test/resources/sentry.ini</value>
+        <name>sentry.hive.provider.resource</name>
+        <value>target/test-classes/sentry.ini</value>
+    </property>
+    <property>
+        <name>sentry.hive.server</name>
+        <value>server1</value>
+    </property>
+    <property>
+        <name>sentry.hive.testing.mode</name>
+        <value>true</value>
     </property>
 
 </configuration>

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.coheigea.bigdata.hive;
+package org.apache.coheigea.bigdata.hive.sentry;
 
 import java.io.File;
 import java.net.ServerSocket;
@@ -34,12 +34,12 @@ import org.apache.hive.service.server.HiveServer2;
 import org.junit.Assert;
 
 /**
- * Here we plug a custom HiveAuthorizer into HIVE. It enforces the following rules:
+ * Here we plug the Sentry v2 SentryAuthorizerFactory into HIVE. It enforces the following rules:
  *   a) The logged in user can do anything
  *   b) "bob" can do a select on the tables
  *   c) "alice" can do a select only on the "count" column
  */
-public class HIVEAuthorizerTest {
+public class HIVESentryAuthorizerTest {
 
     private static final File hdfsBaseDir = new File("./target/hdfs/").getAbsoluteFile();
     private static HiveServer2 hiveServer;
@@ -73,10 +73,11 @@ public class HIVEAuthorizerTest {
         // Enable authorization
         conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_ENABLED.varname, "true");
         conf.set(HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS.varname, "true");
-        conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_MANAGER.varname,
-                 "org.apache.coheigea.bigdata.hive.CustomHiveAuthorizerFactory");
-        //conf.set(HiveConf.ConfVars.HIVE_METASTORE_AUTHORIZATION_MANAGER.varname,
-        //         "org.apache.hadoop.hive.ql.security.authorization.StorageBasedAuthorizationProvider");
+
+        // Plug in Apache Sentry authorizer
+        conf.set("hive.security.authenticator.manager", "org.apache.hadoop.hive.ql.security.SessionStateUserAuthenticator");
+        conf.set("hive.security.authorization.manager", "org.apache.sentry.binding.hive.v2.SentryAuthorizerFactory");
+        conf.set("hive.sentry.conf.url", "file:" + HIVESentryAuthorizerTest.class.getResource("/sentry-site.xml").getPath());
 
         hiveServer = new HiveServer2();
         hiveServer.init(conf);
@@ -104,13 +105,14 @@ public class HIVEAuthorizerTest {
         statement.execute("create table words (word STRING, count INT) row format delimited fields terminated by '\t'");
 
         // Copy "wordcount.txt" to "target" to avoid overwriting it during load
-        java.io.File inputFile = new java.io.File(HIVEAuthorizerTest.class.getResource("../../../../../wordcount.txt").toURI());
+        java.io.File inputFile = new java.io.File(HIVESentryAuthorizerTest.class.getResource("../../../../../../wordcount.txt").toURI());
         Path outputPath = Paths.get(inputFile.toPath().getParent().getParent().toString() + java.io.File.separator + "wordcountout.txt");
         if (!outputPath.toFile().exists()) {
             Files.copy(inputFile.toPath(), outputPath);
         }
 
-        statement.execute("LOAD DATA INPATH '" + outputPath + "' OVERWRITE INTO TABLE words");
+        // TODO See SENTRY-1845 statement.execute("LOAD DATA INPATH '" + outputPath + "' OVERWRITE INTO TABLE words");
+        statement.execute("LOAD DATA INPATH '" + outputPath + "' INTO TABLE words");
 
         // Just test to make sure it's working
         ResultSet resultSet = statement.executeQuery("SELECT * FROM words where count == '100'");
