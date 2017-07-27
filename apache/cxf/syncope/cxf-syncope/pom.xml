@@ -38,6 +38,7 @@
         <cargo.output>${log.directory}/cargo-output.log</cargo.output>
         <conf.directory>${project.build.directory}/test-classes</conf.directory>
         <h2.version>1.4.187</h2.version>
+        <syncope.version>1.2.10</syncope.version>
     </properties>
     <dependencies>
         <dependency>
