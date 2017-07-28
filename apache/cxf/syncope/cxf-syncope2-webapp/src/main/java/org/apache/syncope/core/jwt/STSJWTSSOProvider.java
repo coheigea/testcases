@@ -16,21 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.syncope.fit.core.reference;
+package org.apache.syncope.core.jwt;
 
-import java.util.List;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
 import java.util.Set;
+
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.cxf.common.classloader.ClassLoaderUtils;
 import org.apache.cxf.rs.security.jose.jwa.SignatureAlgorithm;
-import org.apache.cxf.rs.security.jose.jws.HmacJwsSignatureVerifier;
 import org.apache.cxf.rs.security.jose.jws.JwsHeaders;
 import org.apache.cxf.rs.security.jose.jws.JwsSignatureVerifier;
 import org.apache.cxf.rs.security.jose.jws.JwsVerificationSignature;
+import org.apache.cxf.rs.security.jose.jws.PublicKeyJwsSignatureVerifier;
 import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
-import org.apache.syncope.common.lib.types.AnyTypeKind;
-import org.apache.syncope.core.persistence.api.dao.AnySearchDAO;
-import org.apache.syncope.core.persistence.api.dao.search.AttributeCond;
-import org.apache.syncope.core.persistence.api.dao.search.SearchCond;
+import org.apache.syncope.core.persistence.api.dao.UserDAO;
 import org.apache.syncope.core.persistence.api.entity.user.User;
 import org.apache.syncope.core.spring.security.AuthDataAccessor;
 import org.apache.syncope.core.spring.security.JWTSSOProvider;
@@ -45,18 +45,22 @@ public class STSJWTSSOProvider implements JWTSSOProvider {
 
     public static final String ISSUER = "STSIssuer";
 
-    public static final String CUSTOM_KEY = "12345678910987654321";
-
     private final JwsSignatureVerifier delegate;
 
     @Autowired
-    private AnySearchDAO searchDAO;
+    private UserDAO userDAO;
 
     @Autowired
     private AuthDataAccessor authDataAccessor;
 
-    public STSJWTSSOProvider() {
-        delegate = new HmacJwsSignatureVerifier(CUSTOM_KEY.getBytes(), SignatureAlgorithm.HS512);
+    public STSJWTSSOProvider() throws Exception {
+        // Load verification cert
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(ClassLoaderUtils.getResourceAsStream("sts_ver.jks", this.getClass()),
+                      "stsspass".toCharArray());
+        X509Certificate cert = (X509Certificate)keyStore.getCertificate("mykey");
+
+        delegate = new PublicKeyJwsSignatureVerifier(cert, SignatureAlgorithm.RS256);
     }
 
     @Override
@@ -82,14 +86,9 @@ public class STSJWTSSOProvider implements JWTSSOProvider {
     @Transactional(readOnly = true)
     @Override
     public Pair<User, Set<SyncopeGrantedAuthority>> resolve(final JwtClaims jwtClaims) {
-        AttributeCond userIdCond = new AttributeCond();
-        userIdCond.setSchema("userId");
-        userIdCond.setType(AttributeCond.Type.EQ);
-        userIdCond.setExpression(jwtClaims.getSubject());
 
-        List<User> matching = searchDAO.search(SearchCond.getLeafCond(userIdCond), AnyTypeKind.USER);
-        if (matching.size() == 1) {
-            User user = matching.get(0);
+        User user = userDAO.findByUsername(jwtClaims.getSubject());
+        if (user != null) {
             Set<SyncopeGrantedAuthority> authorities = authDataAccessor.getAuthorities(user.getUsername());
 
             return Pair.of(user, authorities);
