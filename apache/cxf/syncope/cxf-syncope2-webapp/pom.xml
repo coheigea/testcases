@@ -149,7 +149,15 @@
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>context.xml</exclude>
+                    <exclude>sts_ver.jks</exclude>
                 </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/sts_ver.jks</include>
+                </includes>
+                <filtering>false</filtering>
             </resource>
         </resources>
     </build>
