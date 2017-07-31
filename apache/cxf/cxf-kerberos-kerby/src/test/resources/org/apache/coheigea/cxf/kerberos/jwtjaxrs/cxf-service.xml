@@ -72,9 +72,11 @@
        <jaxrs:serviceBeans>
           <ref bean="serviceBean"/>
        </jaxrs:serviceBeans>
+       <!-- 
        <jaxrs:inInterceptors>
             <ref bean="authorizationInterceptor"/>
        </jaxrs:inInterceptors>
+       -->
        <jaxrs:providers>
             <ref bean="kerberosFilter" />
        </jaxrs:providers>
