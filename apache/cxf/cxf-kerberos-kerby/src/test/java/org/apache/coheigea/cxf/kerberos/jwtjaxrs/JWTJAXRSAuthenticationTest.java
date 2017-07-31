@@ -20,7 +20,7 @@ package org.apache.coheigea.cxf.kerberos.jwtjaxrs;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
+import java.security.Provider;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
@@ -28,14 +28,12 @@ import javax.ws.rs.core.Response;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.rs.security.jose.jws.JwsJwtCompactConsumer;
-import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
-import org.apache.cxf.rs.security.jose.jwt.JwtToken;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.apache.cxf.testutil.common.TestUtil;
 import org.apache.cxf.transport.http.auth.SpnegoAuthSupplier;
 import org.apache.kerby.kerberos.kdc.impl.NettyKdcServerImpl;
 import org.apache.kerby.kerberos.kerb.KrbException;
+import org.apache.kerby.kerberos.kerb.gss.KerbyGssProvider;
 import org.apache.kerby.kerberos.kerb.server.KdcConfigKey;
 import org.apache.kerby.kerberos.kerb.server.SimpleKdcServer;
 import org.apache.wss4j.dom.engine.WSSConfig;
@@ -61,6 +59,9 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
 
     @BeforeClass
     public static void setUp() throws Exception {
+
+        Provider provider = new KerbyGssProvider();
+        java.security.Security.insertProviderAt(provider, 1);
 
         WSSConfig.init();
 
@@ -116,26 +117,34 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
 
     // TODO
     @org.junit.Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testJWTKerberosAccessToken() throws Exception {
 
         URL busFile = JWTJAXRSAuthenticationTest.class.getResource("cxf-client.xml");
-
+/*
         // 1. Get a JWT Token from the STS via the REST interface for "alice"
         String jwtToken = getJWTTokenFromSTS(busFile);
         JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(jwtToken);
         JwtToken jwt = jwtConsumer.getJwtToken();
         Assert.assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
         Assert.assertTrue(((List<?>)jwt.getClaim(ROLE)).contains("boss"));
-
+*/
         // 2. Now call on the service using a custom HttpAuthSupplier
         String address = "https://localhost:" + PORT + "/doubleit/services";
         WebClient client = WebClient.create(address, busFile.toString());
-
+/*
         KerbyHttpAuthSupplier authSupplier = new KerbyHttpAuthSupplier();
         authSupplier.setKdcRealm(kerbyServer.getKdcSetting().getKdcRealm());
         authSupplier.setKdcPort(kerbyServer.getKdcPort());
         authSupplier.setJwtToken(jwtToken);
+        WebClient.getConfig(client).getHttpConduit().setAuthSupplier(authSupplier);
+*/
+        Map<String, Object> requestContext = WebClient.getConfig(client).getRequestContext();
+        requestContext.put("auth.spnego.useKerberosOid", "true");
+
+        SpnegoAuthSupplier authSupplier = new SpnegoAuthSupplier();
+        authSupplier.setServicePrincipalName("bob/service.ws.apache.org@service.ws.apache.org");
+        authSupplier.setServiceNameType(GSSName.NT_HOSTBASED_SERVICE);
         WebClient.getConfig(client).getHttpConduit().setAuthSupplier(authSupplier);
 
         Number numberToDouble = new Number();
@@ -160,7 +169,7 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         client.accept("text/plain");
         client.path("jwt");
         client.query("appliesTo", "bob/service.ws.apache.org@service.ws.apache.org");
-        
+
         client.query("claim", ROLE);
 
         Response response = client.get();
