@@ -40,7 +40,7 @@
         <kerby.version>1.0.0</kerby.version>
         <knox.version>0.13.0-SNAPSHOT</knox.version>
         <ranger.version>0.7.1</ranger.version>
-        <sentry.version>1.7.0</sentry.version>
+        <sentry.version>1.8.0</sentry.version>
         <slf4j.version>1.7.22</slf4j.version>
         <solr.version>5.5.4</solr.version>
         <storm.version>1.0.4</storm.version>
