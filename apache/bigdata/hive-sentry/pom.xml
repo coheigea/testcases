@@ -20,9 +20,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.coheigea.bigdata</groupId>
-    <artifactId>bigdata-hive-demo</artifactId>
+    <artifactId>bigdata-hive-sentry-demo</artifactId>
     <packaging>jar</packaging>
-    <name>Apache HIVE Demo</name>
+    <name>Apache HIVE Sentry Demo</name>
     <version>1.0</version>
     <parent>
         <groupId>org.apache.coheigea.bigdata</groupId>
@@ -30,6 +30,9 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
     </parent>
+    <properties>
+        <hive.version>2.0.1</hive.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -65,6 +68,12 @@
             <groupId>org.apache.ranger</groupId>
             <artifactId>ranger-hive-plugin</artifactId>
             <version>${ranger.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sentry</groupId>
+            <artifactId>sentry-binding-hive-v2</artifactId>
+            <version>${sentry.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
