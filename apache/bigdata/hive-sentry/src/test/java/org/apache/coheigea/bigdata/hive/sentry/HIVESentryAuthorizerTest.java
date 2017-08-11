@@ -38,6 +38,9 @@ import org.junit.Assert;
  *   a) The logged in user can do anything
  *   b) "bob" can do a select on the tables
  *   c) "alice" can do a select only on the "count" column
+ *
+ * TODO - Temporarily keeping this test in a separate module to the hive tests, as Ranger currently supports only Hive 2.1.x, whereas Sentry
+ * supports Hive 2.0.x.
  */
 public class HIVESentryAuthorizerTest {
 
