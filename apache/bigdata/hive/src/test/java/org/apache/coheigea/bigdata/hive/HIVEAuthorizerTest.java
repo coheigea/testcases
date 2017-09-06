@@ -77,6 +77,7 @@ public class HIVEAuthorizerTest {
                  "org.apache.coheigea.bigdata.hive.CustomHiveAuthorizerFactory");
         //conf.set(HiveConf.ConfVars.HIVE_METASTORE_AUTHORIZATION_MANAGER.varname,
         //         "org.apache.hadoop.hive.ql.security.authorization.StorageBasedAuthorizationProvider");
+        conf.set(HiveConf.ConfVars.HIVE_SERVER2_WEBUI_PORT.varname, "0");
 
         hiveServer = new HiveServer2();
         hiveServer.init(conf);
