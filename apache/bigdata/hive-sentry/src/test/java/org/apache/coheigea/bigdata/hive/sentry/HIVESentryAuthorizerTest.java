@@ -81,6 +81,7 @@ public class HIVESentryAuthorizerTest {
         conf.set("hive.security.authenticator.manager", "org.apache.hadoop.hive.ql.security.SessionStateUserAuthenticator");
         conf.set("hive.security.authorization.manager", "org.apache.sentry.binding.hive.v2.SentryAuthorizerFactory");
         conf.set("hive.sentry.conf.url", "file:" + HIVESentryAuthorizerTest.class.getResource("/sentry-site.xml").getPath());
+        conf.set(HiveConf.ConfVars.HIVE_SERVER2_WEBUI_PORT.varname, "0");
 
         hiveServer = new HiveServer2();
         hiveServer.init(conf);
