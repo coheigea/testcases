@@ -7,6 +7,10 @@ bob {
     com.sun.security.auth.module.Krb5LoginModule required refreshKrb5Config=true useKeyTab=false storeKey=true principal="bob/service.ws.apache.org";
 };
 
+dave {
+    com.sun.security.auth.module.Krb5LoginModule required refreshKrb5Config=true useKeyTab=false storeKey=true principal="dave";
+};
+
 aliceTokenAuth {
     org.apache.kerby.kerberos.kerb.client.jaas.TokenAuthLoginModule required refreshKrb5Config=true useKeyTab=false principal="alice"
     armorCache="armorCacheVal"

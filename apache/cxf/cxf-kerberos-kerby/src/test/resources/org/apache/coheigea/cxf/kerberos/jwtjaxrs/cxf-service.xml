@@ -51,7 +51,7 @@
    <bean id="kerberosCallbackHandler" 
          class="org.apache.coheigea.cxf.kerberos.authentication.KerberosCallbackHandler"/>
          
-   <bean id="kerberosFilter" class="org.apache.cxf.jaxrs.security.KerberosAuthenticationFilter">
+   <bean id="kerberosFilter" class="org.apache.coheigea.cxf.kerberos.jwtjaxrs.JWTKerberosAuthenticationFilter">
        <property name="loginContextName" value="bob"/>
        <property name="servicePrincipalName" value="bob@service.ws.apache.org"/>
        <property name="callbackHandler" ref="kerberosCallbackHandler"/>
@@ -72,11 +72,9 @@
        <jaxrs:serviceBeans>
           <ref bean="serviceBean"/>
        </jaxrs:serviceBeans>
-       <!-- 
        <jaxrs:inInterceptors>
             <ref bean="authorizationInterceptor"/>
        </jaxrs:inInterceptors>
-       -->
        <jaxrs:providers>
             <ref bean="kerberosFilter" />
        </jaxrs:providers>

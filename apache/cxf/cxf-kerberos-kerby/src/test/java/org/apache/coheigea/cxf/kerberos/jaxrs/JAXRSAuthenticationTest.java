@@ -97,7 +97,7 @@ public class JAXRSAuthenticationTest extends org.junit.Assert {
         URL busFile = JAXRSAuthenticationTest.class.getResource("cxf-client.xml");
 
         String address = "https://localhost:" + PORT + "/doubleit/services";
-        WebClient client = WebClient.create(address, busFile.toString());
+        WebClient client = WebClient.create(address, busFile.toString()).type("application/xml");
 
         Map<String, Object> requestContext = WebClient.getConfig(client).getRequestContext();
         requestContext.put("auth.spnego.useKerberosOid", "true");
