@@ -36,28 +36,28 @@ import org.apache.cxf.rs.security.jose.jws.JwsSignatureProvider;
 import org.apache.cxf.rs.security.jose.jws.JwsUtils;
 import org.apache.cxf.rs.security.jose.jwt.JwtClaims;
 import org.apache.kerby.kerberos.kerb.type.base.AuthToken;
-import org.apache.kerby.kerberos.kerb.type.base.KrbTokenBase;
+import org.apache.kerby.kerberos.kerb.type.base.KrbToken;
 import org.apache.kerby.kerberos.kerb.type.base.TokenFormat;
 import org.apache.wss4j.common.util.Loader;
 
 /**
  * We need a custom implementation of AuthToken to wrap the JWT token returned by CXF
  */
-public class CXFKrbToken extends KrbTokenBase implements AuthToken {
-    
+public class CXFKrbToken extends KrbToken implements AuthToken {
+
     private JwtClaims claims;
     private boolean idToken;
-    
+
     public CXFKrbToken(JwtClaims claims, boolean idToken) {
         this.claims = claims;
         this.idToken = idToken;
         setTokenFormat(TokenFormat.JWT);
     }
-    
+
     public void sign() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
         KeyStore keystore = KeyStore.getInstance("JKS");
         keystore.load(Loader.getResourceAsStream("clientstore.jks"), "cspass".toCharArray());
-        
+
         Properties signingProperties = new Properties();
         signingProperties.put(JoseConstants.RSSEC_SIGNATURE_ALGORITHM, SignatureAlgorithm.RS256.name());
         signingProperties.put(JoseConstants.RSSEC_KEY_STORE, keystore);
@@ -71,7 +71,7 @@ public class CXFKrbToken extends KrbTokenBase implements AuthToken {
             JwsUtils.loadSignatureProvider(signingProperties, jwsHeaders);
 
         String signedToken = jws.signWith(sigProvider);
-        
+
         setTokenValue(signedToken.getBytes());
     }
 

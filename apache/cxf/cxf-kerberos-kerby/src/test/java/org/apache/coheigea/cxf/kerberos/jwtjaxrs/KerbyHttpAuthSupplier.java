@@ -18,24 +18,19 @@
  */
 package org.apache.coheigea.cxf.kerberos.jwtjaxrs;
 
-import java.io.File;
 import java.net.URI;
+import java.text.ParseException;
 
-import org.apache.cxf.common.util.Base64Utility;
+import javax.security.auth.Subject;
+
 import org.apache.cxf.configuration.security.AuthorizationPolicy;
 import org.apache.cxf.message.Message;
-import org.apache.cxf.transport.http.auth.HttpAuthHeader;
+import org.apache.cxf.transport.http.auth.AbstractSpnegoAuthSupplier;
 import org.apache.cxf.transport.http.auth.HttpAuthSupplier;
 import org.apache.kerby.kerberos.kerb.KrbRuntime;
-import org.apache.kerby.kerberos.kerb.ccache.Credential;
-import org.apache.kerby.kerberos.kerb.ccache.CredentialCache;
-import org.apache.kerby.kerberos.kerb.client.KrbClient;
-import org.apache.kerby.kerberos.kerb.client.KrbTokenClient;
 import org.apache.kerby.kerberos.kerb.type.base.AuthToken;
 import org.apache.kerby.kerberos.kerb.type.base.KrbToken;
 import org.apache.kerby.kerberos.kerb.type.base.TokenFormat;
-import org.apache.kerby.kerberos.kerb.type.ticket.SgtTicket;
-import org.apache.kerby.kerberos.kerb.type.ticket.TgtTicket;
 import org.apache.kerby.kerberos.provider.token.JwtAuthToken;
 import org.apache.kerby.kerberos.provider.token.JwtTokenProvider;
 
@@ -43,96 +38,43 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 
 /**
- * A Custom HttpAuthSupplier implementation that uses the Kerby API and passes through a received JWT Token
- * when getting a SGT.
+ * A Custom HttpAuthSupplier implementation that decorates the Subject with the JWT Token.
  */
-public class KerbyHttpAuthSupplier implements HttpAuthSupplier {
-    
-    private int kdcPort;
-    private String kdcRealm;
+public class KerbyHttpAuthSupplier extends AbstractSpnegoAuthSupplier implements HttpAuthSupplier {
+
     private String jwtToken;
 
     @Override
-    public String getAuthorization(AuthorizationPolicy arg0, URI arg1, Message arg2, String arg3) {
+    protected void decorateSubject(Subject subject) {
+        KrbRuntime.setTokenProvider(new JwtTokenProvider());
         try {
-            // Get a TGT
-            KrbClient client = new KrbClient();
-    
-            client.setKdcHost("localhost");
-            client.setKdcTcpPort(kdcPort);
-            client.setAllowUdp(false);
-    
-            client.setKdcRealm(kdcRealm);
-            client.init();
-    
-            TgtTicket tgt = client.requestTgt("alice@service.ws.apache.org", "alice");
-    
-            // Write to cache
-            Credential credential = new Credential(tgt);
-            CredentialCache cCache = new CredentialCache();
-            cCache.addCredential(credential);
-            cCache.setPrimaryPrincipal(tgt.getClientPrincipal());
-    
-            File cCacheFile = File.createTempFile("krb5_alice@service.ws.apache.org", "cc");
-            cCache.store(cCacheFile);
-    
-            KrbTokenClient tokenClient = new KrbTokenClient(client);
-    
-            tokenClient.setKdcHost("localhost");
-            tokenClient.setKdcTcpPort(kdcPort);
-            tokenClient.setAllowUdp(false);
-    
-            tokenClient.setKdcRealm(kdcRealm);
-            tokenClient.init();
-
-            // Parse JWT token into a format we can use with Kerby
-            KrbRuntime.setTokenProvider(new JwtTokenProvider());
             JWT jwt = JWTParser.parse(jwtToken);
             AuthToken authToken = new JwtAuthToken(jwt.getJWTClaimsSet());
-            
+
             KrbToken krbToken = new KrbToken(authToken, TokenFormat.JWT);
             krbToken.setTokenValue(jwtToken.getBytes());
-    
-            // Now get a SGT using the JWT
-            SgtTicket tkt = tokenClient.requestSgt(krbToken, "bob/service.ws.apache.org@service.ws.apache.org", cCacheFile.getPath());
-    
-            cCacheFile.delete();
-            
-            return HttpAuthHeader.AUTH_TYPE_NEGOTIATE + " " + Base64Utility.encode(tkt.getTicket().encode());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
+
+            subject.getPrivateCredentials().add(krbToken);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+    }
+
+    public String getAuthorization(AuthorizationPolicy  authPolicy,
+                                   URI currentURI,
+                                   Message message,
+                                   String fullHeader) {
+       return super.getAuthorization(authPolicy, currentURI, message);
+   }
+
+    public void setJwtToken(String jwtToken) {
+        this.jwtToken = jwtToken;
     }
 
     @Override
     public boolean requiresRequestCaching() {
-        // TODO Auto-generated method stub
         return false;
-    }
-
-    public int getKdcPort() {
-        return kdcPort;
-    }
-
-    public void setKdcPort(int kdcPort) {
-        this.kdcPort = kdcPort;
-    }
-
-    public String getKdcRealm() {
-        return kdcRealm;
-    }
-
-    public void setKdcRealm(String kdcRealm) {
-        this.kdcRealm = kdcRealm;
-    }
-
-    public String getJwtToken() {
-        return jwtToken;
-    }
-
-    public void setJwtToken(String jwtToken) {
-        this.jwtToken = jwtToken;
     }
 
 }
