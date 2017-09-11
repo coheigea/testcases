@@ -44,8 +44,9 @@ public class SyncopeDeployer {
     @SuppressWarnings("unchecked")
     public void deployUserData() {
         WebClient client = WebClient.create(address);
+        client = client.type("application/xml");
 
-        String authorizationHeader = 
+        String authorizationHeader =
             "Basic " + Base64Utility.encode(("admin" + ":" + "password").getBytes());
 
         client.header("Authorization", authorizationHeader);
@@ -94,16 +95,16 @@ public class SyncopeDeployer {
             user.getMemberships().add(membership);
             client.post(user, ProvisioningResult.class);
         }
-        
+
         client.close();
-        
+
         // Check via the client API that the users were created correctly
         SyncopeClientFactoryBean clientFactory = new SyncopeClientFactoryBean().setAddress(address);
         SyncopeClient syncopeClient = clientFactory.create("admin", "password");
-        
+
         UserService userService = syncopeClient.getService(UserService.class);
-        
-        int count = userService.search(new AnyQuery.Builder().build()).getTotalCount(); 
+
+        int count = userService.search(new AnyQuery.Builder().build()).getTotalCount();
         Assert.assertEquals(2, count);
     }
 

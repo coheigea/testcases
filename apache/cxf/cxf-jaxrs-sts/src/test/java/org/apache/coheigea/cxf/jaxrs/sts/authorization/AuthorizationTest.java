@@ -32,15 +32,15 @@ import org.junit.BeforeClass;
  * This tests using the CXF STS for authorization. The JAX-RS client sends a HTTP/BA request
  * to the service, which sends it to the STS for validation (along with its own UsernameToken
  * for authentication to the STS). The service also requests the roles for the client.
- * 
+ *
  * The CXF Endpoint has configured the SimpleAuthorizingInterceptor, which requires that a user must
  * have role "boss" to access the "doubleIt" operation ("alice" has this role, "bob" does not).
  */
 public class AuthorizationTest extends AbstractBusClientServerTestBase {
-    
+
     private static final String PORT = allocatePort(Server.class);
     static final String STS_PORT = allocatePort(STSServer.class);
-    
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -56,40 +56,42 @@ public class AuthorizationTest extends AbstractBusClientServerTestBase {
                 launchServer(STSServer.class, true)
         );
     }
-   
+
     @org.junit.Test
     public void testAuthorizedRequest() throws Exception {
 
         URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
 
         String address = "https://localhost:" + PORT + "/doubleit/services";
-        WebClient client = 
+        WebClient client =
             WebClient.create(address, "alice", "security", busFile.toString());
-        
+        client = client.type("application/xml");
+
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
         numberToDouble.setNumber(25);
-        
+
         Response response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
-    
+
     @org.junit.Test
     public void testUnauthorizedRequest() throws Exception {
 
         URL busFile = AuthorizationTest.class.getResource("cxf-client.xml");
 
         String address = "https://localhost:" + PORT + "/doubleit/services";
-        WebClient client = 
+        WebClient client =
             WebClient.create(address, "bob", "security", busFile.toString());
-        
+        client = client.type("application/xml");
+
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
         numberToDouble.setNumber(25);
-        
+
         Response response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 500);
     }
-    
+
 }

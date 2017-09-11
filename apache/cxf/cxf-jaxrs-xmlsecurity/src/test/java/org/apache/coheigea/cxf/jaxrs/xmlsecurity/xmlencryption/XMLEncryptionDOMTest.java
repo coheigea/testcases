@@ -35,9 +35,9 @@ import org.junit.BeforeClass;
  * Test JAX-RS XML Encryption using the DOM implementation.
  */
 public class XMLEncryptionDOMTest extends AbstractBusClientServerTestBase {
-    
+
     private static final String PORT = allocatePort(Server.class);
-    
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -47,7 +47,7 @@ public class XMLEncryptionDOMTest extends AbstractBusClientServerTestBase {
                    launchServer(Server.class, true)
         );
     }
-    
+
     @org.junit.Test
     public void testXMLEncryptionDOM() throws Exception {
 
@@ -55,28 +55,29 @@ public class XMLEncryptionDOMTest extends AbstractBusClientServerTestBase {
 
         String address = "http://localhost:" + PORT + "/doubleit/services";
         WebClient client = WebClient.create(address, busFile.toString());
-        
+        client = client.type("application/xml");
+
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("ws-security.callback-handler",
                        "org.apache.coheigea.cxf.jaxrs.xmlsecurity.common.CommonCallbackHandler");
         properties.put("ws-security.encryption.username", "myservicekey");
-        
+
         properties.put("ws-security.encryption.properties", "serviceKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
-        
+
         XmlEncOutInterceptor encInterceptor = new XmlEncOutInterceptor();
         WebClient.getConfig(client).getOutInterceptors().add(encInterceptor);
-        
+
         XmlEncInInterceptor encInInterceptor = new XmlEncInInterceptor();
         WebClient.getConfig(client).getInInterceptors().add(encInInterceptor);
-            
+
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
         numberToDouble.setNumber(25);
-        
+
         Response response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
-    
+
 }

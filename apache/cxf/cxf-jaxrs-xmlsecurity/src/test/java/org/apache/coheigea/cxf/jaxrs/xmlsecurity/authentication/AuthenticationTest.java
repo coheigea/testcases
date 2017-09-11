@@ -34,9 +34,9 @@ import org.junit.BeforeClass;
  * Test Authentication via JAX-RS XML Signature.
  */
 public class AuthenticationTest extends AbstractBusClientServerTestBase {
-    
+
     private static final String PORT = allocatePort(Server.class);
-    
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -46,7 +46,7 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
                    launchServer(Server.class, true)
         );
     }
-    
+
     @org.junit.Test
     public void testAuthenticatedRequest() throws Exception {
 
@@ -54,27 +54,28 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
 
         String address = "http://localhost:" + PORT + "/doubleit/services";
         WebClient client = WebClient.create(address, busFile.toString());
-        
+        client = client.type("application/xml");
+
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("ws-security.callback-handler",
                        "org.apache.coheigea.cxf.jaxrs.xmlsecurity.common.CommonCallbackHandler");
         properties.put("ws-security.signature.username", "myclientkey");
-        
+
         properties.put("ws-security.signature.properties", "clientKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
-        
+
         XmlSigOutInterceptor sigInterceptor = new XmlSigOutInterceptor();
         WebClient.getConfig(client).getOutInterceptors().add(sigInterceptor);
-            
+
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
         numberToDouble.setNumber(25);
-        
+
         Response response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
-    
+
     @org.junit.Test
     public void testUnauthenticatedRequest() throws Exception {
 
@@ -82,24 +83,25 @@ public class AuthenticationTest extends AbstractBusClientServerTestBase {
 
         String address = "http://localhost:" + PORT + "/doubleit/services";
         WebClient client = WebClient.create(address, busFile.toString());
-        
+        client = client.type("application/xml");
+
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("ws-security.callback-handler",
                        "org.apache.coheigea.cxf.jaxrs.xmlsecurity.common.CommonCallbackHandler");
         properties.put("ws-security.signature.username", "imposter");
-       
+
         properties.put("ws-security.signature.properties", "imposterKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
-        
+
         XmlSigOutInterceptor sigInterceptor = new XmlSigOutInterceptor();
         WebClient.getConfig(client).getOutInterceptors().add(sigInterceptor);
-            
+
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
         numberToDouble.setNumber(25);
-        
+
         Response response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 400);
     }
-    
+
 }

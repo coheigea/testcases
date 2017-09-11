@@ -33,7 +33,6 @@
 
    <properties>
        <jmh.version>1.12</jmh.version>
-       <cxf.version>3.2.0-SNAPSHOT</cxf.version>
    </properties>
 
    <dependencies>
