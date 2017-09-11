@@ -68,6 +68,7 @@ public class LoadBalancerTest extends AbstractBusClientServerTestBase {
         String address = "http://localhost:" + PORT1 + "/doubleit/services";
         WebClient client = WebClient.create(address, null,
                                             Collections.singletonList(feature), busFile.toString());
+        client = client.type("application/xml");
 
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
