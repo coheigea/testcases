@@ -42,12 +42,12 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(value = org.junit.runners.Parameterized.class)
 public class XMLEncryptionInteropTest extends AbstractBusClientServerTestBase {
-    
+
     private static final String PORT = allocatePort(Server.class);
     private static final String STAX_PORT = allocatePort(StaxServer.class);
-    
+
     final TestParam test;
-    
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -63,21 +63,21 @@ public class XMLEncryptionInteropTest extends AbstractBusClientServerTestBase {
                 launchServer(StaxServer.class, true)
         );
     }
-    
+
     @Parameters(name = "{0}")
     public static Collection<TestParam[]> data() {
-       
+
         return Arrays.asList(new TestParam[][] {{new TestParam(PORT, false)},
                                                 {new TestParam(STAX_PORT, false)},
                                                 {new TestParam(PORT, true)},
                                                 {new TestParam(STAX_PORT, true)},
         });
     }
-    
+
     public XMLEncryptionInteropTest(TestParam type) {
         this.test = type;
     }
-    
+
     @org.junit.Test
     public void testXMLEncryption() throws Exception {
 
@@ -85,53 +85,54 @@ public class XMLEncryptionInteropTest extends AbstractBusClientServerTestBase {
 
         String address = "http://localhost:" + test.port + "/doubleit/services";
         WebClient client = WebClient.create(address, busFile.toString());
-        
+        client = client.type("application/xml");
+
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("ws-security.callback-handler",
                        "org.apache.coheigea.cxf.jaxrs.xmlsecurity.common.CommonCallbackHandler");
         properties.put("ws-security.encryption.username", "myservicekey");
-        
+
         properties.put("ws-security.encryption.properties", "serviceKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
-        
+
         if (test.streaming) {
             XmlSecOutInterceptor encInterceptor = new XmlSecOutInterceptor();
             encInterceptor.setEncryptRequest(true);
             WebClient.getConfig(client).getOutInterceptors().add(encInterceptor);
-            
+
             XmlSecInInterceptor encInInterceptor = new XmlSecInInterceptor();
             // encInInterceptor.setRequireEncryption(true);
             WebClient.getConfig(client).getInInterceptors().add(encInInterceptor);
         } else {
             XmlEncOutInterceptor encInterceptor = new XmlEncOutInterceptor();
             WebClient.getConfig(client).getOutInterceptors().add(encInterceptor);
-        
+
             XmlEncInInterceptor encInInterceptor = new XmlEncInInterceptor();
             WebClient.getConfig(client).getInInterceptors().add(encInInterceptor);
         }
-            
+
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
         numberToDouble.setNumber(25);
-        
+
         Response response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
-    
+
     private static final class TestParam {
         final String port;
         final boolean streaming;
-        
+
         public TestParam(String p, boolean b) {
             port = p;
             streaming = b;
         }
-        
+
         public String toString() {
             return port + ":" + (streaming ? "streaming" : "dom");
         }
-        
+
     }
-    
+
 }

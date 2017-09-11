@@ -40,12 +40,12 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(value = org.junit.runners.Parameterized.class)
 public class XMLSignatureInteropTest extends AbstractBusClientServerTestBase {
-    
+
     private static final String PORT = allocatePort(Server.class);
     private static final String STAX_PORT = allocatePort(StaxServer.class);
-    
+
     final TestParam test;
-    
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -61,21 +61,21 @@ public class XMLSignatureInteropTest extends AbstractBusClientServerTestBase {
                 launchServer(StaxServer.class, true)
         );
     }
-    
+
     @Parameters(name = "{0}")
     public static Collection<TestParam[]> data() {
-       
+
         return Arrays.asList(new TestParam[][] {{new TestParam(PORT, false)},
                                                 {new TestParam(STAX_PORT, false)},
                                                 {new TestParam(PORT, true)},
                                                 {new TestParam(STAX_PORT, true)},
         });
     }
-    
+
     public XMLSignatureInteropTest(TestParam type) {
         this.test = type;
     }
-    
+
     @org.junit.Test
     public void testXMLSignature() throws Exception {
 
@@ -83,15 +83,16 @@ public class XMLSignatureInteropTest extends AbstractBusClientServerTestBase {
 
         String address = "http://localhost:" + test.port + "/doubleit/services";
         WebClient client = WebClient.create(address, busFile.toString());
-        
+        client = client.type("application/xml");
+
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("ws-security.callback-handler",
                        "org.apache.coheigea.cxf.jaxrs.xmlsecurity.common.CommonCallbackHandler");
         properties.put("ws-security.signature.username", "myclientkey");
-        
+
         properties.put("ws-security.signature.properties", "clientKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
-        
+
         if (test.streaming) {
             XmlSecOutInterceptor sigInterceptor = new XmlSecOutInterceptor();
             sigInterceptor.setSignRequest(true);
@@ -100,29 +101,29 @@ public class XMLSignatureInteropTest extends AbstractBusClientServerTestBase {
             XmlSigOutInterceptor sigInterceptor = new XmlSigOutInterceptor();
             WebClient.getConfig(client).getOutInterceptors().add(sigInterceptor);
         }
-            
+
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
         numberToDouble.setNumber(25);
-        
+
         Response response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
-    
+
     private static final class TestParam {
         final String port;
         final boolean streaming;
-        
+
         public TestParam(String p, boolean b) {
             port = p;
             streaming = b;
         }
-        
+
         public String toString() {
             return port + ":" + (streaming ? "streaming" : "dom");
         }
-        
+
     }
-    
+
 }

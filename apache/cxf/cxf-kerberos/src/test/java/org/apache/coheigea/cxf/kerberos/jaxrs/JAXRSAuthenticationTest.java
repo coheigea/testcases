@@ -85,16 +85,16 @@ import org.junit.runner.RunWith;
 @ApplyLdifFiles("kerberos/kerberos.ldif")
 
 public class JAXRSAuthenticationTest extends AbstractLdapTestUnit {
-    
+
     private static final String PORT = TestUtil.getPortNumber(Server.class);
-    
+
     private static boolean portUpdated;
-    
+
     @BeforeClass
     public static void setUp() throws Exception {
 
         WSSConfig.init();
-        
+
         String basedir = System.getProperty("basedir");
         if (basedir == null) {
             basedir = new File(".").getCanonicalPath();
@@ -102,7 +102,7 @@ public class JAXRSAuthenticationTest extends AbstractLdapTestUnit {
 
         // System.setProperty("sun.security.krb5.debug", "true");
         System.setProperty("java.security.auth.login.config", basedir + "/src/test/resources/kerberos/kerberos.jaas");
-        
+
         Assert.assertTrue(
                    "Server failed to launch",
                    // run the server in the same process
@@ -118,34 +118,35 @@ public class JAXRSAuthenticationTest extends AbstractLdapTestUnit {
             if (basedir == null) {
                 basedir = new File(".").getCanonicalPath();
             }
-            
+
             // Read in krb5.conf and substitute in the correct port
             File f = new File(basedir + "/src/test/resources/kerberos/krb5.conf");
-            
+
             FileInputStream inputStream = new FileInputStream(f);
             String content = IOUtils.toString(inputStream, "UTF-8");
             inputStream.close();
             content = content.replaceAll("port", "" + super.getKdcServer().getTransports()[0].getPort());
-            
+
             File f2 = new File(basedir + "/target/test-classes/kerberos/krb5.conf");
             FileOutputStream outputStream = new FileOutputStream(f2);
             IOUtils.write(content, outputStream, "UTF-8");
             outputStream.close();
-            
+
             System.setProperty("java.security.krb5.conf", f2.getPath());
-            
+
             portUpdated = true;
         }
     }
-    
+
     @org.junit.Test
     public void testKerberos() throws Exception {
 
         URL busFile = JAXRSAuthenticationTest.class.getResource("cxf-client.xml");
-        
+
         String address = "https://localhost:" + PORT + "/doubleit/services";
         WebClient client = WebClient.create(address, busFile.toString());
-        
+        client = client.type("application/xml");
+
         Map<String, Object> requestContext = WebClient.getConfig(client).getRequestContext();
         requestContext.put("auth.spnego.useKerberosOid", "true");
 
@@ -153,14 +154,14 @@ public class JAXRSAuthenticationTest extends AbstractLdapTestUnit {
         authSupplier.setServicePrincipalName("bob@service.ws.apache.org");
         authSupplier.setServiceNameType(GSSName.NT_HOSTBASED_SERVICE);
         WebClient.getConfig(client).getHttpConduit().setAuthSupplier(authSupplier);
-        
+
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
         numberToDouble.setNumber(25);
-        
+
         Response response = client.post(numberToDouble);
         Assert.assertEquals(response.getStatus(), 200);
         Assert.assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
-    
+
 }

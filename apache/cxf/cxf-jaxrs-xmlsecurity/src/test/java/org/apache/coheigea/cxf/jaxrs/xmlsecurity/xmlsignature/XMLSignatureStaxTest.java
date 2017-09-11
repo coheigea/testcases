@@ -34,9 +34,9 @@ import org.junit.BeforeClass;
  * Test JAX-RS XML Signature using the StAX implementation.
  */
 public class XMLSignatureStaxTest extends AbstractBusClientServerTestBase {
-    
+
     private static final String STAX_PORT = allocatePort(StaxServer.class);
-    
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -46,7 +46,7 @@ public class XMLSignatureStaxTest extends AbstractBusClientServerTestBase {
                 launchServer(StaxServer.class, true)
         );
     }
-    
+
     @org.junit.Test
     public void testXMLSignature() throws Exception {
 
@@ -54,26 +54,27 @@ public class XMLSignatureStaxTest extends AbstractBusClientServerTestBase {
 
         String address = "http://localhost:" + STAX_PORT + "/doubleit/services";
         WebClient client = WebClient.create(address, busFile.toString());
-        
+        client = client.type("application/xml");
+
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("ws-security.callback-handler",
                        "org.apache.coheigea.cxf.jaxrs.xmlsecurity.common.CommonCallbackHandler");
         properties.put("ws-security.signature.username", "myclientkey");
-        
+
         properties.put("ws-security.signature.properties", "clientKeystore.properties");
         WebClient.getConfig(client).getRequestContext().putAll(properties);
-        
+
         XmlSecOutInterceptor sigInterceptor = new XmlSecOutInterceptor();
         sigInterceptor.setSignRequest(true);
         WebClient.getConfig(client).getOutInterceptors().add(sigInterceptor);
-            
+
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
         numberToDouble.setNumber(25);
-        
+
         Response response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
-    
+
 }

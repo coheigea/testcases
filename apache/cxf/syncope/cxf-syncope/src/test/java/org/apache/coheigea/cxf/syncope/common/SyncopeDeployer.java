@@ -38,8 +38,9 @@ public class SyncopeDeployer {
     @SuppressWarnings("unchecked")
     public void deployUserData() {
         WebClient client = WebClient.create(address);
+        client = client.type("application/xml");
 
-        String authorizationHeader = 
+        String authorizationHeader =
             "Basic " + Base64Utility.encode(("admin" + ":" + "password").getBytes());
 
         client.header("Authorization", authorizationHeader);
