@@ -30,9 +30,9 @@ import org.junit.Test;
 /**
  * Create a KDC for use with securing Apache Hive. It contains the following principals:
  * a) hiveserver2/localhost
- * b) alice
- * c) hdfs/localhost
- * d) HTTP/localhost
+ * b) hdfs/localhost
+ * c) HTTP/localhost
+ * c) mapred/localhost
  *
  * The krb.conf file with the (random) port that the KDC is running on is written out to target/krb5.conf
  *
@@ -65,23 +65,23 @@ public class HiveKerbyTest extends org.junit.Assert {
 
         // Create principals
         String hive = "hiveserver2/localhost@hadoop.apache.org";
-        String alice = "alice@hadoop.apache.org";
         String hdfs = "hdfs/localhost@hadoop.apache.org";
         String http = "HTTP/localhost@hadoop.apache.org";
+        String mapred = "mapred/localhost@hadoop.apache.org";
 
         kerbyServer.createPrincipal(hive, "hiveserver2");
         File keytabFile = new File(basedir + "/target/hiveserver2.keytab");
         kerbyServer.exportPrincipal(hive, keytabFile);
-
-        kerbyServer.createPrincipal(alice, "alice");
-        keytabFile = new File(basedir + "/target/alice.keytab");
-        kerbyServer.exportPrincipal(alice, keytabFile);
 
         kerbyServer.createPrincipal(hdfs, "hdfs");
         kerbyServer.createPrincipal(http, "http");
         keytabFile = new File(basedir + "/target/hdfs.keytab");
         kerbyServer.exportPrincipal(hdfs, keytabFile);
         kerbyServer.exportPrincipal(http, keytabFile);
+
+        kerbyServer.createPrincipal(mapred, "mapred");
+        keytabFile = new File(basedir + "/target/mapred.keytab");
+        kerbyServer.exportPrincipal(mapred, keytabFile);
 
         kerbyServer.start();
     }
