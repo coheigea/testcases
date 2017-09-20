@@ -32,7 +32,8 @@ import org.junit.Test;
  * a) hiveserver2/localhost
  * b) hdfs/localhost
  * c) HTTP/localhost
- * c) mapred/localhost
+ * d) mapred/localhost
+ * e) alice
  *
  * The krb.conf file with the (random) port that the KDC is running on is written out to target/krb5.conf
  *
@@ -68,6 +69,7 @@ public class HiveKerbyTest extends org.junit.Assert {
         String hdfs = "hdfs/localhost@hadoop.apache.org";
         String http = "HTTP/localhost@hadoop.apache.org";
         String mapred = "mapred/localhost@hadoop.apache.org";
+        String alice = "alice@hadoop.apache.org";
 
         kerbyServer.createPrincipal(hive, "hiveserver2");
         File keytabFile = new File(basedir + "/target/hiveserver2.keytab");
@@ -82,6 +84,10 @@ public class HiveKerbyTest extends org.junit.Assert {
         kerbyServer.createPrincipal(mapred, "mapred");
         keytabFile = new File(basedir + "/target/mapred.keytab");
         kerbyServer.exportPrincipal(mapred, keytabFile);
+
+        kerbyServer.createPrincipal(alice, "alice");
+        keytabFile = new File(basedir + "/target/alice.keytab");
+        kerbyServer.exportPrincipal(alice, keytabFile);
 
         kerbyServer.start();
     }
