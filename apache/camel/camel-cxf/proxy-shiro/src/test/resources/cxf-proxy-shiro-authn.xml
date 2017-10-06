@@ -59,7 +59,6 @@
                      endpointName="s:DoubleItPort"
                      serviceName="s:DoubleItService"
                      wsdlURL="org/apache/coheigea/camel/cxf/proxy/shiro/service/DoubleItService.wsdl"
-                     bindingId="s:DoubleItBinding"
                      xmlns:s="http://www.example.org/contract/DoubleIt">
         <cxf:properties>
             <entry key="dataFormat" value="PAYLOAD"/>
