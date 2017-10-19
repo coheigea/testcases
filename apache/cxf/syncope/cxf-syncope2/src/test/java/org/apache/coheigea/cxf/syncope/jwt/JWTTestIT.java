@@ -97,6 +97,12 @@ public class JWTTestIT extends AbstractBusClientServerTestBase {
         syncopeClient.self();
     }
 
-
+    @org.junit.Test
+    @org.junit.Ignore
+    public void testThirdParty() throws Exception {
+        System.out.println("STS PORT: " + STS_PORT);
+        System.out.println("Sleeping...");
+        Thread.sleep(2 * 60 * 1000);
+    }
 
 }
