@@ -40,77 +40,210 @@ import org.w3c.dom.Document;
  * Some interop tests between the different XML Signature stacks.
  */
 public class SignatureInteropTest extends org.junit.Assert {
-    
+
     // Sign using StAX and verify using DOM
     @org.junit.Test
     public void testSignatureInteropStAXDOMTest() throws Exception {
-        
+
         // Read in plaintext document
-        InputStream sourceDocument = 
+        InputStream sourceDocument =
                 this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
-        
+
         // Set up the Key
         KeyStore keyStore = KeyStore.getInstance("jks");
         keyStore.load(
-            this.getClass().getClassLoader().getResource("clientstore.jks").openStream(), 
+            this.getClass().getClassLoader().getResource("clientstore.jks").openStream(),
             "cspass".toCharArray()
         );
         Key key = keyStore.getKey("myclientkey", "ckpass".toCharArray());
         X509Certificate cert = (X509Certificate)keyStore.getCertificate("myclientkey");
-        
+
         // Sign using StAX
         List<QName> namesToSign = new ArrayList<QName>();
         namesToSign.add(new QName("urn:example:po", "PaymentInfo"));
         ByteArrayOutputStream baos = SignatureUtils.signUsingStAX(
             sourceDocument, namesToSign, "http://www.w3.org/2000/09/xmldsig#rsa-sha1", key, cert
         );
-        
+
         // Verify using DOM
         DocumentBuilder documentBuilder = XMLUtils.createDocumentBuilder(false);
         Document document = documentBuilder.parse(new ByteArrayInputStream(baos.toByteArray()));
         XMLUtils.outputDOM(document, System.out);
-        
+
         SignatureUtils.verifyUsingDOM(document, namesToSign, cert);
     }
-    
-    // Sign using DOM and verify using StAX
+
+    // Sign using StAX and verify using JSR-105
     @org.junit.Test
-    public void testSignatureInteropDOMStAXTest() throws Exception {
-        
+    public void testSignatureInteropStAXJSR105Test() throws Exception {
+
         // Read in plaintext document
-        InputStream sourceDocument = 
+        InputStream sourceDocument =
                 this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
-        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
-        Document document = builder.parse(sourceDocument);
-        
+
         // Set up the Key
         KeyStore keyStore = KeyStore.getInstance("jks");
         keyStore.load(
-            this.getClass().getClassLoader().getResource("clientstore.jks").openStream(), 
+            this.getClass().getClassLoader().getResource("clientstore.jks").openStream(),
             "cspass".toCharArray()
         );
         Key key = keyStore.getKey("myclientkey", "ckpass".toCharArray());
         X509Certificate cert = (X509Certificate)keyStore.getCertificate("myclientkey");
-        
+
+        // Sign using StAX
+        List<QName> namesToSign = new ArrayList<QName>();
+        namesToSign.add(new QName("urn:example:po", "PaymentInfo"));
+        ByteArrayOutputStream baos = SignatureUtils.signUsingStAX(
+            sourceDocument, namesToSign, "http://www.w3.org/2000/09/xmldsig#rsa-sha1", key, cert
+        );
+
+        // Verify using JSR-105
+        DocumentBuilder documentBuilder = XMLUtils.createDocumentBuilder(false);
+        Document document = documentBuilder.parse(new ByteArrayInputStream(baos.toByteArray()));
+        XMLUtils.outputDOM(document, System.out);
+
+        SignatureUtils.verifyUsingJSR105(document, namesToSign, cert);
+    }
+
+    // Sign using DOM and verify using StAX
+    @org.junit.Test
+    public void testSignatureInteropDOMStAXTest() throws Exception {
+
+        // Read in plaintext document
+        InputStream sourceDocument =
+                this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
+        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
+        Document document = builder.parse(sourceDocument);
+
+        // Set up the Key
+        KeyStore keyStore = KeyStore.getInstance("jks");
+        keyStore.load(
+            this.getClass().getClassLoader().getResource("clientstore.jks").openStream(),
+            "cspass".toCharArray()
+        );
+        Key key = keyStore.getKey("myclientkey", "ckpass".toCharArray());
+        X509Certificate cert = (X509Certificate)keyStore.getCertificate("myclientkey");
+
         // Sign using DOM
         List<QName> namesToSign = new ArrayList<QName>();
         namesToSign.add(new QName("urn:example:po", "PaymentInfo"));
         SignatureUtils.signUsingDOM(
             document, namesToSign, "http://www.w3.org/2000/09/xmldsig#rsa-sha1", key, cert
         );
-        
+
         XMLUtils.outputDOM(document, System.out);
-        
+
         // Verify using StAX
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         javax.xml.transform.Transformer transformer = transformerFactory.newTransformer();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         transformer.transform(new DOMSource(document), new StreamResult(baos));
-        
+
         SignatureUtils.verifyUsingStAX(
             new ByteArrayInputStream(baos.toByteArray()), namesToSign, cert);
     }
-    
-    
-    
+
+
+    // Sign using DOM and verify using JSR-105
+    @org.junit.Test
+    public void testSignatureInteropDOMJSR105Test() throws Exception {
+
+        // Read in plaintext document
+        InputStream sourceDocument =
+                this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
+        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
+        Document document = builder.parse(sourceDocument);
+
+        // Set up the Key
+        KeyStore keyStore = KeyStore.getInstance("jks");
+        keyStore.load(
+            this.getClass().getClassLoader().getResource("clientstore.jks").openStream(),
+            "cspass".toCharArray()
+        );
+        Key key = keyStore.getKey("myclientkey", "ckpass".toCharArray());
+        X509Certificate cert = (X509Certificate)keyStore.getCertificate("myclientkey");
+
+        // Sign using DOM
+        List<QName> namesToSign = new ArrayList<QName>();
+        namesToSign.add(new QName("urn:example:po", "PaymentInfo"));
+        SignatureUtils.signUsingDOM(
+            document, namesToSign, "http://www.w3.org/2000/09/xmldsig#rsa-sha1", key, cert
+        );
+
+        XMLUtils.outputDOM(document, System.out);
+
+        // Verify using JSR-105
+        SignatureUtils.verifyUsingJSR105(document, namesToSign, cert);
+    }
+
+    // Sign using JSR-105 and verify using DOM
+    @org.junit.Test
+    public void testSignatureInteropJSR105DOMTest() throws Exception {
+
+        // Read in plaintext document
+        InputStream sourceDocument =
+                this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
+        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
+        Document document = builder.parse(sourceDocument);
+
+        // Set up the Key
+        KeyStore keyStore = KeyStore.getInstance("jks");
+        keyStore.load(
+            this.getClass().getClassLoader().getResource("clientstore.jks").openStream(),
+            "cspass".toCharArray()
+        );
+        Key key = keyStore.getKey("myclientkey", "ckpass".toCharArray());
+        X509Certificate cert = (X509Certificate)keyStore.getCertificate("myclientkey");
+
+        // Sign using DOM
+        List<QName> namesToSign = new ArrayList<QName>();
+        namesToSign.add(new QName("urn:example:po", "PaymentInfo"));
+        SignatureUtils.signUsingJSR105(
+            document, namesToSign, "http://www.w3.org/2000/09/xmldsig#rsa-sha1", key, cert
+        );
+
+        XMLUtils.outputDOM(document, System.out);
+
+        // Verify using DOM
+        SignatureUtils.verifyUsingDOM(document, namesToSign, cert);
+    }
+
+    // Sign using JSR-105 and verify using StAX
+    @org.junit.Test
+    public void testSignatureInteropJSR105StAXTest() throws Exception {
+
+        // Read in plaintext document
+        InputStream sourceDocument =
+                this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
+        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
+        Document document = builder.parse(sourceDocument);
+
+        // Set up the Key
+        KeyStore keyStore = KeyStore.getInstance("jks");
+        keyStore.load(
+            this.getClass().getClassLoader().getResource("clientstore.jks").openStream(),
+            "cspass".toCharArray()
+        );
+        Key key = keyStore.getKey("myclientkey", "ckpass".toCharArray());
+        X509Certificate cert = (X509Certificate)keyStore.getCertificate("myclientkey");
+
+        // Sign using DOM
+        List<QName> namesToSign = new ArrayList<QName>();
+        namesToSign.add(new QName("urn:example:po", "PaymentInfo"));
+        SignatureUtils.signUsingJSR105(
+            document, namesToSign, "http://www.w3.org/2000/09/xmldsig#rsa-sha1", key, cert
+        );
+
+        XMLUtils.outputDOM(document, System.out);
+
+        // Verify using StAX
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        javax.xml.transform.Transformer transformer = transformerFactory.newTransformer();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        transformer.transform(new DOMSource(document), new StreamResult(baos));
+
+        SignatureUtils.verifyUsingStAX(
+            new ByteArrayInputStream(baos.toByteArray()), namesToSign, cert);
+    }
+
 }
