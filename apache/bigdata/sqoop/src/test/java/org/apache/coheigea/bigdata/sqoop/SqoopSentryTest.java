@@ -18,6 +18,7 @@
 package org.apache.coheigea.bigdata.sqoop;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,9 +28,10 @@ import org.apache.sqoop.model.MJob;
 import org.apache.sqoop.model.MLink;
 
 /**
- * A simple Sqoop test to create some links and a job
+ * A simple Sqoop test for authorization for Sentry. The "admin" user can do everything with connectors and links,
+ * but user "bob" is not authorized.
  */
-public class SqoopTest {
+public class SqoopSentryTest {
 
     private static JettySqoopRunner jettySqoopRunner;
     private static Path tempDir;
@@ -37,7 +39,8 @@ public class SqoopTest {
     @org.junit.BeforeClass
     public static void setup() throws Exception {
         tempDir = Files.createTempDirectory("sqoop");
-        jettySqoopRunner = new JettySqoopRunner(tempDir.toString(), "sqoopServer1", null);
+        String sentrySitePath = "file:" + SqoopSentryTest.class.getResource("/sentry-site.xml").getPath();
+        jettySqoopRunner = new JettySqoopRunner(tempDir.toString(), "sqoopServer1", sentrySitePath);
         jettySqoopRunner.start();
     }
 
@@ -69,6 +72,13 @@ public class SqoopTest {
         // create job
         job1.setName("HDFS_JDBS_job1");
         jettySqoopRunner.saveJob(client, job1);
+    }
+
+    @org.junit.Test
+    public void testFailedAuthorization() throws Exception {
+        SqoopClient client = jettySqoopRunner.getSqoopClient("bob");
+
+        assertTrue(client.getConnectors().isEmpty());
     }
 
 }
