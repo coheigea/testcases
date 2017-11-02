@@ -37,6 +37,7 @@
         <module>kafka</module>
         <module>kerberos</module>
         <module>knox</module>
+        <module>sqoop</module>
     </modules>
 
     <build>
