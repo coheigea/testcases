@@ -48,10 +48,10 @@ public class JettySqoopRunner {
     private DatabaseProvider provider;
     private String temporaryPath;
 
-    public JettySqoopRunner(String temporaryPath, String serverName, String sentrySite)
+    public JettySqoopRunner(String temporaryPath, String serverName, String sentrySite, boolean ranger)
         throws Exception {
         this.temporaryPath = temporaryPath;
-        this.server = new SqoopServerEnableSentry(temporaryPath, serverName, sentrySite);
+        this.server = new SqoopServerEnableSentry(temporaryPath, serverName, sentrySite, ranger);
         this.provider = DatabaseProviderFactory.getProvider(System.getProperties());
     }
 
@@ -157,14 +157,16 @@ public class JettySqoopRunner {
         private String sentrySite;
         private String serverName;
         private SqoopJettyServer sqoopJettyServer;
+        private boolean ranger;
 
-        SqoopServerEnableSentry(String temporaryPath, String serverName, String sentrySite)
+        SqoopServerEnableSentry(String temporaryPath, String serverName, String sentrySite, boolean ranger)
             throws Exception {
             super(temporaryPath);
             this.serverName = serverName;
             this.sentrySite = sentrySite;
             // Random port
             this.port = NetworkUtils.findAvailablePort();
+            this.ranger = ranger;
         }
 
         @Override
@@ -173,6 +175,8 @@ public class JettySqoopRunner {
             configureAuthentication(properties);
             if (sentrySite != null) {
                 configureSentryAuthorization(properties);
+            } else if (ranger) {
+                configureRangerAuthorization(properties);
             }
             properties.put("org.apache.sqoop.jetty.port", port.toString());
             return properties;
@@ -202,6 +206,12 @@ public class JettySqoopRunner {
                 }
             }
             properties.put("org.apache.sqoop.classpath.extra", Joiner.on(":").join(extraClassPath));
+        }
+
+        private void configureRangerAuthorization(Map<String, String> properties) {
+            properties.put("org.apache.sqoop.security.authorization.validator",
+                "org.apache.ranger.authorization.sqoop.authorizer.RangerSqoopAuthorizer");
+            properties.put("org.apache.sqoop.security.authorization.server_name", serverName);
         }
 
         @Override
