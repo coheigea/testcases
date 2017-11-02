@@ -88,7 +88,6 @@ public class JettySqoopRunner {
         assertEquals(Status.OK, client.updateLink(link, oldLinkName));
     }
 
-
     /**
      * save job.
      *
