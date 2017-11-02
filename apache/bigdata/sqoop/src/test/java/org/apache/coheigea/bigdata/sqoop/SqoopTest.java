@@ -37,7 +37,7 @@ public class SqoopTest {
     @org.junit.BeforeClass
     public static void setup() throws Exception {
         tempDir = Files.createTempDirectory("sqoop");
-        jettySqoopRunner = new JettySqoopRunner(tempDir.toString(), "sqoopServer1", null);
+        jettySqoopRunner = new JettySqoopRunner(tempDir.toString(), "sqoopServer1", null, false);
         jettySqoopRunner.start();
     }
 

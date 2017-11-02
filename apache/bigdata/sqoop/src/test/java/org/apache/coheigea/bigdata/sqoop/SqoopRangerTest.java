@@ -32,12 +32,12 @@ import org.apache.sqoop.model.MJob;
 import org.apache.sqoop.model.MLink;
 
 /**
- * A simple Sqoop test for authorization for Sentry.
+ * A simple Sqoop test for authorization for Ranger:
  *  - the "admin" user can do anything with jobs, connectors, links.
  *  - "bob" can't do anything
  *  - "alice" can read/write links and read connectors and jobs, but nothing else.
  */
-public class SqoopSentryTest {
+public class SqoopRangerTest {
 
     private static JettySqoopRunner jettySqoopRunner;
     private static Path tempDir;
@@ -45,8 +45,7 @@ public class SqoopSentryTest {
     @org.junit.BeforeClass
     public static void setup() throws Exception {
         tempDir = Files.createTempDirectory("sqoop");
-        String sentrySitePath = "file:" + SqoopSentryTest.class.getResource("/sentry-site.xml").getPath();
-        jettySqoopRunner = new JettySqoopRunner(tempDir.toString(), "sqoopServer1", sentrySitePath, false);
+        jettySqoopRunner = new JettySqoopRunner(tempDir.toString(), "sqoopServer1", null, true);
         jettySqoopRunner.start();
 
         // Create some links, jobs via the admin
@@ -122,5 +121,4 @@ public class SqoopSentryTest {
             // expected
         }
     }
-
 }
