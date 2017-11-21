@@ -39,6 +39,7 @@
         <conf.directory>${project.build.directory}/test-classes</conf.directory>
         <h2.version>1.4.187</h2.version>
         <syncope.version>1.2.10</syncope.version>
+        <tomcat.version>7.0.82</tomcat.version>
     </properties>
     <dependencies>
         <dependency>
