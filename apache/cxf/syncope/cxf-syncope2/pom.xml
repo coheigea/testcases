@@ -37,7 +37,6 @@
         <cargo.output>${log.directory}/cargo-output.log</cargo.output>
         <conf.directory>${project.build.directory}/test-classes</conf.directory>
         <h2.version>1.4.187</h2.version>
-        <tomcat.version>8.0.26</tomcat.version>
     </properties>
     <dependencies>
         <dependency>
