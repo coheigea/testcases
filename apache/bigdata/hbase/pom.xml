@@ -30,6 +30,9 @@
         <relativePath>../parent/pom.xml</relativePath>
         <version>1.0</version>
     </parent>
+    <properties>
+        <hadoop.hbase.version>2.5.1</hadoop.hbase.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -72,26 +75,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-common</artifactId>
-            <version>${hadoop.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-hdfs</artifactId>
-            <version>${hadoop.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-minicluster</artifactId>
-            <version>${hadoop.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-auth</artifactId>
-            <version>${hadoop.version}</version>
+            <version>${hadoop.hbase.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
