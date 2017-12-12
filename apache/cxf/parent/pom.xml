@@ -39,7 +39,7 @@
         <fediz.version>1.3.3</fediz.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
         <htmlunit.version>2.22</htmlunit.version>
-        <jackson.version>2.9.1</jackson.version>
+        <jackson.version>2.9.3</jackson.version>
         <junit.version>4.12</junit.version>
         <karaf.version>4.1.3</karaf.version>
         <slf4j.version>1.7.25</slf4j.version>
