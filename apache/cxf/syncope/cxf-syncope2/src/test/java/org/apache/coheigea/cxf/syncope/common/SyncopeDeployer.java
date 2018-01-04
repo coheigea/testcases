@@ -73,12 +73,12 @@ public class SyncopeDeployer {
             user.setRealm("/");
 
             MembershipTO membership = new MembershipTO();
-            membership.setRightKey(employeeGroup.getKey());
+            membership.setGroupKey(employeeGroup.getKey());
             // membership.setGroupName(employeeGroup.getName());
             user.getMemberships().add(membership);
             membership = new MembershipTO();
             // membership.setGroupName(bossGroup.getName());
-            membership.setRightKey(bossGroup.getKey());
+            membership.setGroupKey(bossGroup.getKey());
             user.getMemberships().add(membership);
             client.post(user, ProvisioningResult.class);
         }
@@ -90,7 +90,7 @@ public class SyncopeDeployer {
             user.setRealm("/");
 
             MembershipTO membership = new MembershipTO();
-            membership.setRightKey(employeeGroup.getKey());
+            membership.setGroupKey(employeeGroup.getKey());
             // membership.setGroupName(employeeGroup.getName());
             user.getMemberships().add(membership);
             client.post(user, ProvisioningResult.class);
