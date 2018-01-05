@@ -78,6 +78,7 @@ public class HIVEAuthorizerTest {
         //conf.set(HiveConf.ConfVars.HIVE_METASTORE_AUTHORIZATION_MANAGER.varname,
         //         "org.apache.hadoop.hive.ql.security.authorization.StorageBasedAuthorizationProvider");
         conf.set(HiveConf.ConfVars.HIVE_SERVER2_WEBUI_PORT.varname, "0");
+        conf.set("hive.metastore.schema.verification", "false");
 
         hiveServer = new HiveServer2();
         hiveServer.init(conf);

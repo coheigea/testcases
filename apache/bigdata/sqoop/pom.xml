@@ -32,7 +32,6 @@
     </parent>
     <properties>
         <jetty.version>9.3.21.v20170918</jetty.version>
-        <ranger.version>1.0.0-SNAPSHOT</ranger.version>
     </properties>
     <dependencies>
         <dependency>
