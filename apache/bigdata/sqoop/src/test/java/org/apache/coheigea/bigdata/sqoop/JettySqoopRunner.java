@@ -189,9 +189,8 @@ public class JettySqoopRunner {
         }
 
         private void configureSentryAuthorization(Map<String, String> properties) {
-            // TODO change to "handler" with Sentry 2.0.0
             properties.put("org.apache.sqoop.security.authorization.handler",
-                "org.apache.sentry.sqoop.authz.SentryAuthorizationHander");
+                "org.apache.sentry.sqoop.authz.SentryAuthorizationHandler");
             properties.put("org.apache.sqoop.security.authorization.access_controller",
                 "org.apache.sentry.sqoop.authz.SentryAccessController");
             properties.put("org.apache.sqoop.security.authorization.validator",

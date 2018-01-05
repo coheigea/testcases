@@ -38,9 +38,6 @@ import org.junit.Assert;
  *   a) The logged in user can do anything
  *   b) "bob" can do a select on the tables
  *   c) "alice" can do a select only on the "count" column
- *
- * TODO - Temporarily keeping this test in a separate module to the hive tests, as Ranger currently supports only Hive 2.1.x, whereas Sentry
- * supports Hive 2.0.x.
  */
 public class HIVESentryAuthorizerTest {
 
@@ -77,11 +74,17 @@ public class HIVESentryAuthorizerTest {
         conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_ENABLED.varname, "true");
         conf.set(HiveConf.ConfVars.HIVE_SERVER2_ENABLE_DOAS.varname, "true");
 
+        conf.set("hive.metastore.schema.verification", "false");
+        conf.set(HiveConf.ConfVars.HIVE_STATS_COLLECT_SCANCOLS.varname, "true");
+
         // Plug in Apache Sentry authorizer
         conf.set("hive.security.authenticator.manager", "org.apache.hadoop.hive.ql.security.SessionStateUserAuthenticator");
-        conf.set("hive.security.authorization.manager", "org.apache.sentry.binding.hive.v2.SentryAuthorizerFactory");
+        conf.set(HiveConf.ConfVars.HIVE_AUTHORIZATION_MANAGER.varname, "org.apache.sentry.binding.hive.authz.SentryHiveAuthorizerFactory");
         conf.set("hive.sentry.conf.url", "file:" + HIVESentryAuthorizerTest.class.getResource("/sentry-site.xml").getPath());
         conf.set(HiveConf.ConfVars.HIVE_SERVER2_WEBUI_PORT.varname, "0");
+
+        conf.set(HiveConf.ConfVars.HIVE_SERVER2_SESSION_HOOK.varname,
+            "org.apache.sentry.binding.hive.HiveAuthzBindingSessionHook");
 
         hiveServer = new HiveServer2();
         hiveServer.init(conf);
@@ -115,8 +118,7 @@ public class HIVESentryAuthorizerTest {
             Files.copy(inputFile.toPath(), outputPath);
         }
 
-        // TODO See SENTRY-1845 statement.execute("LOAD DATA INPATH '" + outputPath + "' OVERWRITE INTO TABLE words");
-        statement.execute("LOAD DATA INPATH '" + outputPath + "' INTO TABLE words");
+        statement.execute("LOAD DATA INPATH '" + outputPath + "' OVERWRITE INTO TABLE words");
 
         // Just test to make sure it's working
         ResultSet resultSet = statement.executeQuery("SELECT * FROM words where count == '100'");
