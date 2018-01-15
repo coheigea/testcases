@@ -2,6 +2,7 @@
 FROM maven:3.5.2-jdk-8-alpine
 
 LABEL maintainer-twitter="@coheigea"
+LABEL version=1.1.0
 
 ARG KERBY_VERSION=1.1.0
 ARG KERBY_HOME=/usr/local/kerby-${KERBY_VERSION}
