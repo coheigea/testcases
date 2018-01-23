@@ -32,7 +32,7 @@
    </parent>
 
    <properties>
-       <kafka.version>0.10.0.1</kafka.version>
+       <kafka.version>0.10.2.0</kafka.version>
    </properties>
    
    <dependencies>
