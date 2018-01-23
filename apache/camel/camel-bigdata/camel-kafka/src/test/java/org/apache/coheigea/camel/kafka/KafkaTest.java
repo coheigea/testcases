@@ -39,11 +39,11 @@ public class KafkaTest extends org.junit.Assert {
     private static KafkaServerStartable kafkaServer;
     private static TestingServer zkServer;
     private static int port = 12345;
-    
+
     @org.junit.BeforeClass
     public static void setup() throws Exception {
         zkServer = new TestingServer();
-        
+
         port = Integer.parseInt(System.getProperty("kafka.port"));
         Properties props = new Properties();
         props.put("broker.id", 1);
@@ -57,7 +57,7 @@ public class KafkaTest extends org.junit.Assert {
         KafkaConfig config = new KafkaConfig(props);
         kafkaServer = new KafkaServerStartable(config);
         kafkaServer.startup();
-        
+
         // Create a "test" topic
         ZkClient zkClient = new ZkClient(zkServer.getConnectString(), 30000, 30000, ZKStringSerializer$.MODULE$);
 
@@ -65,7 +65,7 @@ public class KafkaTest extends org.junit.Assert {
         AdminUtils.createTopic(zkUtils, "test", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
 
     }
-    
+
     @org.junit.AfterClass
     public static void cleanup() throws Exception {
         if (kafkaServer != null) {
@@ -76,7 +76,7 @@ public class KafkaTest extends org.junit.Assert {
         }
 
     }
-    
+
     @org.junit.Test
     public void testKafka() throws Exception {
         // Set up the Producer
@@ -91,7 +91,7 @@ public class KafkaTest extends org.junit.Assert {
         producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
         Producer<String, String> producer = new KafkaProducer<>(producerProps);
-        
+
         // Send a message
         producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
         producer.flush();
@@ -99,15 +99,15 @@ public class KafkaTest extends org.junit.Assert {
         // Start up the Camel route
         Main main = new Main();
         main.setApplicationContextUri("camel-kafka.xml");
-        
+
         main.start();
-        
+
         // Sleep to allow time for the demo to work
         Thread.sleep(60 * 1000);
-        
+
         main.stop();
-        
+
         producer.close();
     }
-    
+
 }
