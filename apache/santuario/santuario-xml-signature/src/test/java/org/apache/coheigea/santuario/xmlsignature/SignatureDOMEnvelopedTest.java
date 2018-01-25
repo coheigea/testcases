@@ -65,9 +65,6 @@ public class SignatureDOMEnvelopedTest extends org.junit.Assert {
         X509Certificate cert = (X509Certificate)keyStore.getCertificate("myclientkey");
 
         // Sign using DOM
-        List<QName> namesToSign = new ArrayList<QName>();
-        namesToSign.add(new QName("urn:example:po", "PurchaseOrder"));
-
         XMLSignature sig =
                 new XMLSignature(document, "", "http://www.w3.org/2000/09/xmldsig#rsa-sha1", "http://www.w3.org/2001/10/xml-exc-c14n#");
         Element root = document.getDocumentElement();
@@ -88,6 +85,8 @@ public class SignatureDOMEnvelopedTest extends org.junit.Assert {
         XMLUtils.outputDOM(document, System.out);
 
         // Verify using DOM
+        List<QName> namesToSign = new ArrayList<QName>();
+        namesToSign.add(new QName("urn:example:po", "PurchaseOrder"));
         SignatureUtils.verifyUsingDOM(document, namesToSign, cert);
     }
 
