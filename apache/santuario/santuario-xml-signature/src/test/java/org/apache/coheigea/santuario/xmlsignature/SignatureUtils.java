@@ -374,7 +374,9 @@ public final class SignatureUtils {
             Element signedElement =
                 (Element) xpath.evaluate(expression, document, XPathConstants.NODE);
             Assert.assertNotNull(signedElement);
-            signedElement.setIdAttributeNS(null, "Id", true);
+            if (signedElement.hasAttributeNS(null, "Id")) {
+            	signedElement.setIdAttributeNS(null, "Id", true);
+            }
         }
     }
 
