@@ -110,10 +110,10 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
 
         // XMLUtils.outputDOM(document, System.out);
 
-        // Verify using DOM
+        // Verify using JSR-105
         List<QName> namesToSign = new ArrayList<QName>();
         namesToSign.add(new QName("urn:example:po", "PurchaseOrder"));
-        SignatureUtils.verifyUsingDOM(document, namesToSign, cert);
+        SignatureUtils.verifyUsingJSR105(document, namesToSign, cert);
     }
 
 
