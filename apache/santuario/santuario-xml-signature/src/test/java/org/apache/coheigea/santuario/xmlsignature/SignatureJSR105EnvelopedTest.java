@@ -137,11 +137,18 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
         Assert.assertTrue(xmlSignature.validate(context));
 
         // Check that what was signed is what we expected to be signed.
-        assertEquals(1, signedInfo.getReferences().size());
-        assertEquals("", ((Reference)signedInfo.getReferences().get(0)).getURI());
-        List<Transform> transforms = (List<Transform>)((Reference)signedInfo.getReferences().get(0)).getTransforms();
-        assertTrue(transforms != null && transforms.stream().anyMatch(t -> t.getAlgorithm().equals(Transform.ENVELOPED)));
+        boolean found = false;
+        for (Object refObject : signedInfo.getReferences()) {
+        	Reference ref = (Reference)refObject;
+        	if ("".equals(ref.getURI())) {
+        		List<Transform> transforms = (List<Transform>)ref.getTransforms();
+                if (transforms != null && transforms.stream().anyMatch(t -> t.getAlgorithm().equals(Transform.ENVELOPED))) {
+                	found = true;
+                }
+        	}
+        }
         assertEquals(sigElement.getParentNode(), document.getDocumentElement());
+        assertTrue(found);
     }
 
 
