@@ -380,7 +380,7 @@ public final class SignatureUtils {
         }
     }
 
-    private static Element getSignatureElement(Document document) throws XPathExpressionException {
+    public static Element getSignatureElement(Document document) throws XPathExpressionException {
         XPathFactory xpf = XPathFactory.newInstance();
         XPath xpath = xpf.newXPath();
         xpath.setNamespaceContext(new DSNamespaceContext());

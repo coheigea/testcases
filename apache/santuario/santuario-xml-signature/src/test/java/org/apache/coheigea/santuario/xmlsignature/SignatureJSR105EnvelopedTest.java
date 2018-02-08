@@ -25,14 +25,21 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
+import javax.xml.crypto.Data;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.Reference;
 import javax.xml.crypto.dsig.SignatureMethod;
 import javax.xml.crypto.dsig.SignedInfo;
+import javax.xml.crypto.dsig.Transform;
 import javax.xml.crypto.dsig.XMLSignContext;
+import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.XMLValidateContext;
 import javax.xml.crypto.dsig.dom.DOMSignContext;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
@@ -41,8 +48,10 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.apache.xml.security.Init;
 import org.apache.xml.security.utils.XMLUtils;
+import org.junit.Assert;
 
 /**
  * This tests using JSR-105 API for XML Signature to create an enveloped Signature.
@@ -84,11 +93,11 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
         SignatureMethod signatureMethod =
                 signatureFactory.newSignatureMethod("http://www.w3.org/2000/09/xmldsig#rsa-sha1", null);
 
-        javax.xml.crypto.dsig.Transform transform =
-        		signatureFactory.newTransform(javax.xml.crypto.dsig.Transform.ENVELOPED, (TransformParameterSpec)null);
+        Transform transform =
+        		signatureFactory.newTransform(Transform.ENVELOPED, (TransformParameterSpec)null);
 
         DigestMethod digestMethod = signatureFactory.newDigestMethod("http://www.w3.org/2000/09/xmldsig#sha1", null);
-        javax.xml.crypto.dsig.Reference reference =
+        Reference reference =
         		signatureFactory.newReference(
         				"",
         				digestMethod,
@@ -98,7 +107,7 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
         SignedInfo signedInfo =
         		signatureFactory.newSignedInfo(c14nMethod, signatureMethod, Collections.singletonList(reference));
 
-        javax.xml.crypto.dsig.XMLSignature sig = signatureFactory.newXMLSignature(
+        XMLSignature sig = signatureFactory.newXMLSignature(
         		signedInfo,
         		keyInfo,
         		null,
@@ -111,9 +120,28 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
         // XMLUtils.outputDOM(document, System.out);
 
         // Verify using JSR-105
-        List<QName> namesToSign = new ArrayList<QName>();
-        namesToSign.add(new QName("urn:example:po", "PurchaseOrder"));
-        SignatureUtils.verifyUsingJSR105(document, namesToSign, cert);
+
+        // Find the Signature Element
+        Element sigElement = SignatureUtils.getSignatureElement(document);
+        Assert.assertNotNull(sigElement);
+
+        XMLValidateContext context = new DOMValidateContext(cert.getPublicKey(), sigElement);
+        context.setProperty("javax.xml.crypto.dsig.cacheReference", Boolean.TRUE);
+        context.setProperty("org.apache.jcp.xml.dsig.secureValidation", Boolean.TRUE);
+        context.setProperty("org.jcp.xml.dsig.secureValidation", Boolean.TRUE);
+
+        signatureFactory = XMLSignatureFactory.getInstance("DOM");
+        XMLSignature xmlSignature = signatureFactory.unmarshalXMLSignature(context);
+
+        // Check the Signature value
+        Assert.assertTrue(xmlSignature.validate(context));
+
+        // Check that what was signed is what we expected to be signed.
+        assertEquals(1, signedInfo.getReferences().size());
+        assertEquals("", ((Reference)signedInfo.getReferences().get(0)).getURI());
+        List<Transform> transforms = (List<Transform>)((Reference)signedInfo.getReferences().get(0)).getTransforms();
+        assertTrue(transforms != null && transforms.stream().anyMatch(t -> t.getAlgorithm().equals(Transform.ENVELOPED)));
+        assertEquals(sigElement.getParentNode(), document.getDocumentElement());
     }
 
 
