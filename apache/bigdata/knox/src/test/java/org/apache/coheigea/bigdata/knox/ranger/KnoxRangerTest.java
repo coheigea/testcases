@@ -26,8 +26,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.gateway.GatewayTestConfig;
-import org.apache.hadoop.gateway.GatewayTestDriver;
+import org.apache.knox.gateway.GatewayTestConfig;
+import org.apache.knox.gateway.GatewayTestDriver;
 import org.apache.http.HttpStatus;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
