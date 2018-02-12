@@ -20,4 +20,5 @@ invoke on the Sentry security service:
 
 This DockerFile is provided as a quick and easy way to play around with the
 Apache Sentry security service. It should not be deployed in production as
-it uses hard-coded security credentials in the configuration files.
+it uses hard-coded security credentials in the configuration files, and it is
+not secured with kerberos.
