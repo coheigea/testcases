@@ -1,4 +1,4 @@
-#H1 DockerFile to create an Apache Sentry security server
+# DockerFile to create an Apache Sentry security server
 
 This directory contains a Docker File to create an Apache Sentry security
 server.
