@@ -23,7 +23,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-@Path("/services")
+import io.swagger.annotations.Api;
+
+@Path("/doubleit")
+@Api("/doubleit")
 public class DoubleItService {
 
     @POST

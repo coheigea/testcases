@@ -55,14 +55,17 @@
    <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
         <!-- customize some of the properties
         <property name="basePath" value="/app/swaggerSample"/> -->
-    </bean>
+   </bean>
    
-   <jaxrs:server address="http://localhost:${testutil.ports.Server}/doubleit">
+   <bean id="swagger3ConversionFilter" class="org.apache.cxf.jaxrs.swagger.openapi.SwaggerToOpenApiConversionFilter" />
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server}">
        <jaxrs:serviceBeans>
           <ref bean="serviceBean"/>
        </jaxrs:serviceBeans>
        <jaxrs:providers>
           <ref bean="jackson"/>
+          <ref bean="swagger3ConversionFilter"/>
        </jaxrs:providers>
        <jaxrs:features>
           <ref bean="swagger2Feature" />
