@@ -69,6 +69,12 @@
        </dependency>
        <dependency>
            <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-rs-json-basic</artifactId>
+           <version>${cxf.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.cxf</groupId>
            <artifactId>cxf-rt-rs-client</artifactId>
            <version>${cxf.version}</version>
            <scope>test</scope>

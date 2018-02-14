@@ -37,6 +37,7 @@
         <module>cxf-jaxrs-oauth1</module>
         <module>cxf-jaxrs-oauth2.0</module>
         <module>cxf-jaxrs-oidc</module>
+        <module>cxf-swagger</module>
         <module>cxf-spring-security</module>
         <module>syncope</module>
         <module>cxf-ldap</module>

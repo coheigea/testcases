@@ -22,9 +22,10 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
 /**
- *
+ * A simple example of how to generate Swagger 2 / OpenAPI documentation for a JAX-RS endpoint.
  */
-public class CXFSwagger2Test extends AbstractBusClientServerTestBase {
+@org.junit.Ignore("Remove this annotation to run the test")
+public class CXFSwaggerTest extends AbstractBusClientServerTestBase {
 
     private static final String PORT = allocatePort(Server.class);
 
@@ -40,14 +41,16 @@ public class CXFSwagger2Test extends AbstractBusClientServerTestBase {
 
     @org.junit.Test
     public void testSwagger2Browser() throws Exception {
-    	String json = "http://localhost:" + PORT + "/doubleit/swagger.json";
+    	String json = "http://localhost:" + PORT + "/swagger.json";
     	System.out.println("Swagger JSON: " + json);
-    	String swaggerUI = "http://localhost:" + PORT + "/doubleit/api-docs?/url=/swagger.json";
-    	System.out.println("Swagger UI: " + swaggerUI);
-    	Thread.sleep(2 * 60 * 1000);
 
-    	// http://localhost:9001/doubleit/swagger.json
-    	// http://localhost:9001/doubleit/api-docs?/url=/swagger.json
+    	String openapi = "http://localhost:" + PORT + "/openapi.json";
+    	System.out.println("OpenAPI JSON: " + openapi);
+
+    	String swaggerUI = "http://localhost:" + PORT + "/api-docs?url=/swagger.json";
+    	System.out.println("Swagger UI: " + swaggerUI);
+
+    	Thread.sleep(2 * 60 * 1000);
     }
 
 }
