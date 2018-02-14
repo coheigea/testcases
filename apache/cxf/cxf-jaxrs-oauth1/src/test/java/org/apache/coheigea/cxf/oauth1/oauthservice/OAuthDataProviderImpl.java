@@ -22,6 +22,7 @@ package org.apache.coheigea.cxf.oauth1.oauthservice;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,73 +39,72 @@ import org.apache.cxf.rs.security.oauth.data.RequestTokenRegistration;
 import org.apache.cxf.rs.security.oauth.data.Token;
 import org.apache.cxf.rs.security.oauth.provider.OAuthDataProvider;
 import org.apache.cxf.rs.security.oauth.provider.OAuthServiceException;
-import org.apache.xml.security.utils.Base64;
 
 /**
  * A simple implementation of CXF's OAuthDataProvider interface.
  */
 public class OAuthDataProviderImpl implements OAuthDataProvider {
-    
+
     private final OAuthPermission getBalancePermission;
     private final OAuthPermission createBalancePermission;
     private final SecureRandom random;
-    
+
     private Map<String, Client> clients = new HashMap<String, Client>();
     private Map<String, RequestToken> requestTokens = new HashMap<String, RequestToken>();
     private Map<String, AccessToken> accessTokens = new HashMap<String, AccessToken>();
-    
+
     public OAuthDataProviderImpl() throws Exception {
         random = SecureRandom.getInstance("SHA1PRNG");
         List<String> permissions = new ArrayList<String>();
-        
+
         // Only customers can create new users with a given balance
         permissions.add("customer");
-        createBalancePermission = 
+        createBalancePermission =
             new OAuthPermission("create_balance", "Permission to create your balance", permissions);
-        
+
         // Customers or partners can read a balance
         permissions = new ArrayList<String>();
         permissions.add("customer");
         permissions.add("partner");
-        getBalancePermission = 
+        getBalancePermission =
             new OAuthPermission("get_balance", "Permission to get your balance", permissions);
     }
 
     public AccessToken createAccessToken(AccessTokenRegistration reg) throws OAuthServiceException {
-        
+
         // Generate request token + associated secret
         Client client = reg.getRequestToken().getClient();
         String token = UUID.randomUUID().toString();
         byte[] secret = new byte[20];
         random.nextBytes(secret);
-        
-        AccessToken accessToken = 
-            new AccessToken(client, token, Base64.encode(secret), 60L * 5L, 
+
+        AccessToken accessToken =
+            new AccessToken(client, token, Base64.getEncoder().encodeToString(secret), 60L * 5L,
                             new Date().getTime() / 1000L);
         accessToken.setScopes(reg.getRequestToken().getScopes());
-        
+
         accessToken.setSubject(reg.getRequestToken().getSubject());
-        
+
         // Remove request token
         requestTokens.remove(reg.getRequestToken().getTokenKey());
-        
+
         // Add access token
         accessTokens.put(token,  accessToken);
-        
+
         return accessToken;
     }
 
     public RequestToken createRequestToken(RequestTokenRegistration reg) throws OAuthServiceException {
-        
+
         // Generate request token + associated secret
         Client client = reg.getClient();
         String token = UUID.randomUUID().toString();
         byte[] secret = new byte[20];
         random.nextBytes(secret);
-        
-        RequestToken requestToken = 
-            new RequestToken(client, token, Base64.encode(secret), reg.getLifetime(), reg.getIssuedAt());
-        
+
+        RequestToken requestToken =
+            new RequestToken(client, token, Base64.getEncoder().encodeToString(secret), reg.getLifetime(), reg.getIssuedAt());
+
         // Set the permissions/scopes
         List<String> regScopes = reg.getScopes();
         List<OAuthPermission> permissions = new ArrayList<OAuthPermission>();
@@ -118,7 +118,7 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
         requestToken.setScopes(permissions);
         requestToken.setCallback(reg.getCallback());
         requestTokens.put(token, requestToken);
-        
+
         return requestToken;
     }
 
@@ -126,7 +126,7 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
         RequestToken requestToken = authorizationInput.getToken();
         String verifier = UUID.randomUUID().toString();
         requestToken.setVerifier(verifier);
-        
+
         return verifier;
     }
 
@@ -134,7 +134,7 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
         if (accessTokens.containsKey(tokenId)) {
             return accessTokens.get(tokenId);
         }
-        
+
         return null;
     }
 
@@ -142,7 +142,7 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
         if (clients.containsKey(clientId)) {
             return clients.get(clientId);
         }
-        
+
         return null;
     }
 
@@ -150,7 +150,7 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
         if (requestTokens.containsKey(tokenId)) {
             return requestTokens.get(tokenId);
         }
-        
+
         return null;
     }
 
@@ -158,12 +158,12 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
         if (requestTokens.containsKey(token.getTokenKey())) {
             requestTokens.remove(token.getTokenKey());
         }
-        
+
         if (accessTokens.containsKey(token.getTokenKey())) {
             accessTokens.remove(token.getTokenKey());
         }
     }
-    
+
     public Map<String, Client> getClients() {
         return clients;
     }
@@ -171,7 +171,7 @@ public class OAuthDataProviderImpl implements OAuthDataProvider {
     public void setClients(Map<String, Client> clients) {
         this.clients = clients;
     }
-    
+
 }
 
 
