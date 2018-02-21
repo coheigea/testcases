@@ -66,6 +66,7 @@
        <property name="redirectUris">
            <util:list value-type="java.lang.String">
                <value>http://www.blah.apache.org</value>
+               <value>https://localhost:${testutil.ports.PartnerServer}/partnerservice/balance</value>
            </util:list>
        </property>
        <property name="allowedGrantTypes">

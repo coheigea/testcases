@@ -20,8 +20,11 @@ package org.apache.coheigea.cxf.oauth2.common;
 
 import java.io.IOException;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.configuration.security.AuthorizationPolicy;
@@ -33,12 +36,14 @@ import org.apache.cxf.rt.security.saml.interceptor.WSS4JBasicAuthValidator;
 /**
  * Extends the WSS4J validator as a JAX-RS request filter
  */
+@PreMatching
+@Priority(Priorities.AUTHENTICATION)
 public class WSS4JBasicAuthFilter extends WSS4JBasicAuthValidator implements ContainerRequestFilter {
 
     public void filter(ContainerRequestContext requestContext) throws IOException {
         Message message = JAXRSUtils.getCurrentMessage();
         AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
-        
+
         if (policy == null || policy.getUserName() == null || policy.getPassword() == null) {
             requestContext.abortWith(
                 Response.status(401).header("WWW-Authenticate", "Basic realm=\"IdP\"").build());
