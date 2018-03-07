@@ -1,0 +1,12 @@
+version: "2"
+services:
+  postgres-server:
+    image: coheigea/ranger-postgres
+    ports:
+      - "5432:5432"
+  ranger-admin:
+    image: coheigea/ranger-admin
+    stdin_open: true
+    tty: true
+    ports:
+      - "6080:6080"
