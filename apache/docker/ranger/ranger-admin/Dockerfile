@@ -20,14 +20,19 @@ ADD https://jdbc.postgresql.org/download/postgresql-42.2.1.jar /opt
 
 # Just work with the built Ranger admin for now
 COPY ranger-${RANGER_VERSION}-admin.tar.gz /opt
+COPY ranger-entrypoint.sh /opt
 
 WORKDIR /opt
 
 RUN apt-get -q update && apt-get install -y -q python \
- && tar zxvf /opt/ranger-${RANGER_VERSION}-admin.tar.gz
-
-COPY install.properties /opt/ranger-${RANGER_VERSION}-admin
+ && tar zxvf /opt/ranger-${RANGER_VERSION}-admin.tar.gz \
+ && chmod +x /opt/ranger-entrypoint.sh
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+ENV RANGER_HOME=/opt/ranger-${RANGER_VERSION}-admin
+
+COPY install.properties ${RANGER_HOME}
 
 EXPOSE 6080
+
+ENTRYPOINT ["/opt/ranger-entrypoint.sh"]
