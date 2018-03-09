@@ -8,5 +8,7 @@ services:
     image: coheigea/ranger-admin
     stdin_open: true
     tty: true
+    depends_on:
+      - "postgres-server"
     ports:
       - "6080:6080"
