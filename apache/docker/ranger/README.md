@@ -12,7 +12,10 @@ The simplest way to get started is to do the following:
 Alternatively, you can build the docker images as follows:
 
  * cd ranger-postgres; docker build . -t coheigea/ranger-postgres; cd ..
- * cd ranger-admin; docker build . -t coheigea/ranger-admin; cd..
+ * cd ranger-admin; docker build . -t coheigea/ranger-admin; cd ..
+   (Note: ranger-admin takes a long time due to having to build the source
+          code using maven - and hence it needs to download a load of 
+          dependencies)
 
 To run manually:
 
