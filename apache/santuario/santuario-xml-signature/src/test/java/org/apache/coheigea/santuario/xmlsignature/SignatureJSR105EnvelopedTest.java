@@ -21,19 +21,27 @@ package org.apache.coheigea.santuario.xmlsignature;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.UUID;
 
-import javax.xml.crypto.Data;
+import javax.xml.crypto.XMLStructure;
+import javax.xml.crypto.dom.DOMStructure;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.crypto.dsig.Reference;
 import javax.xml.crypto.dsig.SignatureMethod;
+import javax.xml.crypto.dsig.SignatureProperties;
+import javax.xml.crypto.dsig.SignatureProperty;
 import javax.xml.crypto.dsig.SignedInfo;
 import javax.xml.crypto.dsig.Transform;
+import javax.xml.crypto.dsig.XMLObject;
 import javax.xml.crypto.dsig.XMLSignContext;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
@@ -44,7 +52,6 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.w3c.dom.Document;
@@ -81,6 +88,9 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
         Key key = keyStore.getKey("myclientkey", "ckpass".toCharArray());
         X509Certificate cert = (X509Certificate)keyStore.getCertificate("myclientkey");
 
+        String signatureId = "_" + UUID.randomUUID().toString();
+        String signaturePropertyId = "_" + UUID.randomUUID().toString();
+
         // Sign using DOM
         XMLSignatureFactory signatureFactory = XMLSignatureFactory.getInstance("DOM");
         CanonicalizationMethod c14nMethod =
@@ -104,14 +114,37 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
         				Collections.singletonList(transform),
         				null,
         				null);
+        Transform objectTransform =
+            signatureFactory.newTransform("http://www.w3.org/2001/10/xml-exc-c14n#", (TransformParameterSpec)null);
+
+        Reference objectReference =
+            signatureFactory.newReference(
+                            "#" + signaturePropertyId,
+                            digestMethod,
+                            Collections.singletonList(objectTransform),
+                            "http://www.w3.org/2000/09/xmldsig#SignatureProperties",
+                            null);
+        List<Reference> references = new ArrayList<>();
+        references.add(reference);
+        references.add(objectReference);
         SignedInfo signedInfo =
-        		signatureFactory.newSignedInfo(c14nMethod, signatureMethod, Collections.singletonList(reference));
+        		signatureFactory.newSignedInfo(c14nMethod, signatureMethod, references);
+
+        // Add a SignatureProperty containing a Timestamp
+        Element timestamp = document.createElementNS(null, "Timestamp");
+        timestamp.setTextContent(new Date().toString());
+        XMLStructure content = new DOMStructure(timestamp);
+        SignatureProperty signatureProperty =
+            signatureFactory.newSignatureProperty(Collections.singletonList(content), "#" + signatureId, signaturePropertyId);
+        SignatureProperties signatureProperties =
+            signatureFactory.newSignatureProperties(Collections.singletonList(signatureProperty), null);
+        XMLObject object = signatureFactory.newXMLObject(Collections.singletonList(signatureProperties), null, null, null);
 
         XMLSignature sig = signatureFactory.newXMLSignature(
         		signedInfo,
         		keyInfo,
-        		null,
-        		null,
+        		Collections.singletonList(object),
+        		signatureId,
         		null);
 
         XMLSignContext signContext = new DOMSignContext(key, document.getDocumentElement());
@@ -136,20 +169,63 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
         // Check the Signature value
         Assert.assertTrue(xmlSignature.validate(context));
 
+        // First find the Timestamp
+        SignatureProperty timestampSignatureProperty = getTimestampSignatureProperty(xmlSignature);
+        assertNotNull(timestampSignatureProperty);
+
         // Check that what was signed is what we expected to be signed.
-        boolean found = false;
+        boolean foundEnvelopedSig = false;
+        boolean foundSignedTimestamp = false;
         for (Object refObject : signedInfo.getReferences()) {
-        	Reference ref = (Reference)refObject;
-        	if ("".equals(ref.getURI())) {
-        		List<Transform> transforms = (List<Transform>)ref.getTransforms();
+            Reference ref = (Reference)refObject;
+            if ("".equals(ref.getURI())) {
+                List<Transform> transforms = (List<Transform>)ref.getTransforms();
                 if (transforms != null && transforms.stream().anyMatch(t -> t.getAlgorithm().equals(Transform.ENVELOPED))) {
-                	found = true;
+                    foundEnvelopedSig = true;
                 }
-        	}
+            } else if ("http://www.w3.org/2000/09/xmldsig#SignatureProperties".equals(ref.getType())
+                && ref.getURI().equals("#" + timestampSignatureProperty.getId())) {
+                // Found matching SignatureProperties Object
+                // Now validate Timestamp
+                validateTimestamp(signatureProperty, cert);
+                foundSignedTimestamp = true;
+            }
         }
         assertEquals(sigElement.getParentNode(), document.getDocumentElement());
-        assertTrue(found);
+        assertTrue(foundEnvelopedSig);
+        assertTrue(foundSignedTimestamp);
     }
 
 
+    private SignatureProperty getTimestampSignatureProperty(XMLSignature xmlSignature) {
+        Iterator<?> objects = xmlSignature.getObjects().iterator();
+        while (objects.hasNext()) {
+            XMLObject object = (XMLObject)objects.next();
+            for (Object objectContent : object.getContent()) {
+                if (objectContent instanceof SignatureProperties) {
+                    for (Object signaturePropertiesObject : ((SignatureProperties)objectContent).getProperties()) {
+                        SignatureProperty signatureProperty = (SignatureProperty)signaturePropertiesObject;
+                        if (("#" + xmlSignature.getId()).equals(signatureProperty.getTarget())) {
+                            return signatureProperty;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private void validateTimestamp(SignatureProperty signatureProperty, X509Certificate signingCert)
+        throws CertificateExpiredException, CertificateNotYetValidException {
+        boolean foundValidTimestamp = false;
+        for (Object xmlStructure : signatureProperty.getContent()) {
+            DOMStructure domStructure = (DOMStructure)xmlStructure;
+            if (domStructure.getNode() != null && "Timestamp".equals(domStructure.getNode().getNodeName())) {
+                String timestampVal = domStructure.getNode().getTextContent();
+                signingCert.checkValidity(new Date(timestampVal));
+                foundValidTimestamp = true;
+            }
+        }
+        assertTrue(foundValidTimestamp);
+    }
 }
