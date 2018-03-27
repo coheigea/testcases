@@ -1,11 +1,11 @@
 
-FROM maven:3.5.2-jdk-8
+FROM maven:3.5.3-jdk-8
 #FROM openjdk:8u121-jdk
 
 LABEL maintainer-twitter="@coheigea"
-LABEL version=0.7.1
+LABEL version=1.0.0
 
-ARG RANGER_VERSION=0.7.1
+ARG RANGER_VERSION=1.0.0
 
 ADD https://jdbc.postgresql.org/download/postgresql-42.2.1.jar /opt
 
