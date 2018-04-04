@@ -21,24 +21,25 @@ package org.apache.coheigea.camel.sftp;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.camel.spring.Main;
 import org.apache.commons.io.IOUtils;
 import org.apache.mina.util.AvailablePortFinder;
-import org.apache.sshd.SshServer;
 import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.server.Command;
-import org.apache.sshd.server.command.ScpCommandFactory;
+import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.apache.sshd.server.sftp.SftpSubsystem;
+import org.apache.sshd.server.scp.ScpCommandFactory;
+import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.junit.After;
 import org.junit.Before;
 
 /**
  * This test uses the Apache Camel File component to take XML files from
- * src/test/resources/scp_data. These files are then copied using SFTP to a directory on 
+ * src/test/resources/scp_data. These files are then copied using SFTP to a directory on
  * the SSH server (target/storage_sftp) using the camel-ftp component.
  */
 public class SFTPTest extends org.junit.Assert {
@@ -72,9 +73,9 @@ public class SFTPTest extends org.junit.Assert {
         sshServer.setPort(port);
 
         // Generate a key
-        sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("target/generatedkey.pem"));
+        sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(Paths.get("target/generatedkey.pem")));
         List<NamedFactory<Command>> subsystemFactories = new ArrayList<NamedFactory<Command>>(1);
-        subsystemFactories.add(new SftpSubsystem.Factory());
+        subsystemFactories.add(new SftpSubsystemFactory());
         sshServer.setSubsystemFactories(subsystemFactories);
         sshServer.setCommandFactory(new ScpCommandFactory());
 

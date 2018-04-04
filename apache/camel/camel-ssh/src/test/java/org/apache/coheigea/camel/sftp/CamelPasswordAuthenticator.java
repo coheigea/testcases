@@ -16,7 +16,7 @@
  */
 package org.apache.coheigea.camel.sftp;
 
-import org.apache.sshd.server.PasswordAuthenticator;
+import org.apache.sshd.server.auth.password.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
 
 public class CamelPasswordAuthenticator implements PasswordAuthenticator {

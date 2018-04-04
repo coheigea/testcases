@@ -21,13 +21,14 @@ package org.apache.coheigea.camel.ssh;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Paths;
 
 import org.apache.camel.spring.Main;
 import org.apache.commons.io.IOUtils;
 import org.apache.mina.util.AvailablePortFinder;
-import org.apache.sshd.SshServer;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.CommandFactory;
+import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.shell.ProcessShellFactory;
 import org.junit.After;
@@ -39,13 +40,13 @@ import org.junit.Before;
  * are run on the SSH server, and the results are stored in target/results.
  */
 public class SSHTest extends org.junit.Assert {
-    
+
     private SshServer sshServer;
-    
+
     @Before
     public void setup() throws Exception {
         int port = AvailablePortFinder.getNextAvailable(10000);
-        
+
         // Write port number to configuration file in target
         String basedir = System.getProperty("basedir");
         if (basedir == null) {
@@ -64,12 +65,12 @@ public class SSHTest extends org.junit.Assert {
         FileOutputStream outputStream = new FileOutputStream(f2);
         IOUtils.write(content, outputStream, "UTF-8");
         outputStream.close();
-            
+
         sshServer = SshServer.setUpDefaultServer();
         sshServer.setPort(port);
-        
+
         // Generate a key
-        sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider("target/generatedkey.pem"));
+        sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(Paths.get("target/generatedkey.pem")));
 
         // Simple CommandFactory to run commands in a process
         sshServer.setCommandFactory(new CommandFactory() {
@@ -89,19 +90,19 @@ public class SSHTest extends org.junit.Assert {
             sshServer.stop(true);
         }
     }
-    
+
     @org.junit.Test
     public void testSSH() throws Exception {
         // Start up the Camel route
         Main main = new Main();
         main.setApplicationContextUri("camel-ssh.xml");
-        
+
         main.start();
-        
+
         // Sleep to allow time to copy the files etc.
         Thread.sleep(10 * 1000);
-        
+
         main.stop();
     }
-    
+
 }
