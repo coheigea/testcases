@@ -5,17 +5,18 @@ admin server in docker. The "ranger-postgres" directory contains a Docker File
 to set up a Postgres database for Apache Ranger. The "ranger-admin" directory
 contains a Docker File to set up the Apache Ranger admin server.
 
-The simplest way to get started is to do the following:
+Build the docker images as follows:
+
+ * (In ranger-postgres) docker build . -t coheigea/ranger-postgres
+ * (In ranger-admin) docker build . -t coheigea/ranger-admin
+
+Note: The ranger-admin docker image takes a long time due to having to build
+the source code using Apache Maven - and hence it needs to download a large
+amount of dependencies.
+
+The simplest way to run the project is to use Docker Compose as follows:
 
  * docker-compose up
-
-Alternatively, you can build the docker images as follows:
-
- * cd ranger-postgres; docker build . -t coheigea/ranger-postgres; cd ..
- * cd ranger-admin; docker build . -t coheigea/ranger-admin; cd ..
-   (Note: ranger-admin takes a long time due to having to build the source
-          code using maven - and hence it needs to download a load of 
-          dependencies)
 
 To run manually:
 

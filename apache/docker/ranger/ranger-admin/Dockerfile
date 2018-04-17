@@ -9,7 +9,7 @@ ARG RANGER_VERSION=1.0.0
 
 ADD https://jdbc.postgresql.org/download/postgresql-42.2.1.jar /opt
 
-ADD http://ftp.heanet.ie/mirrors/www.apache.org/dist/ranger/${RANGER_VERSION}/apache-ranger-${RANGER_VERSION}.tar.gz /opt
+ADD http://mirrors.whoishostingthis.com/apache/ranger/${RANGER_VERSION}/apache-ranger-${RANGER_VERSION}.tar.gz /opt
 
 COPY ranger-entrypoint.sh /opt
 
