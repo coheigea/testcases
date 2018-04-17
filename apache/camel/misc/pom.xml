@@ -30,6 +30,7 @@
         <!--<module>camel-weather</module>-->
         <module>camel-pdf</module>
         <module>camel-xslt</module>
+        <module>camel-tika</module>
     </modules>
 
 </project>

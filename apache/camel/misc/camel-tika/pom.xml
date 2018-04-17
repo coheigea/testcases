@@ -19,7 +19,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.coheigea.camel.misc</groupId>
-    <artifactId>camel-pdf</artifactId>
+    <artifactId>camel-tika</artifactId>
     <packaging>jar</packaging>
     <name>Apache PDF Demo</name>
     <version>1.0</version>
@@ -46,7 +46,7 @@
        </dependency>
        <dependency>
            <groupId>org.apache.camel</groupId>
-           <artifactId>camel-pdf</artifactId>
+           <artifactId>camel-tika</artifactId>
            <version>${camel.version}</version>
            <scope>test</scope>
        </dependency>
