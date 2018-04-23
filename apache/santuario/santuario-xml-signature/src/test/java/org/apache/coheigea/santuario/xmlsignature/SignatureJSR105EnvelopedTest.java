@@ -24,6 +24,8 @@ import java.security.KeyStore;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -65,9 +67,9 @@ import org.junit.Assert;
  */
 public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
 
-	static {
-		Init.init();
-	}
+    static {
+        Init.init();
+    }
 
     // Sign + Verify an XML Document using the JSR-105 API
     @org.junit.Test
@@ -132,7 +134,7 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
 
         // Add a SignatureProperty containing a Timestamp
         Element timestamp = document.createElementNS(null, "Timestamp");
-        timestamp.setTextContent(new Date().toString());
+        timestamp.setTextContent(Instant.now().toString());
         XMLStructure content = new DOMStructure(timestamp);
         SignatureProperty signatureProperty =
             signatureFactory.newSignatureProperty(Collections.singletonList(content), "#" + signatureId, signaturePropertyId);
@@ -222,7 +224,7 @@ public class SignatureJSR105EnvelopedTest extends org.junit.Assert {
             DOMStructure domStructure = (DOMStructure)xmlStructure;
             if (domStructure.getNode() != null && "Timestamp".equals(domStructure.getNode().getNodeName())) {
                 String timestampVal = domStructure.getNode().getTextContent();
-                signingCert.checkValidity(new Date(timestampVal));
+                signingCert.checkValidity(Date.from(Instant.parse(timestampVal)));
                 foundValidTimestamp = true;
             }
         }
