@@ -21,7 +21,6 @@ package org.apache.coheigea.cxf.transports.jms;
 import java.net.URL;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 
 import org.apache.cxf.Bus;
@@ -35,12 +34,12 @@ import org.junit.BeforeClass;
  * See: http://cxf.apache.org/docs/soap-over-jms-10-support.html
  */
 public class WSSecurityJMSTest extends AbstractBusClientServerTestBase {
-    
+
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
     private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
-    
+
     static final String PORT = allocatePort(BrokerServer.class);
-    
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -56,7 +55,7 @@ public class WSSecurityJMSTest extends AbstractBusClientServerTestBase {
                    launchServer(Server.class, true)
         );
     }
-   
+
     @org.junit.Test
     public void testAsymmetricOverJMS() throws Exception {
 
@@ -66,24 +65,20 @@ public class WSSecurityJMSTest extends AbstractBusClientServerTestBase {
         Bus bus = bf.createBus(busFile.toString());
         SpringBusFactory.setDefaultBus(bus);
         SpringBusFactory.setThreadDefaultBus(bus);
-        
+
         URL wsdl = WSSecurityJMSTest.class.getResource("DoubleIt.wsdl");
         Service service = Service.create(wsdl, SERVICE_QNAME);
         QName portQName = new QName(NAMESPACE, "DoubleItAsymmetricOAEPPort");
-        DoubleItPortType port = 
+        DoubleItPortType port =
             service.getPort(portQName, DoubleItPortType.class);
-        
-        // Update the port
-        String address = "jms:queue:test.cxf.jmstransport.queue?timeToLive=1000";
-        ((BindingProvider)port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                                                        address);
-        
+
+
         doubleIt(port, 25);
     }
-    
+
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
         assertEquals(numToDouble * 2 , resp);
     }
-    
+
 }
