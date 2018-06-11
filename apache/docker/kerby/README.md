@@ -13,7 +13,7 @@ stores the principals.
 Once the container is running, you'll need to connect to the container to
 create some principals for testing, or to update the domain:
 
- * docker exec -it <id> bash
+ * docker exec -it \<id\> bash
  * stty rows 24 columns 80 (required to run jline in docker)
  * sh bin/kadmin.sh /kerby-data/conf/ -k /kerby-data/keytabs/admin.keytab
  * Then: addprinc -pw password alice@EXAMPLE.COM
