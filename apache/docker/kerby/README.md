@@ -21,7 +21,7 @@ create some principals for testing, or to update the domain:
 To test the KDC you can use the MIT kinit tool. Set the KRB5_CONFIG environment
 variable to point to the "krb5.conf" file included in this repository, e.g:
 
- * export KRB5_CONFIG=`pwd`/krb5.conf
+ * export KRB5_CONFIG=\`pwd\`/krb5.conf
  * kinit alice 
 
 This will get you a ticket for "alice", that can be inspected via "klist".

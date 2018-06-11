@@ -18,6 +18,25 @@
       }
     }
   },
+  "alice@EXAMPLE.COM": {
+    "principal": "alice@EXAMPLE.COM",
+    "keyVersion": 1,
+    "kdcFlags": 0,
+    "disabled": false,
+    "locked": false,
+    "expireTime": "253402300799900",
+    "createdTime": "1528727377632",
+    "keys": {
+      "AES128_CTS_HMAC_SHA1_96": {
+        "kvno": 1,
+        "key": "3019A003020111A11204106C3F56BE2E4B4653921D4307FA37C36D"
+      },
+      "DES3_CBC_SHA1": {
+        "kvno": 1,
+        "key": "3021A003020110A11A0418F8732F02807529809BDA97E3439202F8134C6EB5F4911AA1"
+      }
+    }
+  },
   "krbtgt/EXAMPLE.COM@EXAMPLE.COM": {
     "principal": "krbtgt/EXAMPLE.COM@EXAMPLE.COM",
     "keyVersion": 1,
