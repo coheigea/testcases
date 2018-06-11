@@ -3,7 +3,7 @@
 This directory contains a Docker File to create an Apache Kerby KDC server.
 
  * Build with: docker build . -t coheigea/kerby
- * Run with: docker run -it -p 4000:88 -v `pwd`/kerby-data:/kerby-data coheigea/kerby
+ * Run with: docker run -it -p 4000:88 -v \`pwd\`/kerby-data:/kerby-data coheigea/kerby
 
 Here we are mapping the kerby-data directory contained in this repository to
 a volume /kerby-data in the container. This directory stores the configuration
