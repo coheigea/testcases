@@ -26,6 +26,7 @@ To test:
  * Use SOAP-UI to create a new SOAP project using the WSDL: http://localhost:8080/cxf-sts-keycloak/UT?wsdl
  * Click on the "Issue" Binding and change the SOAP Body content to:
 
+```xml
    <ns:RequestSecurityToken>
      <t:TokenType xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512">http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0</t:TokenType>
      <t:KeyType xmlns:t="http://docs.oasis-open.org/ws-sx/ws-trust/200512">http://docs.oasis-open.org/ws-sx/ws-trust/200512/Bearer</t:KeyType>
@@ -34,6 +35,7 @@ To test:
         <ic:ClaimType xmlns:ic="http://schemas.xmlsoap.org/ws/2005/05/identity" Uri="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role"/>
      </t:Claims>
    </ns:RequestSecurityToken>
+```
 
  * Click on the Request Properties + add the values you configured in Keycloak
    for the Username + Password.
