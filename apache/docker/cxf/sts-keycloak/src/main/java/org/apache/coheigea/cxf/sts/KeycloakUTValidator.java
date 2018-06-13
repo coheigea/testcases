@@ -19,7 +19,7 @@
 
 package org.apache.coheigea.cxf.sts;
 
-import java.util.List;
+import javax.ws.rs.ForbiddenException;
 
 import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.dom.WSConstants;
@@ -30,7 +30,6 @@ import org.apache.wss4j.dom.validate.Validator;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.representations.idm.UserRepresentation;
 
 /**
  * This is a custom Validator that authenticates to a Keycloak IDM and checks to see whether the
@@ -42,6 +41,7 @@ public class KeycloakUTValidator implements Validator {
             org.apache.commons.logging.LogFactory.getLog(KeycloakUTValidator.class);
 
     private String address;
+    private String realm;
 
     public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
         if (credential == null || credential.getUsernametoken() == null) {
@@ -70,19 +70,22 @@ public class KeycloakUTValidator implements Validator {
 
         // Send it off to Keycloak for validation
         Keycloak keyCloak = KeycloakBuilder.builder()
-            .serverUrl("http://localhost:9080/auth")
-            .realm("master")
-            .username("admin")
-            .password("password")
+            .serverUrl(address)
+            .realm(realm)
+            .username(usernameToken.getName())
+            .password(usernameToken.getPassword())
             .clientId("admin-cli")
             .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
             .build();
 
-        List<UserRepresentation> users = keyCloak.realm("master").users().search(usernameToken.getName());
-        if (users == null) {
+        try {
+            keyCloak.realm(realm).users().search(usernameToken.getName());
+        } catch (ForbiddenException ex) {
+            // We allow 403 here as we only care about authentication. 403 means authentication succeeds but
+            // the user might not have the permissions to access the admin-cli
+        } catch (RuntimeException ex) {
             throw new WSSecurityException(WSSecurityException.ErrorCode.FAILED_AUTHENTICATION);
         }
-        //System.out.println("GROUP: " + kc.realm("master").users().get(users.get(0).getId()).groups().get(0).getName());
 
         return credential;
     }
@@ -93,6 +96,14 @@ public class KeycloakUTValidator implements Validator {
 
     public String getAddress() {
         return address;
+    }
+
+    public String getRealm() {
+        return realm;
+    }
+
+    public void setRealm(String realm) {
+        this.realm = realm;
     }
 
 }
