@@ -25,38 +25,42 @@
             <cxf:logging/>
         </cxf:features>
     </cxf:bus>
-    <bean id="transportIssueDelegate" class="org.apache.cxf.sts.operation.TokenIssueOperation">
-        <property name="tokenProviders" ref="transportTokenProviders"/>
-        <property name="stsProperties" ref="transportSTSProperties"/>
-       <!-- <property name="claimsManager" ref="claimsManager" /> -->
+    <bean id="transportSTSProviderBean" class="org.apache.cxf.ws.security.sts.provider.SecurityTokenServiceProvider">
+        <property name="issueOperation" ref="transportIssueDelegate"/>
     </bean>
-    <util:list id="transportTokenProviders">
-        <ref bean="transportSamlTokenProvider"/>
-    </util:list>
+    
+    <bean id="transportIssueDelegate" class="org.apache.cxf.sts.operation.TokenIssueOperation">
+        <property name="tokenProviders" ref="transportSamlTokenProvider"/>
+        <property name="stsProperties" ref="transportSTSProperties"/>
+        <property name="claimsManager" ref="claimsManager" />
+    </bean>
     <bean id="transportSamlTokenProvider" class="org.apache.cxf.sts.token.provider.SAMLTokenProvider">
     </bean>
     
-    <bean id="transportSTSProviderBean" class="org.apache.cxf.ws.security.sts.provider.SecurityTokenServiceProvider">
-        <property name="issueOperation" ref="transportIssueDelegate"/>
-        <property name="validateOperation" ref="transportValidateDelegate"/>
-    </bean>
-<!--
     <bean id="claimsManager" class="org.apache.cxf.sts.claims.ClaimsManager">
-        <property name="claimHandlers" ref="claimHandlerList" />
+        <property name="claimHandlers" ref="rolesClaimsHandler" />
     </bean>
-    <util:list id="claimHandlerList">
-        <ref bean="rolesClaimsHandler" />
-    </util:list>
+    
     <bean id="rolesClaimsHandler"
-        class="org.apache.coheigea.cxf.jaxrs.sts.RolesClaimsHandler">
+        class="org.apache.coheigea.cxf.sts.KeycloakRolesClaimsHandler">
+        <property name="address" value="http://keycloak:8080/auth"/>
+        <property name="realm" value="master"/>
+        <property name="adminUser" value="admin"/>
+        <property name="adminPassword" value="password"/>
     </bean>
--->
+
     <bean id="transportSTSProperties" class="org.apache.cxf.sts.StaticSTSProperties">
         <property name="signaturePropertiesFile" value="stsKeystore.properties"/>
         <property name="signatureUsername" value="mystskey"/>
         <property name="callbackHandlerClass" value="org.apache.coheigea.cxf.sts.CommonCallbackHandler"/>
         <property name="issuer" value="CXF_STS"/>
     </bean>
+    
+    <bean id="utValidator" class="org.apache.coheigea.cxf.sts.KeycloakUTValidator">
+        <property name="address" value="http://keycloak:8080/auth"/>
+        <property name="realm" value="master"/>
+    </bean>
+    
     <jaxws:endpoint xmlns:ns1="http://docs.oasis-open.org/ws-sx/ws-trust/200512/" 
         id="transportSTS" 
         implementor="#transportSTSProviderBean" 
@@ -65,7 +69,7 @@
         serviceName="ns1:SecurityTokenService" 
         endpointName="ns1:UT_Port">
         <jaxws:properties>
-            <entry key="ws-security.ut.validator" value="org.apache.coheigea.cxf.sts.KeycloakUTValidator" />
+            <entry key="ws-security.ut.validator" value-ref="utValidator" />
         </jaxws:properties>
     </jaxws:endpoint>
 
