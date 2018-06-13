@@ -24,7 +24,8 @@ To test:
  * Go to the "Credentials" tab for the user you have created, and specify a
    password, unselecting the "Temporary" checkbox, and reset the password.
  * Use SOAP-UI to create a new SOAP project using the WSDL: http://localhost:8080/cxf-sts-keycloak/UT?wsdl
- * Click on the "Issue" Binding and change the SOAP Body content to:
+ * Click on the "Issue" Binding and change the SOAP Body content of the request
+   message to:
 
 ```xml
    <ns:RequestSecurityToken>
