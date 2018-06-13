@@ -1,0 +1,17 @@
+version: "2"
+services:
+  keycloak:
+    image: jboss/keycloak
+    ports:
+      - "9080:8080"
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=password
+  cxf-sts-keycloak:
+    image: coheigea/cxf-sts-keycloak
+    stdin_open: true
+    tty: true
+    depends_on:
+      - "keycloak"
+    ports:
+      - "8080:8080"
