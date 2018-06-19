@@ -1,0 +1,14 @@
+version: "2"
+services:
+  sts:
+    image: coheigea/fediz-sts
+    ports:
+      - "8443:8443"
+  idp:
+    image: coheigea/fediz-idp
+    stdin_open: true
+    tty: true
+    depends_on:
+      - "sts"
+    ports:
+      - "9443:8443"
