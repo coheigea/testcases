@@ -8,7 +8,6 @@ ARG FEDIZ_VERSION=1.4.4
 ARG TOMCAT_HOME=/usr/local/tomcat
 
 WORKDIR /tmp
-# TODO
 ADD https://repo.maven.apache.org/maven2/org/apache/cxf/fediz/apache-fediz/$FEDIZ_VERSION/apache-fediz-$FEDIZ_VERSION.zip /tmp
 COPY server.xml $TOMCAT_HOME/conf
 COPY idp-ssl-key.jks $TOMCAT_HOME

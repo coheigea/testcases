@@ -12,3 +12,11 @@ services:
       - "sts"
     ports:
       - "9443:8443"
+  oidc:
+    image: coheigea/fediz-oidc
+    stdin_open: true
+    tty: true
+    depends_on:
+      - "idp"
+    ports:
+      - "10443:8443"
