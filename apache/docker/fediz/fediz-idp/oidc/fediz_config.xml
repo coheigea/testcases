@@ -40,7 +40,7 @@
 		<protocol xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xsi:type="federationProtocolType" version="1.0.0">
 			<realm>urn:org:apache:cxf:fediz:oidc</realm>
-			<issuer>https://localhost:9443/fediz-idp/federation</issuer>
+			<issuer>https://localhost:10001/fediz-idp/federation</issuer>
             <homeRealm type="Class">org.apache.cxf.fediz.service.oidc.handler.hrd.LoginHintHomeRealmDiscovery,org.apache.cxf.fediz.service.oidc.handler.hrd.ClientIdHomeRealmDiscovery</homeRealm>
 			<roleDelimiter>,</roleDelimiter>
 			<roleURI>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role</roleURI>

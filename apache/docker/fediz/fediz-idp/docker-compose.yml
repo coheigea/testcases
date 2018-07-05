@@ -3,7 +3,7 @@ services:
   sts:
     image: coheigea/fediz-sts
     ports:
-      - "8443:8443"
+      - "10000:8443"
   idp:
     image: coheigea/fediz-idp
     stdin_open: true
@@ -11,7 +11,7 @@ services:
     depends_on:
       - "sts"
     ports:
-      - "9443:8443"
+      - "10001:8443"
   oidc:
     image: coheigea/fediz-oidc
     stdin_open: true
@@ -19,4 +19,4 @@ services:
     depends_on:
       - "idp"
     ports:
-      - "10443:8443"
+      - "10002:8443"
