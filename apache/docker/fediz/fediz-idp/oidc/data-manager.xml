@@ -91,7 +91,7 @@
 
     <!-- Custom SubjectCreator where IdToken is created -->    
     <bean id="subjectCreator" class="org.apache.cxf.fediz.service.oidc.FedizSubjectCreator">
-        <property name="idTokenIssuer" value="https://localhost:10443"/>
+        <property name="idTokenIssuer" value="https://localhost:10002"/>
         <!-- List of additional claims which can be optionally added to IdToken -->  
         <property name="supportedClaims" ref="supportedClaims"/>
     </bean>
