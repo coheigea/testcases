@@ -1,6 +1,6 @@
 
 jetty {
-    org.eclipse.jetty.plus.jaas.spi.LdapLoginModule required
+    org.eclipse.jetty.jaas.spi.LdapLoginModule required
     debug="true"
     contextFactory="com.sun.jndi.ldap.LdapCtxFactory"
     hostname="localhost"

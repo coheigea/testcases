@@ -115,8 +115,8 @@
        </dependency>
        <dependency>
            <groupId>org.eclipse.jetty</groupId>
-           <artifactId>jetty-plus</artifactId>
-           <version>8.1.22.v20160922</version>
+           <artifactId>jetty-jaas</artifactId>
+           <version>9.2.25.v20180606</version>
            <scope>test</scope>
        </dependency>
        <dependency>
