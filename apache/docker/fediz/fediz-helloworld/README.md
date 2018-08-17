@@ -1,4 +1,4 @@
-# Dockerfile to deploy a WS-Federation secured 'fedizhelloworld' application
+# Dockerfile to deploy a Fediz secured 'fedizhelloworld' application
 
 This directory contains a Docker File to deploy a 'fedizhelloworld'
 application to Apache Tomcat, where Tomcat is configured with the Apache CXF
@@ -10,4 +10,6 @@ user to the Fediz IdP for authentication, before redirecting back to the plugin.
  * Open in a browser: https://localhost:8443/fedizhelloworld/secure/fedservlet
    (Credentials: alice/ecila)
 
-
+To switch from using WS-Federation to SAML SSO, simply copy the
+'fediz_config_saml.xml' configuration file to 'fediz_config.xml' and 
+rebuild the docker image.
