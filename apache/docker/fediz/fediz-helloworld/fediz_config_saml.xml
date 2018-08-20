@@ -55,6 +55,8 @@
 				<claimType type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" optional="true" />
 			</claimTypesRequested>
 		</protocol>
+		<logoutURL>/secure/logout</logoutURL>
+		<logoutRedirectTo>/index.html</logoutRedirectTo>
 	</contextConfig>
 </FedizConfig>
 
