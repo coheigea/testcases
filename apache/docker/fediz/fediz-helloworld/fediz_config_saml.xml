@@ -45,7 +45,7 @@
 			<issuer>https://localhost:10001/fediz-idp/saml</issuer>
 			<signRequest>true</signRequest>
 			<disableDeflateEncoding>true</disableDeflateEncoding>
-			<checkClientAddress>false</checkClientAddress>
+			<disableClientAddressCheck>true</disableClientAddressCheck>
 			<roleDelimiter>,</roleDelimiter>
 			<roleURI>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role</roleURI>
 			<claimTypesRequested>
