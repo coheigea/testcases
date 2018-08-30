@@ -25,7 +25,7 @@ To test:
 
  * To get a (plain) JWT without any wrapping using curl:
 
-   curl -u alice:security -H "Accept: text/plain" -k http://localhost:8080/cxf-sts-rest/SecurityTokenService/token/jwt
+   curl -u alice:security -H "Accept: text/plain" http://localhost:8080/cxf-sts-rest/SecurityTokenService/token/jwt
 
 This project is provided as a quick and easy way to play around with the
 Apache CXF STS. It should not be deployed in production as it uses default
