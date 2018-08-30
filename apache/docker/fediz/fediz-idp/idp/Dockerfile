@@ -18,4 +18,8 @@ RUN unzip -q *.zip \
     && sed -i 's/localhost:0/sts:8443/' $TOMCAT_HOME/webapps/fediz-idp/WEB-INF/config/* \
     && sed -i 's/localhost:0/sts:8443/' $TOMCAT_HOME/webapps/fediz-idp/WEB-INF/idp-servlet.xml
 
+# Uncomment to support using SAML SSO instead with the RP application
+#COPY entities-realma.xml $TOMCAT_HOME/webapps/fediz-idp/WEB-INF/classes
+#COPY mytomrpkey.cert $TOMCAT_HOME/webapps/fediz-idp/WEB-INF/classes
+
 
