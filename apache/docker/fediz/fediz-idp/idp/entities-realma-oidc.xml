@@ -34,7 +34,7 @@
         <property name="certificate" value="stsKeystoreA.properties" />
         <property name="certificatePassword" value="realma" />
         <property name="stsUrl" value="https://localhost:9443/fediz-idp-sts/REALMA" />
-        <property name="idpUrl" value="https://localhost:10001/fediz-idp/saml" />
+        <property name="idpUrl" value="https://localhost:10001/fediz-idp/federation" />
         <property name="rpSingleSignOutConfirmation" value="true"/>
         <property name="automaticRedirectToRpAfterLogout" value="false"/>
         <property name="supportedProtocols">
@@ -66,7 +66,7 @@
         <property name="applications">
             <util:list>
                 <ref bean="srv-fedizhelloworld" />
-                <ref bean="srv-oidc" />
+				<ref bean="srv-oidc" />
             </util:list>
         </property>
         <property name="trustedIdps">
@@ -88,13 +88,23 @@
         class="org.apache.cxf.fediz.service.idp.service.jpa.TrustedIdpEntity">
         <property name="realm" value="urn:org:apache:cxf:fediz:idp:realm-B" />
         <property name="cacheTokens" value="true" />
-        <property name="url" value="https://localhost:12443/fediz-idp-remote/federation" />
-        <property name="certificate" value="realmb.cert" />
+        <property name="url" value="https://www.fediz.org:20002/fediz-oidc/idp/authorize" />
+        <property name="certificate" value="oidc.cert" />
         <property name="trustType" value="PEER_TRUST" />
-        <property name="protocol" value="http://docs.oasis-open.org/wsfed/federation/200706" />
+        <property name="protocol" value="openid-connect-1.0" />
         <property name="federationType" value="FEDERATE_IDENTITY" />
         <property name="name" value="Realm B" />
         <property name="description" value="Realm B description" />
+        <property name="parameters">
+            <util:map>
+                <entry key="client.id" value="6wFnEgOuAAq3aA" />
+                <entry key="client.secret" value="QOT-t3KaIRrwuUQw8yOZ-g" />
+                <entry key="token.endpoint" value="https://oidcrealmb:8443/fediz-oidc/oauth2/token"/>
+                <entry key="scope" value="openid profile email"/>
+                <entry key="jwks.uri" value="https://oidcrealmb:8443/fediz-oidc/jwk/keys" />
+                <entry key="subject.claim" value="email"/>
+            </util:map>
+        </property>
     </bean>
 
     <bean id="srv-fedizhelloworld" class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationEntity">
@@ -109,8 +119,8 @@
         <property name="logoutEndpointConstraint" value="https://localhost:?(\d)*/.*" />
         <property name="validatingCertificate" value="mytomrpkey.cert" />
     </bean>
-    
-    <bean id="srv-oidc" class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationEntity">
+	
+	<bean id="srv-oidc" class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationEntity">
         <property name="realm" value="urn:org:apache:cxf:fediz:oidc" />
         <property name="protocol" value="http://docs.oasis-open.org/wsfed/federation/200706" />
         <property name="serviceDisplayName" value="OIDC Provider" />
@@ -125,22 +135,22 @@
     <bean class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationClaimEntity">
         <property name="application" ref="srv-fedizhelloworld" />
         <property name="claim" ref="claim_role" />
-        <property name="optional" value="false" />
+        <property name="optional" value="true" />
     </bean>
     <bean class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationClaimEntity">
         <property name="application" ref="srv-fedizhelloworld" />
         <property name="claim" ref="claim_givenname" />
-        <property name="optional" value="false" />
+        <property name="optional" value="true" />
     </bean>
     <bean class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationClaimEntity">
         <property name="application" ref="srv-fedizhelloworld" />
         <property name="claim" ref="claim_surname" />
-        <property name="optional" value="false" />
+        <property name="optional" value="true" />
     </bean>
     <bean class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationClaimEntity">
         <property name="application" ref="srv-fedizhelloworld" />
         <property name="claim" ref="claim_email" />
-        <property name="optional" value="false" />
+        <property name="optional" value="true" />
     </bean>
     
     <bean class="org.apache.cxf.fediz.service.idp.service.jpa.ApplicationClaimEntity">
@@ -505,5 +515,4 @@
 
 
 </beans>
-
 
