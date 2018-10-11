@@ -32,7 +32,7 @@
 
     <properties>
         <apacheds.version>2.0.0-M24</apacheds.version>
-        <bcprov.version>1.59</bcprov.version>
+        <bcprov.version>1.60</bcprov.version>
         <commons.logging.version>1.2</commons.logging.version>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <cxf.version>3.2.6</cxf.version>
@@ -41,11 +41,11 @@
         <htmlunit.version>2.22</htmlunit.version>
         <jackson.version>2.9.3</jackson.version>
         <junit.version>4.12</junit.version>
-        <karaf.version>4.2.0</karaf.version>
+        <karaf.version>4.2.1</karaf.version>
         <slf4j.version>1.7.25</slf4j.version>
         <spring.version>4.3.10.RELEASE</spring.version>
         <syncope.version>2.0.7</syncope.version>
-        <tomcat.version>8.0.50</tomcat.version>
+        <tomcat.version>8.0.53</tomcat.version>
     </properties>
 
 
