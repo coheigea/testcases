@@ -43,7 +43,7 @@
         <junit.version>4.12</junit.version>
         <karaf.version>4.2.1</karaf.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <spring.version>4.3.10.RELEASE</spring.version>
+        <spring.version>4.3.20.RELEASE</spring.version>
         <syncope.version>2.0.7</syncope.version>
         <tomcat.version>8.0.53</tomcat.version>
     </properties>
