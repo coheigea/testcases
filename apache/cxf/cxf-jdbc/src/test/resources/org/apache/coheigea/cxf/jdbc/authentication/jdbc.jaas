@@ -1,6 +1,6 @@
 
 jetty {
-     org.eclipse.jetty.plus.jaas.spi.JDBCLoginModule required
+     org.eclipse.jetty.jaas.spi.JDBCLoginModule required
      debug="true"
      dbUrl="jdbc:derby:memory:derbyDB"
      dbUserName="admin"
