@@ -31,6 +31,7 @@
         <module>camel-pdf</module>
         <module>camel-xslt</module>
         <module>camel-tika</module>
+        <module>camel-zipfile</module>
     </modules>
 
 </project>
