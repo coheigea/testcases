@@ -41,8 +41,6 @@ import org.junit.BeforeClass;
  * The CXF Endpoint has configured the SimpleAuthorizingInterceptor, which requires that a user must
  * have role "boss" to access the "doubleIt" operation ("alice" has this role, "bob" does not).
  */
-// TODO Re-enable when Karaf 4.1.4 is released
-@org.junit.Ignore
 public class KarafLoginModuleTestIT extends AbstractBusClientServerTestBase {
     
     private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
