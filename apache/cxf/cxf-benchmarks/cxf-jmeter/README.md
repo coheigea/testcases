@@ -53,8 +53,15 @@ Same as (6) above, except that MTOM is enabled, and cipherdata is stored in
 the attachments rather than BASE-64 encoded in the request.
 
 Build the project via "mvn clean install" and copy target/doubleit.war to the
-webapps folder of a container such as Tomcat. Then open up JMeter and import
-the "DoubleIt_Users.jmx" in the root directory of this project. Run the project
-and look at the Summary Report for throughput, etc.
+webapps folder of a container such as Tomcat. Note that some of the endpoints
+need TLS enabled in Tomcat. By default, JMeter trusts all certs, so any
+self-signed cert will do in Tomcat. Edit 'conf/server.xml' and add in 
+something like:
+
+ <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol" maxThreads="150" SSLEnabled="true" scheme="https" secure="true" clientAuth="false" sslProtocol="TLS" keystoreFile="idp-ssl-key.jks" keystorePass="tompass" />
+
+Then open up JMeter and import the "DoubleIt_Users.jmx" in the root directory
+of this project. Run the project and look at the Summary Report for
+throughput, etc.
 
 
