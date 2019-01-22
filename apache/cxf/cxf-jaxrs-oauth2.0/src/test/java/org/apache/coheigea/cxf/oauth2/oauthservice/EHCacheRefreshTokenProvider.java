@@ -24,15 +24,19 @@ import java.util.List;
 
 import org.apache.cxf.rs.security.oauth2.common.Client;
 import org.apache.cxf.rs.security.oauth2.common.OAuthPermission;
-import org.apache.cxf.rs.security.oauth2.grants.code.DefaultEHCacheCodeDataProvider;
+import org.apache.cxf.rs.security.oauth2.grants.code.JCacheCodeDataProvider;
 import org.apache.cxf.rs.security.oauth2.provider.OAuthServiceException;
 
 /**
- * Extend the DefaultEHCacheCodeDataProvider to allow refreshing of tokens
+ * Extend the JCacheCodeDataProvider to allow refreshing of tokens
  */
-public class EHCacheRefreshTokenProvider extends DefaultEHCacheCodeDataProvider {
+public class EHCacheRefreshTokenProvider extends JCacheCodeDataProvider {
     
-    @Override
+    protected EHCacheRefreshTokenProvider() throws Exception {
+		super();
+	}
+
+	@Override
     protected boolean isRefreshTokenSupported(List<String> theScopes) {
         return true;
     }

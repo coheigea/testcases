@@ -35,6 +35,10 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 /**
  * The client authenticates to the STS using a username/password, and gets a signed holder-of-key 
  * SAML Assertion in return. This is presented to the service, who verifies proof-of-possession + 

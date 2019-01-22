@@ -40,6 +40,10 @@ import org.apache.xml.security.utils.ClassLoaderUtils;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 /**
  * A test-case for a SOAP client request over TLS, where the client uses OCSP to validate
  * that the server's certificate is valid. This test differs from TLSOCSPTest in that

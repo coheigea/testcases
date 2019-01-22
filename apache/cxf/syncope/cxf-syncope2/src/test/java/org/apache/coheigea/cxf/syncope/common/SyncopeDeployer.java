@@ -34,6 +34,8 @@ import org.apache.syncope.common.rest.api.beans.AnyQuery;
 import org.apache.syncope.common.rest.api.service.UserService;
 import org.junit.Assert;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Deploy some Syncope users + roles to Syncope to get the tests to work!
  */
@@ -105,7 +107,7 @@ public class SyncopeDeployer {
         UserService userService = syncopeClient.getService(UserService.class);
 
         int count = userService.search(new AnyQuery.Builder().build()).getTotalCount();
-        Assert.assertEquals(2, count);
+        assertEquals(2, count);
     }
 
     private GroupTO findOrCreateGroup(

@@ -41,6 +41,10 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test the OIDC Keys Service + test verifying the signature of an IdToken by retrieving a key from the KeyService
  */
@@ -110,7 +114,7 @@ public class KeysTest extends AbstractBusClientServerTestBase {
         Response response = client.get();
         JsonWebKeys jsonWebKeys = response.readEntity(JsonWebKeys.class);
         
-        Assert.assertTrue(jwtConsumer.verifySignatureWith(jsonWebKeys.getKeys().get(0),
+        assertTrue(jwtConsumer.verifySignatureWith(jsonWebKeys.getKeys().get(0),
                                                           SignatureAlgorithm.RS256));
     }
     
@@ -161,7 +165,7 @@ public class KeysTest extends AbstractBusClientServerTestBase {
         response = client.post(form);
         String location = response.getHeaderString("Location"); 
         if (state != null) {
-            Assert.assertTrue(location.contains("state=" + state));
+            assertTrue(location.contains("state=" + state));
         }
         
         return getSubstring(location, "code");

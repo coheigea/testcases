@@ -28,6 +28,8 @@ import org.apache.coheigea.cxf.jaxrs.json.common.Number;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.junit.Assert;
 
+import static org.junit.Assert.assertNotNull;
+
 @Path("/services")
 public class DoubleItAuthenticationService {
     
@@ -39,7 +41,7 @@ public class DoubleItAuthenticationService {
     @Consumes("application/json")
     public Number doubleIt(Number numberToDouble) {
         // Check the context was set up correctly etc.
-        Assert.assertNotNull(jaxrsContext.getSecurityContext().getUserPrincipal());
+        assertNotNull(jaxrsContext.getSecurityContext().getUserPrincipal());
         
         Number newNumber = new Number();
         newNumber.setDescription(numberToDouble.getDescription());

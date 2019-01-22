@@ -30,6 +30,9 @@ import org.apache.cxf.rs.security.xml.XmlSigOutInterceptor;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test Authentication via JAX-RS XML Signature.
  */

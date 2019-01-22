@@ -33,6 +33,9 @@ import org.junit.BeforeClass;
 
 import org.apache.coheigea.cxf.failover.common.Number;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * A test for CXF using the LoadDistributorFeature. The client distributes the service calls
  * to both PORT1 and PORT2 sequentially.

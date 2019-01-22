@@ -48,6 +48,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * This tests using LDAP as for authentication. A cxf client sends a SOAP UsernameToken to a CXF
  * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken 
@@ -96,7 +99,7 @@ public class AuthenticationTest extends AbstractLdapTestUnit {
 
         WSSConfig.init();
         
-        Assert.assertTrue(
+        assertTrue(
                    "Server failed to launch",
                    // run the server in the same process
                    // set this to false to fork
@@ -288,7 +291,7 @@ public class AuthenticationTest extends AbstractLdapTestUnit {
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
-        Assert.assertEquals(numToDouble * 2 , resp);
+        assertEquals(numToDouble * 2 , resp);
     }
     
 }

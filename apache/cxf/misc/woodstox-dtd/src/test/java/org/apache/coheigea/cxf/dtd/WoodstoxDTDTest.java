@@ -27,6 +27,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
+import static org.junit.Assert.assertNotNull;
+
 public class WoodstoxDTDTest extends org.junit.Assert {
 
     @org.junit.Test

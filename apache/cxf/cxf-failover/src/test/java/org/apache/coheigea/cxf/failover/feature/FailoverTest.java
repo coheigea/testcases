@@ -34,6 +34,9 @@ import org.junit.BeforeClass;
 
 import org.apache.coheigea.cxf.failover.common.Number;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * A test for CXF using the failover feature. The service is designed to fail (404) every second iteration.
  * The first invocation on PORT1 works fine. The second fails, but the client fails over to PORT2

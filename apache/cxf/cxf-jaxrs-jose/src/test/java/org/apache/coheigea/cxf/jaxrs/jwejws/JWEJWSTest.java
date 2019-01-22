@@ -38,6 +38,9 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test JAX-RS JSON Signature and Encryption. Only the client -> service request is 
  * encrypted/signed, not the response.

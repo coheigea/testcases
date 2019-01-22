@@ -31,6 +31,9 @@ import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
 import org.apache.cxf.security.SecurityContext;
 import org.junit.Assert;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 @Path("/services")
 public class DoubleItJWTAuthenticationService {
     
@@ -42,12 +45,12 @@ public class DoubleItJWTAuthenticationService {
     @Consumes("application/json")
     public Number doubleIt(Number numberToDouble) {
         // Check the context was set up correctly etc.
-        Assert.assertNotNull(jaxrsContext.getSecurityContext().getUserPrincipal());
+        assertNotNull(jaxrsContext.getSecurityContext().getUserPrincipal());
         
         JwtTokenSecurityContext securityContext = 
             (JwtTokenSecurityContext)jaxrsContext.get(SecurityContext.class.getName());
-        Assert.assertNotNull(securityContext);
-        Assert.assertEquals("DoubleItSTSIssuer",
+        assertNotNull(securityContext);
+        assertEquals("DoubleItSTSIssuer",
                             securityContext.getToken().getClaim(JwtConstants.CLAIM_ISSUER));
         
         Number newNumber = new Number();

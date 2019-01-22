@@ -42,6 +42,9 @@ import org.apache.wss4j.common.saml.bean.AudienceRestrictionBean;
 import org.apache.wss4j.common.saml.bean.ConditionsBean;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test the authorization code grant, where the client authenticates to the access token service using SAML.
  */

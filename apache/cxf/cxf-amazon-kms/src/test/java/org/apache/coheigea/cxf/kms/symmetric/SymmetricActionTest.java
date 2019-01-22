@@ -29,6 +29,9 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Two test-cases for a CXF endpoint using symmetric encryption (AES-128 + AES-256). Each test-case asks a CallbackHandler for the secret
  * key to encrypt the request. In this case, the CallbackHandler asks the Amazon KMS (Key Management Service) for a data encryption key,

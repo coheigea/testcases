@@ -50,6 +50,10 @@ import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * A test that shows how to use interceptors of Apache CXF to authenticate and authorize clients of a JAX-RS service using OpenId Connect.
  */
@@ -84,11 +88,11 @@ public class OIDCTest {
         System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.cxf", "info");  
         
         idpHttpsPort = System.getProperty("idp.https.port");
-        Assert.assertNotNull("Property 'idp.https.port' null", idpHttpsPort);
+        assertNotNull("Property 'idp.https.port' null", idpHttpsPort);
         rpHttpsPort = System.getProperty("rp.https.port");
-        Assert.assertNotNull("Property 'rp.https.port' null", rpHttpsPort);
+        assertNotNull("Property 'rp.https.port' null", rpHttpsPort);
         oidcHttpsPort = System.getProperty("oidc.https.port");
-        Assert.assertNotNull("Property 'oidc.https.port' null", oidcHttpsPort);
+        assertNotNull("Property 'oidc.https.port' null", oidcHttpsPort);
 
         // Start IdP + OIDC servers
         idpServer = startServer(Server.IDP, idpHttpsPort);
@@ -246,7 +250,7 @@ public class OIDCTest {
         WebClient webClient = setupWebClient(user, password, idpPort);
         HtmlPage loginPage = login(url, webClient);
         final String bodyTextContent = loginPage.getBody().getTextContent();
-        Assert.assertTrue(bodyTextContent.contains("Registered Clients"));
+        assertTrue(bodyTextContent.contains("Registered Clients"));
         
         String clientUrl = "https://localhost:" + rpPort + "/fedizdoubleit/auth/rp/complete";
         
@@ -254,18 +258,18 @@ public class OIDCTest {
         HtmlPage registeredClientPage = 
             registerNewClient(webClient, url, "consumer-id", clientUrl, clientUrl);
         String registeredClientPageBody = registeredClientPage.getBody().getTextContent();
-        Assert.assertTrue(registeredClientPageBody.contains("Registered Clients"));
-        Assert.assertTrue(registeredClientPageBody.contains("consumer-id"));
+        assertTrue(registeredClientPageBody.contains("Registered Clients"));
+        assertTrue(registeredClientPageBody.contains("consumer-id"));
         
         HtmlTable table = registeredClientPage.getHtmlElementById("registered_clients");
         storedClientId = table.getCellAt(1, 1).asText().trim();
-        Assert.assertNotNull(storedClientId);
+        assertNotNull(storedClientId);
         
         // Now get the Client Secret
         final HtmlPage clientPage = webClient.getPage(url + "/" + storedClientId);
         HtmlTable clientPageTable = clientPage.getHtmlElementById("client");
         storedClientSecret = clientPageTable.getCellAt(1, 2).asText().trim();
-        Assert.assertNotNull(storedClientSecret);
+        assertNotNull(storedClientSecret);
         
         webClient.close();
     }
@@ -307,7 +311,7 @@ public class OIDCTest {
         webClient.getOptions().setJavaScriptEnabled(false);
         final HtmlPage idpPage = webClient.getPage(url);
         webClient.getOptions().setJavaScriptEnabled(true);
-        Assert.assertEquals("IDP SignIn Response Form", idpPage.getTitleText());
+        assertEquals("IDP SignIn Response Form", idpPage.getTitleText());
 
         // Test the SAML Version here
         DomNodeList<DomElement> results = idpPage.getElementsByTagName("input");
@@ -319,7 +323,7 @@ public class OIDCTest {
                 break;
             }
         }
-        Assert.assertTrue(wresult != null 
+        assertTrue(wresult != null 
             && wresult.contains("urn:oasis:names:tc:SAML:2.0:cm:bearer"));
 
         final HtmlForm form = idpPage.getFormByName("signinresponseform");

@@ -26,6 +26,8 @@ import javax.xml.ws.WebServiceContext;
 
 import org.junit.Assert;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
  * DoubleIt definition code-first instead of WSDL-first.
  */
@@ -41,8 +43,8 @@ public class DoubleItCodeFirstImpl implements DoubleItCodeFirst {
     public int doubleIt(int numberToDouble) {
         Principal pr = wsContext.getUserPrincipal();
 
-        Assert.assertNotNull("Principal must not be null", pr);
-        Assert.assertNotNull("Principal.getName() must not return null", pr.getName());
+        assertNotNull("Principal must not be null", pr);
+        assertNotNull("Principal.getName() must not return null", pr.getName());
 
         return numberToDouble * 2;
     }

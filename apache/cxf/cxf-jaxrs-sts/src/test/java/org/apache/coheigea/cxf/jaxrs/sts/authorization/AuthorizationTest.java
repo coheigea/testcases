@@ -28,6 +28,9 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * This tests using the CXF STS for authorization. The JAX-RS client sends a HTTP/BA request
  * to the service, which sends it to the STS for validation (along with its own UsernameToken

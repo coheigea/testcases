@@ -36,6 +36,10 @@ import org.apache.wss4j.dom.engine.WSSConfig;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * This tests invoking on the Syncope REST API using a third-party JWT token obtained from the REST interface of the
  * CXF STS.
@@ -86,7 +90,7 @@ public class JWTTestIT extends AbstractBusClientServerTestBase {
 
         JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(jwtToken);
         JwtToken jwt = jwtConsumer.getJwtToken();
-        Assert.assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
+        assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
 
         // 2. Now use the JWT Token to authenticate to Syncope.
         String syncopePort = System.getProperty("syncope.port");

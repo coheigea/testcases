@@ -40,6 +40,10 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * A test for WS-Federation using the CXF plugin (deployed in Tomcat).
  */
@@ -64,9 +68,9 @@ public class FederationTest {
         
         idpHttpsPort = System.getProperty("idp.https.port");
         // idpHttpsPort = "12345";
-        Assert.assertNotNull("Property 'idp.https.port' null", idpHttpsPort);
+        assertNotNull("Property 'idp.https.port' null", idpHttpsPort);
         rpHttpsPort = System.getProperty("rp.https.port");
-        Assert.assertNotNull("Property 'rp.https.port' null", rpHttpsPort);
+        assertNotNull("Property 'rp.https.port' null", rpHttpsPort);
 
         idpServer = startServer(true, idpHttpsPort);
         rpServer = startServer(false, rpHttpsPort);
@@ -167,8 +171,8 @@ public class FederationTest {
         final String bodyTextContent = 
             login(url, user, password, getIdpHttpsPort());
         
-        Assert.assertTrue(bodyTextContent.contains("This is the double number response"));
-        Assert.assertTrue(bodyTextContent.contains("50"));
+        assertTrue(bodyTextContent.contains("This is the double number response"));
+        assertTrue(bodyTextContent.contains("50"));
     }
 
     public String getServletContextName() {
@@ -185,7 +189,7 @@ public class FederationTest {
         webClient.getOptions().setJavaScriptEnabled(false);
         final HtmlPage idpPage = webClient.getPage(url);
         webClient.getOptions().setJavaScriptEnabled(true);
-        Assert.assertEquals("IDP SignIn Response Form", idpPage.getTitleText());
+        assertEquals("IDP SignIn Response Form", idpPage.getTitleText());
 
         final HtmlForm form = idpPage.getFormByName("signinresponseform");
         final HtmlSubmitInput button = form.getInputByName("_eventId_submit");

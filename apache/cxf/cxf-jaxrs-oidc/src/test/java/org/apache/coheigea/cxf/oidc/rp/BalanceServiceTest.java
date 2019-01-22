@@ -33,6 +33,10 @@ import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test the Balance Service. The BalanceService has a method to check the balance of a given user using GET. It is secured with OIDC - the client
  * is redirected to the IdP for authentication, and then back to the service, where the username is checked.

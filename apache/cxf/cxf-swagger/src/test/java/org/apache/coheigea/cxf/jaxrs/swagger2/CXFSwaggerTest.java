@@ -21,6 +21,8 @@ package org.apache.coheigea.cxf.jaxrs.swagger2;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * A simple example of how to generate Swagger 2 / OpenAPI documentation for a JAX-RS endpoint.
  */

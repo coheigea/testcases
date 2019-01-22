@@ -42,6 +42,10 @@ import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 import org.w3c.dom.Element;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 /**
  * This tests using X.509 Certificates for authentication in CXF using a WS-SecurityPolicy
  * TransportBinding with an endorsing X509Token.

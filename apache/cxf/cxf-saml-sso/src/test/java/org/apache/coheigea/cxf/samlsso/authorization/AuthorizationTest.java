@@ -29,6 +29,9 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Authentication is the same as for the AuthenticationTest. This time however,
  * the IdP is configured to add an AttributeStatement to the SAML Assertion in

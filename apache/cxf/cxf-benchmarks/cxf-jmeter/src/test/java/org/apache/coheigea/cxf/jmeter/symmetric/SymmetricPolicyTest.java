@@ -29,6 +29,9 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Three test-cases for a CXF endpoint using a Symmetric binding. In all cases, the SOAP
  * Body is signed and encrypted.

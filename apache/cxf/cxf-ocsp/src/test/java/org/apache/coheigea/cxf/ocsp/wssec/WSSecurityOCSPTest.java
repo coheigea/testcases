@@ -30,6 +30,9 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * A test-case an asymmetric WS-Security client request, where the service uses OCSP to validate
  * that the client's certificate is valid.

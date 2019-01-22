@@ -29,6 +29,9 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 import org.w3c.dom.Document;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Here the JAX-RS service uses the HTTP redirect binding of SAML SSO to redirect
  * the client to the IdP for authentication. The client is then redirected to the
