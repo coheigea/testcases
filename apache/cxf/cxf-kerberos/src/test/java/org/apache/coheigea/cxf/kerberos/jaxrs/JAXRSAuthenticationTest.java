@@ -47,6 +47,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * This is a test-case that shows how to use Kerberos with a JAX-RS service.
  */
@@ -103,7 +106,7 @@ public class JAXRSAuthenticationTest extends AbstractLdapTestUnit {
         // System.setProperty("sun.security.krb5.debug", "true");
         System.setProperty("java.security.auth.login.config", basedir + "/src/test/resources/kerberos/kerberos.jaas");
 
-        Assert.assertTrue(
+        assertTrue(
                    "Server failed to launch",
                    // run the server in the same process
                    // set this to false to fork
@@ -160,8 +163,8 @@ public class JAXRSAuthenticationTest extends AbstractLdapTestUnit {
         numberToDouble.setNumber(25);
 
         Response response = client.post(numberToDouble);
-        Assert.assertEquals(response.getStatus(), 200);
-        Assert.assertEquals(response.readEntity(Number.class).getNumber(), 50);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
 
 }

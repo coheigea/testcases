@@ -35,6 +35,10 @@ import org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test the Balance Service. The BalanceService has two different implementations, a "customer" balance service where a user can create
  * a balance (if authenticated using Basic Authentication), and a "partner" balance service protected by OAuth, where a partner can check

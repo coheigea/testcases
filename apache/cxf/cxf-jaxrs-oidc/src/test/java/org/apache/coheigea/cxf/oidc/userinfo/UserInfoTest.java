@@ -49,6 +49,10 @@ import org.apache.wss4j.common.util.Loader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Some unit tests for the UserInfo Service in OpenId Connect. This can be used to return the User's claims given
  * an access token.
@@ -161,9 +165,9 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
         KeyStore keystore = KeyStore.getInstance("JKS");
         keystore.load(Loader.getResource("servicestore.jks").openStream(), "sspass".toCharArray());
         Certificate cert = keystore.getCertificate("myservicekey");
-        Assert.assertNotNull(cert);
+        assertNotNull(cert);
 
-        Assert.assertTrue(jwtConsumer.verifySignatureWith((X509Certificate)cert, 
+        assertTrue(jwtConsumer.verifySignatureWith((X509Certificate)cert, 
                                                           SignatureAlgorithm.RS256));
     }
     
@@ -262,7 +266,7 @@ public class UserInfoTest extends AbstractBusClientServerTestBase {
         response = client.post(form);
         String location = response.getHeaderString("Location"); 
         if (state != null) {
-            Assert.assertTrue(location.contains("state=" + state));
+            assertTrue(location.contains("state=" + state));
         }
         
         return getSubstring(location, "code");

@@ -47,6 +47,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * There are two test-cases covered in this class, one that uses a WS-SecurityPolicy 
  * KerberosToken policy, and the other that uses a SpnegoContextToken policy.
@@ -112,7 +115,7 @@ public class AuthenticationTest extends AbstractLdapTestUnit {
         // System.setProperty("sun.security.krb5.debug", "true");
         System.setProperty("java.security.auth.login.config", basedir + "/src/test/resources/kerberos/kerberos.jaas");
         
-        Assert.assertTrue(
+        assertTrue(
                    "Server failed to launch",
                    // run the server in the same process
                    // set this to false to fork
@@ -189,7 +192,7 @@ public class AuthenticationTest extends AbstractLdapTestUnit {
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
-        Assert.assertEquals(numToDouble * 2 , resp);
+        assertEquals(numToDouble * 2 , resp);
     }
     
 }

@@ -34,6 +34,9 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * This test builds on the AuthenticationTest to show how SingleSignOn (SSO) can be achieved 
  * using the STS. The client caches the token after the initial invocation, and therefore the 

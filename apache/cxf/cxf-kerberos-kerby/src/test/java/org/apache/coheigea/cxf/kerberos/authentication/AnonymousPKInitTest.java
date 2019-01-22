@@ -34,6 +34,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Some tests for anonymous PKINIT
  */

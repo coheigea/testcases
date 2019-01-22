@@ -50,6 +50,10 @@ import org.apache.wss4j.common.util.Loader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Some unit tests to test the implicit flow in OpenID Connect.
  */
@@ -120,8 +124,8 @@ public class ImplicitFlowTest extends AbstractBusClientServerTestBase {
         
         JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(idToken);
         JwtToken jwt = jwtConsumer.getJwtToken();
-        Assert.assertNotNull(jwt.getClaims().getClaim(IdToken.ACCESS_TOKEN_HASH_CLAIM));
-        Assert.assertNotNull(jwt.getClaims().getClaim(IdToken.NONCE_CLAIM));
+        assertNotNull(jwt.getClaims().getClaim(IdToken.ACCESS_TOKEN_HASH_CLAIM));
+        assertNotNull(jwt.getClaims().getClaim(IdToken.NONCE_CLAIM));
     }
     
     private String getSubstring(String parentString, String substringName) {
@@ -143,21 +147,21 @@ public class ImplicitFlowTest extends AbstractBusClientServerTestBase {
         JwtToken jwt = jwtConsumer.getJwtToken();
         
         // Validate claims
-        Assert.assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
-        Assert.assertEquals("OIDC IdP", jwt.getClaim(JwtConstants.CLAIM_ISSUER));
-        Assert.assertEquals("consumer-id", jwt.getClaim(JwtConstants.CLAIM_AUDIENCE));
-        Assert.assertNotNull(jwt.getClaim(JwtConstants.CLAIM_EXPIRY));
-        Assert.assertNotNull(jwt.getClaim(JwtConstants.CLAIM_ISSUED_AT));
+        assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
+        assertEquals("OIDC IdP", jwt.getClaim(JwtConstants.CLAIM_ISSUER));
+        assertEquals("consumer-id", jwt.getClaim(JwtConstants.CLAIM_AUDIENCE));
+        assertNotNull(jwt.getClaim(JwtConstants.CLAIM_EXPIRY));
+        assertNotNull(jwt.getClaim(JwtConstants.CLAIM_ISSUED_AT));
         if (nonce != null) {
-            Assert.assertEquals(nonce, jwt.getClaim(IdToken.NONCE_CLAIM));
+            assertEquals(nonce, jwt.getClaim(IdToken.NONCE_CLAIM));
         }
         
         KeyStore keystore = KeyStore.getInstance("JKS");
         keystore.load(Loader.getResource("servicestore.jks").openStream(), "sspass".toCharArray());
         Certificate cert = keystore.getCertificate("myservicekey");
-        Assert.assertNotNull(cert);
+        assertNotNull(cert);
         
-        Assert.assertTrue(jwtConsumer.verifySignatureWith((X509Certificate)cert, 
+        assertTrue(jwtConsumer.verifySignatureWith((X509Certificate)cert, 
                                                           SignatureAlgorithm.RS256));
     }
     

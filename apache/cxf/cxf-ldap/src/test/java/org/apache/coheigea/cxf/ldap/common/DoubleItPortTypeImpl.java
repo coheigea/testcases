@@ -28,6 +28,8 @@ import org.apache.cxf.feature.Features;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.Assert;
 
+import static org.junit.Assert.assertNotNull;
+
 @WebService(targetNamespace = "http://www.example.org/contract/DoubleIt", 
             serviceName = "DoubleItService", 
             endpointInterface = "org.example.contract.doubleit.DoubleItPortType")
@@ -40,8 +42,8 @@ public class DoubleItPortTypeImpl implements DoubleItPortType {
     public int doubleIt(int numberToDouble) {
         Principal pr = wsContext.getUserPrincipal();
         
-        Assert.assertNotNull("Principal must not be null", pr);
-        Assert.assertNotNull("Principal.getName() must not return null", pr.getName());
+        assertNotNull("Principal must not be null", pr);
+        assertNotNull("Principal.getName() must not return null", pr.getName());
         
         return numberToDouble * 2;
     }

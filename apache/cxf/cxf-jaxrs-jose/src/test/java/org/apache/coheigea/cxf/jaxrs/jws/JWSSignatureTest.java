@@ -36,6 +36,10 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test JAX-RS JSON Signature. Only the client -> service request is signed, not the response.
  */

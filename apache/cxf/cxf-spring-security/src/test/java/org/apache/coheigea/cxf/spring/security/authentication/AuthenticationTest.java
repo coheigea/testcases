@@ -31,6 +31,10 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 /**
  * This tests using Spring Security for authentication. A cxf client sends a SOAP UsernameToken
  * to a CXF Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the 

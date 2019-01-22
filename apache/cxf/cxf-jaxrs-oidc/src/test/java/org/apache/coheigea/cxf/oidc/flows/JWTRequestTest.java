@@ -42,6 +42,9 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Some unit tests to test sending the OIDC request as a JWT
  */
@@ -170,7 +173,7 @@ public class JWTRequestTest extends AbstractBusClientServerTestBase {
         response = client.post(form);
         String location = response.getHeaderString("Location"); 
         if (state != null) {
-            Assert.assertTrue(location.contains("state=" + state));
+            assertTrue(location.contains("state=" + state));
         }
         
         return getSubstring(location, "code");

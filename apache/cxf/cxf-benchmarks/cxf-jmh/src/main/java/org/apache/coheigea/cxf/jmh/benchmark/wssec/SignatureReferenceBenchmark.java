@@ -44,6 +44,9 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 
@@ -112,18 +115,18 @@ public class SignatureReferenceBenchmark {
         data.setSigVerCrypto(verifyingCrypto);
         data.setSubjectCertConstraints(Collections.singletonList(certConstraint));
         Element securityHeader = WSSecurityUtil.getSecurityHeader(signedDoc, "");
-        Assert.assertNotNull(securityHeader);
+        assertNotNull(securityHeader);
         
         WSHandlerResult results = 
             engine.processSecurityHeader(securityHeader, data);
         
         WSSecurityEngineResult actionResult =
             results.getActionResults().get(WSConstants.SIGN).get(0);
-        Assert.assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_CERTIFICATE));
-        Assert.assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_REFERENCE_TYPE));
+        assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_CERTIFICATE));
+        assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_REFERENCE_TYPE));
         REFERENCE_TYPE refType = 
             (REFERENCE_TYPE)actionResult.get(WSSecurityEngineResult.TAG_X509_REFERENCE_TYPE);
-        Assert.assertTrue(refType == referenceType);
+        assertTrue(refType == referenceType);
     }
     
 }

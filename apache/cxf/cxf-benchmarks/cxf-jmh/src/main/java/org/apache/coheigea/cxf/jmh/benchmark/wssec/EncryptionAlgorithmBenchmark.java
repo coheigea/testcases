@@ -41,6 +41,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import static org.junit.Assert.assertNotNull;
+
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 
@@ -95,15 +97,15 @@ public class EncryptionAlgorithmBenchmark {
             data.setAllowRSA15KeyTransportAlgorithm(true);
         }
         Element securityHeader = WSSecurityUtil.getSecurityHeader(encryptedDoc, "");
-        Assert.assertNotNull(securityHeader);
+        assertNotNull(securityHeader);
         
         WSHandlerResult results = 
             engine.processSecurityHeader(securityHeader, data);
         
         WSSecurityEngineResult actionResult =
             results.getActionResults().get(WSConstants.ENCR).get(0);
-        Assert.assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_CERTIFICATE));
-        Assert.assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_REFERENCE_TYPE));
+        assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_CERTIFICATE));
+        assertNotNull(actionResult.get(WSSecurityEngineResult.TAG_X509_REFERENCE_TYPE));
     }
     
 }

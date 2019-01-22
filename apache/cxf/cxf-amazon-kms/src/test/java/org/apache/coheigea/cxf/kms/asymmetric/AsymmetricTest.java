@@ -29,6 +29,9 @@ import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * A test-case for a CXF based web service using Asymmetric encryption via WS-SecurityPolicy. The keystore password for both signature and
  * encryption is stored encrypted in the crypto properties files using the AWS KMS (Key Management Service) via the KMSPasswordEncryptor class.

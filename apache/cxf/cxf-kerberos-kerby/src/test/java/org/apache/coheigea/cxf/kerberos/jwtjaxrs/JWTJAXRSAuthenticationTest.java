@@ -45,6 +45,10 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * This is a test-case that shows how to use Kerberos and JWT tokens with a JAX-RS service.
  *
@@ -97,13 +101,13 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
         System.setProperty("java.security.krb5.conf", basedir + "/target/krb5.conf");
 
-        Assert.assertTrue(
+        assertTrue(
                           "Server failed to launch",
                           // run the server in the same process
                           // set this to false to fork
                           AbstractBusClientServerTestBase.launchServer(Server.class, true)
         );
-        Assert.assertTrue(
+        assertTrue(
                           "Server failed to launch",
                           // run the server in the same process
                           // set this to false to fork
@@ -127,8 +131,8 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         String jwtToken = getJWTTokenFromSTS(busFile);
         JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(jwtToken);
         JwtToken jwt = jwtConsumer.getJwtToken();
-        Assert.assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
-        Assert.assertTrue(((List<?>)jwt.getClaim(ROLE)).contains("boss"));
+        assertEquals("alice", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
+        assertTrue(((List<?>)jwt.getClaim(ROLE)).contains("boss"));
 
         // 2. Now call on the service using a custom HttpAuthSupplier
         String address = "https://localhost:" + PORT + "/doubleit/services";
@@ -148,8 +152,8 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         numberToDouble.setNumber(25);
 
         Response response = client.post(numberToDouble);
-        Assert.assertEquals(response.getStatus(), 200);
-        Assert.assertEquals(response.readEntity(Number.class).getNumber(), 50);
+        assertEquals(response.getStatus(), 200);
+        assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
 
     @org.junit.Test
@@ -161,8 +165,8 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         String jwtToken = getJWTTokenFromSTS(busFile);
         JwsJwtCompactConsumer jwtConsumer = new JwsJwtCompactConsumer(jwtToken);
         JwtToken jwt = jwtConsumer.getJwtToken();
-        Assert.assertEquals("dave", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
-        Assert.assertTrue((jwt.getClaim(ROLE)).equals("employee"));
+        assertEquals("dave", jwt.getClaim(JwtConstants.CLAIM_SUBJECT));
+        assertTrue((jwt.getClaim(ROLE)).equals("employee"));
 
         // 2. Now call on the service using a custom HttpAuthSupplier
         String address = "https://localhost:" + PORT + "/doubleit/services";
@@ -182,7 +186,7 @@ public class JWTJAXRSAuthenticationTest extends org.junit.Assert {
         numberToDouble.setNumber(25);
 
         Response response = client.post(numberToDouble);
-        Assert.assertEquals(response.getStatus(), 500);
+        assertEquals(response.getStatus(), 500);
     }
 
     private String getJWTTokenFromSTS(URL busFile) {

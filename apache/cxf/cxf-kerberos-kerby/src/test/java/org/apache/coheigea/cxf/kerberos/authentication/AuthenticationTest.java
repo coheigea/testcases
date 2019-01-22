@@ -57,6 +57,11 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * There are two test-cases covered in this class, one that uses a WS-SecurityPolicy
  * KerberosToken policy, and the other that uses a SpnegoContextToken policy.
@@ -108,7 +113,7 @@ public class AuthenticationTest extends org.junit.Assert {
         System.setProperty("java.security.auth.login.config", basedir + "/target/test-classes/kerberos/kerberos.jaas");
         System.setProperty("java.security.krb5.conf", basedir + "/target/krb5.conf");
 
-        Assert.assertTrue(
+        assertTrue(
                           "Server failed to launch",
                           // run the server in the same process
                           // set this to false to fork
@@ -259,7 +264,7 @@ public class AuthenticationTest extends org.junit.Assert {
 
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
-        Assert.assertEquals(numToDouble * 2 , resp);
+        assertEquals(numToDouble * 2 , resp);
     }
 
     /**
