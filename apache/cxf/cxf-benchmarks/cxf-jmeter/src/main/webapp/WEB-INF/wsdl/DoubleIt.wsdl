@@ -127,6 +127,10 @@
             <soap:address
                 location="http://localhost:8080/doubleit/services" />
         </wsdl:port>
+        <wsdl:port name="DoubleItWSAddressingPort" binding="tns:DoubleItNoPolicyBinding">
+            <soap:address
+                location="http://localhost:8081/doubleit/services" />
+        </wsdl:port>
 	</wsdl:service>
 	
 	<wsp:Policy wsu:Id="DoubleItBindingTransportPolicy">
