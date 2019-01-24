@@ -113,6 +113,31 @@ public class SymmetricPolicyTest extends AbstractBusClientServerTestBase {
         doubleIt(transportPort, 25);
     }
     
+    // Hammer the Symmetric endpoint which is deployed in Tomcat
+    @org.junit.Test
+    @org.junit.Ignore
+    public void testHammerSymmetric() throws Exception {
+        
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = SymmetricPolicyTest.class.getResource("cxf-client.xml");
+
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
+        
+        URL wsdl = new URL("http://localhost:8080/doubleit/services/doubleitsymmetric?wsdl");
+        QName portQName = new QName(NAMESPACE, "DoubleItSymmetricPort");
+        for (int i = 0; i < 100000; i++) {
+        	if (i % 10000 == 0) {
+        		System.out.println(i);
+        	}
+	        Service service = Service.create(wsdl, SERVICE_QNAME);
+	        DoubleItPortType transportPort = 
+	            service.getPort(portQName, DoubleItPortType.class);
+	        
+	        doubleIt(transportPort, 25);
+        }
+    }
     
     private static void doubleIt(DoubleItPortType port, int numToDouble) {
         int resp = port.doubleIt(numToDouble);
