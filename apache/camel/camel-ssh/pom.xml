@@ -33,6 +33,7 @@
 
    <properties>
        <commons.io.version>2.4</commons.io.version>
+       <sshd-version>2.0.0</sshd-version>
    </properties>
 
    <dependencies>
@@ -83,6 +84,16 @@
            <artifactId>slf4j-jdk14</artifactId>
            <version>${slf4j.version}</version>
            <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.sshd</groupId>
+           <artifactId>sshd-scp</artifactId>
+           <version>${sshd-version}</version>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.sshd</groupId>
+           <artifactId>sshd-sftp</artifactId>
+           <version>${sshd-version}</version>
        </dependency>
 
     </dependencies>
