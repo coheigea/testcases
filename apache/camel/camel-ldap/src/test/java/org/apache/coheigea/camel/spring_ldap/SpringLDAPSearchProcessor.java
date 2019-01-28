@@ -34,25 +34,27 @@ import org.apache.camel.Processor;
 public class SpringLDAPSearchProcessor implements Processor {
 
     public void process(Exchange exchange) throws Exception {
-        List<?> data = exchange.getIn().getBody(List.class); 
-        StringBuilder result = new StringBuilder();
-        for (Object obj : data) {
-            if (obj instanceof BasicAttributes) {
-                BasicAttributes attributes = (BasicAttributes)obj;
-                
-                // Write out the attributes
-                NamingEnumeration<? extends Attribute> attrs = attributes.getAll();
-                while (attrs.hasMore()) {
-                    Attribute attribute = attrs.next();
-                    // Don't write out the password or objectclass
-                    if (!"userpassword".equals(attribute.getID()) 
-                        && !"objectclass".equals(attribute.getID())) {
-                        result.append(attribute.toString() + "\n");
-                    }
-                }
-            }
+        List<?> data = exchange.getIn().getBody(List.class);
+        if (data != null) {
+	        StringBuilder result = new StringBuilder();
+	        for (Object obj : data) {
+	            if (obj instanceof BasicAttributes) {
+	                BasicAttributes attributes = (BasicAttributes)obj;
+	                
+	                // Write out the attributes
+	                NamingEnumeration<? extends Attribute> attrs = attributes.getAll();
+	                while (attrs.hasMore()) {
+	                    Attribute attribute = attrs.next();
+	                    // Don't write out the password or objectclass
+	                    if (!"userpassword".equals(attribute.getID()) 
+	                        && !"objectclass".equals(attribute.getID())) {
+	                        result.append(attribute.toString() + "\n");
+	                    }
+	                }
+	            }
+	        }
+	        exchange.getIn().setBody(result.toString());
         }
-        exchange.getIn().setBody(result.toString());
     }
     
 }
