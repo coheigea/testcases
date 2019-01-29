@@ -52,6 +52,20 @@ WS-Security implementation available in Apache CXF 3.0.0.
 Same as (6) above, except that MTOM is enabled, and cipherdata is stored in
 the attachments rather than BASE-64 encoded in the request.
 
+9) /doubleit/services/doubleitwsaddr
+
+WS-Addressing is enabled.
+
+10) /services/STS
+
+A SecurityTokenService endpoint, which can issue SAML Tokens. It's secured
+using a UsernameToken.
+
+11) /services/STSREST
+
+A REST SecurityTokenService endpoint, which can issue SAML Tokens. It's secured
+using HTTP BasicAuthentication.
+
 Build the project via "mvn clean install" and copy target/doubleit.war to the
 webapps folder of a container such as Tomcat. Note that some of the endpoints
 need TLS enabled in Tomcat. By default, JMeter trusts all certs, so any
@@ -63,5 +77,3 @@ something like:
 Then open up JMeter and import the "DoubleIt_Users.jmx" in the root directory
 of this project. Run the project and look at the Summary Report for
 throughput, etc.
-
-
