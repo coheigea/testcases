@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.coheigea.cxf.jmeter.common;
+package org.apache.coheigea.cxf.jmeter.sts;
 
 import java.io.IOException;
 
