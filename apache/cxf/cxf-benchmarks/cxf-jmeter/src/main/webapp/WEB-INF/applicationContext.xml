@@ -25,4 +25,5 @@
     <import resource="cxf-asymmetric.xml"/>
     <import resource="cxf-wsaddr.xml"/>
     <import resource="cxf-sts.xml"/>
+    <import resource="cxf-jose.xml"/>
 </beans>
