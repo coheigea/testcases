@@ -26,7 +26,6 @@ import javax.ws.rs.core.Context;
 
 import org.apache.coheigea.cxf.jaxrs.json.common.Number;
 import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.junit.Assert;
 
 import static org.junit.Assert.assertNotNull;
 
