@@ -66,6 +66,10 @@ using a UsernameToken.
 A REST SecurityTokenService endpoint, which can issue SAML Tokens. It's secured
 using HTTP BasicAuthentication.
 
+12) /services/JWT
+
+A REST "double-it" implementation that is secured using a JWT token.
+
 Build the project via "mvn clean install" and copy target/doubleit.war to the
 webapps folder of a container such as Tomcat. Note that some of the endpoints
 need TLS enabled in Tomcat. By default, JMeter trusts all certs, so any
