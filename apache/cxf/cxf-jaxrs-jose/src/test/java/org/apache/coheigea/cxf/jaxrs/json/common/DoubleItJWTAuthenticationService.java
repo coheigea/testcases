@@ -29,7 +29,6 @@ import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.rs.security.jose.jaxrs.JwtTokenSecurityContext;
 import org.apache.cxf.rs.security.jose.jwt.JwtConstants;
 import org.apache.cxf.security.SecurityContext;
-import org.junit.Assert;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
