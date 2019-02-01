@@ -48,7 +48,10 @@ public class CommonCallbackHandler implements CallbackHandler {
                 } else if ("mystskey".equals(pc.getIdentifier())) {
                     pc.setPassword("stskpass");
                     break;
-                }
+                } else if ("consumer-id".equals(pc.getIdentifier())) {
+                    pc.setPassword("this-is-a-secret");
+                    break;
+                } 
             }
         }
     }

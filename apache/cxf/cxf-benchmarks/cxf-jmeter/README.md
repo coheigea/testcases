@@ -70,6 +70,10 @@ using HTTP BasicAuthentication.
 
 A REST "double-it" implementation that is secured using a JWT token.
 
+13) /services/oauth2
+
+A OAuth 2.0 IdP
+
 Build the project via "mvn clean install" and copy target/doubleit.war to the
 webapps folder of a container such as Tomcat. Note that some of the endpoints
 need TLS enabled in Tomcat. By default, JMeter trusts all certs, so any

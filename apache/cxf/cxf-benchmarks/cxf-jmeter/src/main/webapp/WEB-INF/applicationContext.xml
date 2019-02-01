@@ -26,4 +26,5 @@
     <import resource="cxf-wsaddr.xml"/>
     <import resource="cxf-sts.xml"/>
     <import resource="cxf-jose.xml"/>
+    <import resource="cxf-oauth2.xml"/>
 </beans>
