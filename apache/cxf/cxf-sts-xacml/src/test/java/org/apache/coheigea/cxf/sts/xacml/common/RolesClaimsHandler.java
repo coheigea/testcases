@@ -18,7 +18,6 @@
  */
 package org.apache.coheigea.cxf.sts.xacml.common;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +33,8 @@ import org.apache.cxf.sts.claims.ProcessedClaimCollection;
  */
 public class RolesClaimsHandler implements ClaimsHandler {
 
-    public static final URI ROLE = 
-            URI.create("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role");  
+    public static final String ROLE = 
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role";
     
     public ProcessedClaimCollection retrieveClaimValues(
             ClaimCollection claims, ClaimsParameters parameters) {
@@ -61,8 +60,8 @@ public class RolesClaimsHandler implements ClaimsHandler {
         return null;
     }
 
-    public List<URI> getSupportedClaimTypes() {
-        List<URI> list = new ArrayList<URI>();
+    public List<String> getSupportedClaimTypes() {
+        List<String> list = new ArrayList<>();
         list.add(ROLE);
         return list;
     }

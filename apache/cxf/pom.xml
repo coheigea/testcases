@@ -46,7 +46,7 @@
         <module>cxf-sts</module>
         <module>cxf-x509</module>
         <module>cxf-shiro</module>
-        <!--<module>cxf-sts-xacml</module>-->
+        <module>cxf-sts-xacml</module>
         <module>cxf-kerberos</module>
         <module>cxf-kerberos-kerby</module>
         <module>cxf-jdbc</module>
