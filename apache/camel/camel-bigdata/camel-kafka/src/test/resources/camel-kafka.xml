@@ -25,11 +25,11 @@
 
     <camelContext xmlns="http://camel.apache.org/schema/spring">
         <route>
-            <from uri="kafka:test?brokers=localhost:${kafka.port}&amp;groupId=test&amp;autoCommitEnable=true&amp;sessionTimeoutMs=30000&amp;autoCommitIntervalMs=1000"/>
+            <from uri="kafka:test?brokers=localhost:9092&amp;groupId=test-consumer-group&amp;seekTo=beginning&amp;autoCommitEnable=true&amp;sessionTimeoutMs=30000&amp;autoCommitIntervalMs=1000"/>
             <log message="Received: $simple{body}" loggingLevel="INFO"/>
             <log message="Headers: $simple{headers}" loggingLevel="INFO"/>
             <convertBodyTo type="java.lang.String"/>
-            <to uri="file:target/results?fileName=$simple{header.kafka.KEY}.results"/>
+            <to uri="file:target/results"/>
         </route>
     </camelContext>
   

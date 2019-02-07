@@ -18,88 +18,12 @@
  */
 package org.apache.coheigea.camel.kafka;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Properties;
-
-import org.I0Itec.zkclient.ZkClient;
-import org.I0Itec.zkclient.ZkConnection;
-import org.apache.commons.io.FileUtils;
 import org.apache.camel.spring.Main;
-import org.apache.curator.test.TestingServer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-
-import kafka.admin.AdminUtils;
-import kafka.admin.RackAwareMode;
-import kafka.server.KafkaConfig;
-import kafka.server.KafkaServerStartable;
-import kafka.utils.ZKStringSerializer$;
-import kafka.utils.ZkUtils;
 
 public class KafkaTest extends org.junit.Assert {
-    private static KafkaServerStartable kafkaServer;
-    private static TestingServer zkServer;
-    private static int port = 12345;
-    private static Path tempDir;
-
-    @org.junit.BeforeClass
-    public static void setup() throws Exception {
-        zkServer = new TestingServer();
-
-        tempDir = Files.createTempDirectory("kafka");
-
-        port = Integer.parseInt(System.getProperty("kafka.port"));
-        Properties props = new Properties();
-        props.put("broker.id", 1);
-        props.put("host.name", "localhost");
-        props.put("port", port);
-        props.put("log.dir", tempDir.toString());
-        props.put("zookeeper.connect", zkServer.getConnectString());
-        props.put("replica.socket.timeout.ms", "1500");
-        props.put("controlled.shutdown.enable", Boolean.TRUE.toString());
-        props.put("offsets.topic.replication.factor", (short) 1);
-        props.put("offsets.topic.num.partitions", 1);
-
-        KafkaConfig config = new KafkaConfig(props);
-        kafkaServer = new KafkaServerStartable(config);
-        kafkaServer.startup();
-
-        // Create a "test" topic
-        ZkClient zkClient = new ZkClient(zkServer.getConnectString(), 30000, 30000, ZKStringSerializer$.MODULE$);
-
-        final ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(zkServer.getConnectString()), false);
-        AdminUtils.createTopic(zkUtils, "test", 1, 1, new Properties(), RackAwareMode.Enforced$.MODULE$);
-    }
-
-    @org.junit.AfterClass
-    public static void cleanup() throws Exception {
-        if (kafkaServer != null) {
-            kafkaServer.shutdown();
-        }
-        if (zkServer != null) {
-            zkServer.stop();
-        }
-        if (tempDir != null) {
-            FileUtils.deleteDirectory(tempDir.toFile());
-        }
-    }
 
     @org.junit.Test
     public void testKafka() throws Exception {
-        // Set up the Producer
-        Properties producerProps = new Properties();
-        producerProps.put("bootstrap.servers", "localhost:" + port);
-        producerProps.put("acks", "all");
-        producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-        Producer<String, String> producer = new KafkaProducer<>(producerProps);
-
-        // Send a message
-        producer.send(new ProducerRecord<String, String>("test", "somekey", "somevalue"));
-        producer.flush();
 
         // Start up the Camel route
         Main main = new Main();
@@ -111,8 +35,6 @@ public class KafkaTest extends org.junit.Assert {
         Thread.sleep(60 * 1000);
 
         main.stop();
-
-        producer.close();
     }
 
 }
