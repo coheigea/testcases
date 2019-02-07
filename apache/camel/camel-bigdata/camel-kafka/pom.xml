@@ -31,23 +31,12 @@
         <version>1.0</version>
    </parent>
 
-   <properties>
-       <kafka.version>1.0.0</kafka.version>
-       <commons.io.version>2.4</commons.io.version>
-   </properties>
-
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>
            <artifactId>commons-logging</artifactId>
            <version>${commons.logging.version}</version>
            <scope>compile</scope>
-       </dependency>
-       <dependency>
-           <groupId>commons-io</groupId>
-           <artifactId>commons-io</artifactId>
-           <version>${commons.io.version}</version>
-           <scope>test</scope>
        </dependency>
        <dependency>
            <groupId>junit</groupId>
@@ -88,18 +77,6 @@
            <artifactId>spring-context</artifactId>
            <version>${spring.version}</version>
        </dependency>
-       <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.11</artifactId>
-            <version>${kafka.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-test</artifactId>
-            <version>2.12.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
