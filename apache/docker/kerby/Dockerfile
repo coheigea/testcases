@@ -1,10 +1,10 @@
 
-FROM maven:3.5.3-jdk-8-alpine
+FROM maven:3.6.0-jdk-8-alpine
 
 LABEL maintainer-twitter="@coheigea"
-LABEL version=1.1.1
+LABEL version=2.0.0
 
-ARG KERBY_VERSION=1.1.1
+ARG KERBY_VERSION=2.0.0
 ARG KERBY_HOME=/usr/local/kerby-${KERBY_VERSION}
 
 WORKDIR /tmp
