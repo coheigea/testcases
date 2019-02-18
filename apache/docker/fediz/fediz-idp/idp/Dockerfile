@@ -2,9 +2,9 @@
 FROM tomcat:8.5
 
 LABEL maintainer-twitter="@coheigea"
-LABEL version=1.4.4
+LABEL version=1.4.5
 
-ARG FEDIZ_VERSION=1.4.4
+ARG FEDIZ_VERSION=1.4.5
 ARG TOMCAT_HOME=/usr/local/tomcat
 
 WORKDIR /tmp
