@@ -18,24 +18,14 @@
  */
 package org.apache.coheigea.camel.zipfile;
 
-import org.apache.camel.spring.Main;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- */
-public class ZipfileTest extends org.junit.Assert {
-    
-    @org.junit.Test
-    public void testLookup() throws Exception {
-        // Start up the Camel route
-        Main main = new Main();
-        main.setApplicationContextUri("camel-zipfile.xml");
-        
-        main.start();
-        
-        // Sleep to allow time to copy the files etc.
-        Thread.sleep(10 * 1000);
-        
-        main.stop();
-    }
-    
+@SpringBootApplication
+public class ZipFileApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ZipFileApplication.class, args);
+	}
+
 }
