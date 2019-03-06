@@ -26,12 +26,12 @@ public class ZipFileRoutes extends RouteBuilder {
 
 	@Override
 	public void configure() throws Exception {
-		from("file:src/main/resources/data?noop=true")
+		from("file:target/plaintextdata")
 			.setProperty("FileName", simple("{file:name.noext}"))
 			.marshal().zipFile()
 			.to("file:target/results");
 		
-		from("file:src/main/resources/zippeddata?noop=true")
+		from("file:target/zippeddata")
 			.unmarshal().zipFile()
 			.to("file:target/plaintextresults");
 		
