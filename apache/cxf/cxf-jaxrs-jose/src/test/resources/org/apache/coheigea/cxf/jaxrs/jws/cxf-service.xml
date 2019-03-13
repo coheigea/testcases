@@ -50,7 +50,7 @@
    
    <bean id="serviceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItAuthenticationService"/>
    
-   <bean id="noAuthServiceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItService"/>
+   <bean id="noAuthServiceBean" class="org.apache.coheigea.cxf.jaxrs.json.common.DoubleItServiceImpl"/>
    
    <bean id="jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
    

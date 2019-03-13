@@ -18,17 +18,14 @@
  */
 package org.apache.coheigea.cxf.jaxrs.json.common;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
-@Path("/services")
-public interface DoubleItService {
+public class DoubleItServiceImpl implements DoubleItService {
 	
-    @POST
-    @Produces("application/json")
-    @Consumes("application/json")
-    public Number doubleIt(Number numberToDouble);
+	@Override
+    public Number doubleIt(Number numberToDouble) {
+        Number newNumber = new Number();
+        newNumber.setDescription(numberToDouble.getDescription());
+        newNumber.setNumber(numberToDouble.getNumber() * 2);
+        return newNumber;
+    }
     
 }

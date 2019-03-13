@@ -21,13 +21,19 @@ package org.apache.coheigea.cxf.jaxrs.jwejws;
 import java.net.URL;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.coheigea.cxf.jaxrs.json.common.DoubleItService;
 import org.apache.coheigea.cxf.jaxrs.json.common.Number;
+import org.apache.cxf.Bus;
+import org.apache.cxf.BusFactory;
+import org.apache.cxf.bus.spring.SpringBusFactory;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.rs.security.jose.jaxrs.JweWriterInterceptor;
 import org.apache.cxf.rs.security.jose.jaxrs.JwsJsonWriterInterceptor;
@@ -37,8 +43,10 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -97,7 +105,7 @@ public class JWEJWSTest extends AbstractBusClientServerTestBase {
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
-    
+
     @org.junit.Test
     public void testEncryptionSignatureCompactProperties() throws Exception {
 
@@ -125,6 +133,27 @@ public class JWEJWSTest extends AbstractBusClientServerTestBase {
         Response response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
+    }
+    
+    @org.junit.Test
+    public void testEncryptionSignatureCompactPropertiesSpringConfig() throws Exception {
+
+        URL busFile = JWEJWSTest.class.getResource("cxf-client-config.xml");
+        
+        ClassPathXmlApplicationContext ctx =
+                new ClassPathXmlApplicationContext(new String[] {busFile.toString()});
+        DoubleItService proxy = (DoubleItService) ctx.getBean("serviceClient");
+        assertNotNull(proxy);
+        
+        Number numberToDouble = new Number();
+        numberToDouble.setDescription("This is the number to double");
+        numberToDouble.setNumber(25);
+
+        Number response = proxy.doubleIt(numberToDouble);
+        assertEquals(response.getNumber(), 50);
+        
+        ctx.close();
+        
     }
 
 }
