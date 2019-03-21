@@ -43,9 +43,11 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test JAX-RS JWT authorization.
+ * Test JAX-RS JWT authorization using a "role" claim embedded in the token. The service is configured
+ * with the SimpleAuthorizingInterceptor, which requires a role of "boss" to invoke on the "doubleIt"
+ * operation.
  */
-public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
+public class JWTAuthorizationRoleTest extends AbstractBusClientServerTestBase {
 
     private static final String PORT = allocatePort(Server.class);
 
@@ -62,7 +64,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testAuthorizedRequest() throws Exception {
 
-        URL busFile = JWTAuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = JWTAuthorizationRoleTest.class.getResource("cxf-client.xml");
 
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -106,7 +108,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testNoRole() throws Exception {
 
-        URL busFile = JWTAuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = JWTAuthorizationRoleTest.class.getResource("cxf-client.xml");
 
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
@@ -148,7 +150,7 @@ public class JWTAuthorizationTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testWrongRole() throws Exception {
 
-        URL busFile = JWTAuthorizationTest.class.getResource("cxf-client.xml");
+        URL busFile = JWTAuthorizationRoleTest.class.getResource("cxf-client.xml");
 
         List<Object> providers = new ArrayList<Object>();
         providers.add(new JacksonJsonProvider());
