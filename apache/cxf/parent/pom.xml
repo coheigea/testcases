@@ -39,11 +39,11 @@
         <fediz.version>1.3.3</fediz.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
         <htmlunit.version>2.22</htmlunit.version>
-        <jackson.version>2.9.3</jackson.version>
+        <jackson.version>2.9.8</jackson.version>
         <junit.version>4.12</junit.version>
-        <karaf.version>4.2.1</karaf.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <spring.version>4.3.20.RELEASE</spring.version>
+        <karaf.version>4.2.4</karaf.version>
+        <slf4j.version>1.7.26</slf4j.version>
+        <spring.version>4.3.22.RELEASE</spring.version>
         <syncope.version>2.0.7</syncope.version>
         <tomcat.version>8.0.53</tomcat.version>
     </properties>
