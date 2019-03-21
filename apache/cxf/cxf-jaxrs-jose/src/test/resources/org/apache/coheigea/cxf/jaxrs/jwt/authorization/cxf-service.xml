@@ -85,5 +85,29 @@
        </jaxrs:properties>
    </jaxrs:server>
    
+   <bean id="claimsServiceBean" class="org.apache.coheigea.cxf.jaxrs.jwt.authorization.DoubleItJWTClaimsAuthenticationService" />
+   
+   <bean id="claimsHandler" class="org.apache.cxf.jaxrs.security.ClaimsAuthorizingFilter">
+       <property name="securedObject" ref="claimsServiceBean"/>
+   </bean>
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server}/doubleitclaims">
+       <jaxrs:serviceBeans>
+          <ref bean="claimsServiceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <bean class="org.apache.cxf.rs.security.jose.jaxrs.JwtAuthenticationFilter" />
+          <ref bean="claimsHandler"/>
+       </jaxrs:providers>
+       <jaxrs:properties>
+            <entry key="rs.security.keystore.type" value="jks" />
+            <entry key="rs.security.keystore.alias" value="myclientkey"/>
+            <entry key="rs.security.keystore.password" value="cspass"/>
+            <entry key="rs.security.keystore.file" value="clientstore.jks" />
+            <entry key="rs.security.signature.algorithm" value="RS256" />
+       </jaxrs:properties>
+   </jaxrs:server>
+   
 </beans>
 
