@@ -35,6 +35,7 @@
         <module>camel-ssh</module>
         <module>misc</module>
         <module>camel-bigdata</module>
+        <module>camel-jetty</module>
     </modules>
 
     <build>
