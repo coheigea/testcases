@@ -33,6 +33,7 @@
         <module>cxf-jaxrs-sts</module>
         <module>cxf-jaxrs-jaas-sts</module>
         <module>cxf-jaxrs-xmlsecurity</module>
+        <module>cxf-jaxrs-httpsig</module>
         <module>cxf-jaxrs-jose</module>
         <module>cxf-jaxrs-oauth1</module>
         <module>cxf-jaxrs-oauth2.0</module>
