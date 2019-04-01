@@ -32,8 +32,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.kms.AWSKMSClient;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
+import com.amazonaws.services.kms.AWSKMS;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.DecryptRequest;
 import com.amazonaws.services.kms.model.GenerateDataKeyRequest;
 import com.amazonaws.services.kms.model.GenerateDataKeyResult;
@@ -53,8 +56,11 @@ public class CommonCallbackHandler implements CallbackHandler {
                 if (pc.getUsage() == WSPasswordCallback.SECRET_KEY) {
                     final AWSCredentials creds = new BasicAWSCredentials(accessKey, secretKey);
 
-                    AWSKMSClient kms = new AWSKMSClient(creds);
-                    kms.setEndpoint(endpoint);
+                    EndpointConfiguration endpointConfiguration = new EndpointConfiguration(endpoint, "eu-west-1");
+					AWSKMS kms = AWSKMSClientBuilder.standard()
+                    		.withCredentials(new AWSStaticCredentialsProvider(creds))
+                    		.withEndpointConfiguration(endpointConfiguration)
+                    		.build();
                     
                     if (pc.getEncryptedSecret() != null) {
                         ByteBuffer encryptedKey = ByteBuffer.wrap(pc.getEncryptedSecret());
