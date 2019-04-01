@@ -109,10 +109,16 @@
        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-kms</artifactId>
-            <version>1.10.1</version>
+            <version>1.11.524</version>
             <scope>test</scope>
        </dependency>
-
+       <dependency>
+           <groupId>org.apache.coheigea.cxf</groupId>
+           <artifactId>cxf-common</artifactId>
+           <version>${project.version}</version>
+           <scope>test</scope>
+           <classifier>tests</classifier>
+       </dependency>
     </dependencies>
 
     <build>
@@ -176,9 +182,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.20.1</version>
                 <configuration>
-                    <reuseForks>false</reuseForks>
                     <systemPropertyVariables>
                     </systemPropertyVariables>
                 </configuration>

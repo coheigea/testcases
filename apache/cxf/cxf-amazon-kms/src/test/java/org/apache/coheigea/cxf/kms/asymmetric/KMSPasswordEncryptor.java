@@ -19,14 +19,16 @@
 package org.apache.coheigea.cxf.kms.asymmetric;
 
 import java.nio.ByteBuffer;
+import java.util.Base64;
 
 import org.apache.wss4j.common.crypto.PasswordEncryptor;
-import org.apache.xml.security.exceptions.Base64DecodingException;
-import org.apache.xml.security.utils.Base64;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.kms.AWSKMSClient;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
+import com.amazonaws.services.kms.AWSKMS;
+import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.DecryptRequest;
 import com.amazonaws.services.kms.model.EncryptRequest;
 
@@ -41,8 +43,11 @@ public class KMSPasswordEncryptor implements PasswordEncryptor {
     public String encrypt(String password) {
         final AWSCredentials creds = new BasicAWSCredentials(accessKey, secretKey);
 
-        AWSKMSClient kms = new AWSKMSClient(creds);
-        kms.setEndpoint(endpoint);
+        EndpointConfiguration endpointConfiguration = new EndpointConfiguration(endpoint, "eu-west-1");
+		AWSKMS kms = AWSKMSClientBuilder.standard()
+        		.withCredentials(new AWSStaticCredentialsProvider(creds))
+        		.withEndpointConfiguration(endpointConfiguration)
+        		.build();
         
         ByteBuffer plaintext = ByteBuffer.wrap(password.getBytes());
         
@@ -53,7 +58,7 @@ public class KMSPasswordEncryptor implements PasswordEncryptor {
         byte[] key = new byte[encryptedKey.remaining()];
         encryptedKey.get(key);
         
-        return Base64.encode(key);
+        return Base64.getEncoder().encodeToString(key);
     }
 
     @Override
@@ -61,23 +66,22 @@ public class KMSPasswordEncryptor implements PasswordEncryptor {
         
         final AWSCredentials creds = new BasicAWSCredentials(accessKey, secretKey);
 
-        AWSKMSClient kms = new AWSKMSClient(creds);
-        kms.setEndpoint(endpoint);
+        EndpointConfiguration endpointConfiguration = new EndpointConfiguration(endpoint, "eu-west-1");
+		AWSKMS kms = AWSKMSClientBuilder.standard()
+        		.withCredentials(new AWSStaticCredentialsProvider(creds))
+        		.withEndpointConfiguration(endpointConfiguration)
+        		.build();
         
-        try {
-            byte[] encryptedBytes = Base64.decode(encryptedPassword);
-            ByteBuffer encryptedKey = ByteBuffer.wrap(encryptedBytes);
-            
-            DecryptRequest req = new DecryptRequest().withCiphertextBlob(encryptedKey);
-            ByteBuffer plaintextKey = kms.decrypt(req).getPlaintext();
-            
-            byte[] key = new byte[plaintextKey.remaining()];
-            plaintextKey.get(key);
-            
-            return new String(key);
-        } catch (Base64DecodingException ex) {
-            return null;
-        }
+		byte[] encryptedBytes = Base64.getDecoder().decode(encryptedPassword);
+		ByteBuffer encryptedKey = ByteBuffer.wrap(encryptedBytes);
+
+		DecryptRequest req = new DecryptRequest().withCiphertextBlob(encryptedKey);
+		ByteBuffer plaintextKey = kms.decrypt(req).getPlaintext();
+
+		byte[] key = new byte[plaintextKey.remaining()];
+		plaintextKey.get(key);
+
+		return new String(key);
     }
 
     public String getSecretKey() {
