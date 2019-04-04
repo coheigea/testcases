@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.0 r1840935">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="host" elementType="Argument">
+            <stringProp name="Argument.name">host</stringProp>
+            <stringProp name="Argument.value">localhost</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Host of Webservice</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+        <stringProp name="HTTPSampler.domain">${host}</stringProp>
+        <stringProp name="HTTPSampler.port"></stringProp>
+        <stringProp name="HTTPSampler.protocol"></stringProp>
+        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+        <stringProp name="HTTPSampler.path"></stringProp>
+        <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+        <stringProp name="HTTPSampler.response_timeout"></stringProp>
+      </ConfigTestElement>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="NoSecurity" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">50000</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
+        <longProp name="ThreadGroup.start_time">1375525852000</longProp>
+        <longProp name="ThreadGroup.end_time">1375525852000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Soap Request No Security" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;soap:Envelope xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;&lt;soap:Body&gt;&lt;ns2:DoubleIt xmlns:ns2=&quot;http://www.example.org/schema/DoubleIt&quot;&gt;&lt;numberToDouble&gt;25&lt;/numberToDouble&gt;&lt;/ns2:DoubleIt&gt;&lt;/soap:Body&gt;&lt;/soap:Envelope&gt;</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">doubleit/services/doubleit</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">text/xml; charset=utf-8</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">SOAPAction</stringProp>
+                <stringProp name="Header.value">&quot;&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="773387613">DoubleItResponse</stringProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Verify content in response</stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">16</intProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="AsymmetricBinding" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">20000</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
+        <longProp name="ThreadGroup.start_time">1375525852000</longProp>
+        <longProp name="ThreadGroup.end_time">1375525852000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Soap Request Asymmetric" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">&lt;soap:Envelope xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;&lt;soap:Header&gt;&lt;wsse:Security xmlns:wsse=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot; xmlns:wsu=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot; soap:mustUnderstand=&quot;1&quot;&gt;&lt;xenc:EncryptedKey xmlns:xenc=&quot;http://www.w3.org/2001/04/xmlenc#&quot; Id=&quot;EK-984a5631-c664-4c9e-9607-04f16cd2c62b&quot;&gt;&lt;xenc:EncryptionMethod Algorithm=&quot;http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p&quot;/&gt;&lt;ds:KeyInfo xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;&lt;wsse:SecurityTokenReference&gt;&lt;ds:X509Data&gt;&lt;ds:X509IssuerSerial&gt;&lt;ds:X509IssuerName&gt;CN=Werner,OU=Apache WSS4J,O=Home,L=Munich,ST=Bayern,C=DE&lt;/ds:X509IssuerName&gt;&lt;ds:X509SerialNumber&gt;32&lt;/ds:X509SerialNumber&gt;&lt;/ds:X509IssuerSerial&gt;&lt;/ds:X509Data&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;xenc:CipherData&gt;&lt;xenc:CipherValue&gt;pK49pHyt0MYnZ+7v7XqgYMaBVqnW1BF7dfquoEVXdjft4ECAlVYaP6yzjt1W6ERLjd2cPb7OEdGawlhunVD5vpLLj4kkhyxKmG8JzpwNjSD9rhUVcK39raLdGyFnQgaL+wh/fMK1iCp0FmylIFDtY1m8lWotWJul53fzipJXsWBg3gdx8rr9vkQ8o7rBQRJJjjBahxX41a4IM0Feyc/GP9RReVLCckGI724qorBHj2gxFJuuLcLlo/Na1gOE51dJ2jnVa0fhpJxC4cod0IfqBHOuj5BzgmwxtVuCWjTVXt1qR9spBdKtefK6XJT0qkY9NBIWetSL2YyfrkQI7/ROlg==&lt;/xenc:CipherValue&gt;&lt;/xenc:CipherData&gt;&lt;xenc:ReferenceList&gt;&lt;xenc:DataReference URI=&quot;#ED-114a731f-b389-477b-b9a7-3fc57c3c9d0e&quot;/&gt;&lt;/xenc:ReferenceList&gt;&lt;/xenc:EncryptedKey&gt;&lt;wsse:BinarySecurityToken EncodingType=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary&quot; ValueType=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3&quot; wsu:Id=&quot;X509-aa4f5a18-865a-4115-bb3c-711d5f5afc7f&quot;&gt;MIIDqjCCAxOgAwIBAgIBHzANBgkqhkiG9w0BAQsFADBmMQswCQYDVQQGEwJERTEPMA0GA1UECBMGQmF5ZXJuMQ8wDQYDVQQHEwZNdW5pY2gxDTALBgNVBAoTBEhvbWUxFTATBgNVBAsTDEFwYWNoZSBXU1M0SjEPMA0GA1UEAxMGV2VybmVyMB4XDTE1MDkxMDEzMjEyMloXDTI1MDkwNzEzMjEyMlowUzELMAkGA1UEBhMCSUUxETAPBgNVBAgTCExlaW5zdGVyMQ8wDQYDVQQHEwZEdWJsaW4xDzANBgNVBAoTBkFwYWNoZTEPMA0GA1UEAxMGQ2xpZW50MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjeP2hF/KOv8Pw/++n9bAa0DxKFzyLvlcAciBgv1E01cCyUwn5X0v8nT9gIdjXBi6Y6PvSCs2GqcAzo82yzIjlcDmocXt/2vBkezwh6Ow2xoXItzXD+I6KlhpH8gl4xXd35N0z+88m4SEclncm//l3sQHP6CMG9O4H91A+0DXzTkQHzs2PEg13ONMOVbg5P85ceZ+VTBjd3BkqC0mZDB6Ovo6Xt06tVS/S4rFR0L9mtyxZ+v/Psd8TYAIk3wlz1e1wm+dobp1YkOPgvv08r8ROVnWC0pRZquCPQUou6r50LseRZWEo9MGN8kt4sYcLCaJbF3fsTvKYi6InWyczv2JSQIDAQABo4H2MIHzMAkGA1UdEwQCMAAwLAYJYIZIAYb4QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBQsRXQjSEq1PetSTIekkXnMBtntGTCBmAYDVR0jBIGQMIGNgBRWF+/2a4tZ/iMZaN54wOFNZ33QZqFqpGgwZjELMAkGA1UEBhMCREUxDzANBgNVBAgTBkJheWVybjEPMA0GA1UEBxMGTXVuaWNoMQ0wCwYDVQQKEwRIb21lMRUwEwYDVQQLEwxBcGFjaGUgV1NTNEoxDzANBgNVBAMTBldlcm5lcoIJAI3hLAppEXfSMA0GCSqGSIb3DQEBCwUAA4GBAKZXwqAplMzutyC8jIUzFN/DfQOAuZ8ExLBIUxW51KSzxxL+kfydq4HFotRC7PZ3bYEkXYN7deUYoq6yFO0AAWvagBbxdzRYDPRCwpKe+4jn8VLGtjkEyLSsMiiaNiOuMx8qWxvV1sA9KioHvZDFVP+0QqSc1ZytEPOKasdViUU9&lt;/wsse:BinarySecurityToken&gt;&lt;ds:Signature xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot; Id=&quot;SIG-d3be47e3-8f3f-40d9-a7c7-e501ec4cf6d6&quot;&gt;&lt;ds:SignedInfo&gt;&lt;ds:CanonicalizationMethod Algorithm=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;&gt;&lt;ec:InclusiveNamespaces xmlns:ec=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot; PrefixList=&quot;soap&quot;/&gt;&lt;/ds:CanonicalizationMethod&gt;&lt;ds:SignatureMethod Algorithm=&quot;http://www.w3.org/2000/09/xmldsig#rsa-sha1&quot;/&gt;&lt;ds:Reference URI=&quot;#_521af332-e7fb-4e93-b077-06aba6c6e0e5&quot;&gt;&lt;ds:Transforms&gt;&lt;ds:Transform Algorithm=&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;/&gt;&lt;/ds:Transforms&gt;&lt;ds:DigestMethod Algorithm=&quot;http://www.w3.org/2000/09/xmldsig#sha1&quot;/&gt;&lt;ds:DigestValue&gt;JoxiBDldHIWvBfqAo2CK4E2M5uM=&lt;/ds:DigestValue&gt;&lt;/ds:Reference&gt;&lt;/ds:SignedInfo&gt;&lt;ds:SignatureValue&gt;TkC8Ui9XSmyy34ME11mYua7C0F1ItvQqYaMRIVkkhAONsXqYit2qn7MT6jE5/eaziLvDY5t+Hi1rkE0G3ZNFEH9IrxeSLbFgKtwd/gyrYoWBvgUo9HHrox9jaUa1yBL6uXAxqRxA7ytab5jvvCkygwMhMN+sQInU7jZDOC436xWlNVFdGFf+OX/EhnU8jysjVRzkmYm/BeeJRxzhlnwRyE5vdbCAlWFU1g/wf3782JR7G6wRmeb/oqgbVY15LWC7Bj5JmBHHVZYAKVeIwwLm7beOAeThYatzyEHYOCxMezxvWGDdVNTNudnC8pmDiFOhFhUcsTQiz5Z7gnvtM2YIXQ==&lt;/ds:SignatureValue&gt;&lt;ds:KeyInfo Id=&quot;KI-a3a736e2-6eda-49a3-b955-d71924a66c74&quot;&gt;&lt;wsse:SecurityTokenReference xmlns:wsse=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot; xmlns:wsu=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot; wsu:Id=&quot;STR-15833079-13bc-4596-88ed-8132ba7a44c1&quot;&gt;&lt;wsse:Reference URI=&quot;#X509-aa4f5a18-865a-4115-bb3c-711d5f5afc7f&quot; ValueType=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3&quot;/&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;/ds:Signature&gt;&lt;/wsse:Security&gt;&lt;/soap:Header&gt;&lt;soap:Body xmlns:wsu=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot; wsu:Id=&quot;_521af332-e7fb-4e93-b077-06aba6c6e0e5&quot;&gt;&lt;xenc:EncryptedData xmlns:xenc=&quot;http://www.w3.org/2001/04/xmlenc#&quot; Id=&quot;ED-114a731f-b389-477b-b9a7-3fc57c3c9d0e&quot; Type=&quot;http://www.w3.org/2001/04/xmlenc#Content&quot;&gt;&lt;xenc:EncryptionMethod Algorithm=&quot;http://www.w3.org/2001/04/xmlenc#aes128-cbc&quot;/&gt;&lt;ds:KeyInfo xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;&lt;wsse:SecurityTokenReference xmlns:wsse=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot; xmlns:wsse11=&quot;http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd&quot; wsse11:TokenType=&quot;http://docs.oasis-open.org/wss/oasis-wss-soap-message-security-1.1#EncryptedKey&quot;&gt;&lt;wsse:Reference URI=&quot;#EK-984a5631-c664-4c9e-9607-04f16cd2c62b&quot;/&gt;&lt;/wsse:SecurityTokenReference&gt;&lt;/ds:KeyInfo&gt;&lt;xenc:CipherData&gt;&lt;xenc:CipherValue&gt;cktYReIbDasFF5OqTg/FRckNMRHNRgl4NwTyUZd8vyZJX1o8RF0QYPQAVDdFHwkUn5QvkeQNb0qumMQwMhtutPevqznDUSnVwl60/9+aaI/8ssq72QKtMrVw0MDYQCctozHJCyJgyb1yKvE636UqfRsPbcUsHKTE8QZeEIH+ArQb+QmFr7tr+Pv1mJeRI60nOwGQnWbF92KGAkbrAgpPVw==&lt;/xenc:CipherValue&gt;&lt;/xenc:CipherData&gt;&lt;/xenc:EncryptedData&gt;&lt;/soap:Body&gt;&lt;/soap:Envelope</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">doubleit/services/doubleit</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">text/xml; charset=utf-8</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">SOAPAction</stringProp>
+                <stringProp name="Header.value">&quot;&quot;</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
