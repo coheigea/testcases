@@ -26,6 +26,7 @@
 
     <modules>
         <module>cxf-jmeter</module>
+        <module>cxf-security-policy</module>
         <!--<module>cxf-jmh</module>-->
         <!--<module>cxf-timing</module>-->
     </modules>
