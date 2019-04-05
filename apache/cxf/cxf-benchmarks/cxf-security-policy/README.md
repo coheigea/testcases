@@ -16,4 +16,6 @@ it will not apply the SAAJInInterceptor.
 
 Then open up JMeter and import the "DoubleItPolicy.jmx" in the root directory
 of this project. Run the project and look at the Summary Report for
-throughput, etc.
+throughput, etc. The "NoSecurity" testcase uses an encoded version of the
+WS-Security spec as part of the payload to demonstrate performance using
+a large paylod.
