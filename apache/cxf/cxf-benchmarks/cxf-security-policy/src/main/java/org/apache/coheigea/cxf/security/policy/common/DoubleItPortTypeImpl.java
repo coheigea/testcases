@@ -36,11 +36,11 @@ public class DoubleItPortTypeImpl implements DoubleItPortType {
     @Resource
     WebServiceContext wsContext;
 
-    public int doubleIt(int numberToDouble) {
+    public int doubleIt(int numberToDouble, String description) {
         return numberToDouble * 2;
     }
     
-    public int doubleItSecured(int numberToDouble) {
+    public int doubleItSecured(int numberToDouble, String description) {
         return numberToDouble * 2;
     }
     

@@ -71,7 +71,7 @@ public class SecurityPolicyTest extends AbstractBusClientServerTestBase {
             service.getPort(portQName, DoubleItPortType.class);
         updateAddressPort(port, PORT);
         
-        assertEquals(50, port.doubleItSecured(25));
+        assertEquals(50, port.doubleItSecured(25, "xyz"));
     }
     
     @org.junit.Test
@@ -91,7 +91,7 @@ public class SecurityPolicyTest extends AbstractBusClientServerTestBase {
             service.getPort(portQName, DoubleItPortType.class);
         updateAddressPort(port, PORT);
         
-        assertEquals(50, port.doubleIt(25));
+        assertEquals(50, port.doubleIt(25, "xyz"));
     }
     
 }

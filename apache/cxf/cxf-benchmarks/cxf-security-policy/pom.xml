@@ -31,9 +31,9 @@
         <version>1.0</version>
    </parent>
 
-   <properties>
+   <!--<properties>
        <cxf.version>3.3.2-SNAPSHOT</cxf.version>
-   </properties>
+   </properties>-->
    
    <dependencies>
        <dependency>
