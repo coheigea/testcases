@@ -33,7 +33,7 @@ public class CoapTest extends org.junit.Assert {
         main.start();
 
         // Sleep to allow time to copy the files etc.
-        Thread.sleep(30 * 1000);
+        Thread.sleep(10 * 1000);
 
         main.stop();
     }
