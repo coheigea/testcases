@@ -23,13 +23,19 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <camel:keyStoreParameters id="signatureParams" resource="ectest.jks" 
+    <camel:keyStoreParameters id="keystoreParams" resource="ectest.jks" 
+           password="security" />
+    <camel:keyStoreParameters id="truststoreParams" resource="ectest.jks" 
            password="security" />
     
     <camelContext xmlns="http://camel.apache.org/schema/spring">
-       <!--  server configuration port="{{https.port}}" --> 
-        <restConfiguration scheme="coaps" component="coap" port="12345">
-            <endpointProperty key="keyStoreParameters" value="#signatureParams" />
+       <!--  server configuration --> 
+        <restConfiguration scheme="coaps" component="coap" port="{{https.port}}">
+            <endpointProperty key="keyStoreParameters" value="#keystoreParams" />
+            <endpointProperty key="trustStoreParameters" value="#truststoreParams" />
+            <endpointProperty key="alias" value="ec"/>
+            <endpointProperty key="password" value="security"/>
+            <endpointProperty key="cipherSuites" value="TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"/>
         </restConfiguration>
         
         <rest path="/data">
@@ -45,11 +51,11 @@
              </pollEnrich>
         </route>
 
-        <!--  client configuration  <to uri="coaps:localhost:{{https.port}}/data" />-->
+        <!--  client configuration -->
         
         <route>
             <from uri="timer:start?repeatCount=1"/>
-            <to uri="coaps:localhost:12345/data?keyStoreParameters=#signatureParams" />
+            <to uri="coaps:localhost:{{https.port}}/data?trustStoreParameters=#truststoreParams" />
             <log message="Data received: ${body}" />
         </route>
     </camelContext>
