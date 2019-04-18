@@ -23,17 +23,17 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <camel:keyStoreParameters id="keystoreParams" resource="ectest.jks" 
+    <camel:keyStoreParameters id="keystoreParams" resource="service.jks" 
            password="security" />
-    <camel:keyStoreParameters id="truststoreParams" resource="ectest.jks" 
-           password="security" />
+    <camel:keyStoreParameters id="truststoreParams" resource="truststore.jks" 
+           password="storepass" />
     
     <camelContext xmlns="http://camel.apache.org/schema/spring">
        <!--  server configuration --> 
         <restConfiguration scheme="coaps" component="coap" port="{{https.port}}">
             <endpointProperty key="keyStoreParameters" value="#keystoreParams" />
             <endpointProperty key="trustStoreParameters" value="#truststoreParams" />
-            <endpointProperty key="alias" value="ec"/>
+            <endpointProperty key="alias" value="service"/>
             <endpointProperty key="password" value="security"/>
             <endpointProperty key="cipherSuites" value="TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"/>
             <endpointProperty key="clientAuthentication" value="WANT"/>
