@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.jaxrs.httpsig.Number;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.rs.security.httpsignature.filters.CreateSignatureClientFilter;
+import org.apache.cxf.rs.security.httpsignature.filters.CreateSignatureInterceptor;
 import org.apache.cxf.rs.security.httpsignature.filters.VerifySignatureClientFilter;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
 import org.junit.BeforeClass;
@@ -59,7 +59,7 @@ public class HTTPSignatureTest extends AbstractBusClientServerTestBase {
         URL busFile = HTTPSignatureTest.class.getResource("cxf-client.xml");
 
         List<Object> providers = new ArrayList<>();
-        providers.add(new CreateSignatureClientFilter());
+        providers.add(new CreateSignatureInterceptor());
         providers.add(new VerifySignatureClientFilter());
         String address = "http://localhost:" + PORT + "/doubleit/services";
         WebClient client = WebClient.create(address, providers, busFile.toString());
