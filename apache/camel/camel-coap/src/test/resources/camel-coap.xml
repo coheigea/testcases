@@ -22,21 +22,26 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-
-    <camel:keyStoreParameters id="keystoreParams" resource="service.jks" 
-           password="security" />
-    <camel:keyStoreParameters id="truststoreParams" resource="truststore.jks" 
-           password="storepass" />
+           
+    <sslContextParameters id="serverSSLParameters" xmlns="http://camel.apache.org/schema/spring">
+        <keyManagers keyPassword="security">
+            <keyStore resource="service.jks" password="security"/>
+        </keyManagers>
+    </sslContextParameters>
+    
+    <sslContextParameters id="clientSSLParameters" xmlns="http://camel.apache.org/schema/spring">
+        <trustManagers>
+            <keyStore resource="truststore.jks" password="storepass"/>
+        </trustManagers>
+        <cipherSuites>
+        	<cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</cipherSuite>
+        </cipherSuites>
+    </sslContextParameters>
     
     <camelContext xmlns="http://camel.apache.org/schema/spring">
        <!--  server configuration --> 
         <restConfiguration scheme="coaps" component="coap" port="{{https.port}}">
-            <endpointProperty key="keyStoreParameters" value="#keystoreParams" />
-            <endpointProperty key="trustStoreParameters" value="#truststoreParams" />
-            <endpointProperty key="alias" value="service"/>
-            <endpointProperty key="password" value="security"/>
-            <endpointProperty key="cipherSuites" value="TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"/>
-            <endpointProperty key="clientAuthentication" value="WANT"/>
+            <endpointProperty key="sslContextParameters" value="#serverSSLParameters" />
         </restConfiguration>
         
         <rest path="/data">
@@ -56,7 +61,7 @@
         
         <route>
             <from uri="timer:start?repeatCount=1"/>
-            <to uri="coaps:localhost:{{https.port}}/data?trustStoreParameters=#truststoreParams" />
+            <to uri="coaps:localhost:{{https.port}}/data?sslContextParameters=#clientSSLParameters" />
             <log message="Data received: ${body}" />
         </route>
     </camelContext>
