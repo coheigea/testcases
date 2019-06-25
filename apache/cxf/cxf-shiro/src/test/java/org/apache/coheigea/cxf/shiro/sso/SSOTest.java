@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * This tests using Apache Shiro for authentication in combination with SingleSignOn (SSO)
+ * This tests using Apache Shiro for authentication in combination with Single Sign On (SSO)
  * provided by the WS-SecureConversation protocol. A cxf client sends a SOAP UsernameToken to a CXF
  * Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken
  * via the ShiroUTValidator. The Endpoint returns a token + associated secret to the client,
