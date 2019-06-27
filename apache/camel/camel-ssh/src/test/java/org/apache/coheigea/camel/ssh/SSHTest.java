@@ -81,6 +81,7 @@ public class SSHTest extends org.junit.Assert {
         // sshServer.setShellFactory(new ProcessShellFactory(new String[] { "/bin/sh", "-i", "-l" }));
 
         sshServer.setPasswordAuthenticator(new CamelPasswordAuthenticator());
+        sshServer.setPublickeyAuthenticator(new CamelPublicKeyAuthenticator());
         sshServer.start();
     }
 

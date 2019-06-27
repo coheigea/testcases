@@ -37,7 +37,8 @@
                          
         <route>
             <from uri="file:src/test/resources/ssh_data?noop=true"/>
-            <to uri="ssh://alice:{{alice.password}}@localhost:portno"/>
+            <!-- <to uri="ssh://alice:{{alice.password}}@localhost:portno"/> -->
+            <to uri="ssh://alice@localhost:portno?certResource=classpath:ec.pem&amp;keyType=ecdsa-sha2-nistp521"/>
             <to uri="file:target/ssh_results?fileName=${file:name.noext}.result"/>
         </route>
     </camelContext>
