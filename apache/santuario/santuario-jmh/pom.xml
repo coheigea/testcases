@@ -19,38 +19,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.coheigea.santuario</groupId>
-    <artifactId>santuario-xml-signature-demo</artifactId>
+    <artifactId>santuario-jmh-benchmarks</artifactId>
     <packaging>jar</packaging>
-    <name>Apache Santuario - XML Signature Demo</name>
+    <name>Apache Santuario - XML Signature JMH Benchmarks</name>
     <version>1.0</version>
 
    <properties>
-        <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
-        <junit.version>4.12</junit.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <xmlsec.version>2.1.3</xmlsec.version>
+        <jmh.version>1.21</jmh.version>
+        <!-- <xmlsec.version>2.1.3</xmlsec.version> -->
+        <xmlsec.version>2.1.4-SNAPSHOT</xmlsec.version>
    </properties>
 
    <dependencies>
        <dependency>
-           <groupId>junit</groupId>
-           <artifactId>junit</artifactId>
-           <version>${junit.version}</version>
-           <scope>test</scope>
-       </dependency>
-       <dependency>
            <groupId>org.apache.santuario</groupId>
            <artifactId>xmlsec</artifactId>
            <version>${xmlsec.version}</version>
-           <scope>test</scope>
        </dependency>
        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
+           <groupId>org.openjdk.jmh</groupId>
+           <artifactId>jmh-core</artifactId>
+           <version>${jmh.version}</version>
        </dependency>
-
+       <dependency>
+           <groupId>org.openjdk.jmh</groupId>
+           <artifactId>jmh-generator-annprocess</artifactId>
+           <version>${jmh.version}</version>
+           <scope>provided</scope>
+       </dependency>
     </dependencies>
 
     <build>
@@ -102,49 +98,61 @@
             </plugins>
         </pluginManagement>
 
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>benchmarks</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.openjdk.jmh.Main</mainClass>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                             </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+             </plugin>
+             <plugin>
+                 <groupId>org.codehaus.mojo</groupId>
+                 <artifactId>exec-maven-plugin</artifactId>
+                 <executions>
+                     <execution>
+                         <id>run-benchmarks</id>
+                         <phase>integration-test</phase>
+                         <goals>
+                             <goal>exec</goal>
+                         </goals>
+                         <configuration>
+                             <classpathScope>test</classpathScope>
+                             <executable>java</executable>
+                             <arguments>
+                                 <argument>-jar</argument>
+                                 <argument>target/benchmarks.jar</argument>
+                            </arguments>
+                         </configuration>
+                     </execution>
+                </executions>
+             </plugin>
+        </plugins>
         
     </build>
     
-    <profiles>
-        <profile>
-            <build>
-                <plugins>
-                    <plugin>
-                         <groupId>org.apache.maven.plugins</groupId>
-                         <artifactId>maven-surefire-plugin</artifactId>
-                         <configuration>
-                             <systemPropertyVariables>
-                             </systemPropertyVariables>
-                         </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>jdk19-plus</id>
-            <activation>
-                <jdk>[9,)</jdk>
-            </activation>
-            <dependencies>
-                 <dependency>
-                     <groupId>javax.activation</groupId>
-                     <artifactId>activation</artifactId>
-                     <version>1.1.1</version>
-                 </dependency>
-                 <dependency>
-                     <groupId>jakarta.xml.bind</groupId>
-                     <artifactId>jakarta.xml.bind-api</artifactId>
-                     <version>2.3.2</version>
-                 </dependency>
-                 <dependency>
-                     <groupId>org.glassfish.jaxb</groupId>
-                     <artifactId>jaxb-runtime</artifactId>
-                     <version>2.3.2</version>
-                 </dependency>
-
-             </dependencies>
-         </profile>
-
-    </profiles>
-
 </project>
