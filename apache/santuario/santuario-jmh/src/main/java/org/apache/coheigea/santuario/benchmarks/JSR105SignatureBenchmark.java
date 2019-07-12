@@ -25,7 +25,8 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.xml.security.utils.XMLUtils;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -74,7 +75,12 @@ public class JSR105SignatureBenchmark {
 		 // Read in plaintext document
         InputStream sourceDocument =
                 this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
-        Document document = XMLUtils.read(sourceDocument);
+        
+        // Note this is very inefficient to to this every time - but I don't care, I just want to 
+        // compare consistent performance across different Santuario versions
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        Document document = dbf.newDocumentBuilder().parse(sourceDocument);
 
         // Sign using DOM
         SignatureUtils.signUsingJSR105(
@@ -92,7 +98,12 @@ public class JSR105SignatureBenchmark {
 		 // Read in signed document
         InputStream sourceDocument =
                 this.getClass().getClassLoader().getResourceAsStream("signed.xml");
-        Document document = XMLUtils.read(sourceDocument);
+
+        // Note this is very inefficient to to this every time - but I don't care, I just want to 
+        // compare consistent performance across different Santuario versions
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        Document document = dbf.newDocumentBuilder().parse(sourceDocument);
 
         // Verify using JSR-105
         SignatureUtils.verifyUsingJSR105(document, state.cert);
