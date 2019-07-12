@@ -1,0 +1,43 @@
+<PurchaseOrder xmlns="urn:example:po" Id="f49d13c2-a37d-4549-a48e-75ecace17a34">
+  <Items>
+    <Item Code="001-001-001" Quantity="1">
+      spade
+    </Item>
+    <Item Code="001-001-002" Quantity="1">
+      shovel
+    </Item>
+  </Items>
+  <ShippingAddress>
+    Dig PLC, 1 First Ave, Dublin 1, Ireland
+  </ShippingAddress>
+  <PaymentInfo>
+    <BillingAddress>
+      Dig PLC, 1 First Ave, Dublin 1, Ireland
+    </BillingAddress>
+    <CreditCard Type="Amex">
+      <Name>Foo B Baz</Name>
+      <Number>1234 567890 12345</Number>
+      <Expires Month="1" Year="2005"></Expires>
+    </CreditCard>
+  </PaymentInfo>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></CanonicalizationMethod><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></SignatureMethod><Reference URI="#f49d13c2-a37d-4549-a48e-75ecace17a34"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></Transform></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></DigestMethod><DigestValue>yfFAUZIioPShZ7ORjZ+0MGUE+PQ=</DigestValue></Reference></SignedInfo><SignatureValue>a3HiB8NH1bsRkyx7dPf7OiNLLEHncfhIQKiXInF3SsfGqIOnJDPsTbvdN+DCsGHjCcjKNf3Vy7fW
+GLWPDWCxv6UysUDwRQeNXBDOX0eu3JlYqqOePR1fpMiOVTH+Z/qL6lnm3FehftraKer3QSMRVRow
+aezBWehTJMwIDgzl+tJ4Df6rmeiTdX0a626NqT2nBhbtptPYzeZvXzLaBiE3TG0O6svj8g6E+sX6
+OIRc4zfZkvLGyu42MIhHV6yFTwRA4jG1hl+3YheGfc2vVOnBtqG1Z8uWrkfUEPWIqYezfLX+cJ0Q
+S+BEJ1AXsB9jAdhSZc1w4nH98/xkMoh++Uh/5w==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIDqjCCAxOgAwIBAgIBHzANBgkqhkiG9w0BAQsFADBmMQswCQYDVQQGEwJERTEPMA0GA1UECBMG
+QmF5ZXJuMQ8wDQYDVQQHEwZNdW5pY2gxDTALBgNVBAoTBEhvbWUxFTATBgNVBAsTDEFwYWNoZSBX
+U1M0SjEPMA0GA1UEAxMGV2VybmVyMB4XDTE1MDkxMDEzMjEyMloXDTI1MDkwNzEzMjEyMlowUzEL
+MAkGA1UEBhMCSUUxETAPBgNVBAgTCExlaW5zdGVyMQ8wDQYDVQQHEwZEdWJsaW4xDzANBgNVBAoT
+BkFwYWNoZTEPMA0GA1UEAxMGQ2xpZW50MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+jeP2hF/KOv8Pw/++n9bAa0DxKFzyLvlcAciBgv1E01cCyUwn5X0v8nT9gIdjXBi6Y6PvSCs2GqcA
+zo82yzIjlcDmocXt/2vBkezwh6Ow2xoXItzXD+I6KlhpH8gl4xXd35N0z+88m4SEclncm//l3sQH
+P6CMG9O4H91A+0DXzTkQHzs2PEg13ONMOVbg5P85ceZ+VTBjd3BkqC0mZDB6Ovo6Xt06tVS/S4rF
+R0L9mtyxZ+v/Psd8TYAIk3wlz1e1wm+dobp1YkOPgvv08r8ROVnWC0pRZquCPQUou6r50LseRZWE
+o9MGN8kt4sYcLCaJbF3fsTvKYi6InWyczv2JSQIDAQABo4H2MIHzMAkGA1UdEwQCMAAwLAYJYIZI
+AYb4QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVkIENlcnRpZmljYXRlMB0GA1UdDgQWBBQsRXQjSEq1
+PetSTIekkXnMBtntGTCBmAYDVR0jBIGQMIGNgBRWF+/2a4tZ/iMZaN54wOFNZ33QZqFqpGgwZjEL
+MAkGA1UEBhMCREUxDzANBgNVBAgTBkJheWVybjEPMA0GA1UEBxMGTXVuaWNoMQ0wCwYDVQQKEwRI
+b21lMRUwEwYDVQQLEwxBcGFjaGUgV1NTNEoxDzANBgNVBAMTBldlcm5lcoIJAI3hLAppEXfSMA0G
+CSqGSIb3DQEBCwUAA4GBAKZXwqAplMzutyC8jIUzFN/DfQOAuZ8ExLBIUxW51KSzxxL+kfydq4HF
+otRC7PZ3bYEkXYN7deUYoq6yFO0AAWvagBbxdzRYDPRCwpKe+4jn8VLGtjkEyLSsMiiaNiOuMx8q
+WxvV1sA9KioHvZDFVP+0QqSc1ZytEPOKasdViUU9</X509Certificate></X509Data></KeyInfo></Signature></PurchaseOrder>
