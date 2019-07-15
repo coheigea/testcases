@@ -1,0 +1,26 @@
+<PurchaseOrder xmlns="urn:example:po"><xenc:EncryptedData xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" Type="http://www.w3.org/2001/04/xmlenc#Content"><xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc"></xenc:EncryptionMethod><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+<xenc:EncryptedKey xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"><xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"></xenc:EncryptionMethod><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+<ds:KeyValue>
+<ds:RSAKeyValue>
+<ds:Modulus>jeP2hF/KOv8Pw/++n9bAa0DxKFzyLvlcAciBgv1E01cCyUwn5X0v8nT9gIdjXBi6Y6PvSCs2GqcA&#xD;
+zo82yzIjlcDmocXt/2vBkezwh6Ow2xoXItzXD+I6KlhpH8gl4xXd35N0z+88m4SEclncm//l3sQH&#xD;
+P6CMG9O4H91A+0DXzTkQHzs2PEg13ONMOVbg5P85ceZ+VTBjd3BkqC0mZDB6Ovo6Xt06tVS/S4rF&#xD;
+R0L9mtyxZ+v/Psd8TYAIk3wlz1e1wm+dobp1YkOPgvv08r8ROVnWC0pRZquCPQUou6r50LseRZWE&#xD;
+o9MGN8kt4sYcLCaJbF3fsTvKYi6InWyczv2JSQ==</ds:Modulus>
+<ds:Exponent>AQAB</ds:Exponent>
+</ds:RSAKeyValue>
+</ds:KeyValue>
+</ds:KeyInfo><xenc:CipherData><xenc:CipherValue>MKh8rpa+rcb8FfGUUSTIlTSWoUwVylxK4ztECM1qRdSeiPGeAidptoGTJiV6z08y2vFtTkxN75zr&#xD;
+g9/W7VOJoyiIzjKun1qRMR4tPa38MqG7ZCXRtTR566xDj1I/NERz5E1u9VTlG1tmSo+/w8h9uEvm&#xD;
+p1CteXBJwRtu2M5GuvL5VoDiJ78imRFoAftr4fG96ewX5WuN+jNF4klftwWg0RE5WwXcQyiOXde6&#xD;
+8YrvLfOi0t5gs2rSlcOU8tMUBRGfZe9+9n5vzfIkANKpFtjVVRlaQKfHZjX7ve/+3vqoLuoARBCf&#xD;
+rT5e97+sa4FzXFm3iMtnDiJycIljydi3HIz+7w==</xenc:CipherValue></xenc:CipherData></xenc:EncryptedKey></ds:KeyInfo><xenc:CipherData><xenc:CipherValue>+TuZ0L7rhPm0w7vtT3n2zIz9cp/Q2E8RLJXPrOEKYdKzwnxzKj7xGDTx9rSuC63amQpJqx57nBIo&#xD;
+IlTQ9wsVVYjGQlnLpAj2KHK+53hy34B9fYQLEgeZeM+4IGkkxyz0okY0CkjxuYNwZQcI9kfUfmpj&#xD;
+XnnF2Ood7fVAKWgHzVMO4I8Zf29c00dU74KBYxDDDEX96W0g8aODJYkZwjNhiQpDcnueGC89frVn&#xD;
+2KObX0cu3MADyaWTYESpJYgbuW941+/p1QmHlhQDHbUSvautLHnrR+2Elwd3kMxdc0ax74GJB4rI&#xD;
+GnxjDrpE5REIeWXthZemEzP47yQOetVHQubkHvM3WKVRZEDk9NUeBtLotFjEw8iwUC3WvdjMX7ec&#xD;
+xZZR29y8ZqKTVc+U/ziuUx1A8+xN7v1RZm2UlWIcfNSKNB2DaI/BNi8rFTATzARxs8Q3P83kCCLk&#xD;
+vUy5IG4Pb33B09JygxoYxa0R78A8cCU55khtOG7dKn+hLfg7jnYdmy73VWEtAQX6MYIcr0QtAD86&#xD;
+ylUSNe4jDJciqcvppYOZ89qJVudosPhQTlPvLVq8lwuQy8Rhw4+aLoFwWA1DLJFzbUBQuve6SsG3&#xD;
+/AJ1/0eLQ6D8rUiKNlYXQFw+jq+F2MBHZaAmW+m3D2IgD8YO8rPPoV2eiNbL4C8qCOZn8SFB9Ufx&#xD;
+IDAVS0eHkjvdtbp/Yh/CI/EpuJ9063pylrIIuQ+HoyehIRB0wxPPzFo9aDOFnFw=</xenc:CipherValue></xenc:CipherData></xenc:EncryptedData></PurchaseOrder>
