@@ -1,4 +1,4 @@
-ShiroUTValidatorcxf-shiro
+cxf-shiro
 ===========
 
 This project contains a number of tests that show how an Apache CXF service
