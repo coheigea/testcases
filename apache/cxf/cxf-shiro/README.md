@@ -39,3 +39,15 @@ and using the secret key to sign a portion of the request, thus proving
 proof-of-possession. The client can then make repeated invocations without 
 having to re-authenticate the UsernameToken credentials.
 
+4) AnnotationTest
+
+This tests using Shiro for authorization. A cxf client sends a SOAP UsernameToken to a CXF
+Endpoint. The CXF Endpoint has been configured (see cxf-service.xml) to validate the UsernameToken 
+via the ShiroUTValidator. 
+
+Instead of passing the requires roles through to the ShiroUTValidator, like the authorization test
+does, here we use the Shiro RequiresRoles annotation on the service endpoint implementation. The
+Spring config for the service sets up the necessary interceptors so that Shiro picks up the
+annotation and does the authorization check.
+
+
