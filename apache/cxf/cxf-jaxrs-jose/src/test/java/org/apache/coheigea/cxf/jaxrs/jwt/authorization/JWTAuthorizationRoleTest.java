@@ -130,10 +130,10 @@ public class JWTAuthorizationRoleTest extends AbstractBusClientServerTestBase {
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jks");
-        properties.put("rs.security.keystore.password", "ispass");
-        properties.put("rs.security.keystore.alias", "imposter");
-        properties.put("rs.security.keystore.file", "imposter.jks");
-        properties.put("rs.security.key.password", "ikpass");
+        properties.put("rs.security.keystore.password", "cspass");
+        properties.put("rs.security.keystore.alias", "myclientkey");
+        properties.put("rs.security.keystore.file", "clientstore.jks");
+        properties.put("rs.security.key.password", "ckpass");
         properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
@@ -173,10 +173,10 @@ public class JWTAuthorizationRoleTest extends AbstractBusClientServerTestBase {
 
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("rs.security.keystore.type", "jks");
-        properties.put("rs.security.keystore.password", "ispass");
-        properties.put("rs.security.keystore.alias", "imposter");
-        properties.put("rs.security.keystore.file", "imposter.jks");
-        properties.put("rs.security.key.password", "ikpass");
+        properties.put("rs.security.keystore.password", "cspass");
+        properties.put("rs.security.keystore.alias", "myclientkey");
+        properties.put("rs.security.keystore.file", "clientstore.jks");
+        properties.put("rs.security.key.password", "ckpass");
         properties.put("rs.security.signature.algorithm", "RS256");
         properties.put(JwtConstants.JWT_TOKEN, token);
         
