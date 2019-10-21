@@ -85,6 +85,33 @@
        </jaxrs:properties>
    </jaxrs:server>
    
+   <bean id="roleServiceBean" class="org.apache.coheigea.cxf.jaxrs.jwt.authorization.DoubleItJWTRoleAuthenticationService" />
+   
+   <bean id="roleAuthorizationInterceptor"
+      class="org.apache.cxf.interceptor.security.SecureAnnotationsInterceptor">
+      <property name="securedObject" ref="roleServiceBean" />
+   </bean>
+   
+   <jaxrs:server address="http://localhost:${testutil.ports.Server}/doubleitrole">
+       <jaxrs:serviceBeans>
+          <ref bean="roleServiceBean"/>
+       </jaxrs:serviceBeans>
+       <jaxrs:providers>
+          <ref bean="jackson"/>
+          <ref bean="jwtFilter"/>
+       </jaxrs:providers>
+       <jaxrs:inInterceptors>
+          <ref bean="roleAuthorizationInterceptor"/>
+       </jaxrs:inInterceptors>
+       <jaxrs:properties>
+            <entry key="rs.security.keystore.type" value="jks" />
+            <entry key="rs.security.keystore.alias" value="myclientkey"/>
+            <entry key="rs.security.keystore.password" value="cspass"/>
+            <entry key="rs.security.keystore.file" value="clientstore.jks" />
+            <entry key="rs.security.signature.algorithm" value="RS256" />
+       </jaxrs:properties>
+   </jaxrs:server>
+   
    <bean id="claimsServiceBean" class="org.apache.coheigea.cxf.jaxrs.jwt.authorization.DoubleItJWTClaimsAuthenticationService" />
    
    <bean id="claimsHandler" class="org.apache.cxf.jaxrs.security.ClaimsAuthorizingFilter">
