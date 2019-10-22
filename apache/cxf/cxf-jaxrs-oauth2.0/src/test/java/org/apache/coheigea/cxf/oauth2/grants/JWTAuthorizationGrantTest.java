@@ -29,6 +29,8 @@ import java.util.Properties;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
+import org.apache.coheigea.cxf.oauth2.balanceservice.BankServer;
+import org.apache.coheigea.cxf.oauth2.balanceservice.PartnerServer;
 import org.apache.coheigea.cxf.oauth2.oauthservice.OAuthServer;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.provider.json.JSONProvider;
@@ -53,6 +55,9 @@ import static org.junit.Assert.assertTrue;
 public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
     
     static final String PORT = allocatePort(OAuthServer.class);
+    static final String PARTNER_PORT = allocatePort(PartnerServer.class);
+    static final String BANK_PORT = allocatePort(BankServer.class);
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -68,7 +73,7 @@ public class JWTAuthorizationGrantTest extends AbstractBusClientServerTestBase {
         URL busFile = JWTAuthorizationGrantTest.class.getResource("cxf-client.xml");
         
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         
         // Create the JWT Token
         String token = createToken("DoubleItSTSIssuer", "consumer-id", 

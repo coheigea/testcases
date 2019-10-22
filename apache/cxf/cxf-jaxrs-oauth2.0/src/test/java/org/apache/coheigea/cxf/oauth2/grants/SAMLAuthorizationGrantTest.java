@@ -26,6 +26,8 @@ import java.util.List;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
+import org.apache.coheigea.cxf.oauth2.balanceservice.BankServer;
+import org.apache.coheigea.cxf.oauth2.balanceservice.PartnerServer;
 import org.apache.coheigea.cxf.oauth2.oauthservice.OAuthServer;
 import org.apache.cxf.common.util.Base64UrlUtility;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -51,6 +53,9 @@ import static org.junit.Assert.assertTrue;
 public class SAMLAuthorizationGrantTest extends AbstractBusClientServerTestBase {
     
     static final String PORT = allocatePort(OAuthServer.class);
+    static final String PARTNER_PORT = allocatePort(PartnerServer.class);
+    static final String BANK_PORT = allocatePort(BankServer.class);
+
     @BeforeClass
     public static void startServers() throws Exception {
         assertTrue(
@@ -66,7 +71,7 @@ public class SAMLAuthorizationGrantTest extends AbstractBusClientServerTestBase 
         URL busFile = SAMLAuthorizationGrantTest.class.getResource("cxf-client.xml");
         
         String address = "https://localhost:" + PORT + "/services/";
-        WebClient client = WebClient.create(address, setupProviders(), "alice", "security", busFile.toString());
+        WebClient client = WebClient.create(address, setupProviders(), "consumer-id", "this-is-a-secret", busFile.toString());
         
         // Create the SAML Assertion
         String assertion = createToken(address + "token", true, true);
