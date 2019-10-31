@@ -31,7 +31,7 @@
         <version>1.0</version>
     </parent>
     <properties>
-        <jetty.version>9.3.21.v20170918</jetty.version>
+        <jetty.version>9.4.22.v20191022</jetty.version>
     </properties>
     <dependencies>
         <dependency>
