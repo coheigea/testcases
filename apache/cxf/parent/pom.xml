@@ -44,7 +44,7 @@
         <karaf.version>4.2.6</karaf.version>
         <slf4j.version>1.7.26</slf4j.version>
         <spring.version>5.1.9.RELEASE</spring.version>
-        <syncope.version>2.0.7</syncope.version>
+        <syncope.version>2.0.13</syncope.version>
         <tomcat.version>8.0.53</tomcat.version>
     </properties>
 
