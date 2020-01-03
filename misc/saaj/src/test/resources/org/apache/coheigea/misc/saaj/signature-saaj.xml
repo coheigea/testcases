@@ -1,0 +1,33 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><SOAP-ENV:Body><add xmlns="http://ws.apache.org/counter/counter_port_type"><value xmlns="">15</value></add></SOAP-ENV:Body><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></ds:CanonicalizationMethod>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"></ds:SignatureMethod>
+<ds:Reference URI="">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></ds:Transform>
+<ds:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"></ds:Transform>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></ds:DigestMethod>
+<ds:DigestValue>utykt34p7zuu7K6QJyJugFH4kruKiJEUPRZO/xdCSRM=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue>
+qlNZviAjBrKXCoRGx3bjRE+0MrSEJ/feTFHdmU8CMYX26C2xQDvImb67mCV3201NXuDkf2Vcyuhj&#xD;
+LNESGhC7yN85nBZiBd2AuAsDc+7gIPX9cEyp6uEkt2sK+txL0UxjMtyzb++DEhzVqG8OTizcbCun&#xD;
+1Na5oJEwYWoKk6JhzJxv92GT32M2Xlh0sO2TnNv7KQd7ldW+TWSQ43hki9IjmLZNej2Zosq3W/ch&#xD;
+HD5unlRAJQUSAEl+A33O+rMoi0SXGOYPlKxJYRi6YjUNI0S5eRPwSFHqnhtU1NqTcOfuY4TRVRfr&#xD;
+BuURmSsnVmQ1CZdChqtM6NZBqP1Kv9tt9PKk8w==
+</ds:SignatureValue>
+<ds:KeyInfo>
+<ds:KeyValue>
+<ds:RSAKeyValue>
+<ds:Modulus>vsCIQ4bzB4LLfBGu6i1eIxzlk+GvCTHhdwZVRu2sq+Fx/HlHmXtNz+AOtOYiQjaM1CEXVQ1WLnpi&#xD;
+NRjR/jNR2AjBl0Nf4+CQLBZKyMU+x3sdfonz4Vom0c6SK6rAz8rMRLTazxXZvAYUQch72SqKoNRi&#xD;
+ttH6dIlIT+/nqTa+MhMOGtxstK/dH1R5mGWM6ueZeqHUV4H6uW8A/4KDy1nrPT4EbMJAZxTXLGCy&#xD;
+b/uLTaBzZlOhqNleKvtuL+rr/eOcvlmrWAm5Sgx4YcPe7pWy1Qa24FkdiDkH3tXWVopS9zk9F5Fn&#xD;
+1M21FjwgjfPHpNt7VxK4GJvrpkkHtxsfRirnEQ==</ds:Modulus>
+<ds:Exponent>AQAB</ds:Exponent>
+</ds:RSAKeyValue>
+</ds:KeyValue>
+</ds:KeyInfo>
+</ds:Signature></SOAP-ENV:Envelope>
