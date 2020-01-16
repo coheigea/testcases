@@ -86,6 +86,12 @@
        </dependency>
        <dependency>
            <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-frontend-jaxws</artifactId>
+           <version>${cxf.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.cxf</groupId>
            <artifactId>cxf-testutils</artifactId>
            <version>${cxf.version}</version>
            <scope>test</scope>
@@ -152,6 +158,34 @@
             </testResource>
         </testResources>
         
+        <plugins>
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>${cxf.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <sourceRoot>
+                                ${basedir}/target/generated-sources
+                            </sourceRoot>
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>
+                                        ${basedir}/src/test/resources/DoubleItLogical.wsdl
+                                    </wsdl>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
     </build>
     
     <profiles>

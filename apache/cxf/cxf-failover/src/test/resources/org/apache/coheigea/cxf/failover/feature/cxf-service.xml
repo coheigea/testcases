@@ -61,6 +61,26 @@
           <ref bean="serviceBean"/>
        </jaxrs:serviceBeans>
    </jaxrs:server>
+   
+   <jaxws:endpoint id="doubleittransport"
+      implementor="org.apache.coheigea.cxf.failover.feature.DoubleItPortTypeImpl"
+      endpointName="s:DoubleItPort"
+      serviceName="s:DoubleItService"
+      address="http://localhost:${testutil.ports.Server.3}/doubleit/services/doubleittransport"
+      wsdlLocation="org/apache/coheigea/cxf/failover/feature/DoubleIt.wsdl"
+      xmlns:s="http://www.example.org/contract/DoubleIt">
+        
+   </jaxws:endpoint>
+   
+   <jaxws:endpoint id="doubleittransport2"
+      implementor="org.apache.coheigea.cxf.failover.feature.DoubleItPortTypeImpl"
+      endpointName="s:DoubleItPort"
+      serviceName="s:DoubleItService"
+      address="http://localhost:${testutil.ports.Server.4}/doubleit/services/doubleittransport"
+      wsdlLocation="org/apache/coheigea/cxf/failover/feature/DoubleIt.wsdl"
+      xmlns:s="http://www.example.org/contract/DoubleIt">
+        
+   </jaxws:endpoint>
   
 </beans>
 

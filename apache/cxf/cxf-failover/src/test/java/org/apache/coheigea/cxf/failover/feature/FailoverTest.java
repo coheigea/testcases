@@ -24,28 +24,37 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
 
+import org.apache.cxf.Bus;
+import org.apache.cxf.bus.spring.SpringBusFactory;
 import org.apache.cxf.clustering.FailoverFeature;
 import org.apache.cxf.clustering.SequentialStrategy;
 import org.apache.cxf.clustering.circuitbreaker.CircuitBreakerFailoverFeature;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
+import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.BeforeClass;
 
 import org.apache.coheigea.cxf.failover.common.Number;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
- * A test for CXF using the failover feature. The service is designed to fail (404) every second iteration.
- * The first invocation on PORT1 works fine. The second fails, but the client fails over to PORT2
- * automatically, and the invocation succeeds.
+ * A test for CXF using the failover feature. 
  */
 public class FailoverTest extends AbstractBusClientServerTestBase {
 
+    private static final String NAMESPACE = "http://www.example.org/contract/DoubleIt";
+    private static final QName SERVICE_QNAME = new QName(NAMESPACE, "DoubleItService");
+    
     static final String PORT1 = allocatePort(Server.class);
     static final String PORT2 = allocatePort(Server.class, 2);
+    static final String PORT3 = allocatePort(Server.class, 3);
+    static final String PORT4 = allocatePort(Server.class, 4);
 
     @BeforeClass
     public static void startServers() throws Exception {
@@ -57,6 +66,9 @@ public class FailoverTest extends AbstractBusClientServerTestBase {
         );
     }
 
+    // The service is designed to fail (404) every second iteration.
+    // The first invocation on PORT1 works fine. The second fails, but the client fails over to PORT2
+    // automatically, and the invocation succeeds.
     @org.junit.Test
     public void testFailoverFeature() throws Exception {
 
@@ -88,7 +100,69 @@ public class FailoverTest extends AbstractBusClientServerTestBase {
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
     }
+    
+    // This call will fail on the second attempt, as the service sleeps for 30s, and the
+    // client has been configured with a receive timeout of 20s. It should fail over
+    // successfully to the second endpoint
+    @org.junit.Test
+    public void testFailoverFeatureJAXWS() throws Exception {
 
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = FailoverTest.class.getResource("cxf-client.xml");
+
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
+
+        URL wsdl = FailoverTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItPort");
+        DoubleItPortType port =
+            service.getPort(portQName, DoubleItPortType.class);
+        updateAddressPort(port, PORT3);
+        
+        // Make a successful call
+        doubleIt(port, 25);
+        
+        // Failover
+        doubleIt(port, 30);
+    }
+
+    // Here we configure a custom failover target selector. It won't failover on a SocketTimeoutException
+    // so failover fails
+    @org.junit.Test
+    public void testFailoverFeatureJAXWSCustomTargetSelector() throws Exception {
+
+        SpringBusFactory bf = new SpringBusFactory();
+        URL busFile = FailoverTest.class.getResource("cxf-client-custom-failover.xml");
+
+        Bus bus = bf.createBus(busFile.toString());
+        SpringBusFactory.setDefaultBus(bus);
+        SpringBusFactory.setThreadDefaultBus(bus);
+
+        URL wsdl = FailoverTest.class.getResource("DoubleIt.wsdl");
+        Service service = Service.create(wsdl, SERVICE_QNAME);
+        QName portQName = new QName(NAMESPACE, "DoubleItPort");
+        DoubleItPortType port =
+            service.getPort(portQName, DoubleItPortType.class);
+        updateAddressPort(port, PORT3);
+        
+        // Make a successful call
+        doubleIt(port, 25);
+        
+        try {
+            doubleIt(port, 30);
+            fail("Failure expected on a SocketTimeoutException");
+        } catch (Exception ex) {
+            // expected
+        }
+    }
+    
+    private static void doubleIt(DoubleItPortType port, int numToDouble) {
+        int resp = port.doubleIt(numToDouble);
+        assertEquals(numToDouble * 2 , resp);
+    }
+    
     @org.junit.Test
     public void testCircuitBreaker() throws Exception {
 

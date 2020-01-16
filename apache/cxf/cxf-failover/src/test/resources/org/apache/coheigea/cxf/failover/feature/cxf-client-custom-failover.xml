@@ -56,6 +56,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
         </property>
     </bean>
     
+    <bean id="customFailoverSelector" class="org.apache.coheigea.cxf.failover.feature.CustomFailoverTargetSelector"/>
+    
     <http-conf:conduit name="{http://www.example.org/contract/DoubleIt}DoubleItPort.http-conduit">
           <http-conf:client ReceiveTimeout="20000"/>
     </http-conf:conduit>
@@ -66,6 +68,9 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
                 <clustering:strategy>
                     <ref bean="SequentialAddresses"/>
                 </clustering:strategy>
+                <clustering:targetSelector>
+                    <ref bean="customFailoverSelector"/>
+                </clustering:targetSelector>
             </clustering:failover>
        </jaxws:features>
     </jaxws:client>

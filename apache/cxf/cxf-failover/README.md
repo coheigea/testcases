@@ -6,10 +6,14 @@ and load distribution features.
 
 1) FailoverTest
 
-This contains two tests. The first uses the CXF FailoverFeature with a 
-SequentialStrategy. The service endpoint is designed to return 404 on every
-second iteration. The first call succeeds to PORT1 as expected. The second
-call fails, but "fails over" to PORT2 successfully.
+This contains some tests relating to failover.
+
+The first uses the CXF FailoverFeature with a SequentialStrategy. The (JAX-RS)
+service endpoint is designed to return 404 on every second iteration. The
+first call succeeds to PORT1 as expected. The second call fails, but "fails
+over" to PORT2 successfully.
+
+This class also contains some JAX-WS tests.
 
 2) LoadBalancerTest
 
