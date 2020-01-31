@@ -30,13 +30,13 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.store.memory.MemoryPersistenceAdapter;
 
 /**
- * Basic test for message producing + consumer over TCP
+ * Basic test for message producing + consumer over TCP, where the broker is loaded from XML.
  */
-public class TCPTest {
+public class TCPXMLTest {
     
     private static BrokerService broker;
     private static String brokerAddress;
@@ -44,17 +44,13 @@ public class TCPTest {
     @org.junit.BeforeClass
     public static void startBroker() throws Exception {
         
-        broker = new BrokerService();
-        broker.setPersistenceAdapter(new MemoryPersistenceAdapter());
-        broker.setDataDirectory("target/activemq-data");
-        
         ServerSocket serverSocket = new ServerSocket(0);
         int brokerPort = serverSocket.getLocalPort();
         serverSocket.close();
         
         brokerAddress = "tcp://localhost:" + brokerPort;
-        broker.addConnector(brokerAddress);
-        broker.start();
+        System.setProperty("TCPXMLTest.PORT", Integer.toString(brokerPort));
+        broker = BrokerFactory.createBroker("xbean:org/apache/coheigea/activemq/transports/tcp-broker.xml");
     }
     
     @org.junit.AfterClass

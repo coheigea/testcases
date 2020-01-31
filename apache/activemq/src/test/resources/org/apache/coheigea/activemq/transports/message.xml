@@ -1,0 +1,49 @@
+<org.apache.activemq.command.ActiveMQTextMessage>
+  <commandId>5</commandId>
+  <responseRequired>true</responseRequired>
+  <messageId>
+    <producerId>
+      <connectionId>ID:coheig-Precision-7520-37807-1580471151720-5:1</connectionId>
+      <sessionId>1</sessionId>
+      <value>1</value>
+    </producerId>
+    <producerSequenceId>1</producerSequenceId>
+    <brokerSequenceId>0</brokerSequenceId>
+  </messageId>
+  <producerId reference="../messageId/producerId"/>
+  <destination class="org.apache.activemq.command.ActiveMQQueue">
+    <string>testqueue</string>
+    <null/>
+  </destination>
+  <expiration>0</expiration>
+  <timestamp>1580471153019</timestamp>
+  <arrival>0</arrival>
+  <brokerInTime>0</brokerInTime>
+  <brokerOutTime>0</brokerOutTime>
+  <persistent>true</persistent>
+  <priority>4</priority>
+  <groupSequence>0</groupSequence>
+  <compressed>false</compressed>
+  <content>
+    <data>AAAACFNvbWUgdHh0</data>
+    <offset>0</offset>
+    <length>12</length>
+  </content>
+  <marshalledProperties>
+    <data>AAAAAQALc29tZSBoZWFkZXIJAApzb21lIHZhbHVl</data>
+    <offset>0</offset>
+    <length>30</length>
+  </marshalledProperties>
+  <redeliveryCounter>0</redeliveryCounter>
+  <size>0</size>
+  <properties>
+    <entry>
+      <string>some header</string>
+      <string>some value</string>
+    </entry>
+  </properties>
+  <readOnlyProperties>true</readOnlyProperties>
+  <readOnlyBody>true</readOnlyBody>
+  <droppable>false</droppable>
+  <jmsXGroupFirstForConsumer>false</jmsXGroupFirstForConsumer>
+</org.apache.activemq.command.ActiveMQTextMessage>

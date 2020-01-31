@@ -34,9 +34,9 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.store.memory.MemoryPersistenceAdapter;
 
 /**
- * Basic test for message producing + consumer over TCP
+ * Basic test for message producing + consumer over HTTP
  */
-public class TCPTest {
+public class HTTPTest {
     
     private static BrokerService broker;
     private static String brokerAddress;
@@ -52,7 +52,7 @@ public class TCPTest {
         int brokerPort = serverSocket.getLocalPort();
         serverSocket.close();
         
-        brokerAddress = "tcp://localhost:" + brokerPort;
+        brokerAddress = "http://localhost:" + brokerPort;
         broker.addConnector(brokerAddress);
         broker.start();
     }
@@ -87,4 +87,10 @@ public class TCPTest {
         connection.close();
     }
     
+    // TODO send manual message
+    @org.junit.Test
+    @org.junit.Ignore
+    public void testManualMessage() throws Exception {
+        
+    }
 }
