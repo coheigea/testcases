@@ -39,7 +39,6 @@ import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.***REMOVED***.SerializableClassInActiveMQPackage;
 import org.apache.activemq.store.memory.MemoryPersistenceAdapter;
 
 /**
@@ -128,7 +127,6 @@ public class ObjectMessageTest {
     }
     
     @org.junit.Test
-    @org.junit.Ignore
     public void testDenialOfServiceAttack() throws Exception {
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerAddress);
         Connection connection = factory.createConnection();
@@ -163,9 +161,12 @@ public class ObjectMessageTest {
         
         MessageConsumer consumer = session.createConsumer(queue);
         ObjectMessage receivedMessage = (ObjectMessage)consumer.receive(1000L);
-        Object receivedObject = receivedMessage.getObject();
-        assertNotNull(receivedObject);
-        assertEquals("some value", receivedMessage.getStringProperty("some header"));
+        try {
+            receivedMessage.getObject();
+            fail("Failure expected on a custom Object");
+        } catch (Exception ex) {
+            // expected
+        }
         
         connection.close();
     }
@@ -193,9 +194,12 @@ public class ObjectMessageTest {
         
         MessageConsumer consumer = session.createConsumer(queue);
         ObjectMessage receivedMessage = (ObjectMessage)consumer.receive(1000L);
-        Object receivedObject = receivedMessage.getObject();
-        assertNotNull(receivedObject);
-        assertEquals("some value", receivedMessage.getStringProperty("some header"));
+        try {
+            receivedMessage.getObject();
+            fail("Failure expected on a custom Object");
+        } catch (Exception ex) {
+            // expected
+        }
         
         connection.close();
         
@@ -203,37 +207,6 @@ public class ObjectMessageTest {
         Method method = clz.getDeclaredMethod("isReadObjectCalled");
         Object result = method.invoke(null);
         assertFalse((Boolean)result);
-    }
-    
-    @org.junit.Test
-    @org.junit.Ignore
-    public void testActiveMQPackageAttack() throws Exception {
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerAddress);
-        Connection connection = factory.createConnection();
-        connection.start();
-        
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination queue = session.createQueue("testqueue");
-        MessageProducer producer = session.createProducer(queue);
-        
-        SerializableClassInActiveMQPackage serial = new SerializableClassInActiveMQPackage();
-        ObjectMessage message = session.createObjectMessage(serial);
-        message.setStringProperty("some header", "some value");
-        
-        System.out.println("Sending message");
-        producer.send(message);
-        System.out.println("Receiving message");
-        
-        MessageConsumer consumer = session.createConsumer(queue);
-        ObjectMessage receivedMessage = (ObjectMessage)consumer.receive(1000L);
-        Object receivedObject = receivedMessage.getObject();
-        assertNotNull(receivedObject);
-        assertEquals("some value", receivedMessage.getStringProperty("some header"));
-        
-        connection.close();
-        
-        // Now check to see if readObject was called
-        assertFalse(((SerializableClassInActiveMQPackage)receivedObject).isReadObjectCalled());
     }
     
     private static class AttackObject implements Serializable {

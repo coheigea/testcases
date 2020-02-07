@@ -28,7 +28,7 @@
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <activemq.version>5.15.11</activemq.version>
+        <activemq.version>5.16.0-SNAPSHOT</activemq.version>
    </properties>
 
    <dependencies>
