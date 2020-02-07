@@ -19,14 +19,12 @@
 package org.apache.coheigea.activemq.security;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.util.HashSet;
 
@@ -169,44 +167,6 @@ public class ObjectMessageTest {
         }
         
         connection.close();
-    }
-    
-    @org.junit.Test
-    @org.junit.Ignore
-    public void testNoPackageAttack() throws Exception {
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerAddress);
-        Connection connection = factory.createConnection();
-        connection.start();
-        
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination queue = session.createQueue("testqueue");
-        MessageProducer producer = session.createProducer(queue);
-        
-        // Need to load via reflection due to the fact it's in the default package
-        Class<?> clz = Class.forName("SerializableClassInDefaultPackage");
-        Serializable serial = (Serializable)clz.newInstance();
-        ObjectMessage message = session.createObjectMessage(serial);
-        message.setStringProperty("some header", "some value");
-        
-        System.out.println("Sending message");
-        producer.send(message);
-        System.out.println("Receiving message");
-        
-        MessageConsumer consumer = session.createConsumer(queue);
-        ObjectMessage receivedMessage = (ObjectMessage)consumer.receive(1000L);
-        try {
-            receivedMessage.getObject();
-            fail("Failure expected on a custom Object");
-        } catch (Exception ex) {
-            // expected
-        }
-        
-        connection.close();
-        
-        // Now check via reflection to see if readObject was called
-        Method method = clz.getDeclaredMethod("isReadObjectCalled");
-        Object result = method.invoke(null);
-        assertFalse((Boolean)result);
     }
     
     private static class AttackObject implements Serializable {
