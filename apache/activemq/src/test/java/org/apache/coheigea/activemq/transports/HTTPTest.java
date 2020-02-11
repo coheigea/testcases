@@ -87,10 +87,4 @@ public class HTTPTest {
         connection.close();
     }
     
-    // TODO send manual message
-    @org.junit.Test
-    @org.junit.Ignore
-    public void testManualMessage() throws Exception {
-        
-    }
 }
