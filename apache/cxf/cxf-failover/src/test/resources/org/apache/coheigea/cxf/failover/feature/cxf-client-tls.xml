@@ -49,7 +49,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <http:conduit name="https://localhost.*">
       <http:tlsClientParameters disableCNCheck="true">
         <sec:trustManagers>
-          <sec:keyStore type="jks" password="cspass" resource="stsclientstore.jks"/>
+          <sec:keyStore type="jks" password="security" resource="truststore.jks"/>
         </sec:trustManagers>
       </http:tlsClientParameters>
    </http:conduit>

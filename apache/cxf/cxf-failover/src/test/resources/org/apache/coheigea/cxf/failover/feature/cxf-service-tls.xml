@@ -66,12 +66,9 @@
    <httpj:engine port="${testutil.ports.TLSServer}">
     <httpj:tlsServerParameters>
       <sec:keyManagers keyPassword="skpass">
-          <sec:keyStore type="jks" password="sspass" resource="stsservicestore.jks"/>
+          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
       </sec:keyManagers>
-      <sec:trustManagers>
-          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
-      </sec:trustManagers>
-      <sec:clientAuthentication want="true" required="false"/>
+      <sec:clientAuthentication want="false" required="false"/>
     </httpj:tlsServerParameters>
    </httpj:engine>
   </httpj:engine-factory>
@@ -80,12 +77,9 @@
    <httpj:engine port="${testutil.ports.TLSServer.2}">
     <httpj:tlsServerParameters>
       <sec:keyManagers keyPassword="skpass">
-          <sec:keyStore type="jks" password="sspass" resource="stsservicestore.jks"/>
+          <sec:keyStore type="jks" password="sspass" resource="servicestore.jks"/>
       </sec:keyManagers>
-      <sec:trustManagers>
-          <sec:keyStore type="jks" password="stsspass" resource="stsstore.jks"/>
-      </sec:trustManagers>
-      <sec:clientAuthentication want="true" required="false"/>
+      <sec:clientAuthentication want="false" required="false"/>
     </httpj:tlsServerParameters>
    </httpj:engine>
   </httpj:engine-factory>
