@@ -30,8 +30,14 @@ import java.util.Map;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.composer.Composer;
+import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.parser.ParserImpl;
+import org.yaml.snakeyaml.reader.StreamReader;
+import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
+import org.yaml.snakeyaml.resolver.Resolver;
 
 public class YamlTest {
 
@@ -43,14 +49,27 @@ public class YamlTest {
         assertEquals("Colm", data.get("name"));
     }
     
-    // TODO
     @org.junit.Test
-    @org.junit.Ignore
-    public void testDenialOfServiceAttack() throws Exception {
-        Yaml yaml = new Yaml();
+    public void testLoadAndParseYamlAtAPILevel() throws Exception {
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data.yaml");
+        Constructor constructor = new CustomConstructor();
+        Composer composer = new Composer(new ParserImpl(new StreamReader(new UnicodeReader(inputStream))), new Resolver());
+        constructor.setComposer(composer);
+        Map<String, String> data = (Map<String, String>)constructor.getSingleData(Map.class);
+        assertEquals("Colm", data.get("name"));
+    }
+    
+    @org.junit.Test
+    public void testDenialOfServiceAttackAtAPILevel() throws Exception {
+        // Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data-dos.yaml");
         try {
-            Map<String, String> data = yaml.load(inputStream);
+            // Map<String, String> data = yaml.load(inputStream);
+            Constructor constructor = new CustomConstructor();
+            Composer composer = new CustomComposer(new ParserImpl(new StreamReader(new UnicodeReader(inputStream))), new Resolver());
+            constructor.setComposer(composer);
+            Map<String, String> data = (Map<String, String>)constructor.getSingleData(Map.class);
+            
             assertEquals("Colm", data.get("name"));
             fail("Failure expected on a DoS attack");
         } catch (Exception ex) {
