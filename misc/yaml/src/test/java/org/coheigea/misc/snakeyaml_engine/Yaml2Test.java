@@ -1,0 +1,152 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.coheigea.misc.snakeyaml_engine;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import org.snakeyaml.engine.v2.api.Dump;
+import org.snakeyaml.engine.v2.api.DumpSettings;
+import org.snakeyaml.engine.v2.api.Load;
+import org.snakeyaml.engine.v2.api.LoadSettings;
+import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
+
+public class Yaml2Test {
+
+    @org.junit.Test
+    public void testLoadAndParseYaml() throws Exception {
+        LoadSettings settings = LoadSettings.builder().build();
+        Load load = new Load(settings);
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data.yaml");
+        @SuppressWarnings("unchecked")
+        Map<String, String> data = (Map<String, String>)load.loadFromInputStream(inputStream);
+        assertEquals("Colm", data.get("name"));
+    }
+    
+    @org.junit.Test
+    public void testDenialOfServiceAttack() throws Exception {
+        LoadSettings settings = LoadSettings.builder().build();
+        Load load = new Load(settings);
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data-dos.yaml");
+        try {
+            load.loadFromInputStream(inputStream);
+            fail("Failure expected on a DoS attack");
+        } catch (YamlEngineException ex) {
+            assertTrue(ex.getMessage().contains("exceeds the specified"));
+        }
+    }
+
+    // TODO
+    @org.junit.Test
+    @org.junit.Ignore
+    public void testRecursiveDenialOfServiceAttack() throws Exception {
+        // Ref: https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data
+        HashSet<Object> root = new HashSet<>();
+        HashSet<Object> s1 = root;
+        HashSet<Object> s2 = new HashSet<>();
+        for (int i = 0; i < 100; i++) {
+            HashSet<Object> t1 = new HashSet<>();
+            HashSet<Object> t2 = new HashSet<>();
+            t1.add("***REMOVED***"); // make it not equal to t2
+            s1.add(t1);
+            s1.add(t2);
+            s2.add(t1);
+            s2.add(t2);
+            s1 = t1;
+            s2 = t2;
+        }
+        
+        DumpSettings settings = DumpSettings.builder().build();
+        Dump dump = new Dump(settings);
+        dump.dumpToString(root);
+
+    }
+    
+    @org.junit.Test
+    public void referencesWithRecursiveKeysNotAllowedByDefault() {
+        String output = createDump(30);
+        // Load
+        LoadSettings settings = LoadSettings.builder()
+                .setMaxAliasesForCollections(150)
+                .build();
+        Load load = new Load(settings);
+        try {
+            load.loadFromString(output);
+            fail();
+        } catch (Exception e) {
+            assertEquals("Recursive key for mapping is detected but it is not configured to be allowed.", e.getMessage());
+        }
+    }
+    
+    // Take from SnakeYaml test code
+    private String createDump(int size) {
+        HashMap root = new HashMap();
+        HashMap s1, s2, t1, t2;
+        s1 = root;
+        s2 = new HashMap();
+        /*
+        the time to parse grows very quickly
+        SIZE -> time to parse in seconds
+        25 -> 1
+        26 -> 2
+        27 -> 3
+        28 -> 8
+        29 -> 13
+        30 -> 28
+        31 -> 52
+        32 -> 113
+        33 -> 245
+        34 -> 500
+         */
+        for (int i = 0; i < size; i++) {
+
+            t1 = new HashMap();
+            t2 = new HashMap();
+            t1.put("***REMOVED***", "1");
+            t2.put("bar", "2");
+
+            s1.put("a", t1);
+            s1.put("b", t2);
+            s2.put("a", t1);
+            s2.put("b", t2);
+
+            s1 = t1;
+            s2 = t2;
+        }
+
+        // this is VERY BAD code
+        // the map has itself as a key (no idea why it may be used except of a DoS attack)
+        HashMap f = new HashMap();
+        f.put(f, "a");
+        f.put("g", root);
+
+        Dump dump = new Dump(DumpSettings.builder().build());
+        String output = dump.dumpToString(f);
+        return output;
+    }
+    
+}
