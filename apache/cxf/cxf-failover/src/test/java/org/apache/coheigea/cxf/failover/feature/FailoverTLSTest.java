@@ -21,18 +21,27 @@ package org.apache.coheigea.cxf.failover.feature;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.URL;
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.Response;
 
 import org.apache.coheigea.cxf.failover.common.Number;
+import org.apache.cxf.Bus;
+import org.apache.cxf.BusFactory;
 import org.apache.cxf.clustering.FailoverFeature;
 import org.apache.cxf.clustering.SequentialStrategy;
+import org.apache.cxf.common.classloader.ClassLoaderUtils;
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transport.http.HTTPConduitConfigurer;
 import org.junit.BeforeClass;
 
 /**
@@ -61,7 +70,7 @@ public class FailoverTLSTest extends AbstractBusClientServerTestBase {
     @org.junit.Test
     public void testFailoverFeature() throws Exception {
 
-        URL busFile = FailoverTLSTest.class.getResource("cxf-client-tls.xml");
+        Bus bus = BusFactory.getDefaultBus(true);
 
         FailoverFeature feature = new FailoverFeature();
         SequentialStrategy strategy = new SequentialStrategy();
@@ -71,9 +80,36 @@ public class FailoverTLSTest extends AbstractBusClientServerTestBase {
         feature.setStrategy(strategy);
 
         String address = "https://localhost:" + PORT1 + "/doubleit/services";
-        WebClient client = WebClient.create(address, null,
-                                            Collections.singletonList(feature), busFile.toString());
+        WebClient client = WebClient.create(address, null, Collections.singletonList(feature), null);
         client = client.type("application/xml");
+        
+        // Configure TLS
+        final TLSClientParameters _tlsParams = new TLSClientParameters();
+
+        KeyStore _truststore = null;
+        try (InputStream _is = ClassLoaderUtils.getResourceAsStream("truststore.jks", this.getClass()))
+        {
+          _truststore = KeyStore.getInstance("JKS");
+          _truststore.load(_is, "security".toCharArray());
+        }
+
+        final TrustManagerFactory trustFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustFactory.init(_truststore);
+
+        final TrustManager[] _tm = trustFactory.getTrustManagers();
+        _tlsParams.setTrustManagers(_tm);
+        _tlsParams.setDisableCNCheck(true);
+        
+        //WebClient.getConfig(client).getHttpConduit().setTlsClientParameters(_tlsParams);
+        
+        // Make sure the TLS settings are also set on the failover conduit
+        HTTPConduitConfigurer httpConduitConfigurer = new HTTPConduitConfigurer() {
+            public void configure(String name, String address, HTTPConduit c) {
+                c.setTlsClientParameters(_tlsParams);
+            }
+        };
+             
+        bus.setExtension(httpConduitConfigurer, HTTPConduitConfigurer.class);
 
         Number numberToDouble = new Number();
         numberToDouble.setDescription("This is the number to double");
@@ -88,6 +124,7 @@ public class FailoverTLSTest extends AbstractBusClientServerTestBase {
         response = client.post(numberToDouble);
         assertEquals(response.getStatus(), 200);
         assertEquals(response.readEntity(Number.class).getNumber(), 50);
+        
     }
     
 

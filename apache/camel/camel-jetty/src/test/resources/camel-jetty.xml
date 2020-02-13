@@ -48,11 +48,25 @@
     </sslContextParameters>
         
     <camelContext xmlns="http://camel.apache.org/schema/spring">
+    
         <!-- define the camel properties placeholder, and let it leverage jasypt -->
         <propertyPlaceholder id="properties"
                          location="classpath:passwords.properties"
                          propertiesParserRef="jasypt"/>
                         
+        <jmxAgent id="agent" createConnector="true" >
+            <environment>
+                <entry>
+                    <key>jmx.remote.x.access.file</key>
+                    <value>src/test/resources/jmx.access</value>
+                </entry>
+                <entry>
+                    <key>jmx.remote.x.password.file</key>
+                    <value>src/test/resources/jmx.password</value>
+                </entry>
+            </environment>
+        </jmxAgent>
+        
         <!--  server configuration --> 
         <restConfiguration scheme="https" component="jetty" port="{{https.port}}">
             <endpointProperty key="sslContextParameters" value="#serverSSLParameters"/>

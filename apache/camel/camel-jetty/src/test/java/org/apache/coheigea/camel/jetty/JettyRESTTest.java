@@ -33,7 +33,8 @@ public class JettyRESTTest extends org.junit.Assert {
         main.start();
 
         // Sleep to allow time to copy the files etc.
-        Thread.sleep(10 * 1000);
+        System.out.println("Sleeping...");
+        Thread.sleep(1000 * 1000);
 
         main.stop();
     }
