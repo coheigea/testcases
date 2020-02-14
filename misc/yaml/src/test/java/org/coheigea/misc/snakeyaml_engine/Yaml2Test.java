@@ -24,7 +24,6 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.snakeyaml.engine.v2.api.Dump;
@@ -32,8 +31,6 @@ import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 public class Yaml2Test {
 
@@ -60,32 +57,6 @@ public class Yaml2Test {
         }
     }
 
-    // TODO
-    @org.junit.Test
-    @org.junit.Ignore
-    public void testRecursiveDenialOfServiceAttack() throws Exception {
-        // Ref: https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data
-        HashSet<Object> root = new HashSet<>();
-        HashSet<Object> s1 = root;
-        HashSet<Object> s2 = new HashSet<>();
-        for (int i = 0; i < 100; i++) {
-            HashSet<Object> t1 = new HashSet<>();
-            HashSet<Object> t2 = new HashSet<>();
-            t1.add("***REMOVED***"); // make it not equal to t2
-            s1.add(t1);
-            s1.add(t2);
-            s2.add(t1);
-            s2.add(t2);
-            s1 = t1;
-            s2 = t2;
-        }
-        
-        DumpSettings settings = DumpSettings.builder().build();
-        Dump dump = new Dump(settings);
-        dump.dumpToString(root);
-
-    }
-    
     @org.junit.Test
     public void referencesWithRecursiveKeysNotAllowedByDefault() {
         String output = createDump(30);
