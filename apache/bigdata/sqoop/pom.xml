@@ -67,59 +67,61 @@
             <artifactId>sentry-binding-sqoop</artifactId>
             <version>${sentry.version}</version>
             <scope>test</scope>
-		    <exclusions>
-		        <exclusion>
-		            <groupId>tomcat</groupId>
-	             	<artifactId>jasper-runtime</artifactId>
-	        	</exclusion>
-		        <exclusion>
-		            <groupId>tomcat</groupId>
-	             	<artifactId>jasper-compiler</artifactId>
-	        	</exclusion>
-		        <exclusion>
-		            <groupId>org.apache.sqoop</groupId>
-	             	<artifactId>sqoop-common</artifactId>
-	        	</exclusion>
-		        <exclusion>
-		            <groupId>org.apache.sqoop</groupId>
-	             	<artifactId>sqoop-security</artifactId>
-	        	</exclusion>
-		    </exclusions>
+            <exclusions>
+                <exclusion>
+                    <groupId>tomcat</groupId>
+                    <artifactId>jasper-runtime</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>tomcat</groupId>
+                    <artifactId>jasper-compiler</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.sqoop</groupId>
+                    <artifactId>sqoop-common</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.sqoop</groupId>
+                    <artifactId>sqoop-security</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-		    <groupId>org.eclipse.jetty</groupId>
-		    <artifactId>jetty-servlet</artifactId>
-		    <version>${jetty.version}</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.eclipse.jetty</groupId>
-	    	<artifactId>jetty-server</artifactId>
-    		<version>${jetty.version}</version>
-		</dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>${jetty.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
-		    <groupId>org.apache.hadoop</groupId>
-		    <artifactId>hadoop-common</artifactId>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
             <version>${hadoop.version}</version>
             <scope>test</scope>
-		    <exclusions>
-		        <exclusion>
-		            <groupId>javax.servlet</groupId>
-	             	<artifactId>servlet-api</artifactId>
-	        	</exclusion>
-		    </exclusions>
-		</dependency>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
-		    <groupId>org.apache.hadoop</groupId>
-		    <artifactId>hadoop-minicluster</artifactId>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-minicluster</artifactId>
             <version>${hadoop.version}</version>
             <scope>test</scope>
-		    <exclusions>
-		        <exclusion>
-		            <groupId>javax.servlet</groupId>
-	             	<artifactId>servlet-api</artifactId>
-	        	</exclusion>
-		    </exclusions>
-		</dependency>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.apache.ranger</groupId>
             <artifactId>ranger-sqoop-plugin</artifactId>
