@@ -30,6 +30,7 @@
         <module>camel-common</module>
         <module>camel-coap</module>
         <module>camel-cxf</module>
+        <module>camel-jmx</module>
         <module>camel-xmlsecurity</module>
         <module>camel-crypto</module>
         <module>camel-ldap</module>
