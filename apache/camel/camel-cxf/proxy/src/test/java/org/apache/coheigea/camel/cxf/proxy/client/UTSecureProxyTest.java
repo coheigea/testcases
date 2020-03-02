@@ -34,6 +34,8 @@ import org.example.contract.doubleit.DoubleItPortType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import static org.junit.Assert.*;
+
 /**
  * A secure proxy test. A CXF JAX-WS "double-it" service requires TLS with client
  * authentication. A CXF proxy service also requires TLS, but with a UsernameToken

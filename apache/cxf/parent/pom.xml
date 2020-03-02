@@ -31,19 +31,19 @@
     </parent>
 
     <properties>
-        <apacheds.version>2.0.0-M24</apacheds.version>
-        <bcprov.version>1.62</bcprov.version>
+        <apacheds.version>2.0.0.AM25</apacheds.version>
+        <bcprov.version>1.64</bcprov.version>
         <commons.logging.version>1.2</commons.logging.version>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <cxf.version>3.3.5</cxf.version>
         <fediz.version>1.3.3</fediz.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
         <htmlunit.version>2.22</htmlunit.version>
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.10.2</jackson.version>
         <junit.version>4.12</junit.version>
-        <karaf.version>4.2.6</karaf.version>
+        <karaf.version>4.2.8</karaf.version>
         <slf4j.version>1.7.26</slf4j.version>
-        <spring.version>5.1.9.RELEASE</spring.version>
+        <spring.version>5.1.13.RELEASE</spring.version>
         <syncope.version>2.0.13</syncope.version>
         <tomcat.version>8.0.53</tomcat.version>
     </properties>
