@@ -24,7 +24,6 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.yaml.snakeyaml.DumperOptions;
@@ -60,6 +59,19 @@ public class YamlTest {
     }
     
     @org.junit.Test
+    public void testDenialOfServiceAttack() throws Exception {
+        Yaml yaml = new Yaml();
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data-dos.yaml");
+        try {
+            Map<String, String> data = yaml.load(inputStream);
+            assertEquals("Colm", data.get("name"));
+            fail("Failure expected on a DoS attack");
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("exceeds the specified"));
+        }
+    }
+    
+    @org.junit.Test
     public void testDenialOfServiceAttackAtAPILevel() throws Exception {
         // Yaml yaml = new Yaml();
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data-dos.yaml");
@@ -82,7 +94,22 @@ public class YamlTest {
         String output = createDump(30);
         // Load
         LoaderOptions settings = new LoaderOptions();
-        //settings.setMaxAliasesForCollections(150);
+        settings.setMaxAliasesForCollections(150);
+        Yaml yaml = new Yaml(settings);
+        try {
+            yaml.load(output);
+            fail();
+        } catch (Exception e) {
+            assertEquals("Recursive key for mapping is detected but it is not configured to be allowed.", e.getMessage());
+        }
+    }
+    
+    @org.junit.Test
+    public void referencesWithRecursiveKeysNotAllowedByDefaultAtAPILevel() {
+        String output = createDump(30);
+        // Load
+        LoaderOptions settings = new LoaderOptions();
+        settings.setMaxAliasesForCollections(150);
         Yaml yaml = new Yaml(new CustomConstructor(), new Representer(), new DumperOptions(), settings);
         try {
             yaml.load(output);
