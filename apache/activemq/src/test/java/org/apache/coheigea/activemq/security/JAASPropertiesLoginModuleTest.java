@@ -258,4 +258,23 @@ public class JAASPropertiesLoginModuleTest {
             // expected
         }
     }
+    
+    @org.junit.Test
+    public void testAliceCantProduce() throws Exception {
+        
+        // Now log on and try to produce + consume
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerAddress);
+        Connection connection = factory.createConnection("alice", "password");
+        connection.start();
+        
+        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Destination queue = session.createQueue("testqueue2");
+        
+        try {
+            session.createProducer(queue);
+            fail("Expected failure as alice can't produce");
+        } catch (Exception ex) {
+            // expected
+        }
+    }
 }
