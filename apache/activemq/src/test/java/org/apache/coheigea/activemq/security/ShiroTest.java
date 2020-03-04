@@ -21,10 +21,7 @@ package org.apache.coheigea.activemq.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.net.ServerSocket;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.jms.Connection;
 import javax.jms.Destination;
@@ -36,18 +33,13 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.filter.DestinationMapEntry;
-import org.apache.activemq.security.AuthorizationEntry;
-import org.apache.activemq.security.AuthorizationMap;
-import org.apache.activemq.security.AuthorizationPlugin;
-import org.apache.activemq.security.DefaultAuthorizationMap;
-import org.apache.activemq.security.JaasAuthenticationPlugin;
+import org.apache.activemq.shiro.ShiroPlugin;
 import org.apache.activemq.store.memory.MemoryPersistenceAdapter;
 
 /**
- * Some tests for the JAAS PropertiesLoginModule
+ * Some tests for the ShiroPlugin
  */
-public class JAASPropertiesLoginModuleTest {
+public class ShiroTest {
     
     private static BrokerService broker;
     private static String brokerAddress;
@@ -55,39 +47,13 @@ public class JAASPropertiesLoginModuleTest {
     @org.junit.BeforeClass
     public static void startBroker() throws Exception {
         
-        String basedir = System.getProperty("basedir");
-        if (basedir == null) {
-            basedir = new File(".").getCanonicalPath();
-        }
-
-        // Read in jaas file
-        File f = new File(basedir + "/src/test/resources/activemq.jaas");
-        System.setProperty("java.security.auth.login.config", f.getPath());
-        
         broker = new BrokerService();
         broker.setPersistenceAdapter(new MemoryPersistenceAdapter());
         broker.setDataDirectory("target/activemq-data");
         
-        // Add authorization data
-        AuthorizationEntry authorizationEntry = new AuthorizationEntry();
-        authorizationEntry.setAdmin("guest");
-        authorizationEntry.setRead("consumer");
-        authorizationEntry.setWrite("producer");
-        authorizationEntry.setQueue("testqueue");
-        
-        AuthorizationEntry advisoryEntry = new AuthorizationEntry();
-        advisoryEntry.setAdmin("guest");
-        advisoryEntry.setRead("guest");
-        advisoryEntry.setWrite("guest");
-        advisoryEntry.setTopic("ActiveMQ.Advisory.>");
-        
-        List<DestinationMapEntry> authzEntryList = Arrays.asList(authorizationEntry, advisoryEntry);
-        AuthorizationMap authorizationMap = new DefaultAuthorizationMap(authzEntryList);
-        AuthorizationPlugin authorizationPlugin = new AuthorizationPlugin(authorizationMap);
-        
-        JaasAuthenticationPlugin authenticationPlugin = new JaasAuthenticationPlugin();
-        authenticationPlugin.setConfiguration("activemq");
-        broker.setPlugins(new BrokerPlugin[] { authenticationPlugin, authorizationPlugin });
+        ShiroPlugin shiroPlugin = new ShiroPlugin();
+        shiroPlugin.setIniResourcePath("src/test/resources/securityconfig.ini");
+        broker.setPlugins(new BrokerPlugin[] { shiroPlugin });
         
         ServerSocket serverSocket = new ServerSocket(0);
         int brokerPort = serverSocket.getLocalPort();
@@ -103,7 +69,6 @@ public class JAASPropertiesLoginModuleTest {
         if (broker != null) {
             broker.stop();
         }
-        System.clearProperty("java.security.auth.login.config");
     }
     
     @org.junit.Test
@@ -212,50 +177,22 @@ public class JAASPropertiesLoginModuleTest {
     }
     
     @org.junit.Test
-    public void testAliceTempDestination() throws Exception {
+    public void testAliceCantProduce() throws Exception {
+        
+        // Now log on and try to produce + consume
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerAddress);
         Connection connection = factory.createConnection("alice", "password");
         connection.start();
         
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        session.createTemporaryQueue();
+        Destination queue = session.createQueue("testqueue2");
         
-        connection.close();
-    }
-    
-    @org.junit.Test
-    public void testMissingCreds() throws Exception {
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerAddress);
-        Connection connection = factory.createConnection();
         try {
-            connection.start();
-            fail("Failure expected on an authentication problem");
+            session.createProducer(queue);
+            fail("Expected failure as alice can't produce");
         } catch (Exception ex) {
             // expected
         }
     }
     
-    @org.junit.Test
-    public void testUnknownUser() throws Exception {
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerAddress);
-        Connection connection = factory.createConnection("dave", "password");
-        try {
-            connection.start();
-            fail("Failure expected on an authentication problem");
-        } catch (Exception ex) {
-            // expected
-        }
-    }
-    
-    @org.junit.Test
-    public void testWrongPassword() throws Exception {
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerAddress);
-        Connection connection = factory.createConnection("alice", "security");
-        try {
-            connection.start();
-            fail("Failure expected on an authentication problem");
-        } catch (Exception ex) {
-            // expected
-        }
-    }
 }
