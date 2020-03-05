@@ -19,6 +19,7 @@
 package org.apache.coheigea.activemq.misc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.ServerSocket;
 import java.util.UUID;
@@ -79,7 +80,8 @@ public class RequestReplyTest {
         Destination queue = session.createQueue("testqueue");
         
         MessageConsumer consumer = session.createConsumer(queue);
-        consumer.setMessageListener(new ConsumerMessageListener(session));
+        ConsumerMessageListener consumerMessageListener = new ConsumerMessageListener(session);
+        consumer.setMessageListener(consumerMessageListener);
         
         // Producer
         MessageProducer producer = session.createProducer(queue);
@@ -92,11 +94,15 @@ public class RequestReplyTest {
         message.setJMSReplyTo(tempQueue);
         
         MessageConsumer replyConsumer = session.createConsumer(tempQueue);
-        replyConsumer.setMessageListener(new ProducerMessageListener());
+        ProducerMessageListener productMessageListener = new ProducerMessageListener();
+        replyConsumer.setMessageListener(productMessageListener);
         
         producer.send(message);
         
         Thread.sleep(2 * 1000L);
+        
+        assertTrue(consumerMessageListener.isMessageReceived());
+        assertTrue(productMessageListener.isMessageReceived());
         
         connection.close();
     }
@@ -104,6 +110,7 @@ public class RequestReplyTest {
     private static class ConsumerMessageListener implements MessageListener {
         
         private final Session session;
+        private boolean messageReceived;
         
         public ConsumerMessageListener(Session session) {
             this.session = session;
@@ -114,6 +121,7 @@ public class RequestReplyTest {
             try {
                 assertEquals("Some txt", ((TextMessage)message).getText());
                 assertEquals("some value", message.getStringProperty("some header"));
+                messageReceived = true;
                 
                 // Return a message
                 TextMessage responseMsg = session.createTextMessage("Some reply");
@@ -126,20 +134,30 @@ public class RequestReplyTest {
                 e.printStackTrace();
             }
         }
+        
+        public boolean isMessageReceived() {
+            return messageReceived;
+        }
     }
     
     private static class ProducerMessageListener implements MessageListener {
+        
+        private boolean messageReceived;
         
         @Override
         public void onMessage(Message message) {
             try {
                 assertEquals("Some reply", ((TextMessage)message).getText());
+                messageReceived = true;
             } catch (JMSException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
         
+        public boolean isMessageReceived() {
+            return messageReceived;
+        }
     }
     
 }
