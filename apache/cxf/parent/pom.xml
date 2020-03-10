@@ -31,7 +31,7 @@
     </parent>
 
     <properties>
-        <apacheds.version>2.0.0.AM25</apacheds.version>
+        <apacheds.version>2.0.0.AM26</apacheds.version>
         <bcprov.version>1.64</bcprov.version>
         <commons.logging.version>1.2</commons.logging.version>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
