@@ -32,24 +32,24 @@ import org.springframework.util.FileSystemUtils;
 @SpringBootTest
 public class ZipFileTest {
 
-	@Test
-	public void testPlaintextRoute() throws IOException, InterruptedException {
-		Path sourcePath = Paths.get("src/test/resources/data");
-		Path destPath = Paths.get("target/plaintextdata");
-		FileSystemUtils.copyRecursively(sourcePath, destPath);
-		
-		// Sleep to let the processing take place
-		Thread.sleep(2000);
-	}
-	
-	@Test
-	public void testZippedRoute() throws IOException, InterruptedException {
-		Path sourcePath = Paths.get("src/test/resources/zippeddata");
-		Path destPath = Paths.get("target/zippeddata");
-		FileSystemUtils.copyRecursively(sourcePath, destPath);
-		
-		// Sleep to let the processing take place
-		Thread.sleep(2000);
-	}
-	
+    @Test
+    public void testPlaintextRoute() throws IOException, InterruptedException {
+        Path sourcePath = Paths.get("src/test/resources/data");
+        Path destPath = Paths.get("target/plaintextdata");
+        FileSystemUtils.copyRecursively(sourcePath, destPath);
+
+        // Sleep to let the processing take place
+        Thread.sleep(2000);
+    }
+
+    @Test
+    public void testZippedRoute() throws IOException, InterruptedException {
+        Path sourcePath = Paths.get("src/test/resources/zippeddata");
+        Path destPath = Paths.get("target/zippeddata");
+        FileSystemUtils.copyRecursively(sourcePath, destPath);
+
+        // Sleep to let the processing take place
+        Thread.sleep(2000);
+    }
+
 }

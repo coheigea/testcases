@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ZipFileApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ZipFileApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ZipFileApplication.class, args);
+    }
 
 }

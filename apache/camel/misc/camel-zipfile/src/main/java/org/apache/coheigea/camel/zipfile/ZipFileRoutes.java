@@ -24,17 +24,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class ZipFileRoutes extends RouteBuilder {
 
-	@Override
-	public void configure() throws Exception {
-		from("file:target/plaintextdata")
-			.setProperty("FileName", simple("{file:name.noext}"))
-			.marshal().zipFile()
-			.to("file:target/results");
-		
-		from("file:target/zippeddata")
-			.unmarshal().zipFile()
-			.to("file:target/plaintextresults");
-		
-	}
-	
+    @Override
+    public void configure() throws Exception {
+        from("file:target/plaintextdata")
+            .setProperty("FileName", simple("{file:name.noext}"))
+            .marshal().zipFile()
+            .to("file:target/results");
+
+        from("file:target/zippeddata")
+            .unmarshal().zipFile()
+            .to("file:target/plaintextresults");
+
+    }
+
 }
