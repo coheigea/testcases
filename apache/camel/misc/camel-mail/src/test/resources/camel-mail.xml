@@ -26,7 +26,7 @@
     <camelContext xmlns="http://camel.apache.org/schema/spring">
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
-            <setHeader headerName="CC">
+            <setHeader name="CC">
                 <simple>bad@apache-recipient.org</simple>
             </setHeader>
             <removeHeader headerName="cc" />

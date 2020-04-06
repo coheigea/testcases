@@ -53,7 +53,7 @@
                          propertiesParserRef="jasypt"/>
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
-            <to uri="xmlsecurity:sign://enveloped?keyAccessor=#signatureAccessor&amp;parentLocalName=PaymentInfo&amp;parentNamespace=urn:example:po&amp;properties=#xadesProperties" />
+            <to uri="xmlsecurity-sign://enveloped?keyAccessor=#signatureAccessor&amp;parentLocalName=PaymentInfo&amp;parentNamespace=urn:example:po&amp;properties=#xadesProperties" />
             <to uri="file:target/signed-xades-data?fileName=${file:name}.signed"/>
         </route>
     </camelContext>

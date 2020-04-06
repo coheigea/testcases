@@ -57,6 +57,18 @@
            <scope>test</scope>
        </dependency>
        <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-file</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-spring-main</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
            <groupId>org.slf4j</groupId>
            <artifactId>slf4j-jdk14</artifactId>
            <version>${slf4j.version}</version>

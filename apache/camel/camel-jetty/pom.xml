@@ -52,7 +52,31 @@
        </dependency>
        <dependency>
            <groupId>org.apache.camel</groupId>
-           <artifactId>camel-http4</artifactId>
+           <artifactId>camel-http</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-spring-main</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-direct</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-timer</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-rest</artifactId>
            <version>${camel.version}</version>
            <scope>test</scope>
        </dependency>

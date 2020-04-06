@@ -65,10 +65,14 @@
         </cxf:properties>
     </cxf:cxfEndpoint>
 
+    <bean id="cryptoKey" class="org.apache.coheigea.camel.cxf.proxy.shiro.proxyservice.ShiroHeaderProcessor" 
+        factory-method="getKey" />
+
     <bean id="shiroSecurityPolicy" class="org.apache.camel.component.shiro.security.ShiroSecurityPolicy">
         <constructor-arg>
             <value>target/test-classes/securityconfig.ini</value>
         </constructor-arg>
+        <constructor-arg ref="cryptoKey" />
     </bean>
     
     <bean id="shiroHeaderProcessor" class="org.apache.coheigea.camel.cxf.proxy.shiro.proxyservice.ShiroHeaderProcessor"/> 

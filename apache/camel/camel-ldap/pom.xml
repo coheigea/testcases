@@ -32,8 +32,8 @@
    </parent>
    
    <properties>
-        <apacheds.version>2.0.0-M24</apacheds.version>
-        <bcprov.version>1.60</bcprov.version>
+        <apacheds.version>2.0.0.AM25</apacheds.version>
+        <bcprov.version>1.64</bcprov.version>
         <spring-ldap-version>2.3.2.RELEASE</spring-ldap-version>
    </properties>
 
@@ -59,6 +59,18 @@
        <dependency>
            <groupId>org.apache.camel</groupId>
            <artifactId>camel-spring-ldap</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-file</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-spring-main</artifactId>
            <version>${camel.version}</version>
            <scope>test</scope>
        </dependency>

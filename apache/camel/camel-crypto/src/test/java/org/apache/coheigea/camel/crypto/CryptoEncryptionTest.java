@@ -35,6 +35,7 @@ public class CryptoEncryptionTest extends org.junit.Assert {
     static {
         try {
             KeyGenerator generator = KeyGenerator.getInstance("AES");
+            generator.init(256);
             key = generator.generateKey();
         } catch (NoSuchAlgorithmException e) {
             // TODO Auto-generated catch block

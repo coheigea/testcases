@@ -26,9 +26,6 @@
     <camel:keyStoreParameters id="signatureParams" resource="./clientstore.jks" 
            password="{{client.store.password}}" />
            
-    <camel:keyStoreParameters id="verificationParams" resource="./servicestore.jks" 
-           password="{{service.store.password}}" />
-           
     <bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
         <!-- password is mandatory, you can prefix it with sysenv: or sys: to indicate it should use
          an OS environment or JVM system property value, so you dont have the master password defined here -->
@@ -43,7 +40,7 @@
     
     <bean id="verificationSelector" class="org.apache.camel.component.xmlsecurity.api.DefaultKeySelector">
         <property name="alias" value="myclientkey"/>
-        <property name="keyStoreParameters" ref="verificationParams"/>
+        <property name="keyStoreParameters" ref="signatureParams"/>
     </bean>
     
     <camelContext xmlns="http://camel.apache.org/schema/spring">
@@ -53,12 +50,12 @@
                          propertiesParserRef="jasypt"/>
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
-            <to uri="xmlsecurity:sign://enveloped?keyAccessor=#signatureAccessor&amp;parentLocalName=PaymentInfo&amp;parentNamespace=urn:example:po" />
+            <to uri="xmlsecurity-sign://enveloped?keyAccessor=#signatureAccessor&amp;parentLocalName=PaymentInfo&amp;parentNamespace=urn:example:po" />
             <to uri="file:target/signed-data?fileName=${file:name}.signed"/>
         </route>
         <route>
             <from uri="file:target/signed-data?noop=true"/>
-            <to uri="xmlsecurity:verify://enveloped?keySelector=#verificationSelector" />
+            <to uri="xmlsecurity-verify://enveloped?keySelector=#verificationSelector" />
             <to uri="file:target/verified-data?fileName=${file:name.noext}.verified"/>
         </route>
     </camelContext>

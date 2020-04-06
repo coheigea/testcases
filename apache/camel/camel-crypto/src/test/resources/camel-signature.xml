@@ -26,9 +26,6 @@
     <camel:keyStoreParameters id="signatureParams" resource="./clientstore.jks" 
            password="{{client.store.password}}" />
 
-    <camel:keyStoreParameters id="verificationParams" resource="./servicestore.jks" 
-           password="{{service.store.password}}" />
-
     <bean id="jasypt" class="org.apache.camel.component.jasypt.JasyptPropertiesParser">
         <!-- password is mandatory, you can prefix it with sysenv: or sys: to indicate it should use
          an OS environment or JVM system property value, so you dont have the master password defined here -->
@@ -44,7 +41,7 @@
             <from uri="file:src/test/resources/data?noop=true"/>
             <to uri="crypto:sign://keystoreParams?keyStoreParameters=#signatureParams&amp;alias=myclientkey&amp;password={{client.key.password}}&amp;algorithm=SHA256withRSA" />
             <log message="Signature $simple{in.header.CamelDigitalSignature}" loggingLevel="INFO"/>
-            <to uri="crypto:verify://keystoreParams?keyStoreParameters=#verificationParams&amp;alias=myclientkey&amp;algorithm=SHA256WithRSA" />
+            <to uri="crypto:verify://keystoreParams?keyStoreParameters=#signatureParams&amp;alias=myclientkey&amp;algorithm=SHA256WithRSA" />
             <to uri="file:target/verified-data?fileName=${file:name}.verified"/>
         </route>
     </camelContext>

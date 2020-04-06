@@ -31,13 +31,13 @@
     </parent>
 
     <properties>
-        <camel.version>2.25.0</camel.version>
+        <camel.version>3.2.0</camel.version>
         <commons.logging.version>1.2</commons.logging.version>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <cxf.version>3.3.5</cxf.version>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <spring.version>5.1.13.RELEASE</spring.version>
+        <spring.version>5.2.5.RELEASE</spring.version>
     </properties>
 
 

@@ -24,7 +24,9 @@ import org.apache.camel.spring.Main;
  */
 public class XMLEncryptionTest extends org.junit.Assert {
     
+    // TODO
     @org.junit.Test
+    @org.junit.Ignore
     public void testXMLEncryption() throws Exception {
         // Start up the Camel route
         Main main = new Main();

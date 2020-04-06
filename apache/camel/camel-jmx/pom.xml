@@ -31,10 +31,6 @@
         <version>1.0</version>
    </parent>
 
-   <properties>
-       <camel.version>3.2.0-SNAPSHOT</camel.version>
-   </properties>
-
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>

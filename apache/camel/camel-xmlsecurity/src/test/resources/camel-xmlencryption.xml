@@ -49,7 +49,7 @@
                         secureTagContents="true"
                         xmlCipherAlgorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"       
                         recipientKeyAlias="myservicekey"
-                        keyOrTrustStoreParametersId="encryptionParams" />
+                        keyOrTrustStoreParametersRef="encryptionParams" />
                 </marshal>
             <to uri="file:target/encrypted-data?fileName=${file:name}.encrypted"/>
         </route>
@@ -63,7 +63,7 @@
                         keyCipherAlgorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"
                         recipientKeyAlias="myservicekey"
                         keyPassword="{{service.key.password}}"
-                        keyOrTrustStoreParametersId="decryptionParams" />
+                        keyOrTrustStoreParametersRef="decryptionParams" />
                 </unmarshal>
             <to uri="file:target/decrypted-data?fileName=${file:name.noext}.decrypted"/>
         </route>

@@ -75,7 +75,7 @@
         <!--  client configuration --> 
         <route>
             <from uri="timer:start?repeatCount=1"/>
-            <to uri="http4:localhost:{{https.port}}/data?sslContextParameters=#clientSSLParameters&amp;x509HostnameVerifier=#noopHostnameVerifier" />
+            <to uri="http:localhost:{{https.port}}/data?sslContextParameters=#clientSSLParameters&amp;x509HostnameVerifier=#noopHostnameVerifier" />
             <log message="Data received: ${body}" />
         </route>
 

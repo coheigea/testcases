@@ -57,6 +57,12 @@
            <scope>test</scope>
        </dependency>
        <dependency>
+           <groupId>org.apache.camel</groupId>
+           <artifactId>camel-spring-main</artifactId>
+           <version>${camel.version}</version>
+           <scope>test</scope>
+       </dependency>
+       <dependency>
            <groupId>org.apache.cxf</groupId>
            <artifactId>cxf-rt-ws-policy</artifactId>
            <version>${cxf.version}</version>

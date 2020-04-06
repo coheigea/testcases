@@ -76,9 +76,13 @@
         <constructor-arg>
             <value>target/test-classes/securityconfig.ini</value>
         </constructor-arg>
+        <constructor-arg ref="cryptoKey" />
         <property name="rolesList" ref="requiredRolesList"/>
     </bean>
     
+    <bean id="cryptoKey" class="org.apache.coheigea.camel.cxf.proxy.shiro.proxyservice.ShiroHeaderProcessor" 
+        factory-method="getKey" />
+
     <bean id="shiroHeaderProcessor" class="org.apache.coheigea.camel.cxf.proxy.shiro.proxyservice.ShiroHeaderProcessor"/> 
      
     <camelContext xmlns="http://camel.apache.org/schema/spring">

@@ -27,11 +27,11 @@
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
             <!-- Store the filename as a property on the exchange, as the header gets removed -->
-            <setProperty propertyName="FileName">
+            <setProperty name="FileName">
                 <simple>${file:name.noext}</simple>
             </setProperty>
             <to uri="pdf:create"/>
-            <to uri="file:target/results?fileName=${property.FileName}.pdf"/>
+            <to uri="file:target/results?fileName=${exchangeProperty.FileName}.pdf"/>
         </route>
     </camelContext>
   

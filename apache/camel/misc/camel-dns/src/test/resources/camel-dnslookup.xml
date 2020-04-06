@@ -28,7 +28,7 @@
     <camelContext xmlns="http://camel.apache.org/schema/spring">
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
-            <setHeader headerName="dns.name">
+            <setHeader name="dns.name">
                 <simple>${body}</simple>
             </setHeader>
             <to uri="dns:lookup"/>

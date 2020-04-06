@@ -26,7 +26,7 @@
     <camelContext xmlns="http://camel.apache.org/schema/spring">
         <route>
             <from uri="file:src/test/resources/data?noop=true"/>
-            <setHeader headerName="CamelWeatherLocation">
+            <setHeader name="CamelWeatherLocation">
                 <simple>${body}</simple>
             </setHeader>
             <to uri="weather:test?mode=XML"/>
