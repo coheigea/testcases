@@ -83,7 +83,7 @@ public class ImplicitFlowTest extends AbstractBusClientServerTestBase {
         // Get Access Token
         client.type("application/json").accept("application/json");
         client.query("client_id", "consumer-id");
-        client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        client.query("redirect_uri", "http://www.blah.apache.org");
         client.query("scope", "openid");
         client.query("response_type", "id_token token");
         client.query("nonce", "123456789");

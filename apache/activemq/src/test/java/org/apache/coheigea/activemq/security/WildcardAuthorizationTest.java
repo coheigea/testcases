@@ -67,11 +67,11 @@ public class WildcardAuthorizationTest {
         authenticationPlugin.setUsers(Arrays.asList(alice, bob));
         
         // Add authorization data
-        AuthorizationEntry ***REMOVED***AuthorizationEntry = new AuthorizationEntry();
-        ***REMOVED***AuthorizationEntry.setAdmin("guest");
-        ***REMOVED***AuthorizationEntry.setRead("consumer");
-        ***REMOVED***AuthorizationEntry.setWrite("producer");
-        ***REMOVED***AuthorizationEntry.setQueue("testqueue.***REMOVED***");
+        AuthorizationEntry fooAuthorizationEntry = new AuthorizationEntry();
+        fooAuthorizationEntry.setAdmin("guest");
+        fooAuthorizationEntry.setRead("consumer");
+        fooAuthorizationEntry.setWrite("producer");
+        fooAuthorizationEntry.setQueue("testqueue.foo");
         
         // Here only the producer can read testqueue.bar
         AuthorizationEntry barAuthorizationEntry = new AuthorizationEntry();
@@ -86,7 +86,7 @@ public class WildcardAuthorizationTest {
         advisoryEntry.setWrite("guest");
         advisoryEntry.setTopic("ActiveMQ.Advisory.>");
         
-        List<DestinationMapEntry> authzEntryList = Arrays.asList(***REMOVED***AuthorizationEntry, barAuthorizationEntry, advisoryEntry);
+        List<DestinationMapEntry> authzEntryList = Arrays.asList(fooAuthorizationEntry, barAuthorizationEntry, advisoryEntry);
         AuthorizationMap authorizationMap = new DefaultAuthorizationMap(authzEntryList);
         AuthorizationPlugin authorizationPlugin = new AuthorizationPlugin(authorizationMap);
         
@@ -115,7 +115,7 @@ public class WildcardAuthorizationTest {
         connection.start();
         
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        sendMessage(session, "testqueue.***REMOVED***");
+        sendMessage(session, "testqueue.foo");
         sendMessage(session, "testqueue.bar");
         
         Connection consumerConnection = factory.createConnection("alice", "password");
@@ -135,7 +135,7 @@ public class WildcardAuthorizationTest {
         connection.start();
         
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        sendMessage(session, "testqueue.***REMOVED***");
+        sendMessage(session, "testqueue.foo");
         sendMessage(session, "testqueue.bar");
         
         Connection consumerConnection = factory.createConnection("bob", "security");

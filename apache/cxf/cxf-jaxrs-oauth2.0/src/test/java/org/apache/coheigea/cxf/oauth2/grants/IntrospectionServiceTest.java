@@ -257,7 +257,7 @@ public class IntrospectionServiceTest extends AbstractBusClientServerTestBase {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
         client.query("client_id", consumerId);
-        client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        client.query("redirect_uri", "http://www.blah.apache.org");
         client.query("response_type", "code");
         if (scope != null) {
             client.query("scope", scope);
@@ -313,7 +313,7 @@ public class IntrospectionServiceTest extends AbstractBusClientServerTestBase {
         if (audience != null) {
             form.param("audience", audience);
         }
-        form.param("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        form.param("redirect_uri", "http://www.blah.apache.org");
         Response response = client.post(form);
 
         return response.readEntity(ClientAccessToken.class);

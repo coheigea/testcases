@@ -93,7 +93,7 @@ public class SAMLClientAuthenticationTest extends AbstractBusClientServerTestBas
         // Make initial authorization request
         client.type("application/json").accept("application/json");
         client.query("client_id", "consumer-id");
-        client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        client.query("redirect_uri", "http://www.blah.apache.org");
         client.query("response_type", "code");
         client.path("authorize/");
         Response response = client.get();
@@ -134,7 +134,7 @@ public class SAMLClientAuthenticationTest extends AbstractBusClientServerTestBas
         form.param("code", code);
         form.param("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:saml2-bearer");
         form.param("client_assertion", Base64UrlUtility.encode(assertion));
-        form.param("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        form.param("redirect_uri", "http://www.blah.apache.org");
         Response response = client.post(form);
 
         return response.readEntity(ClientAccessToken.class);

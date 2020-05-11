@@ -72,7 +72,7 @@ public class WildcardTest {
         connection.start();
         
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        sendMessage(session, "testqueue.***REMOVED***");
+        sendMessage(session, "testqueue.foo");
         sendMessage(session, "testqueue.bar");
         
         receiveMessage(session, "testqueue.*");

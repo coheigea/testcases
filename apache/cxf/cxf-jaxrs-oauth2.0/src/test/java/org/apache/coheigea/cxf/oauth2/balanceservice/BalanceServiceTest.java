@@ -101,7 +101,7 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
 
-        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code, "http://www.b***REMOVED***.apache.org");
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code, "http://www.blah.apache.org");
         assertNotNull(accessToken.getTokenKey());
 
         // Now invoke on the service with the access token
@@ -146,7 +146,7 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
 
-        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code, "http://www.b***REMOVED***.apache.org");
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code, "http://www.blah.apache.org");
         assertNotNull(accessToken.getTokenKey());
 
         // Now invoke on the service with the access token
@@ -191,7 +191,7 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         WebClient.getConfig(oauthClient).getRequestContext().put(
             org.apache.cxf.message.Message.MAINTAIN_SESSION, Boolean.TRUE);
 
-        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code, "http://www.b***REMOVED***.apache.org");
+        ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code, "http://www.blah.apache.org");
         assertNotNull(accessToken.getTokenKey());
 
         // Now invoke on the service with the access token
@@ -240,7 +240,7 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         ClientAccessToken accessToken = getAccessTokenWithAuthorizationCode(oauthClient, code,
                                                                             "consumer-id-aud",
                                                                             partnerAddress,
-                                                                            "http://www.b***REMOVED***.apache.org");
+                                                                            "http://www.blah.apache.org");
         assertNotNull(accessToken.getTokenKey());
 
         // Now invoke on the service with the access token
@@ -318,7 +318,7 @@ public class BalanceServiceTest extends AbstractBusClientServerTestBase {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
         client.query("client_id", consumerId);
-        client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        client.query("redirect_uri", "http://www.blah.apache.org");
         client.query("response_type", "code");
         if (scope != null) {
             client.query("scope", scope);

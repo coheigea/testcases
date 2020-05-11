@@ -1,3 +1,0 @@
-key1=***REMOVED***
-key2=bar
-key3=***REMOVED***

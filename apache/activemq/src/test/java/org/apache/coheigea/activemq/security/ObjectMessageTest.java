@@ -141,7 +141,7 @@ public class ObjectMessageTest {
         for (int i = 0; i < 100; i++) {
             HashSet<Object> t1 = new HashSet<>();
             HashSet<Object> t2 = new HashSet<>();
-            t1.add("***REMOVED***"); // make it not equal to t2
+            t1.add("foo"); // make it not equal to t2
             s1.add(t1);
             s1.add(t2);
             s2.add(t1);

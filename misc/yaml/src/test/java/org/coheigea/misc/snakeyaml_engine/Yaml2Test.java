@@ -97,7 +97,7 @@ public class Yaml2Test {
 
             t1 = new HashMap();
             t2 = new HashMap();
-            t1.put("***REMOVED***", "1");
+            t1.put("foo", "1");
             t2.put("bar", "2");
 
             s1.put("a", t1);

@@ -7,8 +7,8 @@
   <!ATTLIST Notaries Id ID #IMPLIED>
 ]>
 <!-- Preamble -->
-<Envelope xmlns:***REMOVED***="http://example.org/***REMOVED***" xmlns="http://example.org/usps">
-  <DearSir>***REMOVED***</DearSir>
+<Envelope xmlns:foo="http://example.org/foo" xmlns="http://example.org/usps">
+  <DearSir>foo</DearSir>
   <Body>bar</Body>
   <YoursSincerely>
     <Signature xmlns="http://www.w3.org/2000/09/xmldsig#" Id="signature">
@@ -168,7 +168,7 @@
           <Reference URI="#notaries">
             <Transforms>
               <Transform Algorithm="http://www.w3.org/TR/1999/REC-xslt-19991116">
-                <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/TR/xhtml1/strict" exclude-result-prefixes="***REMOVED***" version="1.0">
+                <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/TR/xhtml1/strict" exclude-result-prefixes="foo" version="1.0">
                   <xsl:output encoding="UTF-8" indent="no" method="xml" />
                   <xsl:template match="/">
                     <html>

@@ -73,7 +73,7 @@ public class VirtualTopicTest {
         connection.start();
         
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination queue = session.createQueue("Consumer.***REMOVED***.VirtualTopic.testtopic");
+        Destination queue = session.createQueue("Consumer.foo.VirtualTopic.testtopic");
         MessageConsumer consumer = session.createConsumer(queue);
         
         sendMessage(session, "VirtualTopic.testtopic");

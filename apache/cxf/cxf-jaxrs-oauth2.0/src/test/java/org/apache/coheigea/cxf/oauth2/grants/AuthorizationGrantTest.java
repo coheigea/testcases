@@ -225,7 +225,7 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         // Get Access Token
         client.type("application/json").accept("application/json");
         client.query("client_id", "consumer-id");
-        client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        client.query("redirect_uri", "http://www.blah.apache.org");
         client.query("response_type", "token");
         client.path("authorize-implicit/");
         Response response = client.get();
@@ -303,7 +303,7 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
         client.query("client_id", consumerId);
-        client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        client.query("redirect_uri", "http://www.blah.apache.org");
         client.query("response_type", "code");
         if (scope != null) {
             client.query("scope", scope);
@@ -359,7 +359,7 @@ public class AuthorizationGrantTest extends AbstractBusClientServerTestBase {
         if (audience != null) {
             form.param("audience", audience);
         }
-        form.param("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        form.param("redirect_uri", "http://www.blah.apache.org");
         Response response = client.post(form);
 
         return response.readEntity(ClientAccessToken.class);

@@ -116,14 +116,14 @@ public class JsonTest {
 
     private static class CustomObject implements Serializable {
         private static final long serialVersionUID = -7249059185723713380L;
-        private String ***REMOVED***;
+        private String foo;
 
         public String getFoo() {
-            return ***REMOVED***;
+            return foo;
         }
 
-        public void setFoo(String ***REMOVED***) {
-            this.***REMOVED*** = ***REMOVED***;
+        public void setFoo(String foo) {
+            this.foo = foo;
         }
         
     }

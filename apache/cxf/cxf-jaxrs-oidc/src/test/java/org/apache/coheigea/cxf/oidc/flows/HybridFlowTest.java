@@ -171,7 +171,7 @@ public class HybridFlowTest extends AbstractBusClientServerTestBase {
         // Make initial authorization request
         client.type("application/json").accept("application/json");
         client.query("client_id", consumerId);
-        client.query("redirect_uri", "http://www.b***REMOVED***.apache.org");
+        client.query("redirect_uri", "http://www.blah.apache.org");
         client.query("response_type", responseType);
         if (scope != null) {
             client.query("scope", scope);
