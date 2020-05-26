@@ -19,8 +19,11 @@
 
 package org.apache.coheigea.cxf.syncope.common;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.syncope.client.lib.SyncopeClient;
@@ -45,14 +48,17 @@ public class SyncopeDeployer {
 
     @SuppressWarnings("unchecked")
     public void deployUserData() {
-        WebClient client = WebClient.create(address);
-        client = client.type("application/xml");
+        List<Object> providers = new ArrayList<>();
+        providers.add(new JacksonJsonProvider());
+
+        WebClient client = WebClient.create(address, providers);
+        client = client.type("application/json");
 
         String authorizationHeader =
             "Basic " + Base64Utility.encode(("admin" + ":" + "password").getBytes());
 
         client.header("Authorization", authorizationHeader);
-        client.accept("application/xml");
+        client.accept("application/json");
 
         // Create the groups first
         client = client.path("groups");
