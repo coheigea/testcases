@@ -32,80 +32,9 @@
         http://www.springframework.org/schema/webflow-config
         http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.0.xsd">
 
+    <import resource="config/idp-core-servlet.xml" />
+
     <context:property-placeholder location="classpath:realm.properties" />
-
-    <context:component-scan base-package="org.apache.cxf.fediz.service.idp.beans" />
-
-    <mvc:resources mapping="/images/**" location="/resources/images/" />
-    
-    <mvc:resources mapping="/swagger/**" location="/resources/swagger/" />
-    
-    <mvc:view-controller path="/" view-name="index" />
-    <mvc:view-controller path="/federation/up/login" view-name="signinform" />
-
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/views/" />
-        <property name="suffix" value=".jsp" />
-    </bean>
-
-    <bean id="viewFactoryCreator" class="org.springframework.webflow.mvc.builder.MvcViewFactoryCreator">
-        <property name="viewResolvers">
-            <list>
-                <ref local="viewResolver" />
-            </list>
-        </property>
-    </bean>
-
-    <bean id="expressionParser" class="org.springframework.webflow.expression.WebFlowOgnlExpressionParser" />
-
-    <webflow:flow-builder-services id="builder" view-factory-creator="viewFactoryCreator"
-        expression-parser="expressionParser" />
-
-    <webflow:flow-registry id="flowRegistry" flow-builder-services="builder">
-        <webflow:flow-location path="/WEB-INF/flows/federation-validate-request.xml" id="federation" />
-        <webflow:flow-location path="/WEB-INF/flows/federation-validate-request.xml" id="federation/up" />
-        <webflow:flow-location path="/WEB-INF/flows/federation-validate-request.xml" id="federation/krb" />
-        <webflow:flow-location path="/WEB-INF/flows/federation-validate-request.xml" id="federation/clientcert" />
-        <webflow:flow-location path="/WEB-INF/flows/federation-signin-request.xml" id="signinRequest" />
-        <webflow:flow-location path="/WEB-INF/flows/federation-signin-response.xml" id="signinResponse" />
-        
-        <webflow:flow-location path="/WEB-INF/flows/saml-validate-request.xml" id="saml" />
-        <webflow:flow-location path="/WEB-INF/flows/saml-validate-request.xml" id="saml/up" />
-        <webflow:flow-location path="/WEB-INF/flows/saml-validate-request.xml" id="saml/krb" />
-        <webflow:flow-location path="/WEB-INF/flows/saml-validate-request.xml" id="saml/clientcert" />
-        <webflow:flow-location path="/WEB-INF/flows/saml-signin-request.xml" id="signinSAMLRequest" />
-    </webflow:flow-registry>
-
-    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping" p:flowRegistry-ref="flowRegistry"
-        p:order="2">
-    </bean>
-
-    <webflow:flow-executor id="flowExecutor" flow-registry="flowRegistry">
-        <webflow:flow-execution-attributes>
-            <webflow:always-redirect-on-pause value="false" />
-        </webflow:flow-execution-attributes>
-
-        <webflow:flow-execution-listeners>
-            <webflow:listener ref="securityFlowExecutionListener" />
-        </webflow:flow-execution-listeners>
-    </webflow:flow-executor>
-
-    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter" p:flowExecutor-ref="flowExecutor" />
-
-    <bean id="securityFlowExecutionListener" class="org.springframework.webflow.security.SecurityFlowExecutionListener">
-        <property name="accessDecisionManager" ref="accessDecisionManager" />
-    </bean>
-
-    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
-        <property name="decisionVoters">
-            <list>
-                <bean class="org.springframework.security.access.vote.RoleVoter">
-                    <property name="rolePrefix" value="ROLE_" />
-                </bean>
-                <bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
-            </list>
-        </property>
-    </bean>
 
     <bean id="stsClientForRpAction" class="org.apache.cxf.fediz.service.idp.beans.STSClientAction">
         <property name="wsdlLocation" value="https://localhost:0/fediz-idp-sts/${realm.STS_URI}/STSServiceTransport?wsdl" />

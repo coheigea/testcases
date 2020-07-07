@@ -29,7 +29,7 @@
     <bean id="idp-realmA" class="org.apache.cxf.fediz.service.idp.service.jpa.IdpEntity">
         <property name="realm" value="urn:org:apache:cxf:fediz:idp:realm-A" />
         <property name="uri" value="realma" />
-        <property name="provideIdpList" value="true" />
+        <property name="provideIdpList" value="false" />
         <property name="useCurrentIdp" value="true" />
         <property name="certificate" value="stsKeystoreA.properties" />
         <property name="certificatePassword" value="realma" />
