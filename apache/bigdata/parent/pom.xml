@@ -32,7 +32,7 @@
 
     <properties>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <hadoop.version>2.7.5</hadoop.version>
         <hbase.version>1.2.6</hbase.version>
         <hive.version>2.3.2</hive.version>
