@@ -1,14 +1,14 @@
 
-FROM maven:3.6.0-jdk-8-alpine
+FROM maven:3.6.1-jdk-8-alpine
 
 LABEL maintainer-twitter="@coheigea"
-LABEL version=2.0.0
+LABEL version=2.0.1
 
 ARG KERBY_VERSION=2.0.0
 ARG KERBY_HOME=/usr/local/kerby-${KERBY_VERSION}
 
 WORKDIR /tmp
-ADD http://repo1.maven.org/maven2/org/apache/kerby/kerby-all/${KERBY_VERSION}/kerby-all-${KERBY_VERSION}-source-release.zip /tmp
+ADD https://repo1.maven.org/maven2/org/apache/kerby/kerby-all/${KERBY_VERSION}/kerby-all-${KERBY_VERSION}-source-release.zip /tmp
 RUN unzip -q *.zip \
   && cd /tmp/kerby-all-${KERBY_VERSION}/kerby-dist/kdc-dist \
   && mvn clean install -Pdist \
