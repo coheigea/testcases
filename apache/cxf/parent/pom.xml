@@ -35,17 +35,17 @@
         <bcprov.version>1.68</bcprov.version>
         <commons.logging.version>1.2</commons.logging.version>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
-        <cxf.version>3.3.9</cxf.version>
+        <cxf.version>3.3.10</cxf.version>
         <fediz.version>1.5.0</fediz.version>
         <hsqldb.version>2.5.0</hsqldb.version>
         <htmlunit.version>2.22</htmlunit.version>
         <jackson.version>2.11.4</jackson.version>
         <junit.version>4.13.1</junit.version>
-        <karaf.version>4.2.9</karaf.version>
+        <karaf.version>4.2.11</karaf.version>
         <slf4j.version>1.7.26</slf4j.version>
-        <spring.version>5.1.19.RELEASE</spring.version>
+        <spring.version>5.1.20.RELEASE</spring.version>
         <syncope.version>2.1.8</syncope.version>
-        <tomcat.version>8.5.61</tomcat.version>
+        <tomcat.version>8.5.65</tomcat.version>
     </properties>
 
 
