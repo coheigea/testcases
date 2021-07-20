@@ -27,7 +27,7 @@
    <properties>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <junit.version>4.12</junit.version>
-        <jackson.version>2.10.3</jackson.version>
+        <jackson.version>2.10.5.1</jackson.version>
    </properties>
 
    <dependencies>
