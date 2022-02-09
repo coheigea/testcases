@@ -32,7 +32,7 @@
    </parent>
 
    <properties>
-       <hadoop.version>2.7.2</hadoop.version>
+       <hadoop.version>2.10.1</hadoop.version>
        <hbase.version>1.2.0</hbase.version>
    </properties>
    
