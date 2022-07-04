@@ -45,7 +45,7 @@
         <slf4j.version>1.7.26</slf4j.version>
         <spring.version>5.3.21</spring.version>
         <syncope.version>2.1.8</syncope.version>
-        <tomcat.version>8.5.69</tomcat.version>
+        <tomcat.version>8.5.81</tomcat.version>
     </properties>
 
 
