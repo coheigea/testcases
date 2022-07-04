@@ -40,7 +40,7 @@
         <hsqldb.version>2.5.0</hsqldb.version>
         <htmlunit.version>2.22</htmlunit.version>
         <jackson.version>2.13.3</jackson.version>
-        <junit.version>4.13.1</junit.version>
+        <junit.version>4.13.2</junit.version>
         <karaf.version>4.2.11</karaf.version>
         <slf4j.version>1.7.26</slf4j.version>
         <spring.version>5.1.20.RELEASE</spring.version>
