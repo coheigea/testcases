@@ -127,7 +127,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15</artifactId>
+                    <artifactId>bcprov-jdk18</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -139,7 +139,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15</artifactId>
+                    <artifactId>bcprov-jdk18</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -151,7 +151,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15</artifactId>
+                    <artifactId>bcprov-jdk18</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -163,7 +163,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15</artifactId>
+                    <artifactId>bcprov-jdk18</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>net.sf.ehcache</groupId>
@@ -179,7 +179,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15</artifactId>
+                    <artifactId>bcprov-jdk18</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -203,7 +203,7 @@
        </dependency>
        <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
+            <artifactId>bcprov-jdk18on</artifactId>
             <version>${bcprov.version}</version>
             <scope>test</scope>
        </dependency>
