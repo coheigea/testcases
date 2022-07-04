@@ -21,7 +21,7 @@ package org.apache.coheigea.cxf.jaxrs.json.common;
 import java.util.Properties;
 
 import org.apache.cxf.rs.security.jose.common.JoseConstants;
-import org.apache.cxf.rs.security.jose.common.PrivateKeyPasswordProvider;
+import org.apache.cxf.rt.security.rs.PrivateKeyPasswordProvider;
 
 public class PrivateKeyPasswordProviderImpl implements PrivateKeyPasswordProvider {
 

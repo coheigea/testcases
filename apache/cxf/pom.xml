@@ -35,7 +35,6 @@
         <module>cxf-jaxrs-xmlsecurity</module>
         <module>cxf-jaxrs-httpsig</module>
         <module>cxf-jaxrs-jose</module>
-        <module>cxf-jaxrs-oauth1</module>
         <module>cxf-jaxrs-oauth2.0</module>
         <module>cxf-jaxrs-oidc</module>
         <module>cxf-swagger</module>
@@ -47,13 +46,13 @@
         <module>cxf-saml-sso</module>
         <module>cxf-sts</module>
         <module>cxf-sts-xacml</module>
+        <module>cxf-amazon-kms</module>
         -->
         <module>cxf-x509</module>
         <module>cxf-shiro</module>
         <module>cxf-kerberos</module>
         <module>cxf-kerberos-kerby</module>
         <module>cxf-jdbc</module>
-        <module>cxf-amazon-kms</module>
         <module>cxf-transports</module>
         <module>fediz</module>
         <module>misc</module>
