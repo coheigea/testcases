@@ -26,10 +26,10 @@
 
    <properties>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
-        <cxf.version>3.4.0</cxf.version>
+        <cxf.version>3.5.4</cxf.version>
         <junit.version>5.5.1</junit.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <xmlsec.version>2.2.1</xmlsec.version>
+        <slf4j.version>1.7.26</slf4j.version>
+        <xmlsec.version>2.2.4</xmlsec.version>
    </properties>
 
    <dependencies>

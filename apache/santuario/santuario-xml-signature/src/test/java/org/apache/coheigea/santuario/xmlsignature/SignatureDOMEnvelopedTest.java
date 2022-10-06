@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.xml.security.Init;
 import org.apache.xml.security.signature.XMLSignature;
@@ -52,8 +51,7 @@ public class SignatureDOMEnvelopedTest extends org.junit.Assert {
         // Read in plaintext document
         InputStream sourceDocument =
                 this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
-        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
-        Document document = builder.parse(sourceDocument);
+        Document document = XMLUtils.read(sourceDocument, true);
 
         // Set up the Key
         KeyStore keyStore = KeyStore.getInstance("jks");

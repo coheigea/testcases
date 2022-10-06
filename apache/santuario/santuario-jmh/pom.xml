@@ -26,8 +26,7 @@
 
    <properties>
         <jmh.version>1.21</jmh.version>
-        <!-- <xmlsec.version>2.1.3</xmlsec.version> -->
-        <xmlsec.version>2.1.4-SNAPSHOT</xmlsec.version>
+        <xmlsec.version>2.1.8</xmlsec.version>
    </properties>
 
    <dependencies>

@@ -29,6 +29,7 @@
         <junit.version>4.13.2</junit.version>
         <slf4j.version>1.7.26</slf4j.version>
         <xmlsec.version>3.0.1</xmlsec.version>
+        <xml.bind.impl.version>3.0.2</xml.bind.impl.version>
    </properties>
 
    <dependencies>
@@ -48,6 +49,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>${slf4j.version}</version>
+            <scope>test</scope>
+       </dependency>
+       <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${xml.bind.impl.version}</version>
             <scope>test</scope>
        </dependency>
 

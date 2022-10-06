@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -66,8 +65,7 @@ public class SignatureInteropTest extends org.junit.Assert {
         );
 
         // Verify using DOM
-        DocumentBuilder documentBuilder = XMLUtils.createDocumentBuilder(false);
-        Document document = documentBuilder.parse(new ByteArrayInputStream(baos.toByteArray()));
+        Document document = XMLUtils.read(new ByteArrayInputStream(baos.toByteArray()), true);
         XMLUtils.outputDOM(document, System.out);
 
         SignatureUtils.verifyUsingDOM(document, namesToSign, cert);
@@ -98,8 +96,7 @@ public class SignatureInteropTest extends org.junit.Assert {
         );
 
         // Verify using JSR-105
-        DocumentBuilder documentBuilder = XMLUtils.createDocumentBuilder(false);
-        Document document = documentBuilder.parse(new ByteArrayInputStream(baos.toByteArray()));
+        Document document = XMLUtils.read(new ByteArrayInputStream(baos.toByteArray()), true);
         XMLUtils.outputDOM(document, System.out);
 
         SignatureUtils.verifyUsingJSR105(document, namesToSign, cert);
@@ -112,8 +109,7 @@ public class SignatureInteropTest extends org.junit.Assert {
         // Read in plaintext document
         InputStream sourceDocument =
                 this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
-        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
-        Document document = builder.parse(sourceDocument);
+        Document document = XMLUtils.read(sourceDocument, true);
 
         // Set up the Key
         KeyStore keyStore = KeyStore.getInstance("jks");
@@ -151,8 +147,7 @@ public class SignatureInteropTest extends org.junit.Assert {
         // Read in plaintext document
         InputStream sourceDocument =
                 this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
-        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
-        Document document = builder.parse(sourceDocument);
+        Document document = XMLUtils.read(sourceDocument, true);
 
         // Set up the Key
         KeyStore keyStore = KeyStore.getInstance("jks");
@@ -183,8 +178,7 @@ public class SignatureInteropTest extends org.junit.Assert {
         // Read in plaintext document
         InputStream sourceDocument =
                 this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
-        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
-        Document document = builder.parse(sourceDocument);
+        Document document = XMLUtils.read(sourceDocument, true);
 
         // Set up the Key
         KeyStore keyStore = KeyStore.getInstance("jks");
@@ -215,8 +209,7 @@ public class SignatureInteropTest extends org.junit.Assert {
         // Read in plaintext document
         InputStream sourceDocument =
                 this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
-        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
-        Document document = builder.parse(sourceDocument);
+        Document document = XMLUtils.read(sourceDocument, true);
 
         // Set up the Key
         KeyStore keyStore = KeyStore.getInstance("jks");
