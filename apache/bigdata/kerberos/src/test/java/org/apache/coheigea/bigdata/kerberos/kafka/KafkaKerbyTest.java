@@ -90,7 +90,7 @@ public class KafkaKerbyTest extends org.junit.Assert {
     }
 
     @Test
-    //@org.junit.Ignore
+    @org.junit.Ignore
     public void testKerberos() throws Exception {
         System.out.println("KDC ready on port: " + kerbyServer.getKdcSetting().getKdcUdpPort());
         Thread.sleep(2 * 10 * 60 * 1000);

@@ -28,12 +28,12 @@
     <modules>
         <module>parent</module>
         <module>hdfs</module>
-        <module>hive</module>
+        <!--<module>hive</module>-->
         <module>hbase</module>
         <module>storm</module>
-        <module>solr</module>
+        <!--<module>solr</module>-->
         <module>kms</module>
-        <module>kafka</module>
+        <!--<module>kafka</module>-->
         <module>kerberos</module>
         <module>knox</module>
     </modules>

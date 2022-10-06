@@ -32,14 +32,14 @@
 
     <properties>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
-        <junit.version>4.13.1</junit.version>
+        <junit.version>4.13.2</junit.version>
         <hadoop.version>2.7.5</hadoop.version>
-        <hbase.version>1.2.6</hbase.version>
+        <hbase.version>1.3.2</hbase.version>
         <hive.version>2.3.2</hive.version>
         <kafka.version>0.10.0.1</kafka.version>
         <kerby.version>2.0.1</kerby.version>
         <knox.version>1.6.1</knox.version>
-        <ranger.version>1.0.0</ranger.version>
+        <ranger.version>1.2.0</ranger.version>
         <slf4j.version>1.7.25</slf4j.version>
         <solr.version>5.5.4</solr.version>
         <storm.version>1.2.4</storm.version>

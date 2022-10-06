@@ -28,6 +28,7 @@ import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.ProcedureInfo;
 import org.apache.hadoop.hbase.ServerName;
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin.MasterSwitchType;
 import org.apache.hadoop.hbase.coprocessor.MasterCoprocessorEnvironment;
 import org.apache.hadoop.hbase.coprocessor.MasterObserver;
 import org.apache.hadoop.hbase.coprocessor.ObserverContext;
@@ -199,6 +200,34 @@ public class CustomMasterObserver implements MasterObserver {
         throws IOException {
         authorizeUser();
         
+    }
+
+    public void postDispatchMerge(ObserverContext<MasterCoprocessorEnvironment> arg0, HRegionInfo arg1,
+                                  HRegionInfo arg2)
+        throws IOException {
+        authorizeUser();
+
+    }
+
+     public void postSetSplitOrMergeEnabled(ObserverContext<MasterCoprocessorEnvironment> arg0, boolean arg1,
+                                           MasterSwitchType arg2)
+        throws IOException {
+        authorizeUser();
+
+    }
+
+    public void preDispatchMerge(ObserverContext<MasterCoprocessorEnvironment> arg0, HRegionInfo arg1,
+                                 HRegionInfo arg2)
+        throws IOException {
+        authorizeUser();
+
+    }
+
+     public boolean preSetSplitOrMergeEnabled(ObserverContext<MasterCoprocessorEnvironment> arg0, boolean arg1,
+                                             MasterSwitchType arg2)
+        throws IOException {
+        authorizeUser();
+        return false;
     }
 
     @Override
