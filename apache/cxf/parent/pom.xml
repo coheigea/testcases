@@ -33,6 +33,7 @@
     <properties>
         <apacheds.version>2.0.0.AM26</apacheds.version>
         <bcprov.version>1.71</bcprov.version>
+        <commons.io.version>2.8.0</commons.io.version>
         <commons.logging.version>1.2</commons.logging.version>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <cxf.version>3.5.3</cxf.version>
@@ -40,6 +41,7 @@
         <hsqldb.version>2.5.2</hsqldb.version>
         <htmlunit.version>2.52.0</htmlunit.version>
         <jackson.version>2.13.4</jackson.version>
+        <jettison.version>1.5.1</jettison.version>
         <junit.version>4.13.2</junit.version>
         <karaf.version>4.2.16</karaf.version>
         <slf4j.version>1.7.26</slf4j.version>
