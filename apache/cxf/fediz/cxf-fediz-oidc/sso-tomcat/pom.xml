@@ -92,7 +92,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>hsqldb</groupId>
+            <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>${hsqldb.version}</version>
             <scope>test</scope>
@@ -104,7 +104,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.cxf.fediz</groupId>
-            <artifactId>fediz-tomcat7</artifactId>
+            <artifactId>fediz-tomcat</artifactId>
             <version>${fediz.version}</version>
             <scope>test</scope>
         </dependency>
