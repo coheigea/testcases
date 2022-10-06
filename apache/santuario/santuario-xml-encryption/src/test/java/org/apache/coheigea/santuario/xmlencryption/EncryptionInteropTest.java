@@ -30,7 +30,6 @@ import java.util.List;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -75,8 +74,7 @@ public class EncryptionInteropTest extends org.junit.Assert {
         );
         
         // Decrypt using DOM
-        DocumentBuilder documentBuilder = XMLUtils.createDocumentBuilder(false);
-        Document document = documentBuilder.parse(new ByteArrayInputStream(baos.toByteArray()));
+        Document document = XMLUtils.read(new ByteArrayInputStream(baos.toByteArray()), true);
         XMLUtils.outputDOM(document, System.out);
         
         // Check the CreditCard encrypted ok
@@ -99,8 +97,7 @@ public class EncryptionInteropTest extends org.junit.Assert {
         // Read in plaintext document
         InputStream sourceDocument = 
                 this.getClass().getClassLoader().getResourceAsStream("plaintext.xml");
-        DocumentBuilder builder = XMLUtils.createDocumentBuilder(false);
-        Document document = builder.parse(sourceDocument);
+        Document document = XMLUtils.read(sourceDocument, true);
         
         // Set up the Key
         KeyStore keyStore = KeyStore.getInstance("jks");
