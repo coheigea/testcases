@@ -1,7 +1,0 @@
-
-karaf {
-    org.apache.karaf.jaas.modules.syncope.SyncopeLoginModule required
-    debug="true"
-    address="http://localhost:${syncope.port}/syncope/rest"
-    version="1";
-};

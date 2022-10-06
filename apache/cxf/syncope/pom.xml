@@ -25,7 +25,6 @@
     <version>1.0</version>
 
     <modules>
-        <module>cxf-syncope</module>
         <module>cxf-syncope2-webapp</module>
         <module>cxf-syncope2</module>
     </modules>
