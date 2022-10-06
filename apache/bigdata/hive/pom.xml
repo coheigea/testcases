@@ -73,12 +73,6 @@
             <version>${ranger.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.sentry</groupId>
-            <artifactId>sentry-binding-hive</artifactId>
-            <version>${sentry.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
