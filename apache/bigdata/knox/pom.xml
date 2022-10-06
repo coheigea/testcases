@@ -36,18 +36,6 @@
             <artifactId>gateway-server</artifactId>
             <scope>test</scope>
             <version>${knox.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.minidev</groupId>
-                    <artifactId>json-smart</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>net.minidev</groupId>
-            <artifactId>json-smart</artifactId>
-            <scope>test</scope>
-            <version>2.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.knox</groupId>
