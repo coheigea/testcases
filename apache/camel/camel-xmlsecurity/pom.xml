@@ -39,12 +39,6 @@
            <scope>compile</scope>
        </dependency>
        <dependency>
-           <groupId>junit</groupId>
-           <artifactId>junit</artifactId>
-           <version>${junit.version}</version>
-           <scope>test</scope>
-       </dependency>
-       <dependency>
            <groupId>org.apache.camel</groupId>
            <artifactId>camel-xmlsecurity</artifactId>
            <version>${camel.version}</version>
@@ -53,12 +47,6 @@
        <dependency>
            <groupId>org.apache.camel</groupId>
            <artifactId>camel-spring-main</artifactId>
-           <version>${camel.version}</version>
-           <scope>test</scope>
-       </dependency>
-       <dependency>
-           <groupId>org.apache.camel</groupId>
-           <artifactId>camel-spring</artifactId>
            <version>${camel.version}</version>
            <scope>test</scope>
        </dependency>
@@ -86,6 +74,12 @@
            <version>${project.version}</version>
            <scope>test</scope>
            <classifier>tests</classifier>
+       </dependency>
+       <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-spring-junit5</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
        </dependency>
 
     </dependencies>

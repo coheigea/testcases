@@ -29,7 +29,7 @@
             <setHeader name="CC">
                 <simple>bad@apache-recipient.org</simple>
             </setHeader>
-            <removeHeader headerName="cc" />
+            <removeHeader name="cc" />
             <to uri="smtp://smtp.mailtrap.io?username=xyz&amp;password=xyz&amp;contentType=text/html&amp;cc=good@apache-recipient.org"/>
         </route>
         <route>

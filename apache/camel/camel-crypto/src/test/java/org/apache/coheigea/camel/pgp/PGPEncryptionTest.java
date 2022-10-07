@@ -22,9 +22,9 @@ import org.apache.camel.spring.Main;
 
 /**
  */
-public class PGPEncryptionTest extends org.junit.Assert {
+public class PGPEncryptionTest {
     
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testEncryption() throws Exception {
         // Start up the Camel route
         Main main = new Main();

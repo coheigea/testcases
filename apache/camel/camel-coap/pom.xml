@@ -31,35 +31,12 @@
         <version>1.0</version>
    </parent>
 
-   <properties>
-       <camel.version>3.0.0</camel.version>
-   </properties>
-
    <dependencies>
        <dependency>
            <groupId>commons-logging</groupId>
            <artifactId>commons-logging</artifactId>
            <version>${commons.logging.version}</version>
            <scope>compile</scope>
-       </dependency>
-       <dependency>
-           <groupId>org.eclipse.californium</groupId>
-           <artifactId>californium-core</artifactId>
-           <version>2.0.0-M14</version>
-           <scope>compile</scope>
-       </dependency>
-       <!--  TODO Remove these two deps when they are picked up in Camel master -->
-       <dependency>
-           <groupId>org.eclipse.californium</groupId>
-           <artifactId>scandium</artifactId>
-           <version>2.0.0-M14</version>
-           <scope>compile</scope>
-       </dependency>
-       <dependency>
-           <groupId>junit</groupId>
-           <artifactId>junit</artifactId>
-           <version>${junit.version}</version>
-           <scope>test</scope>
        </dependency>
        <dependency>
            <groupId>org.apache.camel</groupId>
@@ -93,7 +70,7 @@
        </dependency>
        <dependency>
            <groupId>org.apache.camel</groupId>
-           <artifactId>camel-spring</artifactId>
+           <artifactId>camel-spring-main</artifactId>
            <version>${camel.version}</version>
            <scope>test</scope>
        </dependency>
@@ -109,6 +86,12 @@
            <version>${project.version}</version>
            <scope>test</scope>
            <classifier>tests</classifier>
+       </dependency>
+       <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-spring-junit5</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
        </dependency>
 
     </dependencies>

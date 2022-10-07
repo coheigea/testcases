@@ -22,9 +22,9 @@ import org.apache.camel.spring.Main;
 
 /**
  */
-public class MailTest extends org.junit.Assert {
+public class MailTest {
     
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testLookup() throws Exception {
         // Start up the Camel route
         Main main = new Main();

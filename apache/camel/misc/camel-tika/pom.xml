@@ -39,12 +39,6 @@
            <scope>compile</scope>
        </dependency>
        <dependency>
-           <groupId>junit</groupId>
-           <artifactId>junit</artifactId>
-           <version>${junit.version}</version>
-           <scope>test</scope>
-       </dependency>
-       <dependency>
            <groupId>org.apache.camel</groupId>
            <artifactId>camel-tika</artifactId>
            <version>${camel.version}</version>
@@ -63,16 +57,16 @@
            <scope>test</scope>
        </dependency>
        <dependency>
-           <groupId>org.apache.camel</groupId>
-           <artifactId>camel-spring</artifactId>
-           <version>${camel.version}</version>
-           <scope>test</scope>
-       </dependency>
-       <dependency>
            <groupId>org.slf4j</groupId>
            <artifactId>slf4j-jdk14</artifactId>
            <version>${slf4j.version}</version>
            <scope>test</scope>
+       </dependency>
+       <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-spring-junit5</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
        </dependency>
 
     </dependencies>

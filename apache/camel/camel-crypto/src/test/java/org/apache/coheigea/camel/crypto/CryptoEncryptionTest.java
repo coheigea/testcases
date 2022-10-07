@@ -28,7 +28,7 @@ import org.apache.camel.spring.Main;
 
 /**
  */
-public class CryptoEncryptionTest extends org.junit.Assert {
+public class CryptoEncryptionTest {
     
     private static Key key;
     
@@ -43,7 +43,7 @@ public class CryptoEncryptionTest extends org.junit.Assert {
         }
     }
     
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testEncryption() throws Exception {
         // Start up the Camel route
         Main main = new Main();

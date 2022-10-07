@@ -22,9 +22,9 @@ import org.apache.camel.spring.Main;
 
 /**
  */
-public class WeatherTest extends org.junit.Assert {
+public class WeatherTest {
     
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testLookup() throws Exception {
         // Start up the Camel route
         Main main = new Main();

@@ -22,9 +22,9 @@ import org.apache.camel.spring.Main;
 
 /**
  */
-public class XSLTTest extends org.junit.Assert {
+public class XSLTTest {
     
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testXSLT() throws Exception {
         // Start up the Camel route
         Main main = new Main();

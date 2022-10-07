@@ -22,9 +22,9 @@ import org.apache.camel.spring.Main;
 
 /**
  */
-public class XMLSignatureXAdESTest extends org.junit.Assert {
+public class XMLSignatureXAdESTest {
     
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testXMLSignature() throws Exception {
         // Start up the Camel route
         Main main = new Main();
