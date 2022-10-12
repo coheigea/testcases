@@ -1,11 +1,13 @@
 
-FROM tomcat:8.5
+FROM tomcat:9-jdk8-corretto
 
 LABEL maintainer-twitter="@coheigea"
-LABEL version=1.4.5
+LABEL version=1.6.0
 
-ARG FEDIZ_VERSION=1.4.5
+ARG FEDIZ_VERSION=1.6.0
 ARG TOMCAT_HOME=/usr/local/tomcat
+
+RUN yum -y install unzip && yum -y clean all && rm -rf /var/cache
 
 WORKDIR /tmp
 ADD https://repo.maven.apache.org/maven2/org/apache/cxf/fediz/apache-fediz/$FEDIZ_VERSION/apache-fediz-$FEDIZ_VERSION.zip /tmp
@@ -19,7 +21,7 @@ RUN unzip -q *.zip \
     && cp /tmp/apache-fediz-$FEDIZ_VERSION/idp/war/fediz-oidc.war $TOMCAT_HOME/webapps \
     && unzip -q $TOMCAT_HOME/webapps/fediz-oidc.war -d $TOMCAT_HOME/webapps/fediz-oidc \
     && mkdir -p $TOMCAT_HOME/lib/fediz \
-    && cp /tmp/apache-fediz-$FEDIZ_VERSION/plugins/tomcat8/lib/* $TOMCAT_HOME/lib/fediz
+    && cp /tmp/apache-fediz-$FEDIZ_VERSION/plugins/tomcat/lib/* $TOMCAT_HOME/lib/fediz
 
 COPY data-manager.xml $TOMCAT_HOME/webapps/fediz-oidc/WEB-INF
 
