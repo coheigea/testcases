@@ -34,7 +34,7 @@
         <camel.version>3.14.5</camel.version>
         <commons.logging.version>1.2</commons.logging.version>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
-        <cxf.version>3.4.8</cxf.version>
+        <cxf.version>3.4.9</cxf.version>
         <slf4j.version>1.7.26</slf4j.version>
         <spring.version>5.3.22</spring.version>
     </properties>
