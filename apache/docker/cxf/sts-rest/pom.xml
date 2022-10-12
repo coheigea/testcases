@@ -25,11 +25,11 @@
     <version>1.0</version>
 
     <properties>
-        <cxf.version>3.2.7</cxf.version>
+        <cxf.version>3.5.4</cxf.version>
         <commons.logging.version>1.2</commons.logging.version>
-        <jackson.version>2.9.3</jackson.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <spring.version>4.3.20.RELEASE</spring.version>
+        <jackson.version>2.13.4</jackson.version>
+        <slf4j.version>1.7.26</slf4j.version>
+        <spring.version>5.3.22</spring.version>
     </properties>
 
    <dependencies>

@@ -38,7 +38,7 @@
     
     <bean id="callbackHandler" class="org.apache.coheigea.cxf.sts.CommonCallbackHandler"/>
     <bean id="transportSTSProperties" class="org.apache.cxf.sts.StaticSTSProperties">
-        <property name="signaturePropertiesFile" value="stsKeystore.properties"/>
+        <property name="signatureCryptoProperties" value="stsKeystore.properties"/>
         <property name="signatureUsername" value="mystskey"/>
         <property name="callbackHandler" ref="callbackHandler"/>
         <property name="issuer" value="CXF_STS"/>
