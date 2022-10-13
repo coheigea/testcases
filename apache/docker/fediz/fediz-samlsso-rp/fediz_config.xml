@@ -45,7 +45,7 @@
 			<realm>urn:org:apache:cxf:fediz:fedizhelloworld</realm>
             <signRequest>true</signRequest>
             <disableDeflateEncoding>true</disableDeflateEncoding>
-			<issuer>http://localhost:8080/auth/realms/fediz-samlsso/protocol/saml</issuer>
+			<issuer>http://localhost:8080/realms/fediz-samlsso/protocol/saml</issuer>
 			<roleDelimiter>,</roleDelimiter>
 			<roleURI>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role</roleURI>
 			<claimTypesRequested>
