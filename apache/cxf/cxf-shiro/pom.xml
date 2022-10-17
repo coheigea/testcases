@@ -32,7 +32,7 @@
    </parent>
 
    <properties>
-        <shiro.version>1.9.1</shiro.version>
+        <shiro.version>1.10.0</shiro.version>
    </properties>
 
    <dependencies>
