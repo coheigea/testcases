@@ -1,8 +1,7 @@
-
-FROM tomcat:8.5
+FROM tomcat:9-jdk11-corretto
 
 LABEL maintainer-twitter="@coheigea"
-LABEL version=0.0.1
+LABEL version=0.0.2
 
 ARG TOMCAT_HOME=/usr/local/tomcat
 

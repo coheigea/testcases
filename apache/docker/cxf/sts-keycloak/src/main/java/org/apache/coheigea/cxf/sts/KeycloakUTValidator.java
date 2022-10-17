@@ -75,7 +75,6 @@ public class KeycloakUTValidator implements Validator {
             .username(usernameToken.getName())
             .password(usernameToken.getPassword())
             .clientId("admin-cli")
-            .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
             .build();
 
         try {

@@ -25,12 +25,12 @@
     <version>1.0</version>
 
     <properties>
-        <cxf.version>3.2.7</cxf.version>
+        <cxf.version>3.5.4</cxf.version>
         <commons.logging.version>1.2</commons.logging.version>
-        <keycloak.version>3.4.3.Final</keycloak.version>
-        <resteasy.version>3.1.4.Final</resteasy.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <spring.version>4.3.20.RELEASE</spring.version>
+        <keycloak.version>19.0.3</keycloak.version>
+        <resteasy.version>4.7.4.Final</resteasy.version>
+        <slf4j.version>1.7.26</slf4j.version>
+        <spring.version>5.3.22</spring.version>
     </properties>
 
    <dependencies>
@@ -85,6 +85,7 @@
             <artifactId>keycloak-admin-client</artifactId>
             <version>${keycloak.version}</version>
        </dependency>
+       <!--
        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
@@ -95,6 +96,7 @@
             <artifactId>resteasy-jackson2-provider</artifactId>
             <version>${resteasy.version}</version>
        </dependency>
+       -->
 
     </dependencies>
 
@@ -114,6 +116,23 @@
                 </includes>
             </resource>
         </resources>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.6.2</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                        <maxmem>256M</maxmem>
+                        <fork>false</fork>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         
        <finalName>cxf-sts-keycloak</finalName>
     </build>

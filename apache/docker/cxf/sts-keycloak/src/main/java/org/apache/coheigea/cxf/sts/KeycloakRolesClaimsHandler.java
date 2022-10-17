@@ -64,7 +64,6 @@ public class KeycloakRolesClaimsHandler implements ClaimsHandler {
                         .username(adminUser)
                         .password(adminPassword)
                         .clientId("admin-cli")
-                        .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                         .build();
 
                     claim.setIssuer("keycloak");
@@ -89,9 +88,9 @@ public class KeycloakRolesClaimsHandler implements ClaimsHandler {
         return null;
     }
 
-    public List<URI> getSupportedClaimTypes() {
-        List<URI> list = new ArrayList<URI>();
-        list.add(ROLE);
+    public List<String> getSupportedClaimTypes() {
+        List<String> list = new ArrayList<>();
+        list.add(ROLE.toString());
         return list;
     }
 
