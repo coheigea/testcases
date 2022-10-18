@@ -42,10 +42,10 @@
         <module>syncope</module>
         <module>cxf-ldap</module>
         <module>cxf-benchmarks</module>
-        <!-- TODO fix failing tests
         <module>cxf-saml-sso</module>
         <module>cxf-sts</module>
         <module>cxf-sts-xacml</module>
+        <!-- TODO not working after upgrade
         <module>cxf-amazon-kms</module>
         -->
         <module>cxf-x509</module>

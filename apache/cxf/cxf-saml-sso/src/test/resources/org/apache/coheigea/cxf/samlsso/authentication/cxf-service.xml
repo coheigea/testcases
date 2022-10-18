@@ -61,7 +61,7 @@
    
    <bean id="consumerService" class="org.apache.cxf.rs.security.saml.sso.RequestAssertionConsumerFilter">
        <property name="stateProvider" ref="stateManager"/>
-       <property name="signatureCryptoProperties" value="stsServiceKeystore.properties"/>
+       <property name="signaturePropertiesFile" value="stsServiceKeystore.properties"/>
        <property name="enforceAssertionsSigned" value="true"/>
        <property name="enforceKnownIssuer" value="true"/>
        <property name="callbackHandlerClass" value="org.apache.coheigea.cxf.samlsso.authentication.CommonCallbackHandler"/>
@@ -88,7 +88,7 @@
        <property name="logoutServiceAddress" 
                  value="https://localhost:${testutil.ports.Server}/logout"/>
        <property name="signatureUsername" value="myservicekey"/>
-       <property name="signatureCryptoProperties" value="serviceKeystore.properties"/>
+       <property name="signaturePropertiesFile" value="serviceKeystore.properties"/>
        <property name="callbackHandlerClass" value="org.apache.coheigea.cxf.samlsso.authentication.CommonCallbackHandler"/>
    </bean>
    
