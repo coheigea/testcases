@@ -89,7 +89,7 @@ public class STSJWTSSOProvider implements JWTSSOProvider {
 
         User user = userDAO.findByUsername(jwtClaims.getSubject());
         if (user != null) {
-            Set<SyncopeGrantedAuthority> authorities = authDataAccessor.getAuthorities(user.getUsername());
+            Set<SyncopeGrantedAuthority> authorities = authDataAccessor.getAuthorities(user.getUsername(), null);
 
             return Pair.of(user, authorities);
         }
