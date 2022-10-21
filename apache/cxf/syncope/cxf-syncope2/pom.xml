@@ -37,6 +37,7 @@
         <cargo.output>${log.directory}/cargo-output.log</cargo.output>
         <conf.directory>${project.build.directory}/test-classes</conf.directory>
         <h2.version>1.4.200</h2.version>
+        <spring.version>5.1.20.RELEASE</spring.version>
     </properties>
     <dependencies>
         <dependency>
