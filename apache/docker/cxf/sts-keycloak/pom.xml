@@ -30,7 +30,7 @@
         <keycloak.version>19.0.3</keycloak.version>
         <resteasy.version>4.7.4.Final</resteasy.version>
         <slf4j.version>1.7.26</slf4j.version>
-        <spring.version>5.3.22</spring.version>
+        <spring.version>6.0.0</spring.version>
     </properties>
 
    <dependencies>
