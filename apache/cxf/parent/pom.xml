@@ -43,7 +43,7 @@
         <jackson.version>2.14.0</jackson.version>
         <jettison.version>1.5.4</jettison.version>
         <junit.version>4.13.2</junit.version>
-        <karaf.version>4.2.16</karaf.version>
+        <karaf.version>4.4.3</karaf.version>
         <slf4j.version>1.7.26</slf4j.version>
         <spring.version>5.3.22</spring.version>
         <syncope.version>2.1.12</syncope.version>
