@@ -27,7 +27,7 @@
    <properties>
         <cxf.surefire.fork.mode>pertest</cxf.surefire.fork.mode>
         <junit.version>4.13.2</junit.version>
-        <snakeyaml.version>1.33</snakeyaml.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
    </properties>
 
    <dependencies>
